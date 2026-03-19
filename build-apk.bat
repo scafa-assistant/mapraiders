@@ -1,4 +1,4 @@
 @echo off
 echo Gridwalker APK Builder
-bash "%~dp0build-apk.sh"
+"C:\Program Files\Git\bin\bash.exe" "%~dp0build-apk.sh"
 pause

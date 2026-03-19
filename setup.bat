@@ -1,4 +1,8 @@
 @echo off
 echo Starting Gridwalker setup...
-bash "%~dp0setup.sh"
+"C:\Program Files\Git\bin\bash.exe" "%~dp0setup.sh"
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Setup failed. Make sure Git Bash is installed.
+)
 pause
