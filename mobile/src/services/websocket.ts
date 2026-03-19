@@ -8,7 +8,7 @@
 import { getToken } from './api';
 
 const WS_URL = __DEV__
-  ? 'ws://localhost:3000'
+  ? 'ws://192.168.3.60:3000'
   : 'wss://api.gridwalker.app';
 
 const RECONNECT_BASE_MS = 1000;

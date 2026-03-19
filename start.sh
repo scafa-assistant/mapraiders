@@ -142,4 +142,7 @@ echo ""
 
 # Start Expo (foreground - this blocks until user exits)
 cd "$SCRIPT_DIR/mobile"
-npx expo start --host lan
+# Clear Metro cache to avoid node:sea path issue on Windows with Node 24+
+rm -rf .expo 2>/dev/null
+export NODE_OPTIONS="--no-experimental-sea-config"
+npx expo start --host lan --clear

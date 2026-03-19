@@ -15,11 +15,11 @@ CREATE EXTENSION IF NOT EXISTS "postgis";
 -- ============================================================
 INSERT INTO users (id, username, email, password_hash, level, xp, streak_days, reputation) VALUES
   ('00000000-0000-0000-0000-000000000001', 'TestWalker', 'walker@test.com',
-   '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36PqLe3sWaOD5KY5GCmZJqS', 25, 15000, 5, 1.2),
+   '$2a$10$D.tKxmRK4V4bRoFXrpSJIeSbdmFrhITIsspJnVCfs34EdCl7lEYY2', 25, 15000, 5, 1.2),
   ('00000000-0000-0000-0000-000000000002', 'DogLover', 'dog@test.com',
-   '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36PqLe3sWaOD5KY5GCmZJqS', 18, 8000, 12, 1.5),
+   '$2a$10$D.tKxmRK4V4bRoFXrpSJIeSbdmFrhITIsspJnVCfs34EdCl7lEYY2', 18, 8000, 12, 1.5),
   ('00000000-0000-0000-0000-000000000003', 'SpeedRunner', 'runner@test.com',
-   '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36PqLe3sWaOD5KY5GCmZJqS', 30, 25000, 3, 1.8)
+   '$2a$10$D.tKxmRK4V4bRoFXrpSJIeSbdmFrhITIsspJnVCfs34EdCl7lEYY2', 30, 25000, 3, 1.8)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================

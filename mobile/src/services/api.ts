@@ -5,7 +5,7 @@ import type { GpsPoint } from '../utils/types';
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const API_BASE = __DEV__
-  ? 'http://localhost:3000/api'
+  ? 'http://192.168.3.60:3000/api'
   : 'https://api.gridwalker.app/api';
 
 const TOKEN_KEY = '@gridwalker_token';
