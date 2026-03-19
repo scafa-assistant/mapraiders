@@ -1,15 +1,17 @@
 // ============================================================
 // User Routes
-// GET  /api/users/me          - Current user profile with titles, stats
-// GET  /api/users/:id/profile - Public profile
-// PUT  /api/users/me/settings - Update settings
+// GET    /api/users/me          - Current user profile with titles, stats
+// GET    /api/users/me/export   - GDPR data export (Article 20)
+// DELETE /api/users/me          - GDPR account deletion (Article 17)
+// GET    /api/users/:id/profile - Public profile
+// PUT    /api/users/me/settings - Update settings
 // ============================================================
 
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { validateBody } from '../middleware/validation';
 import { updateSettingsSchema } from '../middleware/validation';
-import { queryOne, queryMany, query } from '../config/database';
+import { queryOne, queryMany, query, transaction } from '../config/database';
 
 const router = Router();
 
@@ -80,6 +82,133 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('[Users] Get me error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get user data' });
+  }
+});
+
+// GET /api/users/me/export - GDPR Article 20: Right to data portability
+router.get('/me/export', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    const [
+      user,
+      territories,
+      quests,
+      questProgress,
+      echos,
+      challenges,
+      challengeSubmissions,
+      pets,
+      routes,
+      titles,
+      notifications,
+    ] = await Promise.all([
+      queryOne(
+        `SELECT id, username, email, level, xp, streak_days, last_active,
+                reputation, settings, created_at
+         FROM users WHERE id = $1`,
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM territories WHERE owner_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM quests WHERE creator_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM quest_progress WHERE user_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM echos WHERE creator_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM challenges WHERE creator_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM challenge_submissions WHERE user_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM pets WHERE owner_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM routes WHERE user_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM user_titles WHERE user_id = $1',
+        [userId],
+      ),
+      queryMany(
+        'SELECT * FROM notifications WHERE user_id = $1',
+        [userId],
+      ),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        user,
+        territories,
+        quests,
+        quest_progress: questProgress,
+        echos,
+        challenges,
+        challenge_submissions: challengeSubmissions,
+        pets,
+        routes,
+        titles,
+        notifications,
+      },
+    });
+  } catch (err: any) {
+    console.error('[Users] Data export error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to export user data' });
+  }
+});
+
+// DELETE /api/users/me - GDPR Article 17: Right to erasure
+router.delete('/me', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    await transaction(async (client) => {
+      // Delete all user-related data in dependency order
+      await client.query('DELETE FROM territories WHERE owner_id = $1', [userId]);
+      await client.query('DELETE FROM quest_progress WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM quests WHERE creator_id = $1', [userId]);
+      await client.query('DELETE FROM echo_likes WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM echos WHERE creator_id = $1', [userId]);
+      await client.query('DELETE FROM challenge_submissions WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM challenges WHERE creator_id = $1', [userId]);
+      await client.query('DELETE FROM pets WHERE owner_id = $1', [userId]);
+      await client.query('DELETE FROM route_visits WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM routes WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM user_titles WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM feed_events WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM reports WHERE reporter_id = $1', [userId]);
+      await client.query('DELETE FROM clan_members WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM refresh_tokens WHERE user_id = $1', [userId]);
+
+      // Finally delete the user row itself
+      await client.query('DELETE FROM users WHERE id = $1', [userId]);
+    });
+
+    return res.json({ success: true, message: 'Account and all data deleted' });
+  } catch (err: any) {
+    console.error('[Users] Account deletion error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to delete account' });
   }
 });
 

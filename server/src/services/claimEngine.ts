@@ -26,6 +26,7 @@ import { detectMovementClass } from './classDetection';
 import { assessRoute, getAntiGrindMultiplier } from './antiCheat';
 import { awardXp, calculateClaimXp, updateStreak } from './progressionEngine';
 import { notifyTerritoryAttack, notifyTerritoryLost } from './notificationService';
+import { awardWalkXp, checkRareFind } from './petEngine';
 
 /** Input data for processing a claim */
 export interface ClaimInput {
@@ -180,6 +181,18 @@ export class ClaimEngine {
     // 9. Award XP
     const xpAmount = calculateClaimXp(calculation.finalValue);
     await awardXp(userId, xpAmount, 'territory_claim');
+
+    // 9b. Pet XP integration: if detected class is 'dog_walker', award pet XP and check rare finds
+    if (detectedClass === 'dog_walker') {
+      try {
+        const distanceKm = distance / 1000;
+        const isNewArea = noveltyMultiplier > 1.0;
+        await awardWalkXp(userId, distanceKm, isNewArea);
+        await checkRareFind(userId, centerLat, centerLng);
+      } catch (err) {
+        console.error('[ClaimEngine] Pet XP integration error:', err);
+      }
+    }
 
     // 10. Log to activity feed
     await query(

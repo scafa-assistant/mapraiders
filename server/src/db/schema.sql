@@ -477,3 +477,30 @@ COMMENT ON TABLE route_visits IS 'Per-user route repeat tracking for diminishing
 
 CREATE INDEX IF NOT EXISTS idx_route_visits_user_hash ON route_visits (user_id, route_hash);
 CREATE INDEX IF NOT EXISTS idx_route_visits_visited   ON route_visits (visited_at);
+
+-- ============================================================
+-- ARTIFACTS
+-- Geo-anchored creative content placed in owned territories.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS artifacts (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  creator_id        UUID         NOT NULL REFERENCES users(id),
+  territory_id      UUID         REFERENCES territories(id),
+  name              VARCHAR(100) NOT NULL,
+  description       TEXT,
+  type              VARCHAR(30)  NOT NULL DEFAULT 'trophy',
+  rarity            VARCHAR(20)  NOT NULL DEFAULT 'common',
+  location          GEOMETRY(POINT, 4326) NOT NULL,
+  photo_url         TEXT,
+  permanence_votes  INT          DEFAULT 0,
+  is_permanent      BOOLEAN      DEFAULT FALSE,
+  created_at        TIMESTAMPTZ  DEFAULT NOW(),
+  expires_at        TIMESTAMPTZ  DEFAULT (NOW() + INTERVAL '14 days')
+);
+
+COMMENT ON TABLE artifacts IS 'Geo-anchored creative artifacts placed in owned territories with community permanence voting.';
+
+CREATE INDEX IF NOT EXISTS idx_artifacts_location ON artifacts USING GIST (location);
+CREATE INDEX IF NOT EXISTS idx_artifacts_creator  ON artifacts (creator_id);
+CREATE INDEX IF NOT EXISTS idx_artifacts_territory ON artifacts (territory_id);
+CREATE INDEX IF NOT EXISTS idx_artifacts_permanent ON artifacts (is_permanent) WHERE is_permanent = TRUE;

@@ -198,11 +198,17 @@ export type ProfileStackParamList = {
   ProfileMain: undefined;
   Settings: undefined;
   Pet: undefined;
+  Notifications: undefined;
+  Clan: undefined;
+  Feed: undefined;
 };
 
 export type ProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
 export type SettingsScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Settings'>;
 export type PetScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Pet'>;
+export type NotificationsScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Notifications'>;
+export type ClanScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Clan'>;
+export type FeedScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Feed'>;
 
 // ─── Main Tab Navigator ────────────────────────────────────────────────────────
 

@@ -36,6 +36,7 @@ import { clansRouter } from './routes/clans';
 import { notificationsRouter } from './routes/notifications';
 import { socialRouter } from './routes/social';
 import { weatherRouter } from './routes/weather';
+import { artifactsRouter } from './routes/artifacts';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -113,6 +114,7 @@ app.use('/api/clans', clansRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/social', socialRouter);
 app.use('/api/weather', weatherRouter);
+app.use('/api/artifacts', artifactsRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {

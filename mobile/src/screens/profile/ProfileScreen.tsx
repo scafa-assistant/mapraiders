@@ -13,6 +13,7 @@ import { useAuthStore } from '../../store/authStore';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { CLASS_COLORS, CLASS_LABELS } from '../../utils/constants';
 import { formatArea, formatNumber, formatXP } from '../../utils/formatters';
+import { notificationApi } from '../../services/api';
 import StatBar from '../../components/StatBar';
 import ClassBadge from '../../components/ClassBadge';
 import type { ProfileScreenProps, MovementClass } from '../../navigation/types';
@@ -20,9 +21,16 @@ import type { ProfileScreenProps, MovementClass } from '../../navigation/types';
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const { user, refreshProfile } = useAuthStore();
   const [refreshing, setRefreshing] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     refreshProfile();
+    // Fetch unread notification count
+    notificationApi.get().then(({ data }) => {
+      const items = data.data ?? data ?? [];
+      const unread = Array.isArray(items) ? items.filter((n: { read: boolean }) => !n.read).length : 0;
+      setUnreadNotifications(unread);
+    }).catch(() => {});
   }, []);
 
   const onRefresh = useCallback(async () => {
@@ -203,6 +211,61 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <View style={styles.petButtonContent}>
             <Text style={styles.petButtonTitle}>My Pet</Text>
             <Text style={styles.petButtonSubtitle}>View your companion</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+        </TouchableOpacity>
+
+        {/* Notifications Button */}
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Notifications')}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.12)' }]}>
+            <Ionicons name="notifications" size={22} color={THEME.primary} />
+          </View>
+          <View style={styles.petButtonContent}>
+            <Text style={styles.petButtonTitle}>Notifications</Text>
+            <Text style={styles.petButtonSubtitle}>View your alerts</Text>
+          </View>
+          {unreadNotifications > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {unreadNotifications > 99 ? '99+' : unreadNotifications}
+              </Text>
+            </View>
+          )}
+          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+        </TouchableOpacity>
+
+        {/* Clan Button */}
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Clan')}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(255, 184, 0, 0.12)' }]}>
+            <Ionicons name="shield" size={22} color={THEME.warning} />
+          </View>
+          <View style={styles.petButtonContent}>
+            <Text style={styles.petButtonTitle}>My Clan</Text>
+            <Text style={styles.petButtonSubtitle}>View your clan</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+        </TouchableOpacity>
+
+        {/* Activity Feed Button */}
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Feed')}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 255, 136, 0.12)' }]}>
+            <Ionicons name="newspaper" size={22} color={THEME.accent} />
+          </View>
+          <View style={styles.petButtonContent}>
+            <Text style={styles.petButtonTitle}>Activity Feed</Text>
+            <Text style={styles.petButtonSubtitle}>See what's happening nearby</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#2A3450" />
         </TouchableOpacity>
@@ -476,5 +539,39 @@ const styles = StyleSheet.create({
     color: THEME.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginTop: 2,
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: THEME.surface,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  navIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  badge: {
+    backgroundColor: THEME.danger,
+    borderRadius: RADIUS.full,
+    minWidth: 22,
+    height: 22,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.sm,
+  },
+  badgeText: {
+    color: THEME.text,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '800',
   },
 });

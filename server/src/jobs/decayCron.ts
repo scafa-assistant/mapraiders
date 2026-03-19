@@ -226,5 +226,24 @@ export function setupCronJobs(): void {
     }
   }, { timezone: 'UTC' });
 
+  // ------------------------------------------------------------------
+  // Daily at 02:00 UTC - GDPR: GPS route data TTL (data minimization)
+  // Deletes raw GPS route points older than 90 days.
+  // Territory polygons are kept; only raw route data is removed.
+  // ------------------------------------------------------------------
+  cron.schedule('0 2 * * *', async () => {
+    console.log('[CRON] Running GPS route data TTL cleanup...');
+    try {
+      const result = await query(
+        `DELETE FROM routes
+         WHERE created_at < NOW() - INTERVAL '90 days'`,
+      );
+      const deleted = result.rowCount ?? 0;
+      console.log(`[CRON] GPS route TTL: ${deleted} old route records deleted`);
+    } catch (err) {
+      console.error('[CRON] GPS route TTL cleanup failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
   console.log('[CRON] All jobs scheduled.');
 }

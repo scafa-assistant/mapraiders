@@ -1,9 +1,11 @@
 // ============================================================
 // Challenge Routes
-// GET  /api/challenges             - Get nearby challenges
-// POST /api/challenges             - Create challenge
-// GET  /api/challenges/:id         - Get challenge details
-// POST /api/challenges/:id/submit  - Submit challenge proof
+// GET  /api/challenges                  - Get nearby challenges
+// POST /api/challenges                  - Create challenge
+// GET  /api/challenges/:id              - Get challenge details
+// POST /api/challenges/:id/submit       - Submit challenge proof
+// GET  /api/challenges/:id/submissions  - Get challenge submissions
+// POST /api/challenges/:id/submissions/:sid/verify - Verify submission
 // ============================================================
 
 import { Router, Request, Response } from 'express';
@@ -12,14 +14,12 @@ import path from 'path';
 import { authenticate } from '../middleware/auth';
 import { validateBody } from '../middleware/validation';
 import { createChallengeSchema, submitChallengeSchema } from '../middleware/validation';
-import { queryMany, queryOne, query } from '../config/database';
-import { haversineDistance } from '../utils/geo';
-
-// ---- Inline WKT helper ----
-function pointToWkt(lat: number, lng: number): string {
-  return `SRID=4326;POINT(${lng} ${lat})`;
-}
-import { awardXp, calculateChallengeXp } from '../services/progressionEngine';
+import { queryOne, queryMany } from '../config/database';
+import {
+  challengeEngine,
+  getSubmissions,
+  verifySubmission,
+} from '../services/challengeEngine';
 
 const router = Router();
 
@@ -58,8 +58,6 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     const lat = parseFloat(req.query.lat as string);
     const lng = parseFloat(req.query.lng as string);
     const radiusM = Math.min(parseFloat(req.query.radius as string) || 5000, 50000);
-    const template = req.query.template as string;
-    const classFilter = req.query.class as string;
 
     if (isNaN(lat) || isNaN(lng)) {
       return res.status(400).json({
@@ -68,49 +66,24 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
       });
     }
 
-    const locationWkt = pointToWkt(lat, lng);
-    const params: any[] = [locationWkt, radiusM];
-    let paramIdx = 3;
-    const filters: string[] = [];
+    const challenges = await challengeEngine.getNearby(lat, lng, radiusM);
 
+    // Apply optional client-side filters (template, class)
+    const template = req.query.template as string;
+    const classFilter = req.query.class as string;
+
+    let filtered = challenges;
     if (template) {
-      filters.push(`c.template = $${paramIdx}`);
-      params.push(template);
-      paramIdx++;
+      filtered = filtered.filter((c) => c.template === template);
     }
-
     if (classFilter) {
-      filters.push(`(c.class = $${paramIdx} OR c.class IS NULL)`);
-      params.push(classFilter);
-      paramIdx++;
+      filtered = filtered.filter((c) => c.class === classFilter || !c.class);
     }
-
-    const extraWhere = filters.length > 0 ? 'AND ' + filters.join(' AND ') : '';
-
-    const challenges = await queryMany(
-      `SELECT c.id, c.creator_id, c.template, c.parameters,
-              c.verification_level, c.class, c.total_completions,
-              c.avg_rating, c.status, c.created_at,
-              u.username as creator_username,
-              ST_Y(c.location) as lat, ST_X(c.location) as lng,
-              ST_Distance(c.location::geography, ST_GeomFromEWKT($1)::geography) as distance_m
-       FROM challenges c
-       LEFT JOIN users u ON c.creator_id = u.id
-       WHERE c.status = 'active'
-       AND ST_DWithin(c.location::geography, ST_GeomFromEWKT($1)::geography, $2)
-       ${extraWhere}
-       ORDER BY distance_m ASC
-       LIMIT 100`,
-      params
-    );
 
     return res.json({
       success: true,
       data: {
-        challenges: challenges.map(c => ({
-          ...c,
-          distance_m: parseFloat(c.distance_m || '0'),
-        })),
+        challenges: filtered,
       },
     });
   } catch (err: any) {
@@ -147,28 +120,33 @@ router.post(
         });
       }
 
-      const locationWkt = pointToWkt(lat, lng);
-
-      const challenge = await queryOne(
-        `INSERT INTO challenges (creator_id, template, location, parameters, verification_level, class)
-         VALUES ($1, $2, ST_GeomFromEWKT($3), $4, $5, $6)
-         RETURNING id, template, parameters, verification_level, class,
-                   total_completions, avg_rating, status, created_at`,
-        [req.userId, template, locationWkt, JSON.stringify(parameters), verification_level, cls || null]
-      );
-
-      if (!challenge) {
-        return res.status(500).json({ success: false, message: 'Failed to create challenge' });
-      }
+      const challenge = await challengeEngine.createChallenge(req.userId!, {
+        template,
+        lat,
+        lng,
+        parameters,
+        verification_level,
+        class: cls,
+      });
 
       return res.status(201).json({
         success: true,
-        data: {
-          challenge: { ...challenge, lat, lng },
-        },
+        data: { challenge },
       });
     } catch (err: any) {
       console.error('[Challenges] Create challenge error:', err);
+
+      // Surface validation errors as 400
+      if (
+        err.message?.includes('Invalid template') ||
+        err.message?.includes('Missing required parameter') ||
+        err.message?.includes('must be between') ||
+        err.message?.includes('must be a number') ||
+        err.message?.includes('must own a territory')
+      ) {
+        return res.status(400).json({ success: false, error: err.message });
+      }
+
       return res.status(500).json({ success: false, message: 'Failed to create challenge' });
     }
   }
@@ -182,17 +160,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const challenge = await queryOne(
-      `SELECT c.id, c.creator_id, c.template, c.parameters,
-              c.verification_level, c.class, c.total_completions,
-              c.avg_rating, c.status, c.created_at,
-              u.username as creator_username,
-              ST_Y(c.location) as lat, ST_X(c.location) as lng
-       FROM challenges c
-       LEFT JOIN users u ON c.creator_id = u.id
-       WHERE c.id = $1`,
-      [id]
-    );
+    const challenge = await challengeEngine.getChallenge(id as string);
 
     if (!challenge) {
       return res.status(404).json({ success: false, message: 'Challenge not found' });
@@ -201,10 +169,10 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     // Check if current user has submitted
     const userSubmission = await queryOne(
       'SELECT id, verified, submitted_at FROM challenge_submissions WHERE challenge_id = $1 AND user_id = $2 ORDER BY submitted_at DESC LIMIT 1',
-      [id, req.userId]
+      [id as string, req.userId]
     );
 
-    // Get recent submissions
+    // Get recent verified submissions
     const recentSubmissions = await queryMany(
       `SELECT cs.id, cs.user_id, cs.verified, cs.submitted_at,
               u.username
@@ -213,7 +181,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
        WHERE cs.challenge_id = $1 AND cs.verified = TRUE
        ORDER BY cs.submitted_at DESC
        LIMIT 10`,
-      [id]
+      [id as string]
     );
 
     return res.json({
@@ -254,97 +222,110 @@ router.post(
       }
 
       // Determine media URL
-      let media_url = req.body.media_url || null;
+      let media_url = req.body.media_url || undefined;
       if (req.file) {
         media_url = `/uploads/challenges/${req.file.filename}`;
       }
 
-      // Get challenge
-      const challenge = await queryOne<{
-        id: string;
-        creator_id: string;
-        verification_level: number;
-        template: string;
-        parameters: any;
-        lat: number;
-        lng: number;
-      }>(
-        `SELECT id, creator_id, verification_level, template, parameters,
-                ST_Y(location) as lat, ST_X(location) as lng
-         FROM challenges
-         WHERE id = $1 AND status = 'active'`,
-        [id]
-      );
-
-      if (!challenge) {
-        return res.status(404).json({
-          success: false,
-          error: 'Challenge not found or not active',
-        });
+      // Parse optional sensor data
+      let sensor_data: any;
+      if (req.body.sensor_data) {
+        try {
+          sensor_data = typeof req.body.sensor_data === 'string'
+            ? JSON.parse(req.body.sensor_data)
+            : req.body.sensor_data;
+        } catch {
+          // Ignore invalid sensor data
+        }
       }
 
-      // Cannot submit own challenge
-      if (challenge.creator_id === req.userId) {
-        return res.status(400).json({
-          success: false,
-          error: 'Cannot complete your own challenge',
-        });
-      }
-
-      // Verify proximity (must be within 200m)
-      const distance = haversineDistance(lat, lng, challenge.lat, challenge.lng);
-      if (distance > 200) {
-        return res.status(400).json({
-          success: false,
-          error: `Too far from challenge location (${Math.round(distance)}m away, max 200m)`,
-        });
-      }
-
-      // Auto-verify based on verification level (1-2 = auto, 3 = manual review)
-      const verified = challenge.verification_level <= 2;
-
-      // Create submission record
-      const submission = await queryOne(
-        `INSERT INTO challenge_submissions (challenge_id, user_id, media_url, verified)
-         VALUES ($1, $2, $3, $4)
-         RETURNING id, verified, submitted_at`,
-        [id, req.userId, media_url, verified]
-      );
-
-      let xpEarned = 0;
-
-      if (verified) {
-        // Update challenge completion count
-        await query(
-          'UPDATE challenges SET total_completions = total_completions + 1 WHERE id = $1',
-          [id]
-        );
-
-        // Award XP
-        xpEarned = calculateChallengeXp(challenge.verification_level);
-        await awardXp(req.userId!, xpEarned, 'challenge_complete');
-
-        // Log to feed
-        await query(
-          `INSERT INTO feed_events (type, user_id, data)
-           VALUES ('challenge_complete', $1, $2)`,
-          [req.userId, JSON.stringify({ challenge_id: id, template: challenge.template })]
-        );
-      }
+      const result = await challengeEngine.submitAttempt(req.userId!, id as string, {
+        lat,
+        lng,
+        media_url,
+        sensor_data,
+      });
 
       return res.json({
         success: true,
-        data: {
-          submission,
-          xp_earned: xpEarned,
-          message: verified
-            ? 'Challenge completed!'
-            : 'Submission received. Pending manual verification.',
-        },
+        data: result,
       });
     } catch (err: any) {
       console.error('[Challenges] Submit challenge error:', err);
+
+      // Surface domain errors as 400/404
+      if (err.message?.includes('not found')) {
+        return res.status(404).json({ success: false, error: err.message });
+      }
+      if (
+        err.message?.includes('not active') ||
+        err.message?.includes('Cannot complete your own') ||
+        err.message?.includes('Too far') ||
+        err.message?.includes('proof is required')
+      ) {
+        return res.status(400).json({ success: false, error: err.message });
+      }
+
       return res.status(500).json({ success: false, message: 'Failed to submit challenge' });
+    }
+  }
+);
+
+/**
+ * GET /api/challenges/:id/submissions
+ * Get all submissions for a challenge.
+ */
+router.get('/:id/submissions', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const submissions = await getSubmissions(id as string);
+
+    return res.json({
+      success: true,
+      data: { submissions },
+    });
+  } catch (err: any) {
+    console.error('[Challenges] Get submissions error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to get submissions' });
+  }
+});
+
+/**
+ * POST /api/challenges/:id/submissions/:sid/verify
+ * Admin/creator can approve or reject a video submission.
+ */
+router.post(
+  '/:id/submissions/:sid/verify',
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const { sid } = req.params;
+      const { approved } = req.body;
+
+      if (typeof approved !== 'boolean') {
+        return res.status(400).json({
+          success: false,
+          error: '"approved" (boolean) is required in the request body',
+        });
+      }
+
+      const result = await verifySubmission(sid as string, approved, req.userId);
+
+      return res.json({
+        success: true,
+        data: result,
+      });
+    } catch (err: any) {
+      console.error('[Challenges] Verify submission error:', err);
+
+      if (err.message?.includes('not found')) {
+        return res.status(404).json({ success: false, error: err.message });
+      }
+      if (err.message?.includes('Only the challenge creator')) {
+        return res.status(403).json({ success: false, error: err.message });
+      }
+
+      return res.status(500).json({ success: false, message: 'Failed to verify submission' });
     }
   }
 );
