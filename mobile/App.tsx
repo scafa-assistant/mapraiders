@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -6,6 +6,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuthStore } from './src/store/authStore';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainNavigator from './src/navigation/MainNavigator';
+import { offlineQueue } from './src/services/offlineQueue';
 
 const DARK_THEME = {
   dark: true,
@@ -21,6 +22,23 @@ const DARK_THEME = {
 
 function AppContent() {
   const { token, isLoading, refreshProfile } = useAuthStore();
+  const networkCleanupRef = useRef<(() => void) | null>(null);
+
+  // Initialize offline queue and network listener on mount
+  useEffect(() => {
+    offlineQueue.init().then(() => {
+      // After loading persisted queue, set up auto-sync on reconnect
+      networkCleanupRef.current = offlineQueue.setupNetworkListener();
+    });
+
+    return () => {
+      // Cleanup network listener on unmount
+      if (networkCleanupRef.current) {
+        networkCleanupRef.current();
+        networkCleanupRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (token) {

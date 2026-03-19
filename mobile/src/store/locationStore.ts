@@ -1,7 +1,16 @@
 import { create } from 'zustand';
 import * as Location from 'expo-location';
+import NetInfo from '@react-native-community/netinfo';
 import api from '../services/api';
 import { GpsPoint, MovementClass } from '../navigation/types';
+import { offlineQueue } from '../services/offlineQueue';
+import {
+  startBackgroundTracking,
+  stopBackgroundTracking,
+  getBackgroundPoints,
+  clearBackgroundPoints,
+} from '../services/backgroundLocation';
+import { sensorFusion } from '../services/sensorFusion';
 
 interface LocationState {
   currentLocation: { latitude: number; longitude: number } | null;
@@ -11,6 +20,7 @@ interface LocationState {
   recordingStartTime: number | null;
   totalDistance: number;
   locationSubscription: Location.LocationSubscription | null;
+  pendingUploads: number;
   startTracking: () => Promise<void>;
   stopTracking: () => Promise<GpsPoint[]>;
   updateLocation: (location: Location.LocationObject) => void;
@@ -57,6 +67,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   recordingStartTime: null,
   totalDistance: 0,
   locationSubscription: null,
+  pendingUploads: offlineQueue.getQueueSize(),
 
   requestPermissions: async () => {
     const { status: foreground } = await Location.requestForegroundPermissionsAsync();
@@ -129,6 +140,9 @@ export const useLocationStore = create<LocationState>((set, get) => ({
     const granted = await get().requestPermissions();
     if (!granted) return;
 
+    // Clear any leftover background points from a previous session
+    await clearBackgroundPoints();
+
     const subscription = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.BestForNavigation,
@@ -138,6 +152,16 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       (location) => {
         get().updateLocation(location);
       }
+    );
+
+    // Start background tracking as a fallback for when the app is killed
+    startBackgroundTracking().catch((err) =>
+      console.warn('[LocationStore] Background tracking failed to start:', err)
+    );
+
+    // Start sensor fusion for accelerometer/gyroscope data collection
+    sensorFusion.start().catch((err) =>
+      console.warn('[LocationStore] Sensor fusion failed to start:', err)
     );
 
     set({
@@ -157,23 +181,87 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       locationSubscription.remove();
     }
 
+    // Collect sensor analysis before stopping
+    const sensorAnalysis = sensorFusion.getAnalysis();
+    sensorFusion.stop();
+    sensorFusion.reset();
+
+    // Stop background tracking
+    await stopBackgroundTracking().catch((err) =>
+      console.warn('[LocationStore] Background tracking failed to stop:', err)
+    );
+
+    // Merge background points that were collected while app was in background/killed
+    let mergedRoute = [...currentRoute];
+    try {
+      const bgPoints = await getBackgroundPoints();
+      if (bgPoints.length > 0) {
+        // Only merge background points that aren't already in the foreground route
+        const existingTimestamps = new Set(currentRoute.map((p) => p.timestamp));
+        const newBgPoints: GpsPoint[] = bgPoints
+          .filter((p) => !existingTimestamps.has(p.timestamp))
+          .map((p) => ({
+            latitude: p.latitude,
+            longitude: p.longitude,
+            altitude: p.altitude ?? undefined,
+            timestamp: p.timestamp,
+            speed: p.speed ?? undefined,
+          }));
+
+        if (newBgPoints.length > 0) {
+          mergedRoute = [...mergedRoute, ...newBgPoints].sort(
+            (a, b) => a.timestamp - b.timestamp
+          );
+          console.log(`[LocationStore] Merged ${newBgPoints.length} background points`);
+        }
+
+        await clearBackgroundPoints();
+      }
+    } catch (err) {
+      console.warn('[LocationStore] Failed to merge background points:', err);
+    }
+
     set({
       isTracking: false,
       locationSubscription: null,
       recordingStartTime: null,
+      currentRoute: mergedRoute,
     });
 
-    if (currentRoute.length >= 2) {
-      try {
-        await api.post('/claims', {
-          route: currentRoute,
-          movementClass: detectedClass,
+    if (mergedRoute.length >= 2) {
+      // Check network status before uploading
+      const networkState = await NetInfo.fetch();
+      const isOnline = networkState.isConnected && networkState.isInternetReachable !== false;
+
+      const uploadPayload = {
+        route: mergedRoute,
+        movementClass: detectedClass,
+        sensorData: sensorAnalysis.sampleCount > 0 ? sensorAnalysis : undefined,
+      };
+
+      if (isOnline) {
+        try {
+          await api.post('/claims', uploadPayload);
+        } catch (_err) {
+          // Upload failed despite being online - queue for later
+          await offlineQueue.enqueue({
+            points: mergedRoute,
+            class: detectedClass,
+            sensorData: sensorAnalysis.sampleCount > 0 ? sensorAnalysis : undefined,
+          });
+          set({ pendingUploads: offlineQueue.getQueueSize() });
+        }
+      } else {
+        // Offline - queue the route for later sync
+        await offlineQueue.enqueue({
+          points: mergedRoute,
+          class: detectedClass,
+          sensorData: sensorAnalysis.sampleCount > 0 ? sensorAnalysis : undefined,
         });
-      } catch (_err) {
-        // Claim submission failed - will retry later
+        set({ pendingUploads: offlineQueue.getQueueSize() });
       }
     }
 
-    return currentRoute;
+    return mergedRoute;
   },
 }));

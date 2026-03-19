@@ -9,6 +9,7 @@ import { QUEST, XP } from '../config/constants';
 import { haversineDistance } from '../utils/geo';
 import { toWktPoint as pointToWkt } from '../utils/polygon';
 import { Quest, QuestStep, QuestProgress, VerificationType } from '../utils/types';
+import { aiVerification } from './aiVerification';
 
 /** Input data for creating a new quest */
 interface CreateQuestRequest {
@@ -254,7 +255,7 @@ export class QuestEngine {
     }
 
     // Perform verification
-    const verified = this.performVerification(step, proof);
+    const verified = await this.performVerification(step, proof);
 
     if (!verified) {
       return { verified: false };
@@ -540,11 +541,12 @@ export class QuestEngine {
 
   /**
    * Perform type-specific verification for a quest step.
+   * Uses AI verification service for photo and video steps.
    */
-  private performVerification(
+  private async performVerification(
     step: QuestStep & { lat: number; lng: number },
     proof: { type: string; data: any }
-  ): boolean {
+  ): Promise<boolean> {
     const vType = step.verification_type as VerificationType;
 
     // Always check GPS proximity first
@@ -566,11 +568,22 @@ export class QuestEngine {
       case 'proximity':
         return true; // Proximity already checked above
 
-      case 'photo':
-        return !!proof.data?.media_url;
+      case 'photo': {
+        const photoResult = await aiVerification.verifyPhoto(
+          proof.data?.media_url,
+          { lat: step.lat, lng: step.lng },
+          step.instruction
+        );
+        return photoResult.valid;
+      }
 
-      case 'video':
-        return !!proof.data?.media_url;
+      case 'video': {
+        const videoResult = await aiVerification.verifyVideo(
+          proof.data?.media_url,
+          { lat: step.lat, lng: step.lng }
+        );
+        return videoResult.valid;
+      }
 
       case 'text_input':
         if (!proof.data?.answer || !step.expected_answer) return false;

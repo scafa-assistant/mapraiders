@@ -16,6 +16,7 @@ import { useLocationStore } from '../../store/locationStore';
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useQuestStore } from '../../store/questStore';
 import { useAuthStore } from '../../store/authStore';
+import { echoProximityService } from '../../services/echoProximity';
 import { MapScreenProps, MovementClass, Territory } from '../../navigation/types';
 
 const { width, height } = Dimensions.get('window');
@@ -131,6 +132,24 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       return () => pulse.stop();
     }
   }, [isTracking]);
+
+  // Start/stop echo proximity monitoring on mount/unmount
+  useEffect(() => {
+    echoProximityService.start();
+    return () => {
+      echoProximityService.stop();
+    };
+  }, []);
+
+  // Feed location updates to echo proximity service
+  useEffect(() => {
+    if (currentLocation) {
+      echoProximityService.onLocationUpdate(
+        currentLocation.latitude,
+        currentLocation.longitude
+      );
+    }
+  }, [currentLocation]);
 
   // Initial location fetch
   useEffect(() => {

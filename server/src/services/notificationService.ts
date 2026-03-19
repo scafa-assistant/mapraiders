@@ -13,6 +13,8 @@ import {
   UserSettings,
 } from '../utils/types';
 import { cacheGet, cacheSet, incrementCounter } from '../config/redis';
+import { sendPushToUser } from './pushService';
+import { wsService } from './wsService';
 
 /** Input for creating a notification */
 interface NotificationInput {
@@ -88,6 +90,17 @@ export class NotificationService {
         priority: notification.priority,
       });
 
+      // Real-time delivery via WebSocket (best-effort, never blocks main flow)
+      try {
+        wsService.sendToUser(userId, notification.type, {
+          title: notification.title,
+          body: notification.body,
+          ...notification.data,
+        });
+      } catch (wsErr) {
+        // WS failure must never break notification flow
+      }
+
       // Check if notifications are disabled
       if (settings.notifications_enabled === false) {
         return; // Stored but not pushed
@@ -123,11 +136,27 @@ export class NotificationService {
       // HIGH priority: immediate delivery
       await this.incrementDailyCount(userId);
 
-      // TODO: Integrate with Firebase Cloud Messaging (FCM) for actual push delivery
-      // For now, log the notification
-      console.log(
-        `[Notify] PUSH ${notification.type} to ${userId}: ${notification.title}`
+      // Deliver via Firebase Cloud Messaging
+      const pushData: Record<string, string> = {};
+      if (notification.data) {
+        for (const [key, value] of Object.entries(notification.data)) {
+          pushData[key] = String(value);
+        }
+      }
+      pushData.type = notification.type;
+
+      const pushed = await sendPushToUser(
+        userId,
+        notification.title,
+        notification.body || '',
+        pushData
       );
+
+      if (!pushed) {
+        console.log(
+          `[Notify] PUSH ${notification.type} to ${userId}: ${notification.title} (no token or FCM unavailable)`
+        );
+      }
     } catch (err) {
       console.error('[Notify] Error sending notification:', err);
     }

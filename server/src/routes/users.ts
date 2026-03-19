@@ -1,10 +1,11 @@
 // ============================================================
 // User Routes
-// GET    /api/users/me          - Current user profile with titles, stats
-// GET    /api/users/me/export   - GDPR data export (Article 20)
-// DELETE /api/users/me          - GDPR account deletion (Article 17)
-// GET    /api/users/:id/profile - Public profile
-// PUT    /api/users/me/settings - Update settings
+// GET    /api/users/me            - Current user profile with titles, stats
+// GET    /api/users/me/export     - GDPR data export (Article 20)
+// DELETE /api/users/me            - GDPR account deletion (Article 17)
+// GET    /api/users/:id/profile   - Public profile
+// PUT    /api/users/me/push-token - Store FCM push token
+// PUT    /api/users/me/settings   - Update settings
 // ============================================================
 
 import { Router, Request, Response } from 'express';
@@ -273,6 +274,23 @@ router.get('/:id/profile', authenticate, async (req: Request, res: Response) => 
   } catch (err: any) {
     console.error('[Users] Get profile error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get profile' });
+  }
+});
+
+// PUT /api/users/me/push-token - Store FCM push token for notifications
+router.put('/me/push-token', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { token } = req.body;
+
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ success: false, message: 'Push token is required' });
+    }
+
+    await query('UPDATE users SET push_token = $1 WHERE id = $2', [token, req.userId]);
+    return res.json({ success: true });
+  } catch (err: any) {
+    console.error('[Users] Update push token error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to update push token' });
   }
 });
 

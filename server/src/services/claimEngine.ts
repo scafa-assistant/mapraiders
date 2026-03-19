@@ -27,6 +27,7 @@ import { assessRoute, getAntiGrindMultiplier } from './antiCheat';
 import { awardXp, calculateClaimXp, updateStreak } from './progressionEngine';
 import { notifyTerritoryAttack, notifyTerritoryLost } from './notificationService';
 import { awardWalkXp, checkRareFind } from './petEngine';
+import { wsService } from './wsService';
 
 /** Input data for processing a claim */
 export interface ClaimInput {
@@ -209,6 +210,18 @@ export class ClaimEngine {
         }),
       ]
     );
+
+    // Broadcast territory claim to nearby players via WebSocket
+    try {
+      wsService.broadcastNearby(centerLat, centerLng, 500, 'territory_claimed', {
+        territory_id: territoryResult.territory_id,
+        owner_id: userId,
+        claim_value: calculation.finalValue,
+        is_takeover: territoryResult.is_takeover,
+      }, userId);
+    } catch (err) {
+      console.error('[ClaimEngine] WS broadcast error:', err);
+    }
 
     // Fetch the created territory
     const territory = await queryOne<Territory>(

@@ -4,6 +4,8 @@
 // ============================================================
 
 import express, { Request, Response, NextFunction } from 'express';
+import { createServer } from 'http';
+import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -11,6 +13,7 @@ import compression from 'compression';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
 // Load environment variables before anything else
 dotenv.config();
@@ -40,6 +43,9 @@ import { artifactsRouter } from './routes/artifacts';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
+
+// Import WebSocket service
+import { wsService } from './services/wsService';
 
 // ---- Create Express app ----
 const app = express();
@@ -165,10 +171,45 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// ---- Start server ----
+// ---- Create HTTP server and WebSocket server ----
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws: WebSocket, req) => {
+  // Parse token from query string: ws://host?token=xxx
+  const url = new URL(req.url || '', `http://${req.headers.host}`);
+  const token = url.searchParams.get('token');
+
+  if (!token) {
+    ws.close(4001, 'No token');
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
+    wsService.addClient(decoded.userId, ws);
+
+    ws.on('message', (raw) => {
+      try {
+        const msg = JSON.parse(raw.toString());
+        if (msg.event === 'location_update') {
+          wsService.updateLocation(decoded.userId, msg.data.lat, msg.data.lng);
+        }
+      } catch {
+        // Ignore malformed messages
+      }
+    });
+
+    ws.on('close', () => wsService.removeClient(decoded.userId));
+  } catch {
+    ws.close(4003, 'Invalid token');
+  }
+});
+
+// ---- Start server ----
 async function startServer(): Promise<void> {
   try {
     // Initialize database connection and verify PostGIS
@@ -179,8 +220,9 @@ async function startServer(): Promise<void> {
     console.warn('[Server] Starting anyway - database may become available later');
   }
 
-  app.listen(PORT, HOST, () => {
+  server.listen(PORT, HOST, () => {
     console.log(`[Server] Gridwalker API running on http://${HOST}:${PORT}`);
+    console.log(`[Server] WebSocket server ready`);
     console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 
