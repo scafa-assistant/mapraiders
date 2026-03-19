@@ -6,7 +6,9 @@ import SettingsScreen from '../screens/profile/SettingsScreen';
 import PetScreen from '../screens/profile/PetScreen';
 import NotificationsScreen from '../screens/profile/NotificationsScreen';
 import ClanScreen from '../screens/profile/ClanScreen';
+import ClanChatScreen from '../screens/profile/ClanChatScreen';
 import FeedScreen from '../screens/profile/FeedScreen';
+import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -24,7 +26,9 @@ export default function ProfileStack() {
       <Stack.Screen name="Pet" component={PetScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Clan" component={ClanScreen} />
+      <Stack.Screen name="ClanChat" component={ClanChatScreen} />
       <Stack.Screen name="Feed" component={FeedScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
     </Stack.Navigator>
   );
 }

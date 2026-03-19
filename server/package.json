@@ -4,10 +4,12 @@
   "description": "Gridwalker GPS-based city MMO - Backend Server",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:init": "psql $DATABASE_URL -f src/db/schema.sql",
+    "db:seed": "psql $DATABASE_URL -f src/db/seed.sql",
+    "db:reset": "psql $DATABASE_URL -f src/db/schema.sql && psql $DATABASE_URL -f src/db/seed.sql",
     "lint": "tsc --noEmit"
   },
   "keywords": [
@@ -55,6 +57,7 @@
     "@types/ws": "^8.5.13",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2"
   },
   "engines": {

@@ -389,6 +389,22 @@ COMMENT ON TABLE clan_members IS 'Membership junction for clans.';
 CREATE INDEX IF NOT EXISTS idx_clan_members_user ON clan_members (user_id);
 
 -- ============================================================
+-- CLAN MESSAGES
+-- Real-time chat messages within a clan.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS clan_messages (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  clan_id    UUID NOT NULL REFERENCES clans(id) ON DELETE CASCADE,
+  sender_id  UUID NOT NULL REFERENCES users(id),
+  message    TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE clan_messages IS 'Chat messages exchanged within a clan.';
+
+CREATE INDEX IF NOT EXISTS idx_clan_messages_clan ON clan_messages (clan_id, created_at DESC);
+
+-- ============================================================
 -- NOTIFICATIONS
 -- Push / in-app notification queue.
 -- ============================================================

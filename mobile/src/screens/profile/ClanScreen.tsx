@@ -188,6 +188,27 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
                 </View>
               </View>
 
+              {/* Chat Button */}
+              <TouchableOpacity
+                style={styles.chatButton}
+                onPress={() =>
+                  navigation.navigate('ClanChat', {
+                    clanId: clan.id,
+                    clanName: clan.name,
+                  })
+                }
+                activeOpacity={0.7}
+              >
+                <View style={styles.chatIconCircle}>
+                  <Ionicons name="chatbubbles" size={20} color={THEME.primary} />
+                </View>
+                <View style={styles.chatButtonContent}>
+                  <Text style={styles.chatButtonTitle}>Chat</Text>
+                  <Text style={styles.chatButtonSubtitle}>Message your clan</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+              </TouchableOpacity>
+
               {/* Members Header */}
               <Text style={styles.sectionTitle}>Members</Text>
             </View>
@@ -320,6 +341,38 @@ const styles = StyleSheet.create({
   statLabel: {
     color: THEME.textSecondary,
     fontSize: FONT_SIZE.xs,
+  },
+  chatButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: THEME.surface,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  chatIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 212, 255, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  chatButtonContent: {
+    flex: 1,
+  },
+  chatButtonTitle: {
+    color: THEME.text,
+    fontSize: FONT_SIZE.lg,
+    fontWeight: '700',
+  },
+  chatButtonSubtitle: {
+    color: THEME.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    marginTop: 2,
   },
   sectionTitle: {
     color: THEME.text,

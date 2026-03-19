@@ -12,6 +12,7 @@ interface ConnectedClient {
   userId: string;
   lat?: number;
   lng?: number;
+  clanId?: string;
 }
 
 /**
@@ -121,6 +122,39 @@ class WsService {
         } catch (err) {
           console.error(`[WS] Failed to broadcast to nearby user ${userId}:`, err);
         }
+      }
+    }
+  }
+
+  /**
+   * Set the clan ID for a connected user.
+   * Called when a user connects and their clan membership is resolved.
+   */
+  setClanId(userId: string, clanId: string): void {
+    const client = this.clients.get(userId);
+    if (client) {
+      client.clanId = clanId;
+    }
+  }
+
+  /**
+   * Broadcast a message to all connected users who belong to a specific clan.
+   *
+   * @param clanId - Clan ID to target
+   * @param event - Event name
+   * @param data - Event payload
+   */
+  broadcastToClan(clanId: string, event: string, data: any): void {
+    const message = JSON.stringify({ event, data });
+
+    for (const [userId, client] of this.clients) {
+      if (client.clanId !== clanId) continue;
+      if (client.ws.readyState !== WebSocket.OPEN) continue;
+
+      try {
+        client.ws.send(message);
+      } catch (err) {
+        console.error(`[WS] Failed to broadcast to clan member ${userId}:`, err);
       }
     }
   }

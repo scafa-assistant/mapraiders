@@ -217,7 +217,9 @@ export type ProfileStackParamList = {
   Pet: undefined;
   Notifications: undefined;
   Clan: undefined;
+  ClanChat: { clanId: string; clanName: string };
   Feed: undefined;
+  Leaderboard: undefined;
 };
 
 export type ProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
@@ -225,7 +227,9 @@ export type SettingsScreenProps = NativeStackScreenProps<ProfileStackParamList, 
 export type PetScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Pet'>;
 export type NotificationsScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Notifications'>;
 export type ClanScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Clan'>;
+export type ClanChatScreenProps = NativeStackScreenProps<ProfileStackParamList, 'ClanChat'>;
 export type FeedScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Feed'>;
+export type ProfileLeaderboardScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Leaderboard'>;
 
 // ─── Travel Stack ─────────────────────────────────────────────────────────────
 

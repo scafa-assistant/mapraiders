@@ -46,6 +46,7 @@ import { setupCronJobs } from './jobs/decayCron';
 
 // Import WebSocket service
 import { wsService } from './services/wsService';
+import { queryOne } from './config/database';
 
 // ---- Create Express app ----
 const app = express();
@@ -191,6 +192,18 @@ wss.on('connection', (ws: WebSocket, req) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
     wsService.addClient(decoded.userId, ws);
+
+    // Look up the user's clan membership and attach it to the WS client
+    queryOne<{ clan_id: string }>(
+      'SELECT clan_id FROM clan_members WHERE user_id = $1 ORDER BY joined_at DESC LIMIT 1',
+      [decoded.userId]
+    ).then((row) => {
+      if (row) {
+        wsService.setClanId(decoded.userId, row.clan_id);
+      }
+    }).catch(() => {
+      // Non-critical: user may not be in a clan
+    });
 
     ws.on('message', (raw) => {
       try {

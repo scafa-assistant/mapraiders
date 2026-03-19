@@ -270,6 +270,22 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <Ionicons name="chevron-forward" size={20} color="#2A3450" />
         </TouchableOpacity>
 
+        {/* Leaderboard Button */}
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Leaderboard')}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(255, 71, 87, 0.12)' }]}>
+            <Ionicons name="trophy" size={22} color={THEME.danger} />
+          </View>
+          <View style={styles.petButtonContent}>
+            <Text style={styles.petButtonTitle}>Leaderboard</Text>
+            <Text style={styles.petButtonSubtitle}>Top Gridwalkers rankings</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+        </TouchableOpacity>
+
         <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>

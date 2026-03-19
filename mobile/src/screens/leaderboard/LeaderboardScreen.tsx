@@ -13,12 +13,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { leaderboardApi, userApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS, LEADERBOARD_TYPES } from '../../utils/constants';
 import LeaderboardRow from '../../components/LeaderboardRow';
-import type { LeaderboardScreenProps } from '../../navigation/types';
+import type { LeaderboardScreenProps, ProfileLeaderboardScreenProps } from '../../navigation/types';
 import type { LeaderboardEntry } from '../../utils/types';
 
 type LeaderboardType = (typeof LEADERBOARD_TYPES)[number]['key'];
 
-export default function LeaderboardScreen(_props: LeaderboardScreenProps) {
+export default function LeaderboardScreen(_props: LeaderboardScreenProps | ProfileLeaderboardScreenProps) {
   const [activeType, setActiveType] = useState<LeaderboardType>('area');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [myRank, setMyRank] = useState<LeaderboardEntry | null>(null);

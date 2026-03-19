@@ -315,6 +315,15 @@ export const clanApi = {
 
   getById: (id: string) =>
     api.get(`/clans/${id}`),
+
+  getMessages: (clanId: string, before?: string) =>
+    api.get(`/clans/${clanId}/messages`, { params: { before } }),
+
+  sendMessage: (clanId: string, message: string) =>
+    api.post(`/clans/${clanId}/messages`, { message }),
+
+  getDistrictScores: () =>
+    api.get('/clans/districts/scores'),
 };
 
 // ─── Notifications API ──────────────────────────────────────────────────────
