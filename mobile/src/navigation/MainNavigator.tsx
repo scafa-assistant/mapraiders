@@ -6,7 +6,7 @@ import { MainTabParamList } from './types';
 import MapStack from './MapStack';
 import QuestStack from './QuestStack';
 import CreateStack from './CreateStack';
-import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
+import TravelStack from './TravelStack';
 import ProfileStack from './ProfileStack';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -15,7 +15,7 @@ const TAB_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   Map: 'map',
   Quests: 'compass',
   Create: 'add-circle',
-  Leaderboard: 'trophy',
+  Travel: 'trail-sign',
   Profile: 'person',
 };
 
@@ -49,7 +49,7 @@ export default function MainNavigator() {
         component={CreateStack}
         options={{ tabBarLabel: '' }}
       />
-      <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Tab.Screen name="Travel" component={TravelStack} />
       <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
   );

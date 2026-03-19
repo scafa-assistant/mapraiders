@@ -7,6 +7,8 @@ import {
   ScrollView,
   Switch,
   Alert,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -39,6 +41,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     darkMap: true,
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const updateSetting = async (key: keyof SettingsState, value: boolean) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -50,6 +54,65 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      await userApi.exportData();
+      Alert.alert(
+        'Data Export Requested',
+        'Your data export has been started. You will receive an email with a download link once it is ready.'
+      );
+    } catch {
+      Alert.alert('Export Failed', 'Unable to export your data. Please try again later.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This action is permanent and cannot be undone. All your data, territories, routes, and progress will be deleted.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: () => {
+            Alert.prompt(
+              'Confirm Deletion',
+              'Type DELETE to confirm account deletion.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Delete Forever',
+                  style: 'destructive',
+                  onPress: async (input) => {
+                    if (input !== 'DELETE') {
+                      Alert.alert('Cancelled', 'You must type DELETE to confirm.');
+                      return;
+                    }
+                    setIsDeleting(true);
+                    try {
+                      await userApi.deleteAccount();
+                      logout();
+                    } catch {
+                      Alert.alert('Error', 'Failed to delete account. Please try again.');
+                    } finally {
+                      setIsDeleting(false);
+                    }
+                  },
+                },
+              ],
+              'plain-text',
+              '',
+            );
+          },
+        },
+      ]
+    );
   };
 
   const handleLogout = () => {
@@ -145,6 +208,46 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               <Text style={styles.settingLabel}>Change Password</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#2A3450" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.7}
+            onPress={handleExportData}
+            disabled={isExporting}
+          >
+            <View style={styles.settingIconCircle}>
+              <Ionicons name="download-outline" size={18} color={THEME.primary} />
+            </View>
+            <View style={styles.settingContent}>
+              <Text style={styles.settingLabel}>Export My Data</Text>
+              <Text style={styles.settingSubtitle}>Download all your personal data</Text>
+            </View>
+            {isExporting ? (
+              <ActivityIndicator size="small" color={THEME.primary} />
+            ) : (
+              <Ionicons name="chevron-forward" size={18} color="#2A3450" />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.7}
+            onPress={handleDeleteAccount}
+            disabled={isDeleting}
+          >
+            <View style={[styles.settingIconCircle, { backgroundColor: 'rgba(255, 71, 87, 0.08)' }]}>
+              <Ionicons name="trash-outline" size={18} color={THEME.danger} />
+            </View>
+            <View style={styles.settingContent}>
+              <Text style={[styles.settingLabel, { color: THEME.danger }]}>Delete Account</Text>
+              <Text style={styles.settingSubtitle}>Permanently delete your account and data</Text>
+            </View>
+            {isDeleting ? (
+              <ActivityIndicator size="small" color={THEME.danger} />
+            ) : (
+              <Ionicons name="chevron-forward" size={18} color="#2A3450" />
+            )}
           </TouchableOpacity>
         </View>
 

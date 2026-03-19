@@ -204,6 +204,9 @@ export const echoApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/echos', { params: { lat, lng, radius } }),
 
+  getById: (id: string) =>
+    api.get(`/echos/${id}`),
+
   create: (formData: FormData) =>
     api.post('/echos', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -221,6 +224,12 @@ export const echoApi = {
 export const challengeApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/challenges', { params: { lat, lng, radius } }),
+
+  getById: (id: string) =>
+    api.get(`/challenges/${id}`),
+
+  getSubmissions: (id: string) =>
+    api.get(`/challenges/${id}/submissions`),
 
   create: (data: Record<string, unknown>) =>
     api.post('/challenges', data),
@@ -250,6 +259,9 @@ export const travelApi = {
   getRoutes: (lat: number, lng: number, radius: number) =>
     api.get('/travel/routes', { params: { lat, lng, radius } }),
 
+  getById: (id: string) =>
+    api.get(`/travel/routes/${id}`),
+
   create: (data: Record<string, unknown>) =>
     api.post('/travel/routes', data),
 
@@ -258,6 +270,9 @@ export const travelApi = {
 
   complete: (id: string) =>
     api.post(`/travel/routes/${id}/complete`),
+
+  rate: (id: string, data: Record<string, unknown>) =>
+    api.post(`/travel/routes/${id}/rate`, data),
 };
 
 // ─── Leaderboards API ───────────────────────────────────────────────────────
@@ -281,6 +296,15 @@ export const userApi = {
 
   updateSettings: (settings: Record<string, unknown>) =>
     api.put('/users/me/settings', settings),
+
+  exportData: () =>
+    api.get('/users/me/export'),
+
+  deleteAccount: () =>
+    api.delete('/users/me'),
+
+  updatePushToken: (token: string) =>
+    api.put('/users/me/push-token', { token }),
 };
 
 // ─── Clans API ──────────────────────────────────────────────────────────────
@@ -301,6 +325,25 @@ export const notificationApi = {
 
   markRead: (ids: string[]) =>
     api.put('/notifications/read', { ids }),
+
+  updateSettings: (settings: Record<string, unknown>) =>
+    api.put('/notifications/settings', settings),
+};
+
+// ─── Artifacts API ──────────────────────────────────────────────────────
+
+export const artifactApi = {
+  getNearby: (lat: number, lng: number, radius: number) =>
+    api.get('/artifacts', { params: { lat, lng, radius } }),
+
+  getById: (id: string) =>
+    api.get(`/artifacts/${id}`),
+
+  create: (data: Record<string, unknown>) =>
+    api.post('/artifacts', data),
+
+  vote: (id: string) =>
+    api.post(`/artifacts/${id}/vote`),
 };
 
 // ─── Social API ─────────────────────────────────────────────────────────────

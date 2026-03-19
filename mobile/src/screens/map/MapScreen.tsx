@@ -17,7 +17,28 @@ import { useTerritoryStore } from '../../store/territoryStore';
 import { useQuestStore } from '../../store/questStore';
 import { useAuthStore } from '../../store/authStore';
 import { echoProximityService } from '../../services/echoProximity';
-import { MapScreenProps, MovementClass, Territory } from '../../navigation/types';
+import { echoApi, artifactApi, weatherApi } from '../../services/api';
+import EchoMarker from '../../components/EchoMarker';
+import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
+import type { WeatherData, WeatherBonus } from '../../utils/types';
+
+const WEATHER_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  clear: 'sunny',
+  rain: 'rainy',
+  snow: 'snow',
+  fog: 'cloud',
+  wind: 'flag',
+  storm: 'thunderstorm',
+};
+
+const WEATHER_BONUSES: Record<string, WeatherBonus> = {
+  clear: { multiplier: 1.0, label: '1x' },
+  rain: { multiplier: 1.5, label: '1.5x' },
+  snow: { multiplier: 2.0, label: '2x' },
+  fog: { multiplier: 1.3, label: '1.3x' },
+  wind: { multiplier: 1.2, label: '1.2x' },
+  storm: { multiplier: 2.5, label: '2.5x' },
+};
 
 const { width, height } = Dimensions.get('window');
 
@@ -90,6 +111,31 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     xp: number;
   } | null>(null);
   const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
+  const [nearbyEchos, setNearbyEchos] = useState<(Echo & { likes?: number })[]>([]);
+  const [nearbyArtifacts, setNearbyArtifacts] = useState<
+    { id: string; name: string; rarity: string; location: { latitude: number; longitude: number } }[]
+  >([]);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const lastWeatherFetch = useRef<{ lat: number; lng: number } | null>(null);
+
+  // Fetch weather on mount and significant location change (>500m)
+  useEffect(() => {
+    if (!currentLocation) return;
+    const shouldFetch = !lastWeatherFetch.current ||
+      Math.abs(currentLocation.latitude - lastWeatherFetch.current.lat) > 0.005 ||
+      Math.abs(currentLocation.longitude - lastWeatherFetch.current.lng) > 0.005;
+
+    if (shouldFetch) {
+      lastWeatherFetch.current = {
+        lat: currentLocation.latitude,
+        lng: currentLocation.longitude,
+      };
+      weatherApi
+        .getCurrent(currentLocation.latitude, currentLocation.longitude)
+        .then((res) => setWeather(res.data))
+        .catch(() => { /* silently ignore weather fetch errors */ });
+    }
+  }, [currentLocation]);
 
   // Pulse animation for current location marker
   useEffect(() => {
@@ -151,6 +197,40 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
+  // Fetch nearby echos and artifacts
+  const fetchNearbyEchos = useCallback(async () => {
+    if (!currentLocation) return;
+    try {
+      const { data } = await echoApi.getNearby(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        2000
+      );
+      setNearbyEchos(data.data ?? data);
+    } catch (_err) {
+      // Silently fail
+    }
+  }, [currentLocation]);
+
+  const fetchNearbyArtifacts = useCallback(async () => {
+    if (!currentLocation) return;
+    try {
+      const { data } = await artifactApi.getNearby(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        2000
+      );
+      setNearbyArtifacts(data.data ?? data);
+    } catch (_err) {
+      // Silently fail
+    }
+  }, [currentLocation]);
+
+  useEffect(() => {
+    fetchNearbyEchos();
+    fetchNearbyArtifacts();
+  }, [fetchNearbyEchos, fetchNearbyArtifacts]);
+
   // Initial location fetch
   useEffect(() => {
     (async () => {
@@ -170,9 +250,11 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       });
       if (currentLocation) {
         fetchNearby(currentLocation.latitude, currentLocation.longitude, 2000);
+        fetchNearbyEchos();
+        fetchNearbyArtifacts();
       }
     },
-    [currentLocation]
+    [currentLocation, fetchNearbyEchos, fetchNearbyArtifacts]
   );
 
   // Center map on current location
@@ -318,6 +400,45 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           </Marker>
         ))}
 
+        {/* Nearby Echo Markers */}
+        {nearbyEchos.map((echo) => (
+          <EchoMarker
+            key={`echo-${echo.id}`}
+            echo={echo}
+            likes={echo.likes ?? 0}
+            onPress={() => navigation.navigate('EchoDetail', { echoId: echo.id })}
+          />
+        ))}
+
+        {/* Nearby Artifact Markers */}
+        {nearbyArtifacts.map((artifact) => {
+          const rarityColor =
+            artifact.rarity === 'legendary'
+              ? '#FFB800'
+              : artifact.rarity === 'epic'
+                ? '#7B61FF'
+                : artifact.rarity === 'rare'
+                  ? '#00D4FF'
+                  : '#8892B0';
+          return (
+            <Marker
+              key={`artifact-${artifact.id}`}
+              coordinate={{
+                latitude: artifact.location.latitude,
+                longitude: artifact.location.longitude,
+              }}
+              anchor={{ x: 0.5, y: 0.5 }}
+              onPress={() =>
+                navigation.navigate('ArtifactDetail', { artifactId: artifact.id })
+              }
+            >
+              <View style={[styles.artifactMarker, { borderColor: rarityColor }]}>
+                <Ionicons name="diamond" size={14} color={rarityColor} />
+              </View>
+            </Marker>
+          );
+        })}
+
         {/* Custom Current Location Marker */}
         {currentLocation && (
           <Marker
@@ -384,10 +505,35 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         </View>
       </SafeAreaView>
 
+      {/* Weather Badge */}
+      {weather && (
+        <View style={styles.weatherBadge}>
+          <Ionicons
+            name={WEATHER_ICONS[weather.condition] || 'partly-sunny'}
+            size={16}
+            color={WEATHER_BONUSES[weather.condition]?.multiplier > 1 ? '#00FF88' : '#8892B0'}
+          />
+          <Text style={styles.weatherText}>{weather.condition}</Text>
+          {WEATHER_BONUSES[weather.condition]?.multiplier > 1 && (
+            <View style={styles.weatherMultiplier}>
+              <Text style={styles.weatherMultiplierText}>
+                {WEATHER_BONUSES[weather.condition].label}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+
       {/* Map Control Buttons */}
       <View style={styles.mapControls}>
         <TouchableOpacity style={styles.controlButton} onPress={centerOnUser}>
           <Ionicons name="locate" size={22} color="#00D4FF" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={() => navigation.navigate('ChallengeList')}
+        >
+          <Ionicons name="trophy" size={22} color="#FFB800" />
         </TouchableOpacity>
       </View>
 
@@ -625,6 +771,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  artifactMarker: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{ rotate: '45deg' }],
+  },
   locationMarkerContainer: {
     width: 60,
     height: 60,
@@ -802,5 +958,36 @@ const styles = StyleSheet.create({
     color: '#8892B0',
     fontSize: 11,
     marginTop: 4,
+  },
+  weatherBadge: {
+    position: 'absolute',
+    top: height * 0.12,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(13, 18, 32, 0.92)',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+    gap: 6,
+  },
+  weatherText: {
+    color: '#8892B0',
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  weatherMultiplier: {
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  weatherMultiplierText: {
+    color: '#00FF88',
+    fontSize: 10,
+    fontWeight: '800',
   },
 });

@@ -5,6 +5,7 @@ import CreateMenuScreen from '../screens/create/CreateMenuScreen';
 import QuestCreateScreen from '../screens/create/QuestCreateScreen';
 import EchoCreateScreen from '../screens/create/EchoCreateScreen';
 import ChallengeCreateScreen from '../screens/create/ChallengeCreateScreen';
+import TravelRouteCreateScreen from '../screens/travel/TravelRouteCreateScreen';
 
 const Stack = createNativeStackNavigator<CreateStackParamList>();
 
@@ -21,6 +22,7 @@ export default function CreateStack() {
       <Stack.Screen name="QuestCreate" component={QuestCreateScreen} />
       <Stack.Screen name="EchoCreate" component={EchoCreateScreen} />
       <Stack.Screen name="ChallengeCreate" component={ChallengeCreateScreen} />
+      <Stack.Screen name="TravelRouteCreate" component={TravelRouteCreateScreen} />
     </Stack.Navigator>
   );
 }

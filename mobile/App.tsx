@@ -2,11 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, AppState } from 'react-native';
 import { useAuthStore } from './src/store/authStore';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainNavigator from './src/navigation/MainNavigator';
 import { offlineQueue } from './src/services/offlineQueue';
+import { gridwalkerWs } from './src/services/websocket';
+import { setupWsEventHandlers } from './src/services/wsEventHandler';
+import { registerForPushNotifications } from './src/services/notifications';
+import { userApi } from './src/services/api';
 
 const DARK_THEME = {
   dark: true,
@@ -44,6 +48,32 @@ function AppContent() {
     if (token) {
       refreshProfile();
     }
+  }, [token]);
+
+  // Connect/disconnect WebSocket based on auth state
+  useEffect(() => {
+    if (token) {
+      gridwalkerWs.connect();
+      const cleanupHandlers = setupWsEventHandlers();
+      return () => {
+        cleanupHandlers();
+        gridwalkerWs.disconnect();
+      };
+    } else {
+      gridwalkerWs.disconnect();
+    }
+  }, [token]);
+
+  // Re-register push token on app foreground resume (tokens can change)
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active' && token) {
+        registerForPushNotifications().then((pushToken) => {
+          if (pushToken) userApi.updatePushToken(pushToken).catch(() => {});
+        });
+      }
+    });
+    return () => subscription.remove();
   }, [token]);
 
   if (isLoading) {

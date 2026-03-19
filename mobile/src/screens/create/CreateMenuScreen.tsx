@@ -19,7 +19,7 @@ interface CreateOption {
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
   color: string;
-  screen: 'QuestCreate' | 'EchoCreate' | 'ChallengeCreate';
+  screen: 'QuestCreate' | 'EchoCreate' | 'ChallengeCreate' | 'TravelRouteCreate';
   minLevel: number;
   requiresTerritory: boolean;
 }
@@ -54,6 +54,16 @@ const CREATE_OPTIONS: CreateOption[] = [
     screen: 'ChallengeCreate',
     minLevel: 7,
     requiresTerritory: true,
+  },
+  {
+    key: 'travel',
+    title: 'Create Travel Route',
+    description: 'Design a curated route with interesting spots for others to explore.',
+    icon: 'trail-sign',
+    color: '#00FF88',
+    screen: 'TravelRouteCreate',
+    minLevel: 5,
+    requiresTerritory: false,
   },
 ];
 

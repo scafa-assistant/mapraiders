@@ -17,7 +17,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useQuestStore } from '../../store/questStore';
 import { useLocationStore } from '../../store/locationStore';
+import { questApi } from '../../services/api';
+import RatingForm from '../../components/RatingForm';
 import { QuestPlayScreenProps, QuestStep, QuestStepType } from '../../navigation/types';
+import type { Rating } from '../../utils/types';
 
 const { width, height } = Dimensions.get('window');
 
@@ -51,6 +54,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
   const [stepStartTime, setStepStartTime] = useState(Date.now());
   const [showComplete, setShowComplete] = useState(false);
   const [rating, setRating] = useState(0);
+  const [isRatingSubmitting, setIsRatingSubmitting] = useState(false);
 
   const successAnim = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -225,6 +229,18 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
     ]);
   };
 
+  const handleRatingSubmit = async (ratingData: Rating) => {
+    setIsRatingSubmitting(true);
+    try {
+      await questApi.rate(questId, ratingData);
+    } catch (_err) {
+      // Rating submission failed silently
+    }
+    setIsRatingSubmitting(false);
+    abandonQuest();
+    navigation.popToTop();
+  };
+
   const handleCompleteQuest = async () => {
     if (rating > 0) {
       await completeQuest(questId, rating);
@@ -243,28 +259,11 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
           <Text style={styles.completeTitle}>QUEST COMPLETE!</Text>
           <Text style={styles.completeSubtitle}>{quest?.title}</Text>
 
-          <View style={styles.ratingSection}>
-            <Text style={styles.ratingPrompt}>Rate this quest</Text>
-            <View style={styles.ratingStars}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity key={star} onPress={() => setRating(star)}>
-                  <Ionicons
-                    name={star <= rating ? 'star' : 'star-outline'}
-                    size={36}
-                    color={star <= rating ? '#FFB800' : '#2A3450'}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.doneButton}
-            onPress={handleCompleteQuest}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.doneButtonText}>CLAIM REWARDS</Text>
-          </TouchableOpacity>
+          <RatingForm
+            title="Rate this quest"
+            onSubmit={handleRatingSubmit}
+            isSubmitting={isRatingSubmitting}
+          />
         </View>
       </SafeAreaView>
     );
@@ -841,38 +840,5 @@ const styles = StyleSheet.create({
     color: '#8892B0',
     fontSize: 16,
     marginBottom: 40,
-  },
-  ratingSection: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  ratingPrompt: {
-    color: '#8892B0',
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  ratingStars: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  doneButton: {
-    backgroundColor: '#00D4FF',
-    borderRadius: 16,
-    paddingHorizontal: 40,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    shadowColor: '#00D4FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  doneButtonText: {
-    color: '#0A0E17',
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 2,
   },
 });

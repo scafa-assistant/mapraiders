@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { authApi, userApi, setTokens, clearTokens } from '../services/api';
 import { UserProfile } from '../navigation/types';
+import { registerForPushNotifications } from '../services/notifications';
 
 interface AuthState {
   token: string | null;
@@ -27,6 +28,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { token, user } = response.data;
       await setTokens(token, response.data.refreshToken);
       set({ token, user, isLoading: false });
+
+      // Register push token after login
+      registerForPushNotifications().then((pushToken) => {
+        if (pushToken) userApi.updatePushToken(pushToken).catch(() => {});
+      });
     } catch (err: any) {
       const message = err.message || 'Login failed. Please check your credentials.';
       set({ isLoading: false, error: message });
@@ -41,6 +47,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { token, user } = response.data;
       await setTokens(token, response.data.refreshToken);
       set({ token, user, isLoading: false });
+
+      // Register push token after registration
+      registerForPushNotifications().then((pushToken) => {
+        if (pushToken) userApi.updatePushToken(pushToken).catch(() => {});
+      });
     } catch (err: any) {
       const message = err.message || 'Registration failed. Please try again.';
       set({ isLoading: false, error: message });

@@ -11,6 +11,7 @@ import {
   clearBackgroundPoints,
 } from '../services/backgroundLocation';
 import { sensorFusion } from '../services/sensorFusion';
+import { gridwalkerWs } from '../services/websocket';
 
 interface LocationState {
   currentLocation: { latitude: number; longitude: number } | null;
@@ -109,6 +110,9 @@ export const useLocationStore = create<LocationState>((set, get) => ({
         longitude: newPoint.longitude,
       },
     });
+
+    // Send location update via WebSocket
+    gridwalkerWs.sendLocationUpdate(newPoint.latitude, newPoint.longitude);
 
     if (isTracking) {
       const updatedRoute = [...currentRoute, newPoint];

@@ -12,27 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuestStore } from '../../store/questStore';
 import { useLocationStore } from '../../store/locationStore';
-import { QuestListScreenProps, Quest, MovementClass } from '../../navigation/types';
-
-const CLASS_COLORS: Record<MovementClass, string> = {
-  walker: '#00D4FF',
-  runner: '#FF4757',
-  cyclist: '#00FF88',
-  skater: '#FFB800',
-  dog_walker: '#7B61FF',
-  driver: '#8892B0',
-  unknown: '#555E78',
-};
-
-const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
-  walker: 'walk',
-  runner: 'speedometer',
-  cyclist: 'bicycle',
-  skater: 'flash',
-  dog_walker: 'paw',
-  driver: 'car',
-  unknown: 'help-circle',
-};
+import QuestCard from '../../components/QuestCard';
+import { QuestListScreenProps, Quest } from '../../navigation/types';
 
 type FilterDifficulty = 0 | 1 | 2 | 3 | 4 | 5;
 type FilterDistance = 'any' | '500' | '1000' | '2000';
@@ -69,68 +50,13 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
     return true;
   });
 
-  const renderDifficultyStars = (difficulty: number) => {
-    return (
-      <View style={styles.starsRow}>
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Ionicons
-            key={star}
-            name={star <= difficulty ? 'star' : 'star-outline'}
-            size={12}
-            color={star <= difficulty ? '#FFB800' : '#2A3450'}
-          />
-        ))}
-      </View>
-    );
-  };
-
-  const renderQuestCard = ({ item }: { item: Quest }) => {
-    const classColor = CLASS_COLORS[item.movementClass];
-
-    return (
-      <TouchableOpacity
-        style={styles.questCard}
-        onPress={() => navigation.navigate('QuestDetail', { questId: item.id })}
-        activeOpacity={0.7}
-      >
-        {/* Class Icon */}
-        <View style={[styles.questClassIcon, { backgroundColor: `${classColor}15` }]}>
-          <Ionicons name={CLASS_ICONS[item.movementClass]} size={24} color={classColor} />
-        </View>
-
-        {/* Content */}
-        <View style={styles.questCardContent}>
-          <Text style={styles.questTitle} numberOfLines={1}>
-            {item.title}
-          </Text>
-
-          <View style={styles.questMeta}>
-            {renderDifficultyStars(item.difficulty)}
-            <View style={styles.metaDivider} />
-            <Ionicons name="footsteps-outline" size={12} color="#8892B0" />
-            <Text style={styles.metaText}>{item.stepCount} steps</Text>
-            <View style={styles.metaDivider} />
-            <Ionicons name="star" size={12} color="#FFB800" />
-            <Text style={styles.metaText}>{item.rating.toFixed(1)}</Text>
-          </View>
-
-          <View style={styles.questBottom}>
-            <Text style={styles.distanceText}>
-              {item.estimatedDistance < 1000
-                ? `${Math.round(item.estimatedDistance)}m away`
-                : `${(item.estimatedDistance / 1000).toFixed(1)}km away`}
-            </Text>
-            <Text style={styles.completionsText}>
-              {item.completions} completed
-            </Text>
-          </View>
-        </View>
-
-        {/* Arrow */}
-        <Ionicons name="chevron-forward" size={20} color="#2A3450" />
-      </TouchableOpacity>
-    );
-  };
+  const renderQuestCard = ({ item }: { item: Quest }) => (
+    <QuestCard
+      quest={item}
+      onPress={() => navigation.navigate('QuestDetail', { questId: item.id })}
+      distance={item.estimatedDistance}
+    />
+  );
 
   const renderEmpty = () => {
     if (isLoading) return null;
@@ -310,70 +236,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   listContent: {
-    paddingHorizontal: 20,
     paddingTop: 8,
     paddingBottom: 100,
     flexGrow: 1,
-  },
-  questCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#141B2D',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#1A2340',
-  },
-  questClassIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 14,
-  },
-  questCardContent: {
-    flex: 1,
-  },
-  questTitle: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  questMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 6,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    gap: 2,
-  },
-  metaDivider: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: '#2A3450',
-  },
-  metaText: {
-    color: '#8892B0',
-    fontSize: 11,
-  },
-  questBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  distanceText: {
-    color: '#00D4FF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  completionsText: {
-    color: '#555E78',
-    fontSize: 11,
   },
   emptyContainer: {
     flex: 1,

@@ -151,6 +151,11 @@ export type RegisterScreenProps = NativeStackScreenProps<AuthStackParamList, 'Re
 export type MapStackParamList = {
   MapMain: undefined;
   TerritoryDetail: { territory: Territory };
+  ChallengeList: undefined;
+  ChallengeDetail: { challengeId: string };
+  EchoList: undefined;
+  EchoDetail: { echoId: string };
+  ArtifactDetail: { artifactId: string };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -162,6 +167,13 @@ export type TerritoryDetailScreenProps = NativeStackScreenProps<
   MapStackParamList,
   'TerritoryDetail'
 >;
+
+export type ChallengeListScreenProps = NativeStackScreenProps<MapStackParamList, 'ChallengeList'>;
+export type ChallengeDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'ChallengeDetail'>;
+
+export type EchoListScreenProps = NativeStackScreenProps<MapStackParamList, 'EchoList'>;
+export type EchoDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'EchoDetail'>;
+export type ArtifactDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'ArtifactDetail'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 
@@ -182,6 +194,7 @@ export type CreateStackParamList = {
   QuestCreate: undefined;
   EchoCreate: undefined;
   ChallengeCreate: undefined;
+  TravelRouteCreate: undefined;
 };
 
 export type CreateMenuScreenProps = NativeStackScreenProps<CreateStackParamList, 'CreateMenu'>;
@@ -190,6 +203,10 @@ export type EchoCreateScreenProps = NativeStackScreenProps<CreateStackParamList,
 export type ChallengeCreateScreenProps = NativeStackScreenProps<
   CreateStackParamList,
   'ChallengeCreate'
+>;
+export type TravelRouteCreateScreenProps = NativeStackScreenProps<
+  CreateStackParamList,
+  'TravelRouteCreate'
 >;
 
 // ─── Profile Stack ─────────────────────────────────────────────────────────────
@@ -210,17 +227,38 @@ export type NotificationsScreenProps = NativeStackScreenProps<ProfileStackParamL
 export type ClanScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Clan'>;
 export type FeedScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Feed'>;
 
+// ─── Travel Stack ─────────────────────────────────────────────────────────────
+
+export type TravelStackParamList = {
+  TravelRouteList: undefined;
+  TravelRouteDetail: { routeId: string };
+  TravelRoutePlay: { routeId: string };
+};
+
+export type TravelRouteListScreenProps = NativeStackScreenProps<
+  TravelStackParamList,
+  'TravelRouteList'
+>;
+export type TravelRouteDetailScreenProps = NativeStackScreenProps<
+  TravelStackParamList,
+  'TravelRouteDetail'
+>;
+export type TravelRoutePlayScreenProps = NativeStackScreenProps<
+  TravelStackParamList,
+  'TravelRoutePlay'
+>;
+
 // ─── Main Tab Navigator ────────────────────────────────────────────────────────
 
 export type MainTabParamList = {
   Map: NavigatorScreenParams<MapStackParamList>;
   Quests: NavigatorScreenParams<QuestStackParamList>;
   Create: NavigatorScreenParams<CreateStackParamList>;
-  Leaderboard: undefined;
+  Travel: NavigatorScreenParams<TravelStackParamList>;
   Profile: NavigatorScreenParams<ProfileStackParamList>;
 };
 
 export type LeaderboardScreenProps = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'Leaderboard'>,
+  BottomTabScreenProps<MainTabParamList, 'Travel'>,
   NativeStackScreenProps<MapStackParamList>
 >;
