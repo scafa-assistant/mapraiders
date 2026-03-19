@@ -156,6 +156,7 @@ export type MapStackParamList = {
   EchoList: undefined;
   EchoDetail: { echoId: string };
   ArtifactDetail: { artifactId: string };
+  PlaceHistory: { lat: number; lng: number };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -174,6 +175,7 @@ export type ChallengeDetailScreenProps = NativeStackScreenProps<MapStackParamLis
 export type EchoListScreenProps = NativeStackScreenProps<MapStackParamList, 'EchoList'>;
 export type EchoDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'EchoDetail'>;
 export type ArtifactDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'ArtifactDetail'>;
+export type PlaceHistoryScreenProps = NativeStackScreenProps<MapStackParamList, 'PlaceHistory'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 

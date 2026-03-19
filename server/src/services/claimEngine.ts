@@ -28,6 +28,7 @@ import { awardXp, calculateClaimXp, updateStreak } from './progressionEngine';
 import { notifyTerritoryAttack, notifyTerritoryLost } from './notificationService';
 import { awardWalkXp, checkRareFind } from './petEngine';
 import { wsService } from './wsService';
+import { recordEvent } from './placeMemoryService';
 
 /** Input data for processing a claim */
 export interface ClaimInput {
@@ -222,6 +223,14 @@ export class ClaimEngine {
     } catch (err) {
       console.error('[ClaimEngine] WS broadcast error:', err);
     }
+
+    // Record place memory event
+    const user = await queryOne<{ username: string }>('SELECT username FROM users WHERE id = $1', [userId]);
+    recordEvent(centerLat, centerLng, territoryResult.is_takeover ? 'takeover' : 'claim', userId, user?.username ?? null, {
+      territory_id: territoryResult.territory_id,
+      claim_value: calculation.finalValue,
+      class: detectedClass,
+    });
 
     // Fetch the created territory
     const territory = await queryOne<Territory>(

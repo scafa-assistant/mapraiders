@@ -149,7 +149,7 @@ async function checkUserTitles(userId: string): Promise<string[]> {
     }
   }
 
-  // ---- night_runner: 50 territory claims between 22:00 and 05:00 ----
+  // ---- night_runner (Nachtläufer): 10 territory claims between 22:00 and 05:00 ----
   if (!existingKeys.has('night_runner')) {
     const r = await query(
       `SELECT COUNT(*) AS c
@@ -158,7 +158,7 @@ async function checkUserTitles(userId: string): Promise<string[]> {
          AND (EXTRACT(HOUR FROM claimed_at) >= 22 OR EXTRACT(HOUR FROM claimed_at) < 5)`,
       [userId],
     );
-    if (parseInt(r.rows[0].c, 10) >= 50) {
+    if (parseInt(r.rows[0].c, 10) >= 10) {
       await awardTitle(userId, 'night_runner');
       earned.push('night_runner');
     }

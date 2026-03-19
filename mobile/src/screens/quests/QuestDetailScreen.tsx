@@ -182,6 +182,64 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           </View>
         </View>
 
+        {/* Seed Quest Growth Indicator */}
+        {(quest as any).is_seed && (
+          <View style={styles.growthSection}>
+            <View style={styles.growthHeader}>
+              <Ionicons name="leaf" size={18} color="#00FF88" />
+              <Text style={styles.growthTitle}>Seed Quest</Text>
+            </View>
+            <View style={styles.growthLevelRow}>
+              {['Seed', 'Sprout', 'Growing', 'Mature', 'Legendary'].map((name, idx) => {
+                const growthLevel = (quest as any).growth_level ?? 0;
+                const isActive = idx <= growthLevel;
+                const isCurrent = idx === growthLevel;
+                const iconNames: (keyof typeof Ionicons.glyphMap)[] = [
+                  'ellipse-outline', 'leaf-outline', 'leaf', 'flower-outline', 'trophy'
+                ];
+                return (
+                  <View key={name} style={styles.growthStage}>
+                    <Ionicons
+                      name={iconNames[idx]}
+                      size={isCurrent ? 22 : 16}
+                      color={isActive ? '#00FF88' : '#2A3450'}
+                    />
+                    <Text style={[
+                      styles.growthStageName,
+                      isActive && styles.growthStageNameActive,
+                      isCurrent && styles.growthStageNameCurrent,
+                    ]}>
+                      {name}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+            {(quest as any).growth_info && (
+              <View style={styles.growthProgress}>
+                {(quest as any).growth_info.completionsToNext > 0 && (
+                  <Text style={styles.growthProgressText}>
+                    {(quest as any).growth_info.completionsToNext} more completions to next level
+                  </Text>
+                )}
+                {(quest as any).growth_info.ratingToNext > 0 && (
+                  <Text style={styles.growthProgressText}>
+                    Needs +{(quest as any).growth_info.ratingToNext.toFixed(1)} avg rating
+                  </Text>
+                )}
+              </View>
+            )}
+            {(quest as any).linked_quests && (quest as any).linked_quests.length > 0 && (
+              <View style={styles.linkedSection}>
+                <Ionicons name="link" size={14} color="#00D4FF" />
+                <Text style={styles.linkedText}>
+                  Linked with {(quest as any).linked_quests.length} nearby quest{(quest as any).linked_quests.length > 1 ? 's' : ''}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
         {/* Steps Preview */}
         <View style={styles.stepsSection}>
           <Text style={styles.sectionTitle}>STEPS</Text>
@@ -454,5 +512,69 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
+  },
+  growthSection: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1A2340',
+  },
+  growthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 14,
+  },
+  growthTitle: {
+    color: '#00FF88',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  growthLevelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  growthStage: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  growthStageName: {
+    color: '#2A3450',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  growthStageNameActive: {
+    color: '#00FF88',
+  },
+  growthStageNameCurrent: {
+    fontSize: 10,
+    fontWeight: '900',
+  },
+  growthProgress: {
+    backgroundColor: '#141B2D',
+    borderRadius: 10,
+    padding: 12,
+    gap: 4,
+  },
+  growthProgressText: {
+    color: '#8892B0',
+    fontSize: 12,
+  },
+  linkedSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 10,
+    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  linkedText: {
+    color: '#00D4FF',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

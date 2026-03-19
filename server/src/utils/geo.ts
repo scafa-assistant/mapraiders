@@ -335,3 +335,21 @@ export const polygonAreaM2 = polygonArea;
 export function pointToWkt(lat: number, lng: number): string {
   return `POINT(${lng} ${lat})`;
 }
+
+// ---- Night Layer ----------------------------------------------------------
+
+/**
+ * Check if the current server time is within the night window (22:00-05:00).
+ * Used by the Nacht-Layer feature to filter content.
+ */
+export function isNightTime(): boolean {
+  const hour = new Date().getHours();
+  return hour >= 22 || hour < 5;
+}
+
+/**
+ * Get the current time window label ('night' or 'day').
+ */
+export function getCurrentTimeWindow(): 'night' | 'day' {
+  return isNightTime() ? 'night' : 'day';
+}

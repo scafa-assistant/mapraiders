@@ -16,12 +16,15 @@ import { checkTitles } from '../services/progressionEngine';
 import {
   notifyStreakAtRisk,
   notifyNewTitle,
+  sendNotification,
 } from '../services/notificationService';
 import { query, queryMany } from '../config/database';
 import { TITLES, LEGENDARY } from '../config/constants';
 import { refreshAllLeaderboards as refreshLeaderboardsFull } from './leaderboardCron';
 import { runClanFormation as runClanFormationJob } from './clanFormation';
 import { checkTitles as checkTitlesJob } from './titleCheck';
+import { weatherService } from '../services/weatherService';
+import { cacheGet, cacheSet } from '../config/redis';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -242,6 +245,99 @@ export function setupCronJobs(): void {
       console.log(`[CRON] GPS route TTL: ${deleted} old route records deleted`);
     } catch (err) {
       console.error('[CRON] GPS route TTL cleanup failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 15 minutes - Weather-activated content notifications
+  // Checks active areas for weather changes and notifies nearby users
+  // about weather-specific quests/challenges that became active.
+  // ------------------------------------------------------------------
+  cron.schedule('*/15 * * * *', async () => {
+    console.log('[CRON] Checking weather-activated content...');
+    try {
+      // Find active areas: distinct grid cells with claims in the last 24h
+      const activeAreas = await queryMany<{ lat: number; lng: number }>(
+        `SELECT DISTINCT
+           ROUND(ST_Y(ST_Centroid(polygon))::numeric, 1)::double precision AS lat,
+           ROUND(ST_X(ST_Centroid(polygon))::numeric, 1)::double precision AS lng
+         FROM territories
+         WHERE claimed_at > NOW() - INTERVAL '24 hours'
+         LIMIT 50`,
+      );
+
+      let notified = 0;
+
+      for (const area of activeAreas) {
+        try {
+          const weather = await weatherService.getWeather(area.lat, area.lng);
+          const condition = weather.condition || 'clear';
+          const areaKey = `weather_cron:${area.lat}:${area.lng}`;
+
+          // Check if weather changed since last check
+          const lastCondition = await cacheGet<string>(areaKey);
+          if (lastCondition === condition) continue; // No change
+
+          // Store current weather for next comparison (30 min TTL)
+          await cacheSet(areaKey, condition, 1800);
+
+          // Count weather-specific quests/challenges now active in this area
+          const weatherContent = await queryMany<{ count: string; type: string }>(
+            `SELECT 'quest' AS type, COUNT(*)::text AS count
+             FROM quests q
+             JOIN quest_steps qs ON q.id = qs.quest_id
+             WHERE q.status = 'active'
+               AND q.weather_condition = $1
+               AND ST_DWithin(qs.location::geography, ST_MakePoint($3, $2)::geography, 5000)
+             UNION ALL
+             SELECT 'challenge' AS type, COUNT(*)::text AS count
+             FROM challenges c
+             WHERE c.status = 'active'
+               AND c.weather_condition = $1
+               AND ST_DWithin(c.location::geography, ST_MakePoint($3, $2)::geography, 5000)`,
+            [condition, area.lat, area.lng],
+          );
+
+          const totalCount = weatherContent.reduce((sum, r) => sum + parseInt(r.count, 10), 0);
+
+          if (totalCount > 0) {
+            // Find users with recent activity in this area
+            const nearbyUsers = await queryMany<{ id: string }>(
+              `SELECT DISTINCT t.owner_id AS id
+               FROM territories t
+               WHERE t.owner_id IS NOT NULL
+                 AND t.claimed_at > NOW() - INTERVAL '24 hours'
+                 AND ST_DWithin(ST_Centroid(t.polygon)::geography, ST_MakePoint($2, $1)::geography, 5000)
+               LIMIT 100`,
+              [area.lat, area.lng],
+            );
+
+            const conditionLabel = condition.charAt(0).toUpperCase() + condition.slice(1);
+
+            for (const user of nearbyUsers) {
+              try {
+                await sendNotification({
+                  userId: user.id,
+                  type: 'new_quest_nearby',
+                  title: `Weather Alert: ${conditionLabel}!`,
+                  body: `${totalCount} ${condition} quest${totalCount > 1 ? 's' : ''} appeared nearby!`,
+                  data: { weather: condition, count: totalCount },
+                  priority: 'MEDIUM',
+                });
+                notified++;
+              } catch {
+                // Skip individual user notification failures
+              }
+            }
+          }
+        } catch (areaErr) {
+          console.error(`[CRON] Weather check failed for area ${area.lat},${area.lng}:`, areaErr);
+        }
+      }
+
+      console.log(`[CRON] Weather content: ${notified} notifications sent for ${activeAreas.length} areas`);
+    } catch (err) {
+      console.error('[CRON] Weather-activated content check failed:', err);
     }
   }, { timezone: 'UTC' });
 

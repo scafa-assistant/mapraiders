@@ -88,6 +88,8 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
   const [selectedTemplate, setSelectedTemplate] = useState<ChallengeTemplate | null>(null);
   const [paramValues, setParamValues] = useState<Record<string, number>>({});
   const [verification, setVerification] = useState<VerificationLevel>('sensor');
+  const [weatherCondition, setWeatherCondition] = useState<string | null>(null);
+  const [timeWindow, setTimeWindow] = useState<'any' | 'day' | 'night'>('any');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectTemplate = (template: ChallengeTemplate) => {
@@ -122,6 +124,8 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
           longitude: currentLocation.longitude,
         },
         verificationLevel: verification,
+        weather_condition: weatherCondition || undefined,
+        time_window: timeWindow,
       });
       Alert.alert('Challenge Created!', 'Other Gridwalkers nearby can now attempt your challenge.', [
         { text: 'OK', onPress: () => navigation.goBack() },
@@ -256,6 +260,82 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                     style={[
                       styles.verificationLabel,
                       verification === opt.value && styles.verificationLabelActive,
+                    ]}
+                  >
+                    {opt.label}
+                  </Text>
+                  <Text style={styles.verificationDesc}>{opt.desc}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Step 4: Weather Condition (optional) */}
+            <Text style={styles.sectionHeader}>4. Weather Condition (Optional)</Text>
+            <View style={styles.weatherGrid}>
+              {[
+                { value: null, label: 'Any', icon: 'partly-sunny' as keyof typeof Ionicons.glyphMap },
+                { value: 'rain', label: 'Rain', icon: 'rainy' as keyof typeof Ionicons.glyphMap },
+                { value: 'snow', label: 'Snow', icon: 'snow' as keyof typeof Ionicons.glyphMap },
+                { value: 'fog', label: 'Fog', icon: 'cloud' as keyof typeof Ionicons.glyphMap },
+                { value: 'wind', label: 'Wind', icon: 'flag' as keyof typeof Ionicons.glyphMap },
+                { value: 'storm', label: 'Storm', icon: 'thunderstorm' as keyof typeof Ionicons.glyphMap },
+                { value: 'clear', label: 'Clear', icon: 'sunny' as keyof typeof Ionicons.glyphMap },
+                { value: 'cold', label: '<5C', icon: 'thermometer-outline' as keyof typeof Ionicons.glyphMap },
+                { value: 'heat', label: '>30C', icon: 'flame' as keyof typeof Ionicons.glyphMap },
+              ].map((opt) => (
+                <TouchableOpacity
+                  key={opt.value ?? 'any'}
+                  style={[
+                    styles.weatherChip,
+                    weatherCondition === opt.value && styles.weatherChipActive,
+                  ]}
+                  onPress={() => setWeatherCondition(opt.value)}
+                >
+                  <Ionicons
+                    name={opt.icon}
+                    size={16}
+                    color={weatherCondition === opt.value ? THEME.primary : THEME.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.weatherChipText,
+                      weatherCondition === opt.value && styles.weatherChipTextActive,
+                    ]}
+                  >
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Time Window */}
+            <Text style={styles.sectionHeader}>4. Time Window</Text>
+            <View style={styles.verificationRow}>
+              {([
+                { value: 'any' as const, label: 'Any Time', icon: 'time-outline' as keyof typeof Ionicons.glyphMap, desc: 'Always visible' },
+                { value: 'day' as const, label: 'Day', icon: 'sunny-outline' as keyof typeof Ionicons.glyphMap, desc: '05:00-22:00' },
+                { value: 'night' as const, label: 'Night', icon: 'moon-outline' as keyof typeof Ionicons.glyphMap, desc: '22:00-05:00' },
+              ]).map((opt) => (
+                <TouchableOpacity
+                  key={opt.value}
+                  style={[
+                    styles.verificationCard,
+                    timeWindow === opt.value && (opt.value === 'night'
+                      ? { borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.08)' }
+                      : styles.verificationCardActive),
+                  ]}
+                  onPress={() => setTimeWindow(opt.value)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={opt.icon}
+                    size={22}
+                    color={timeWindow === opt.value ? (opt.value === 'night' ? '#8B5CF6' : THEME.primary) : THEME.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.verificationLabel,
+                      timeWindow === opt.value && { color: opt.value === 'night' ? '#8B5CF6' : THEME.primary },
                     ]}
                   >
                     {opt.label}
@@ -491,5 +571,34 @@ const styles = StyleSheet.create({
     color: '#0A0E17',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
+  },
+  weatherGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  weatherChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: THEME.surface,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: THEME.border,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  weatherChipActive: {
+    borderColor: THEME.primary,
+    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+  },
+  weatherChipText: {
+    color: THEME.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '600',
+  },
+  weatherChipTextActive: {
+    color: THEME.primary,
   },
 });

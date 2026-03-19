@@ -21,6 +21,7 @@ import {
   rateQuest,
   getQuestWithSteps,
 } from '../services/questEngine';
+import { seedQuestEngine } from '../services/seedQuestEngine';
 import { queryMany, queryOne } from '../config/database';
 
 // ---- Inline WKT helper ----
@@ -104,11 +105,20 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
       paramIdx++;
     }
 
+    // Weather filter: only show quests matching current weather (or any-weather quests)
+    const currentWeather = req.query.weather as string;
+    if (currentWeather) {
+      whereClause += ` AND (q.weather_condition IS NULL OR q.weather_condition = $${paramIdx})`;
+      params.push(currentWeather);
+      paramIdx++;
+    }
+
     params.push(limit, offset);
 
     const quests = await queryMany(
       `SELECT q.id, q.creator_id, q.title, q.description, q.territory_id,
               q.difficulty, q.avg_rating, q.total_completions, q.status, q.created_at,
+              q.weather_condition, q.is_seed, q.growth_level,
               u.username as creator_username,
               (SELECT COUNT(*) FROM quest_steps WHERE quest_id = q.id) as step_count
        FROM quests q
@@ -204,6 +214,16 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
       // expected_answer intentionally omitted
     }));
 
+    // Include seed quest growth info if applicable
+    let growthInfo = null;
+    if ((quest as any).is_seed) {
+      try {
+        growthInfo = await seedQuestEngine.getGrowthInfo(questId);
+      } catch (_err) {
+        // Non-critical: growth info fetch failure should not block response
+      }
+    }
+
     return res.json({
       success: true,
       data: {
@@ -217,8 +237,12 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
         total_completions: quest.total_completions,
         status: quest.status,
         created_at: quest.created_at,
+        is_seed: (quest as any).is_seed || false,
+        growth_level: (quest as any).growth_level || 0,
+        linked_quests: (quest as any).linked_quests || [],
         steps: sanitizedSteps,
         progress: progress || null,
+        growth_info: growthInfo,
       },
     });
   } catch (err: any) {

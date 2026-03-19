@@ -521,3 +521,105 @@ CREATE INDEX IF NOT EXISTS idx_artifacts_location ON artifacts USING GIST (locat
 CREATE INDEX IF NOT EXISTS idx_artifacts_creator  ON artifacts (creator_id);
 CREATE INDEX IF NOT EXISTS idx_artifacts_territory ON artifacts (territory_id);
 CREATE INDEX IF NOT EXISTS idx_artifacts_permanent ON artifacts (is_permanent) WHERE is_permanent = TRUE;
+
+-- ============================================================
+-- PLACE HISTORY (Stadtgedächtnis / City Memory)
+-- Geo-anchored event log: every claim, quest, echo, artifact
+-- and challenge leaves a trace on the map.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS place_history (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  location   GEOMETRY(POINT, 4326) NOT NULL,
+  grid_cell  VARCHAR(20)  NOT NULL,
+  event_type VARCHAR(30)  NOT NULL,
+  user_id    UUID         REFERENCES users(id),
+  username   VARCHAR(50),
+  data       JSONB        DEFAULT '{}',
+  created_at TIMESTAMPTZ  DEFAULT NOW()
+);
+
+COMMENT ON TABLE place_history IS 'Geo-anchored event log powering the City Memory / Place Timeline feature.';
+
+CREATE INDEX IF NOT EXISTS idx_place_history_cell     ON place_history (grid_cell, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_place_history_location ON place_history USING GIST (location);
+
+-- ============================================================
+-- NIGHT LAYER (Nacht-Layer) — time_window columns
+-- Content can be restricted to day-only, night-only, or any time.
+-- Night = 22:00–05:00 local server time.
+-- ============================================================
+ALTER TABLE quests      ADD COLUMN IF NOT EXISTS time_window VARCHAR(10) DEFAULT 'any';
+ALTER TABLE echos       ADD COLUMN IF NOT EXISTS time_window VARCHAR(10) DEFAULT 'any';
+ALTER TABLE challenges  ADD COLUMN IF NOT EXISTS time_window VARCHAR(10) DEFAULT 'any';
+
+-- ============================================================
+-- WEATHER CONDITIONS ON QUESTS AND CHALLENGES
+-- Certain quests/challenges only activate in specific weather.
+-- NULL = any weather (always active).
+-- Valid values: 'rain', 'snow', 'fog', 'wind', 'storm', 'clear', 'cold', 'heat'
+-- ============================================================
+ALTER TABLE quests      ADD COLUMN IF NOT EXISTS weather_condition VARCHAR(20) DEFAULT NULL;
+ALTER TABLE challenges  ADD COLUMN IF NOT EXISTS weather_condition VARCHAR(20) DEFAULT NULL;
+
+COMMENT ON COLUMN quests.weather_condition IS 'If set, quest only appears when current weather matches. NULL = any weather.';
+COMMENT ON COLUMN challenges.weather_condition IS 'If set, challenge only appears when current weather matches. NULL = any weather.';
+
+-- ============================================================
+-- SILENT ZONES
+-- Community-proposed quiet areas where echos are forbidden
+-- but special contemplative artifacts yield bonus XP.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS silent_zones (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name            VARCHAR(100) NOT NULL,
+  description     TEXT,
+  polygon         GEOMETRY(POLYGON, 4326) NOT NULL,
+  created_by      UUID REFERENCES users(id),
+  approved        BOOLEAN DEFAULT FALSE,
+  approval_votes  INT DEFAULT 0,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE silent_zones IS 'Community-proposed quiet areas: no echos allowed, but special contemplative artifacts with bonus XP.';
+
+CREATE INDEX IF NOT EXISTS idx_silent_zones_polygon  ON silent_zones USING GIST(polygon);
+CREATE INDEX IF NOT EXISTS idx_silent_zones_approved ON silent_zones (approved) WHERE approved = TRUE;
+
+-- ============================================================
+-- SEED QUEST EXTENSIONS
+-- Self-growing quests that evolve with community engagement.
+-- ============================================================
+ALTER TABLE quests ADD COLUMN IF NOT EXISTS is_seed BOOLEAN DEFAULT FALSE;
+ALTER TABLE quests ADD COLUMN IF NOT EXISTS growth_level INT DEFAULT 0; -- 0=seed, 1=sprout, 2=growing, 3=mature, 4=legendary
+ALTER TABLE quests ADD COLUMN IF NOT EXISTS parent_quest_id UUID REFERENCES quests(id);
+ALTER TABLE quests ADD COLUMN IF NOT EXISTS linked_quests UUID[] DEFAULT '{}';
+
+COMMENT ON COLUMN quests.is_seed IS 'Whether this quest was planted as a seed quest.';
+COMMENT ON COLUMN quests.growth_level IS 'Growth stage: 0=seed, 1=sprout, 2=growing, 3=mature, 4=legendary.';
+COMMENT ON COLUMN quests.parent_quest_id IS 'Parent quest ID for growth-spawned bonus steps.';
+COMMENT ON COLUMN quests.linked_quests IS 'Array of linked quest IDs for nearby seed quest chains.';
+
+CREATE INDEX IF NOT EXISTS idx_quests_seed ON quests (is_seed) WHERE is_seed = TRUE;
+CREATE INDEX IF NOT EXISTS idx_quests_growth ON quests (growth_level);
+
+-- ============================================================
+-- RESONANCE SPOTS
+-- Cross-content synergy bonus when multiple content types
+-- overlap at the same location.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS resonance_spots (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  location GEOMETRY(POINT, 4326) NOT NULL,
+  grid_cell VARCHAR(20) NOT NULL,
+  content_types TEXT[] NOT NULL, -- e.g., ['quest', 'echo', 'artifact', 'challenge']
+  resonance_level INT DEFAULT 2, -- number of overlapping content types (min 2)
+  bonus_multiplier NUMERIC(3,2) DEFAULT 1.25,
+  discovered_by UUID REFERENCES users(id),
+  discovered_at TIMESTAMPTZ DEFAULT NOW(),
+  expires_at TIMESTAMPTZ -- NULL = permanent
+);
+
+COMMENT ON TABLE resonance_spots IS 'Cross-content synergy spots where multiple content types overlap for bonus XP.';
+
+CREATE INDEX IF NOT EXISTS idx_resonance_spots_location ON resonance_spots USING GIST(location);
+CREATE INDEX IF NOT EXISTS idx_resonance_spots_cell ON resonance_spots(grid_cell);

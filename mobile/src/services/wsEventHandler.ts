@@ -26,5 +26,23 @@ export function setupWsEventHandlers(): () => void {
     console.log('[WS] Notification:', data.title);
   }));
 
+  // Resonance discovered - cross-content synergy bonus
+  unsubs.push(gridwalkerWs.on('resonance_discovered', (data) => {
+    Vibration.vibrate(300);
+    const typesStr = data.types?.join(' + ') || 'multiple content';
+    Alert.alert(
+      'Resonance!',
+      `${typesStr} at this spot = ${data.bonus}x bonus!`
+    );
+  }));
+
+  // Quest growth - seed quest leveled up
+  unsubs.push(gridwalkerWs.on('quest_growth', (data) => {
+    Alert.alert(
+      'Quest Grew!',
+      `Your seed quest reached ${data.growth_name} level!`
+    );
+  }));
+
   return () => unsubs.forEach(fn => fn());
 }

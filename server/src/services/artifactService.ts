@@ -5,6 +5,9 @@
 // ============================================================
 
 import { query, queryOne, queryMany } from '../config/database';
+import { recordEvent } from './placeMemoryService';
+import { resonanceService } from './resonanceService';
+import { wsService } from './wsService';
 
 /** Artifact data for creation */
 export interface CreateArtifactData {
@@ -108,6 +111,32 @@ export class ArtifactService {
       );
     } catch (err) {
       console.error('[ArtifactService] Failed to log artifact creation:', err);
+    }
+
+    // Record place memory event
+    const creator = await queryOne<{ username: string }>('SELECT username FROM users WHERE id = $1', [userId]);
+    recordEvent(data.lat, data.lng, 'artifact_placed', userId, creator?.username ?? null, {
+      artifact_id: artifact.id,
+      name: artifact.name,
+      rarity: artifact.rarity,
+    });
+
+    // Check for resonance (cross-content synergy)
+    try {
+      const resonance = await resonanceService.checkResonance(data.lat, data.lng, 'artifact', userId);
+      if (resonance.resonance) {
+        wsService.sendToUser(userId, 'resonance_discovered', {
+          title: 'Resonance Discovered!',
+          body: `Your artifact created a ${resonance.bonus}x bonus spot!`,
+          types: resonance.types,
+          level: resonance.level,
+          bonus: resonance.bonus,
+          lat: data.lat,
+          lng: data.lng,
+        });
+      }
+    } catch (err) {
+      console.error('[ArtifactService] Resonance check failed:', err);
     }
 
     return artifact;

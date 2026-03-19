@@ -14,6 +14,7 @@ import { useQuestStore } from '../../store/questStore';
 import { useLocationStore } from '../../store/locationStore';
 import QuestCard from '../../components/QuestCard';
 import { QuestListScreenProps, Quest } from '../../navigation/types';
+import { useWeather } from '../../hooks/useWeather';
 
 type FilterDifficulty = 0 | 1 | 2 | 3 | 4 | 5;
 type FilterDistance = 'any' | '500' | '1000' | '2000';
@@ -21,9 +22,11 @@ type FilterDistance = 'any' | '500' | '1000' | '2000';
 export default function QuestListScreen({ navigation }: QuestListScreenProps) {
   const { nearbyQuests, isLoading, fetchNearby } = useQuestStore();
   const { currentLocation } = useLocationStore();
+  const { weather } = useWeather(currentLocation?.latitude, currentLocation?.longitude);
   const [refreshing, setRefreshing] = useState(false);
   const [filterDifficulty, setFilterDifficulty] = useState<FilterDifficulty>(0);
   const [filterDistance, setFilterDistance] = useState<FilterDistance>('any');
+  const [filterWeatherActive, setFilterWeatherActive] = useState(false);
 
   const loadQuests = useCallback(async () => {
     if (currentLocation) {
@@ -46,6 +49,11 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
     if (filterDistance !== 'any') {
       const maxDist = parseInt(filterDistance, 10);
       if (quest.estimatedDistance > maxDist) return false;
+    }
+    // Weather Active filter: only show quests that match current weather
+    if (filterWeatherActive && weather) {
+      const qw = (quest as any).weather_condition;
+      if (!qw || qw !== weather.condition) return false;
     }
     return true;
   });
@@ -116,36 +124,62 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
           )}
         />
 
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={[
-            { label: 'Any distance', value: 'any' as FilterDistance },
-            { label: '< 500m', value: '500' as FilterDistance },
-            { label: '< 1km', value: '1000' as FilterDistance },
-            { label: '< 2km', value: '2000' as FilterDistance },
-          ]}
-          keyExtractor={(item) => item.value}
-          contentContainerStyle={styles.filterList}
-          renderItem={({ item }) => (
+        <View style={styles.filterList}>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={[
+              { label: 'Any distance', value: 'any' as FilterDistance },
+              { label: '< 500m', value: '500' as FilterDistance },
+              { label: '< 1km', value: '1000' as FilterDistance },
+              { label: '< 2km', value: '2000' as FilterDistance },
+            ]}
+            keyExtractor={(item) => item.value}
+            contentContainerStyle={{ gap: 8 }}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.filterChip,
+                  filterDistance === item.value && styles.filterChipActive,
+                ]}
+                onPress={() => setFilterDistance(item.value)}
+              >
+                <Text
+                  style={[
+                    styles.filterChipText,
+                    filterDistance === item.value && styles.filterChipTextActive,
+                  ]}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+          {weather && (
             <TouchableOpacity
               style={[
                 styles.filterChip,
-                filterDistance === item.value && styles.filterChipActive,
+                styles.weatherFilterChip,
+                filterWeatherActive && styles.filterChipActive,
               ]}
-              onPress={() => setFilterDistance(item.value)}
+              onPress={() => setFilterWeatherActive(!filterWeatherActive)}
             >
+              <Ionicons
+                name="rainy"
+                size={12}
+                color={filterWeatherActive ? '#00D4FF' : '#8892B0'}
+              />
               <Text
                 style={[
                   styles.filterChipText,
-                  filterDistance === item.value && styles.filterChipTextActive,
+                  filterWeatherActive && styles.filterChipTextActive,
                 ]}
               >
-                {item.label}
+                Weather Active
               </Text>
             </TouchableOpacity>
           )}
-        />
+        </View>
       </View>
 
       {/* Quest List */}
@@ -224,6 +258,11 @@ const styles = StyleSheet.create({
   },
   filterChipTextActive: {
     color: '#00D4FF',
+  },
+  weatherFilterChip: {
+    flexDirection: 'row',
+    gap: 4,
+    marginLeft: 8,
   },
   loadingContainer: {
     flex: 1,

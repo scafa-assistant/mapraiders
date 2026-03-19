@@ -6,7 +6,7 @@
 
 import { query, queryOne, queryMany, transaction } from '../config/database';
 import { XP, DECAY } from '../config/constants';
-import { haversineDistance } from '../utils/geo';
+import { haversineDistance, isNightTime } from '../utils/geo';
 import { toWktPoint as pointToWkt } from '../utils/polygon';
 import {
   Challenge,
@@ -15,6 +15,8 @@ import {
   CreateChallengeRequest,
 } from '../utils/types';
 import { ProgressionEngine } from './progressionEngine';
+import { resonanceService } from './resonanceService';
+import { wsService } from './wsService';
 
 // ---- Challenge Templates ------------------------------------------------
 
@@ -78,6 +80,8 @@ interface CreateChallengeData {
   parameters: Record<string, any>;
   verification_level?: number;
   class?: MovementClass;
+  weather_condition?: string;
+  time_window?: string;
 }
 
 /** Proof payload submitted by a player attempting a challenge. */
@@ -171,10 +175,25 @@ export class ChallengeEngine {
       throw new Error('You must own a territory at the challenge location');
     }
 
+    // Validate weather_condition if provided
+    const validWeatherConditions = ['rain', 'snow', 'fog', 'wind', 'storm', 'clear', 'cold', 'heat'];
+    if (data.weather_condition && !validWeatherConditions.includes(data.weather_condition)) {
+      throw new Error(
+        `Invalid weather_condition "${data.weather_condition}". Valid values: ${validWeatherConditions.join(', ')}`
+      );
+    }
+
+    // Validate time_window if provided
+    const validTimeWindows = ['any', 'day', 'night'];
+    const timeWindow = data.time_window || 'any';
+    if (!validTimeWindows.includes(timeWindow)) {
+      throw new Error(`Invalid time_window "${data.time_window}". Valid values: ${validTimeWindows.join(', ')}`);
+    }
+
     // Insert challenge
     const challenge = await queryOne<Challenge>(
-      `INSERT INTO challenges (creator_id, template, location, parameters, verification_level, class)
-       VALUES ($1, $2, ST_GeomFromEWKT($3), $4, $5, $6)
+      `INSERT INTO challenges (creator_id, template, location, parameters, verification_level, class, weather_condition, time_window)
+       VALUES ($1, $2, ST_GeomFromEWKT($3), $4, $5, $6, $7, $8)
        RETURNING id, creator_id, template, parameters, verification_level, class,
                  total_completions, avg_rating, status, created_at`,
       [
@@ -184,11 +203,31 @@ export class ChallengeEngine {
         JSON.stringify(data.parameters),
         verificationLevel,
         data.class || null,
+        data.weather_condition || null,
+        timeWindow,
       ]
     );
 
     if (!challenge) {
       throw new Error('Failed to create challenge');
+    }
+
+    // Check for resonance (cross-content synergy)
+    try {
+      const resonance = await resonanceService.checkResonance(data.lat, data.lng, 'challenge', userId);
+      if (resonance.resonance) {
+        wsService.sendToUser(userId, 'resonance_discovered', {
+          title: 'Resonance Discovered!',
+          body: `Your challenge created a ${resonance.bonus}x bonus spot!`,
+          types: resonance.types,
+          level: resonance.level,
+          bonus: resonance.bonus,
+          lat: data.lat,
+          lng: data.lng,
+        });
+      }
+    } catch (err) {
+      console.error('[ChallengeEngine] Resonance check failed:', err);
     }
 
     return {
@@ -239,10 +278,29 @@ export class ChallengeEngine {
   async getNearby(
     lat: number,
     lng: number,
-    radiusM: number
+    radiusM: number,
+    currentWeather?: string
   ): Promise<(Challenge & { distance_m: number; creator_username: string })[]> {
     const cappedRadius = Math.min(radiusM, 50000);
     const locationWkt = `SRID=4326;POINT(${lng} ${lat})`;
+
+    let extraClauses = '';
+    const params: any[] = [locationWkt, cappedRadius];
+    let paramIdx = 3;
+
+    // Weather-activated content: only include challenges whose weather_condition
+    // is NULL (always active) or matches the current weather
+    if (currentWeather) {
+      extraClauses += ` AND (c.weather_condition IS NULL OR c.weather_condition = $${paramIdx})`;
+      params.push(currentWeather);
+      paramIdx++;
+    }
+
+    // Night Layer: filter by time_window based on current server time
+    const timeWindow = isNightTime() ? 'night' : 'day';
+    extraClauses += ` AND (c.time_window = 'any' OR c.time_window = $${paramIdx})`;
+    params.push(timeWindow);
+    paramIdx++;
 
     const challenges = await queryMany<
       Challenge & { distance_m: string; creator_username: string; lat: number; lng: number }
@@ -257,9 +315,10 @@ export class ChallengeEngine {
        LEFT JOIN users u ON c.creator_id = u.id
        WHERE c.status = 'active'
        AND ST_DWithin(c.location::geography, ST_GeomFromEWKT($1)::geography, $2)
+       ${extraClauses}
        ORDER BY distance_m ASC
        LIMIT 100`,
-      [locationWkt, cappedRadius]
+      params
     );
 
     return challenges.map((c) => ({
@@ -642,9 +701,10 @@ export async function getChallenge(
 export async function getNearby(
   lat: number,
   lng: number,
-  radiusM: number
+  radiusM: number,
+  currentWeather?: string
 ): Promise<(Challenge & { distance_m: number; creator_username: string })[]> {
-  return challengeEngineInstance.getNearby(lat, lng, radiusM);
+  return challengeEngineInstance.getNearby(lat, lng, radiusM, currentWeather);
 }
 
 export async function submitAttempt(

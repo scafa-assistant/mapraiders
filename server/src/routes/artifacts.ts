@@ -15,7 +15,9 @@ import {
   getArtifactById,
   votePermanence,
 } from '../services/artifactService';
-import { UNLOCK_LEVELS } from '../config/constants';
+import { UNLOCK_LEVELS, XP } from '../config/constants';
+import { isInSilentZone } from '../services/silentZoneService';
+import { awardXp } from '../services/progressionEngine';
 
 const router = Router();
 
@@ -79,10 +81,16 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       });
     }
 
+    // Check if artifact is being placed in a Silent Zone
+    const inSilentZone = await isInSilentZone(parsedLat, parsedLng);
+
+    // In silent zones, artifacts get the special "contemplative" type and bonus XP
+    const artifactType = inSilentZone ? 'contemplative' : (type || 'trophy');
+
     const artifact = await createArtifact(req.userId!, {
       name: name.trim(),
       description: description?.trim() || undefined,
-      type: type || 'trophy',
+      type: artifactType,
       rarity: rarity || 'common',
       lat: parsedLat,
       lng: parsedLng,
@@ -90,9 +98,20 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       photo_url: photo_url || undefined,
     });
 
+    // Award bonus XP for contemplative artifacts in silent zones (1.5x base)
+    let bonusXp = 0;
+    if (inSilentZone) {
+      bonusXp = Math.round(XP.ARTIFACT_BASE * 0.5); // Extra 50% on top of normal XP
+      await awardXp(req.userId!, bonusXp, 'silent_zone_artifact');
+    }
+
     return res.status(201).json({
       success: true,
-      data: { artifact },
+      data: {
+        artifact,
+        silent_zone: inSilentZone,
+        bonus_xp: bonusXp > 0 ? bonusXp : undefined,
+      },
     });
   } catch (err: any) {
     console.error('[Artifacts] Create artifact error:', err);

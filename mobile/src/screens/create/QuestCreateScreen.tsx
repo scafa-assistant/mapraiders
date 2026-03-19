@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Switch,
   StyleSheet,
   ScrollView,
   Alert,
@@ -49,6 +50,9 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [difficulty, setDifficulty] = useState(3);
+  const [weatherCondition, setWeatherCondition] = useState<string | null>(null);
+  const [timeWindow, setTimeWindow] = useState<'any' | 'day' | 'night'>('any');
+  const [isSeed, setIsSeed] = useState(false);
   const [steps, setSteps] = useState<DraftStep[]>([]);
   const [editingStepIndex, setEditingStepIndex] = useState<number | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -111,6 +115,9 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         title: title.trim(),
         description: description.trim(),
         difficulty,
+        weather_condition: weatherCondition || undefined,
+        time_window: timeWindow,
+        is_seed: isSeed,
         steps: steps.map((s, i) => ({
           order: i,
           type: s.type,
@@ -182,6 +189,106 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                   size={32}
                   color={star <= difficulty ? '#FFB800' : '#2A3450'}
                 />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>WEATHER CONDITION (OPTIONAL)</Text>
+          <View style={styles.weatherGrid}>
+            {[
+              { value: null, label: 'Any Weather', icon: 'partly-sunny' as keyof typeof Ionicons.glyphMap },
+              { value: 'rain', label: 'Rain', icon: 'rainy' as keyof typeof Ionicons.glyphMap },
+              { value: 'snow', label: 'Snow', icon: 'snow' as keyof typeof Ionicons.glyphMap },
+              { value: 'fog', label: 'Fog', icon: 'cloud' as keyof typeof Ionicons.glyphMap },
+              { value: 'wind', label: 'Wind', icon: 'flag' as keyof typeof Ionicons.glyphMap },
+              { value: 'storm', label: 'Storm', icon: 'thunderstorm' as keyof typeof Ionicons.glyphMap },
+              { value: 'clear', label: 'Clear Sky', icon: 'sunny' as keyof typeof Ionicons.glyphMap },
+              { value: 'cold', label: 'Cold (<5C)', icon: 'thermometer-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'heat', label: 'Heat (>30C)', icon: 'flame' as keyof typeof Ionicons.glyphMap },
+            ].map((opt) => (
+              <TouchableOpacity
+                key={opt.value ?? 'any'}
+                style={[
+                  styles.weatherChip,
+                  weatherCondition === opt.value && styles.weatherChipActive,
+                ]}
+                onPress={() => setWeatherCondition(opt.value)}
+              >
+                <Ionicons
+                  name={opt.icon}
+                  size={16}
+                  color={weatherCondition === opt.value ? '#00D4FF' : '#555E78'}
+                />
+                <Text
+                  style={[
+                    styles.weatherChipLabel,
+                    weatherCondition === opt.value && { color: '#00D4FF' },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Seed Quest Toggle */}
+        <View style={styles.fieldGroup}>
+          <View style={styles.seedToggleRow}>
+            <View style={styles.seedToggleInfo}>
+              <View style={styles.seedToggleLabelRow}>
+                <Ionicons name="leaf" size={18} color="#00FF88" />
+                <Text style={styles.seedToggleLabel}>Plant as Seed Quest</Text>
+              </View>
+              <Text style={styles.seedToggleDescription}>
+                Seed quests grow with completions. They gain new steps and link with nearby quests.
+              </Text>
+            </View>
+            <Switch
+              value={isSeed}
+              onValueChange={setIsSeed}
+              trackColor={{ false: '#1A2340', true: 'rgba(0, 255, 136, 0.3)' }}
+              thumbColor={isSeed ? '#00FF88' : '#555E78'}
+            />
+          </View>
+        </View>
+
+        {/* Time Window (Night Layer) */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>TIME WINDOW</Text>
+          <View style={styles.difficultyRow}>
+            {([
+              { value: 'any' as const, label: 'Any Time', icon: 'time-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'day' as const, label: 'Day Only', icon: 'sunny-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'night' as const, label: 'Night Only', icon: 'moon-outline' as keyof typeof Ionicons.glyphMap },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.radiusChip,
+                  timeWindow === opt.value && (opt.value === 'night'
+                    ? { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: '#8B5CF6' }
+                    : styles.radiusChipActive),
+                ]}
+                onPress={() => setTimeWindow(opt.value)}
+              >
+                <Ionicons
+                  name={opt.icon}
+                  size={14}
+                  color={timeWindow === opt.value ? (opt.value === 'night' ? '#8B5CF6' : '#00D4FF') : '#555E78'}
+                />
+                <Text
+                  style={[
+                    styles.radiusChipText,
+                    timeWindow === opt.value && {
+                      color: opt.value === 'night' ? '#8B5CF6' : '#00D4FF',
+                    },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -622,6 +729,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  weatherGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  weatherChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#141B2D',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  weatherChipActive: {
+    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    borderColor: '#00D4FF',
+  },
+  weatherChipLabel: {
+    color: '#555E78',
+    fontSize: 11,
+    fontWeight: '600',
+  },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -884,5 +1016,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
     letterSpacing: 1,
+  },
+  seedToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#141B2D',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+    padding: 14,
+  },
+  seedToggleInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  seedToggleLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  seedToggleLabel: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  seedToggleDescription: {
+    color: '#8892B0',
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

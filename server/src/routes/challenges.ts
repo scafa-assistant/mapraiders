@@ -66,7 +66,8 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
       });
     }
 
-    const challenges = await challengeEngine.getNearby(lat, lng, radiusM);
+    const currentWeather = req.query.weather as string | undefined;
+    const challenges = await challengeEngine.getNearby(lat, lng, radiusM, currentWeather);
 
     // Apply optional client-side filters (template, class)
     const template = req.query.template as string;
@@ -107,6 +108,8 @@ router.post(
         parameters,
         verification_level,
         class: cls,
+        weather_condition,
+        time_window,
       } = req.body;
 
       // Extract location from nested or flat format
@@ -127,6 +130,8 @@ router.post(
         parameters,
         verification_level,
         class: cls,
+        weather_condition,
+        time_window,
       });
 
       return res.status(201).json({

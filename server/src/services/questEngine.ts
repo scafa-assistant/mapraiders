@@ -6,10 +6,14 @@
 
 import { query, queryOne, queryMany, transaction } from '../config/database';
 import { QUEST, XP } from '../config/constants';
-import { haversineDistance } from '../utils/geo';
+import { haversineDistance, isNightTime } from '../utils/geo';
 import { toWktPoint as pointToWkt } from '../utils/polygon';
 import { Quest, QuestStep, QuestProgress, VerificationType } from '../utils/types';
 import { aiVerification } from './aiVerification';
+import { recordEvent } from './placeMemoryService';
+import { seedQuestEngine } from './seedQuestEngine';
+import { resonanceService } from './resonanceService';
+import { wsService } from './wsService';
 
 /** Input data for creating a new quest */
 interface CreateQuestRequest {
@@ -17,6 +21,9 @@ interface CreateQuestRequest {
   description?: string;
   territory_id?: string;
   difficulty: number;
+  is_seed?: boolean;
+  weather_condition?: string;
+  time_window?: string;
   steps: {
     type: string;
     lat: number;
@@ -63,7 +70,7 @@ export class QuestEngine {
    * @returns The created quest
    */
   async createQuest(creatorId: string, data: CreateQuestRequest): Promise<Quest> {
-    return transaction(async (client) => {
+    const result = await transaction(async (client) => {
       // Validate creator level
       const creator = await client.query(
         'SELECT level FROM users WHERE id = $1',
@@ -121,10 +128,25 @@ export class QuestEngine {
         }
       }
 
+      // Validate weather_condition if provided
+      const validWeatherConditions = ['rain', 'snow', 'fog', 'wind', 'storm', 'clear', 'cold', 'heat'];
+      if (data.weather_condition && !validWeatherConditions.includes(data.weather_condition)) {
+        throw new Error(
+          `Invalid weather_condition "${data.weather_condition}". Valid values: ${validWeatherConditions.join(', ')}`
+        );
+      }
+
+      // Validate time_window if provided
+      const validTimeWindows = ['any', 'day', 'night'];
+      const timeWindow = data.time_window || 'any';
+      if (!validTimeWindows.includes(timeWindow)) {
+        throw new Error(`Invalid time_window "${data.time_window}". Valid values: ${validTimeWindows.join(', ')}`);
+      }
+
       // Create quest
       const questResult = await client.query(
-        `INSERT INTO quests (creator_id, title, description, territory_id, difficulty)
-         VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO quests (creator_id, title, description, territory_id, difficulty, weather_condition, is_seed, time_window)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
         [
           creatorId,
@@ -132,6 +154,9 @@ export class QuestEngine {
           data.description || null,
           data.territory_id || null,
           data.difficulty,
+          data.weather_condition || null,
+          data.is_seed || false,
+          timeWindow,
         ]
       );
 
@@ -162,6 +187,30 @@ export class QuestEngine {
 
       return quest;
     });
+
+    // Check for resonance at the first step's location (fire and forget)
+    if (data.steps.length > 0) {
+      const firstStep = data.steps[0];
+      resonanceService.checkResonance(firstStep.lat, firstStep.lng, 'quest', creatorId)
+        .then((resonance) => {
+          if (resonance.resonance) {
+            wsService.sendToUser(creatorId, 'resonance_discovered', {
+              title: 'Resonance Discovered!',
+              body: `Your quest created a ${resonance.bonus}x bonus spot!`,
+              types: resonance.types,
+              level: resonance.level,
+              bonus: resonance.bonus,
+              lat: firstStep.lat,
+              lng: firstStep.lng,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error('[QuestEngine] Resonance check failed:', err);
+        });
+    }
+
+    return result;
   }
 
   /**
@@ -293,6 +342,10 @@ export class QuestEngine {
          VALUES ('quest_complete', $1, $2)`,
         [userId, JSON.stringify({ quest_id: questId })]
       );
+
+      // Record place memory event at the last verified step location
+      const completer = await queryOne<{ username: string }>('SELECT username FROM users WHERE id = $1', [userId]);
+      recordEvent(step.lat, step.lng, 'quest_complete', userId, completer?.username ?? null, { quest_id: questId });
 
       return { verified: true };
     } else {
@@ -431,6 +484,14 @@ export class QuestEngine {
         [XP.QUEST_CREATE, quest.creator_id]
       );
     }
+
+    // Check seed quest growth after rating
+    if (quest.is_seed) {
+      // Fire and forget -- growth check should not block the rating response
+      seedQuestEngine.checkGrowth(questId).catch((err) => {
+        console.error('[QuestEngine] Seed quest growth check failed:', err);
+      });
+    }
   }
 
   /**
@@ -446,7 +507,7 @@ export class QuestEngine {
     lat: number,
     lng: number,
     radiusM: number,
-    filters?: { difficulty?: number; status?: string; limit?: number }
+    filters?: { difficulty?: number; status?: string; limit?: number; currentWeather?: string }
   ): Promise<Quest[]> {
     const searchPoint = pointToWkt(lat, lng);
     const limit = filters?.limit || 20;
@@ -467,6 +528,20 @@ export class QuestEngine {
       params.push(filters.status);
       paramIdx++;
     }
+
+    // Weather-activated content: only include quests whose weather_condition
+    // is NULL (always active) or matches the current weather
+    if (filters?.currentWeather) {
+      filterClauses += ` AND (q.weather_condition IS NULL OR q.weather_condition = $${paramIdx})`;
+      params.push(filters.currentWeather);
+      paramIdx++;
+    }
+
+    // Night Layer: filter by time_window based on current server time
+    const timeWindow = isNightTime() ? 'night' : 'day';
+    filterClauses += ` AND (q.time_window = 'any' OR q.time_window = $${paramIdx})`;
+    params.push(timeWindow);
+    paramIdx++;
 
     const quests = await queryMany<Quest>(
       `SELECT DISTINCT q.*

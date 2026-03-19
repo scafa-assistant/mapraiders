@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import MapView, { Marker, Polygon, Polyline, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
@@ -17,10 +17,11 @@ import { useTerritoryStore } from '../../store/territoryStore';
 import { useQuestStore } from '../../store/questStore';
 import { useAuthStore } from '../../store/authStore';
 import { echoProximityService } from '../../services/echoProximity';
-import { echoApi, artifactApi, weatherApi } from '../../services/api';
+import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
 import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
+import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
 
 const WEATHER_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   clear: 'sunny',
@@ -116,6 +117,14 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     { id: string; name: string; rarity: string; location: { latitude: number; longitude: number } }[]
   >([]);
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [nightMode, setNightMode] = useState(isNightTime());
+  const [silentZones, setSilentZones] = useState<
+    { id: string; name: string; polygon: { coordinates: number[][][] }; distance_m: number }[]
+  >([]);
+  const [weatherQuestCount, setWeatherQuestCount] = useState(0);
+  const [resonanceSpots, setResonanceSpots] = useState<
+    { id: string; lat: number; lng: number; resonance_level: number; bonus_multiplier: number; content_types: string[] }[]
+  >([]);
   const lastWeatherFetch = useRef<{ lat: number; lng: number } | null>(null);
 
   // Fetch weather on mount and significant location change (>500m)
@@ -132,7 +141,17 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       };
       weatherApi
         .getCurrent(currentLocation.latitude, currentLocation.longitude)
-        .then((res) => setWeather(res.data))
+        .then((res) => {
+          setWeather(res.data);
+          // Count weather-specific quests from nearbyQuests
+          const condition = res.data?.condition;
+          if (condition && nearbyQuests) {
+            const count = nearbyQuests.filter(
+              (q: any) => q.weather_condition && q.weather_condition === condition
+            ).length;
+            setWeatherQuestCount(count);
+          }
+        })
         .catch(() => { /* silently ignore weather fetch errors */ });
     }
   }, [currentLocation]);
@@ -179,6 +198,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [isTracking]);
 
+  // Night mode check every minute
+  useEffect(() => {
+    setNightMode(isNightTime());
+    const interval = setInterval(() => {
+      setNightMode(isNightTime());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Start/stop echo proximity monitoring on mount/unmount
   useEffect(() => {
     echoProximityService.start();
@@ -212,6 +240,21 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
+  const fetchNearbySilentZones = useCallback(async () => {
+    if (!currentLocation) return;
+    try {
+      const { data } = await silentZoneApi.getNearby(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        3000
+      );
+      const zones = data.data?.zones ?? data.zones ?? [];
+      setSilentZones(zones);
+    } catch (_err) {
+      // Silently fail
+    }
+  }, [currentLocation]);
+
   const fetchNearbyArtifacts = useCallback(async () => {
     if (!currentLocation) return;
     try {
@@ -226,10 +269,27 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
+  const fetchNearbyResonance = useCallback(async () => {
+    if (!currentLocation) return;
+    try {
+      const { data } = await resonanceApi.getNearby(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        2000
+      );
+      const spots = data.data?.resonance_spots ?? data.resonance_spots ?? [];
+      setResonanceSpots(spots);
+    } catch (_err) {
+      // Silently fail
+    }
+  }, [currentLocation]);
+
   useEffect(() => {
     fetchNearbyEchos();
     fetchNearbyArtifacts();
-  }, [fetchNearbyEchos, fetchNearbyArtifacts]);
+    fetchNearbySilentZones();
+    fetchNearbyResonance();
+  }, [fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance]);
 
   // Initial location fetch
   useEffect(() => {
@@ -252,9 +312,11 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         fetchNearby(currentLocation.latitude, currentLocation.longitude, 2000);
         fetchNearbyEchos();
         fetchNearbyArtifacts();
+        fetchNearbySilentZones();
+        fetchNearbyResonance();
       }
     },
-    [currentLocation, fetchNearbyEchos, fetchNearbyArtifacts]
+    [currentLocation, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones]
   );
 
   // Center map on current location
@@ -288,6 +350,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
   const handleTerritoryPress = (territory: Territory) => {
     navigation.navigate('TerritoryDetail', { territory });
+  };
+
+  // Long-press on map opens Place History (Stadtgedächtnis)
+  const handleMapLongPress = (event: LongPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    navigation.navigate('PlaceHistory', { lat: latitude, lng: longitude });
   };
 
   const formatDistance = (meters: number): string => {
@@ -346,6 +414,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               }
         }
         onRegionChangeComplete={handleRegionChange}
+        onLongPress={handleMapLongPress}
       >
         {/* Territory Polygons */}
         {territories.map((territory) => (
@@ -439,6 +508,53 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           );
         })}
 
+        {/* Silent Zone Polygons */}
+        {silentZones.map((zone) => {
+          const coords = zone.polygon?.coordinates?.[0];
+          if (!coords || coords.length < 3) return null;
+          return (
+            <Polygon
+              key={`silent-${zone.id}`}
+              coordinates={coords.map((c: number[]) => ({
+                latitude: c[1],
+                longitude: c[0],
+              }))}
+              fillColor="rgba(0, 200, 83, 0.12)"
+              strokeColor="rgba(0, 200, 83, 0.6)"
+              strokeWidth={2}
+              tappable
+            />
+          );
+        })}
+
+        {/* Resonance Spot Markers */}
+        {resonanceSpots.map((spot) => {
+          const levelColor =
+            spot.resonance_level >= 4 ? '#FFB800' :
+            spot.resonance_level >= 3 ? '#FF8C00' :
+            '#00D4FF';
+          const opacity = spot.resonance_level >= 4 ? 0.35 : spot.resonance_level >= 3 ? 0.25 : 0.15;
+          return (
+            <React.Fragment key={`resonance-${spot.id}`}>
+              <Circle
+                center={{ latitude: spot.lat, longitude: spot.lng }}
+                radius={30}
+                fillColor={`${levelColor}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`}
+                strokeColor={levelColor}
+                strokeWidth={1.5}
+              />
+              <Marker
+                coordinate={{ latitude: spot.lat, longitude: spot.lng }}
+                anchor={{ x: 0.5, y: 0.5 }}
+              >
+                <View style={[styles.resonanceMarker, { borderColor: levelColor }]}>
+                  <Ionicons name="flash" size={12} color={levelColor} />
+                </View>
+              </Marker>
+            </React.Fragment>
+          );
+        })}
+
         {/* Custom Current Location Marker */}
         {currentLocation && (
           <Marker
@@ -505,6 +621,14 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         </View>
       </SafeAreaView>
 
+      {/* Night Mode Badge */}
+      {nightMode && (
+        <View style={styles.nightBadge}>
+          <Ionicons name="moon" size={14} color="#8B5CF6" />
+          <Text style={styles.nightBadgeText}>NIGHT MODE</Text>
+        </View>
+      )}
+
       {/* Weather Badge */}
       {weather && (
         <View style={styles.weatherBadge}>
@@ -518,6 +642,13 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             <View style={styles.weatherMultiplier}>
               <Text style={styles.weatherMultiplierText}>
                 {WEATHER_BONUSES[weather.condition].label}
+              </Text>
+            </View>
+          )}
+          {weatherQuestCount > 0 && (
+            <View style={styles.weatherQuestBadge}>
+              <Text style={styles.weatherQuestBadgeText}>
+                {weatherQuestCount} {weather.condition} quest{weatherQuestCount > 1 ? 's' : ''}
               </Text>
             </View>
           )}
@@ -781,6 +912,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     transform: [{ rotate: '45deg' }],
   },
+  resonanceMarker: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   locationMarkerContainer: {
     width: 60,
     height: 60,
@@ -959,6 +1099,26 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 4,
   },
+  nightBadge: {
+    position: 'absolute',
+    top: height * 0.12,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    gap: 6,
+  },
+  nightBadgeText: {
+    color: '#8B5CF6',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
   weatherBadge: {
     position: 'absolute',
     top: height * 0.12,
@@ -989,5 +1149,16 @@ const styles = StyleSheet.create({
     color: '#00FF88',
     fontSize: 10,
     fontWeight: '800',
+  },
+  weatherQuestBadge: {
+    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  weatherQuestBadgeText: {
+    color: '#00D4FF',
+    fontSize: 9,
+    fontWeight: '700',
   },
 });

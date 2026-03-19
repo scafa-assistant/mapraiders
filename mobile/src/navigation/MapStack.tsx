@@ -8,6 +8,7 @@ import ChallengeDetailScreen from '../screens/map/ChallengeDetailScreen';
 import EchoListScreen from '../screens/map/EchoListScreen';
 import EchoDetailScreen from '../screens/map/EchoDetailScreen';
 import ArtifactDetailScreen from '../screens/map/ArtifactDetailScreen';
+import PlaceHistoryScreen from '../screens/map/PlaceHistoryScreen';
 
 const Stack = createNativeStackNavigator<MapStackParamList>();
 
@@ -50,6 +51,14 @@ export default function MapStack() {
       <Stack.Screen
         name="ArtifactDetail"
         component={ArtifactDetailScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="PlaceHistory"
+        component={PlaceHistoryScreen}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',

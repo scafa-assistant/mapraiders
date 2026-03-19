@@ -352,7 +352,7 @@ export const TITLES: Record<string, TitleDefinition> = {
   night_runner: {
     key: 'night_runner',
     name: 'Nachtl\u00e4ufer',
-    condition: '50 claims 22:00-05:00',
+    condition: '10 claims 22:00-05:00',
   },
   storm_rider: {
     key: 'storm_rider',

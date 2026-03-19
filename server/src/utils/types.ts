@@ -226,6 +226,10 @@ export interface Quest {
   status: ContentStatus;
   created_at: Date;
   steps: QuestStep[];
+  is_seed?: boolean;
+  growth_level?: number;
+  parent_quest_id?: string;
+  linked_quests?: string[];
 }
 
 export interface QuestStep {

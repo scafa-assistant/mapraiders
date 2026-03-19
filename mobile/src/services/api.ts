@@ -372,4 +372,37 @@ export const weatherApi = {
     api.get('/weather', { params: { lat, lng } }),
 };
 
+// ─── Silent Zones API ───────────────────────────────────────────────────────
+
+export const silentZoneApi = {
+  getNearby: (lat: number, lng: number, radius: number) =>
+    api.get('/silent-zones', { params: { lat, lng, radius } }),
+
+  getById: (id: string) =>
+    api.get(`/silent-zones/${id}`),
+
+  propose: (data: Record<string, unknown>) =>
+    api.post('/silent-zones', data),
+
+  vote: (id: string) =>
+    api.post(`/silent-zones/${id}/vote`),
+};
+
+// ─── Places API (Stadtgedächtnis / City Memory) ────────────────────────────
+
+export const placeApi = {
+  getHistory: (lat: number, lng: number, radius?: number, days?: number) =>
+    api.get('/places/history', { params: { lat, lng, radius, days } }),
+
+  getStats: (lat: number, lng: number, radius?: number) =>
+    api.get('/places/stats', { params: { lat, lng, radius } }),
+};
+
+// ─── Resonance API ─────────────────────────────────────────────────────────
+
+export const resonanceApi = {
+  getNearby: (lat: number, lng: number, radius: number) =>
+    api.get('/resonance', { params: { lat, lng, radius } }),
+};
+
 export default api;

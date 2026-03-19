@@ -47,9 +47,16 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
       activeOpacity={0.7}
     >
       <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>
-          {quest.title}
-        </Text>
+        <View style={styles.titleRow}>
+          {(quest as any).is_seed && (
+            <View style={styles.seedBadge}>
+              <Ionicons name="leaf" size={10} color={THEME.accent} />
+            </View>
+          )}
+          <Text style={styles.title} numberOfLines={1}>
+            {quest.title}
+          </Text>
+        </View>
         <ClassBadge movementClass={quest.movementClass} size="sm" />
       </View>
 
@@ -62,6 +69,27 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
         <View style={styles.metaItem}>
           {renderDifficultyStars()}
         </View>
+
+        {/* Weather Badge */}
+        {(quest as any).weather_condition && (
+          <View style={styles.weatherBadge}>
+            <Ionicons
+              name={
+                (quest as any).weather_condition === 'rain' ? 'rainy' :
+                (quest as any).weather_condition === 'snow' ? 'snow' :
+                (quest as any).weather_condition === 'storm' ? 'thunderstorm' :
+                (quest as any).weather_condition === 'fog' ? 'cloud' :
+                (quest as any).weather_condition === 'wind' ? 'flag' :
+                (quest as any).weather_condition === 'cold' ? 'thermometer-outline' :
+                (quest as any).weather_condition === 'heat' ? 'flame' :
+                'sunny'
+              }
+              size={10}
+              color="#00D4FF"
+            />
+            <Text style={styles.weatherBadgeText}>{(quest as any).weather_condition}</Text>
+          </View>
+        )}
 
         {/* Rating */}
         {quest.rating > 0 && (
@@ -119,12 +147,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.xs,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: SPACING.sm,
+    gap: 6,
+  },
+  seedBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   title: {
     color: THEME.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     flex: 1,
-    marginRight: SPACING.sm,
   },
   description: {
     color: THEME.textSecondary,
@@ -143,6 +185,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
+  },
+  weatherBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 212, 255, 0.12)',
+    borderRadius: RADIUS.full,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    gap: 3,
+  },
+  weatherBadgeText: {
+    color: THEME.primary,
+    fontSize: 9,
+    fontWeight: '700',
+    textTransform: 'capitalize',
   },
   metaText: {
     color: THEME.textSecondary,

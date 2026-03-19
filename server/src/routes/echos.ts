@@ -22,6 +22,11 @@ function pointToWkt(lat: number, lng: number): string {
 import { awardXp } from '../services/progressionEngine';
 import { incrementLeaderboardScore } from '../services/leaderboardService';
 import { DECAY, XP } from '../config/constants';
+import { recordEvent } from '../services/placeMemoryService';
+import { isNightTime } from '../utils/geo';
+import { isInSilentZone } from '../services/silentZoneService';
+import { resonanceService } from '../services/resonanceService';
+import { wsService } from '../services/wsService';
 
 const router = Router();
 
@@ -70,9 +75,12 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
 
     const locationWkt = pointToWkt(lat, lng);
 
+    // Night Layer: filter by time_window
+    const timeWindow = isNightTime() ? 'night' : 'day';
+
     const echos = await queryMany(
       `SELECT e.id, e.creator_id, e.radius_m, e.audio_url, e.likes,
-              e.expires_at, e.created_at,
+              e.expires_at, e.created_at, e.time_window,
               u.username as creator_username,
               ST_Y(e.location) as lat, ST_X(e.location) as lng,
               ST_Distance(e.location::geography, ST_GeomFromEWKT($1)::geography) as distance_m
@@ -81,9 +89,10 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
        WHERE e.status = 'active'
        AND e.expires_at > NOW()
        AND ST_DWithin(e.location::geography, ST_GeomFromEWKT($1)::geography, $2)
+       AND (e.time_window = 'any' OR e.time_window = $3)
        ORDER BY distance_m ASC
        LIMIT 100`,
-      [locationWkt, radiusM]
+      [locationWkt, radiusM, timeWindow]
     );
 
     return res.json({
@@ -124,6 +133,15 @@ router.post(
         });
       }
 
+      // Check if location is in a Silent Zone
+      const inSilentZone = await isInSilentZone(lat, lng);
+      if (inSilentZone) {
+        return res.status(403).json({
+          success: false,
+          error: 'This location is in a Silent Zone. Echos are not allowed here, but you can place artifacts instead.',
+        });
+      }
+
       // Determine audio URL: uploaded file or from body
       let audio_url = req.body.audio_url;
       if (req.file) {
@@ -139,14 +157,17 @@ router.post(
 
       const locationWkt = pointToWkt(lat, lng);
 
+      // Optional time_window for Night Layer
+      const time_window = req.body.time_window || 'any';
+
       // Calculate expiry: 48h from now (base)
       const expiresAt = new Date(Date.now() + DECAY.ECHO.BASE_HOURS * 3600 * 1000);
 
       const echo = await queryOne(
-        `INSERT INTO echos (creator_id, location, radius_m, audio_url, expires_at)
-         VALUES ($1, ST_GeomFromEWKT($2), $3, $4, $5)
-         RETURNING id, radius_m, audio_url, likes, expires_at, status, created_at`,
-        [req.userId, locationWkt, radius_m, audio_url, expiresAt]
+        `INSERT INTO echos (creator_id, location, radius_m, audio_url, expires_at, time_window)
+         VALUES ($1, ST_GeomFromEWKT($2), $3, $4, $5, $6)
+         RETURNING id, radius_m, audio_url, likes, expires_at, status, created_at, time_window`,
+        [req.userId, locationWkt, radius_m, audio_url, expiresAt, time_window]
       );
 
       if (!echo) {
@@ -163,12 +184,37 @@ router.post(
         [req.userId, JSON.stringify({ echo_id: echo.id, lat, lng })]
       );
 
+      // Record place memory event
+      const echoCreator = await queryOne<{ username: string }>('SELECT username FROM users WHERE id = $1', [req.userId]);
+      recordEvent(lat, lng, 'echo_created', req.userId!, echoCreator?.username ?? null, { echo_id: echo.id });
+
+      // Check for resonance (cross-content synergy)
+      let resonanceResult = null;
+      try {
+        const resonance = await resonanceService.checkResonance(lat, lng, 'echo', req.userId!);
+        if (resonance.resonance) {
+          resonanceResult = resonance;
+          wsService.sendToUser(req.userId!, 'resonance_discovered', {
+            title: 'Resonance Discovered!',
+            body: `Your echo created a ${resonance.bonus}x bonus spot!`,
+            types: resonance.types,
+            level: resonance.level,
+            bonus: resonance.bonus,
+            lat,
+            lng,
+          });
+        }
+      } catch (_err) {
+        // Resonance check is non-critical
+      }
+
       return res.status(201).json({
         success: true,
         data: {
           echo: { ...echo, lat, lng },
           xp_earned: XP.ECHO_DROP_INSTANT,
           new_level: xpResult.leveledUp ? xpResult.level : undefined,
+          resonance: resonanceResult,
         },
       });
     } catch (err: any) {

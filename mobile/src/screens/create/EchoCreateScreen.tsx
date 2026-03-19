@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { useLocationStore } from '../../store/locationStore';
-import { echoApi } from '../../services/api';
+import { echoApi, silentZoneApi } from '../../services/api';
 import { EchoCreateScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -32,10 +32,25 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
   const [radius, setRadius] = useState(40);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
+  const [timeWindow, setTimeWindow] = useState<'any' | 'day' | 'night'>('any');
+  const [inSilentZone, setInSilentZone] = useState(false);
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const waveAnim = useRef(new Animated.Value(0)).current;
+
+  // Check if current location is in a silent zone
+  useEffect(() => {
+    if (!currentLocation) return;
+    silentZoneApi
+      .getNearby(currentLocation.latitude, currentLocation.longitude, 100)
+      .then(({ data }) => {
+        const zones = data.data?.zones ?? data.zones ?? [];
+        // Check if any zone polygon contains the user's location
+        setInSilentZone(zones.length > 0);
+      })
+      .catch(() => setInSilentZone(false));
+  }, [currentLocation]);
 
   // Waveform animation during recording
   useEffect(() => {
@@ -152,6 +167,14 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
   const handleDrop = async () => {
     if (!recordingUri || !currentLocation) return;
 
+    if (inSilentZone) {
+      Alert.alert(
+        'Silent Zone',
+        'This location is in a Silent Zone. Echos are not allowed here, but you can place artifacts instead.'
+      );
+      return;
+    }
+
     setIsDropping(true);
     try {
       const formData = new FormData();
@@ -164,6 +187,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       formData.append('longitude', currentLocation.longitude.toString());
       formData.append('radius', radius.toString());
       formData.append('duration', duration.toString());
+      formData.append('time_window', timeWindow);
 
       await echoApi.create(formData);
 
@@ -244,6 +268,16 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
           )}
         </MapView>
       </View>
+
+      {/* Silent Zone Warning */}
+      {inSilentZone && (
+        <View style={styles.silentZoneWarning}>
+          <Ionicons name="leaf" size={16} color="#00C853" />
+          <Text style={styles.silentZoneWarningText}>
+            You are in a Silent Zone. Echos cannot be dropped here. You can place artifacts instead.
+          </Text>
+        </View>
+      )}
 
       {/* Controls */}
       <View style={styles.controls}>
@@ -341,6 +375,40 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                   ]}
                 >
                   {r}m
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Time Window */}
+        <View style={styles.radiusSection}>
+          <Text style={styles.radiusLabel}>TIME WINDOW</Text>
+          <View style={styles.radiusOptions}>
+            {([
+              { value: 'any' as const, label: 'Any Time' },
+              { value: 'day' as const, label: 'Day Only' },
+              { value: 'night' as const, label: 'Night Only' },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.radiusChip,
+                  timeWindow === opt.value && (opt.value === 'night'
+                    ? { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: '#8B5CF6' }
+                    : styles.radiusChipActive),
+                ]}
+                onPress={() => setTimeWindow(opt.value)}
+              >
+                <Text
+                  style={[
+                    styles.radiusChipText,
+                    timeWindow === opt.value && {
+                      color: opt.value === 'night' ? '#8B5CF6' : '#7B61FF',
+                    },
+                  ]}
+                >
+                  {opt.label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -568,5 +636,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
+  },
+  silentZoneWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 200, 83, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 200, 83, 0.3)',
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginTop: 12,
+    padding: 12,
+    gap: 10,
+  },
+  silentZoneWarningText: {
+    color: '#00C853',
+    fontSize: 12,
+    fontWeight: '600',
+    flex: 1,
+    lineHeight: 18,
   },
 });
