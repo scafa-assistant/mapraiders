@@ -117,7 +117,7 @@ router.get('/feed', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Social] Get feed error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get feed' });
+    return res.status(500).json({ success: false, message: 'Failed to get feed' });
   }
 });
 

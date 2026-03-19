@@ -165,11 +165,11 @@ export class ClanService {
       for (const group of clanGroups) {
         if (group.length < 2) continue;
 
-        const existingClan = await this.findExistingClan('transit', group);
+        const existingClan = await this.findExistingClan('commute', group);
         if (existingClan) continue;
 
         const clanName = `Transit Crew #${Date.now().toString(36).slice(-4).toUpperCase()}`;
-        const clanId = await this.createClan('transit', clanName, group);
+        const clanId = await this.createClan('commute', clanName, group);
 
         if (clanId) {
           formed++;

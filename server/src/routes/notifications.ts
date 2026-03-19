@@ -74,7 +74,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Notifications] Get notifications error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get notifications' });
+    return res.status(500).json({ success: false, message: 'Failed to get notifications' });
   }
 });
 
@@ -108,7 +108,7 @@ router.put(
       });
     } catch (err: any) {
       console.error('[Notifications] Mark read error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to mark notifications as read' });
+      return res.status(500).json({ success: false, message: 'Failed to mark notifications as read' });
     }
   }
 );
@@ -156,7 +156,7 @@ router.put(
       });
     } catch (err: any) {
       console.error('[Notifications] Update settings error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to update notification settings' });
+      return res.status(500).json({ success: false, message: 'Failed to update notification settings' });
     }
   }
 );

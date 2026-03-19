@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  Platform,
 } from 'react-native';
 import MapView, { Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
@@ -111,7 +112,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
         <View style={styles.mapContainer}>
           <MapView
             style={styles.mapPreview}
-            provider={PROVIDER_GOOGLE}
+            provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
             initialRegion={{
               latitude: mapCenter.latitude,
               longitude: mapCenter.longitude,

@@ -19,7 +19,8 @@ import {
   ANTI_GRIND_RETURNS,
 } from '../config/constants';
 import { routeToPolygon } from '../utils/polygon';
-import { pointsToPolygonWkt, polygonAreaM2, pathDistance, pathDuration } from '../utils/geo';
+import { polygonAreaM2, pathDistance, pathDuration } from '../utils/geo';
+import { toWktPolygon } from '../utils/polygon';
 import { getWeatherAtLocation } from './weatherService';
 import { detectMovementClass } from './classDetection';
 import { assessRoute, getAntiGrindMultiplier } from './antiCheat';
@@ -97,9 +98,8 @@ export class ClaimEngine {
       [polygonWkt]
     );
 
-    let areaM2 = areaResult?.area ?? polygonAreaM2(
-      routeToPolygon(points)
-    );
+    const fallbackPolygon = routeToPolygon(points);
+    let areaM2 = areaResult?.area ?? (fallbackPolygon ? polygonAreaM2(fallbackPolygon) : 0);
 
     if (areaM2 < TERRITORY.MIN_AREA_M2) {
       throw new Error(
@@ -116,8 +116,8 @@ export class ClaimEngine {
     // 5. Gather all bonus multipliers
 
     // Weather bonus
-    const centerLat = points.reduce((s, p) => s + p.lat, 0) / points.length;
-    const centerLng = points.reduce((s, p) => s + p.lng, 0) / points.length;
+    const centerLat = points.reduce((s, p) => s + (p.lat ?? p.latitude), 0) / points.length;
+    const centerLng = points.reduce((s, p) => s + (p.lng ?? p.longitude), 0) / points.length;
     const weatherData = await getWeatherAtLocation(centerLat, centerLng);
     const weatherMultiplier = weatherData.bonus;
 
@@ -221,15 +221,18 @@ export class ClaimEngine {
    */
   private convertToPolygon(points: GpsPoint[]): string {
     const polygonPoints = routeToPolygon(points);
+    if (!polygonPoints || polygonPoints.length < 3) {
+      throw new Error('Could not form a valid polygon from route');
+    }
 
     // Ensure polygon is closed
     const first = polygonPoints[0];
     const last = polygonPoints[polygonPoints.length - 1];
-    if (first.lat !== last.lat || first.lng !== last.lng) {
-      polygonPoints.push({ lat: first.lat, lng: first.lng });
+    if (first.latitude !== last.latitude || first.longitude !== last.longitude) {
+      polygonPoints.push({ ...first });
     }
 
-    return pointsToPolygonWkt(polygonPoints);
+    return toWktPolygon(polygonPoints);
   }
 
   /**

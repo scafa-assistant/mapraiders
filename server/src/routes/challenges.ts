@@ -115,7 +115,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Challenges] Get challenges error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get challenges' });
+    return res.status(500).json({ success: false, message: 'Failed to get challenges' });
   }
 });
 
@@ -158,7 +158,7 @@ router.post(
       );
 
       if (!challenge) {
-        return res.status(500).json({ success: false, error: 'Failed to create challenge' });
+        return res.status(500).json({ success: false, message: 'Failed to create challenge' });
       }
 
       return res.status(201).json({
@@ -169,7 +169,7 @@ router.post(
       });
     } catch (err: any) {
       console.error('[Challenges] Create challenge error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to create challenge' });
+      return res.status(500).json({ success: false, message: 'Failed to create challenge' });
     }
   }
 );
@@ -195,7 +195,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     );
 
     if (!challenge) {
-      return res.status(404).json({ success: false, error: 'Challenge not found' });
+      return res.status(404).json({ success: false, message: 'Challenge not found' });
     }
 
     // Check if current user has submitted
@@ -226,7 +226,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Challenges] Get challenge error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get challenge' });
+    return res.status(500).json({ success: false, message: 'Failed to get challenge' });
   }
 });
 
@@ -344,7 +344,7 @@ router.post(
       });
     } catch (err: any) {
       console.error('[Challenges] Submit challenge error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to submit challenge' });
+      return res.status(500).json({ success: false, message: 'Failed to submit challenge' });
     }
   }
 );

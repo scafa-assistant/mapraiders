@@ -368,6 +368,8 @@ CREATE TABLE IF NOT EXISTS clans (
 
 COMMENT ON TABLE clans IS 'Automatically formed social groups (commute, district, dog_park, route).';
 
+ALTER TABLE clans ADD CONSTRAINT clans_type_name_unique UNIQUE (type, name);
+
 CREATE INDEX IF NOT EXISTS idx_clans_type ON clans (type);
 
 -- ============================================================

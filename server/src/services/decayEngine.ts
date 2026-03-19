@@ -299,8 +299,6 @@ export async function processAllTerritoryDecay() {
   return { updated: result.updated, unclaimed: result.removed };
 }
 
-export { DecayEngine };
-
 export function calculateDecay(daysSince: number): number {
   return DecayEngine.calculateDecay(daysSince);
 }

@@ -1,8 +1,6 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import { questApi } from '../services/api';
 import { Quest, QuestProgress } from '../navigation/types';
-
-const API_BASE = 'https://api.gridwalker.app';
 
 interface QuestState {
   nearbyQuests: Quest[];
@@ -28,21 +26,19 @@ export const useQuestStore = create<QuestState>((set, get) => ({
   fetchNearby: async (lat: number, lng: number, radius: number) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE}/quests/nearby`, {
-        params: { lat, lng, radius },
-      });
+      const response = await questApi.getNearby(lat, lng, radius);
       set({ nearbyQuests: response.data, isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,
-        error: err.response?.data?.message || 'Failed to load quests.',
+        error: err.message || 'Failed to load quests.',
       });
     }
   },
 
   fetchQuestDetail: async (questId: string) => {
     try {
-      const response = await axios.get(`${API_BASE}/quests/${questId}`);
+      const response = await questApi.getById(questId);
       return response.data as Quest;
     } catch (_err) {
       return null;
@@ -52,7 +48,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
   startQuest: async (questId: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_BASE}/quests/${questId}/start`);
+      const response = await questApi.start(questId);
       const quest = response.data.quest as Quest;
       set({
         activeQuest: {
@@ -67,7 +63,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
     } catch (err: any) {
       set({
         isLoading: false,
-        error: err.response?.data?.message || 'Failed to start quest.',
+        error: err.message || 'Failed to start quest.',
       });
     }
   },
@@ -98,11 +94,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
         formData.append('longitude', proof.location.longitude.toString());
       }
 
-      const response = await axios.post(
-        `${API_BASE}/quests/${questId}/steps/${stepId}/verify`,
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
+      const response = await questApi.verifyStep(questId, stepId, formData);
 
       if (response.data.verified) {
         const { activeQuest } = get();
@@ -131,7 +123,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
 
   completeQuest: async (questId: string, rating: number) => {
     try {
-      await axios.post(`${API_BASE}/quests/${questId}/complete`, { rating });
+      await questApi.rate(questId, { rating });
       set({ activeQuest: null });
     } catch (_err) {
       set({ activeQuest: null });

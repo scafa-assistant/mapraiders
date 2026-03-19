@@ -36,7 +36,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Pets] Get pets error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get pets' });
+    return res.status(500).json({ success: false, message: 'Failed to get pets' });
   }
 });
 
@@ -74,7 +74,7 @@ router.post(
       );
 
       if (!pet) {
-        return res.status(500).json({ success: false, error: 'Failed to create pet' });
+        return res.status(500).json({ success: false, message: 'Failed to create pet' });
       }
 
       return res.status(201).json({
@@ -83,7 +83,7 @@ router.post(
       });
     } catch (err: any) {
       console.error('[Pets] Create pet error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to create pet' });
+      return res.status(500).json({ success: false, message: 'Failed to create pet' });
     }
   }
 );
@@ -109,7 +109,7 @@ router.put(
       );
 
       if (!existing) {
-        return res.status(404).json({ success: false, error: 'Pet not found or not yours' });
+        return res.status(404).json({ success: false, message: 'Pet not found or not yours' });
       }
 
       // Build dynamic update
@@ -136,7 +136,7 @@ router.put(
       }
 
       if (updates.length === 0) {
-        return res.status(400).json({ success: false, error: 'No updates provided' });
+        return res.status(400).json({ success: false, message: 'No updates provided' });
       }
 
       values.push(id);
@@ -154,7 +154,7 @@ router.put(
       });
     } catch (err: any) {
       console.error('[Pets] Update pet error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to update pet' });
+      return res.status(500).json({ success: false, message: 'Failed to update pet' });
     }
   }
 );
@@ -189,12 +189,12 @@ router.get('/:id/stats', authenticate, async (req: Request, res: Response) => {
     );
 
     if (!pet) {
-      return res.status(404).json({ success: false, error: 'Pet not found' });
+      return res.status(404).json({ success: false, message: 'Pet not found' });
     }
 
     // Only owner can see detailed stats
     if (pet.owner_id !== req.userId) {
-      return res.status(403).json({ success: false, error: 'Not your pet' });
+      return res.status(403).json({ success: false, message: 'Not your pet' });
     }
 
     // Calculate progression details
@@ -244,7 +244,7 @@ router.get('/:id/stats', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Pets] Get pet stats error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get pet stats' });
+    return res.status(500).json({ success: false, message: 'Failed to get pet stats' });
   }
 });
 

@@ -15,12 +15,11 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE, MapPressEvent } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import axios from 'axios';
 import { useLocationStore } from '../../store/locationStore';
+import { questApi } from '../../services/api';
 import { QuestCreateScreenProps, QuestStepType } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
-const API_BASE = 'https://api.gridwalker.app';
 
 interface DraftStep {
   id: string;
@@ -108,7 +107,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
     setIsPublishing(true);
     try {
-      await axios.post(`${API_BASE}/quests`, {
+      await questApi.create({
         title: title.trim(),
         description: description.trim(),
         difficulty,
@@ -215,7 +214,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         <MapView
           ref={mapRef}
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
+          provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
           initialRegion={
             currentLocation
               ? {

@@ -76,9 +76,9 @@ export class WeatherService {
 
     // Try Redis cache first
     try {
-      const cached = await cacheGet(cacheKey);
+      const cached = await cacheGet<WeatherData>(cacheKey);
       if (cached) {
-        return JSON.parse(cached) as WeatherData;
+        return cached;
       }
     } catch {
       // Redis unavailable; try memory cache
@@ -128,20 +128,28 @@ export class WeatherService {
       const bonus = WeatherService.calculateBonus({
         condition,
         temperature,
-        bonus: 1.0, // placeholder; we calculate below
+        wind_speed: windSpeed,
+        rain_mm: rain,
+        snow: snowfall > 0,
+        weather_code: weatherCode,
+        bonus: 1.0,
         cached_at: Date.now(),
       }, rain, snowfall, windSpeed);
 
       const data: WeatherData = {
         condition,
         temperature,
+        wind_speed: windSpeed,
+        rain_mm: rain,
+        snow: snowfall > 0,
+        weather_code: weatherCode,
         bonus,
         cached_at: Date.now(),
       };
 
       // Store in Redis (15-min TTL)
       try {
-        await cacheSet(cacheKey, JSON.stringify(data), WEATHER_CACHE_MINUTES * 60);
+        await cacheSet(cacheKey, data, WEATHER_CACHE_MINUTES * 60);
       } catch {
         // Redis write failure is non-critical
       }
@@ -220,7 +228,7 @@ export class WeatherService {
     }
 
     // Condition-based multiplier from constants
-    const conditionMultiplier = WEATHER_MULTIPLIERS[weather.condition] ?? 1.0;
+    const conditionMultiplier = WEATHER_MULTIPLIERS[weather.condition ?? 'clear'] ?? 1.0;
     candidates.push(conditionMultiplier);
 
     // Return the maximum (no stacking)
@@ -234,6 +242,10 @@ export class WeatherService {
     return {
       condition: 'clear',
       temperature: 20,
+      wind_speed: 0,
+      rain_mm: 0,
+      snow: false,
+      weather_code: 0,
       bonus: 1.0,
       cached_at: Date.now(),
     };

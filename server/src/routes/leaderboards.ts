@@ -68,7 +68,7 @@ router.get('/:type/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Leaderboard] Get my rank error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get rank' });
+    return res.status(500).json({ success: false, message: 'Failed to get rank' });
   }
 });
 
@@ -143,7 +143,7 @@ router.get('/:type', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Leaderboard] Get leaderboard error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get leaderboard' });
+    return res.status(500).json({ success: false, message: 'Failed to get leaderboard' });
   }
 });
 

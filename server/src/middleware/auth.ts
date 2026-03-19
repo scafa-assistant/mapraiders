@@ -38,7 +38,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ success: false, error: 'Authentication required' });
+    res.status(401).json({ success: false, message: 'Authentication required' });
     return;
   }
 
@@ -50,9 +50,9 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
     next();
   } catch (err: any) {
     if (err.name === 'TokenExpiredError') {
-      res.status(401).json({ success: false, error: 'Token expired' });
+      res.status(401).json({ success: false, message: 'Token expired' });
     } else {
-      res.status(401).json({ success: false, error: 'Invalid token' });
+      res.status(401).json({ success: false, message: 'Invalid token' });
     }
   }
 }
@@ -88,7 +88,7 @@ export function optionalAuth(req: Request, res: Response, next: NextFunction): v
  */
 export async function loadUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   if (!req.userId) {
-    res.status(401).json({ success: false, error: 'Authentication required' });
+    res.status(401).json({ success: false, message: 'Authentication required' });
     return;
   }
 
@@ -99,7 +99,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction):
     );
 
     if (!user) {
-      res.status(403).json({ success: false, error: 'Account not found or banned' });
+      res.status(403).json({ success: false, message: 'Account not found or banned' });
       return;
     }
 

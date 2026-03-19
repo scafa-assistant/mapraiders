@@ -31,7 +31,7 @@ router.post(
       );
 
       if (existingUser) {
-        return res.status(409).json({ success: false, error: 'Username already taken' });
+        return res.status(409).json({ success: false, message: 'Username already taken' });
       }
 
       const existingEmail = await queryOne(
@@ -40,7 +40,7 @@ router.post(
       );
 
       if (existingEmail) {
-        return res.status(409).json({ success: false, error: 'Email already registered' });
+        return res.status(409).json({ success: false, message: 'Email already registered' });
       }
 
       // Hash password with bcrypt (cost factor 12)
@@ -64,7 +64,7 @@ router.post(
       );
 
       if (!user) {
-        return res.status(500).json({ success: false, error: 'Failed to create user' });
+        return res.status(500).json({ success: false, message: 'Failed to create user' });
       }
 
       // Generate tokens
@@ -91,13 +91,13 @@ router.post(
             streak_days: user.streak_days,
             created_at: user.created_at,
           },
-          accessToken,
+          token: accessToken,
           refreshToken,
         },
       });
     } catch (err: any) {
       console.error('[Auth] Register error:', err);
-      return res.status(500).json({ success: false, error: 'Registration failed' });
+      return res.status(500).json({ success: false, message: 'Registration failed' });
     }
   }
 );
@@ -129,17 +129,17 @@ router.post(
       );
 
       if (!user) {
-        return res.status(401).json({ success: false, error: 'Invalid email or password' });
+        return res.status(401).json({ success: false, message: 'Invalid email or password' });
       }
 
       if (user.banned) {
-        return res.status(403).json({ success: false, error: 'Account has been banned' });
+        return res.status(403).json({ success: false, message: 'Account has been banned' });
       }
 
       // Verify password
       const validPassword = await bcrypt.compare(password, user.password_hash);
       if (!validPassword) {
-        return res.status(401).json({ success: false, error: 'Invalid email or password' });
+        return res.status(401).json({ success: false, message: 'Invalid email or password' });
       }
 
       // Update last active timestamp
@@ -169,13 +169,13 @@ router.post(
             streak_days: user.streak_days,
             created_at: user.created_at,
           },
-          accessToken,
+          token: accessToken,
           refreshToken,
         },
       });
     } catch (err: any) {
       console.error('[Auth] Login error:', err);
-      return res.status(500).json({ success: false, error: 'Login failed' });
+      return res.status(500).json({ success: false, message: 'Login failed' });
     }
   }
 );
@@ -193,7 +193,7 @@ router.post(
       try {
         payload = verifyRefreshToken(refreshToken);
       } catch {
-        return res.status(401).json({ success: false, error: 'Invalid or expired refresh token' });
+        return res.status(401).json({ success: false, message: 'Invalid or expired refresh token' });
       }
 
       // Check user exists and is not banned
@@ -203,11 +203,11 @@ router.post(
       );
 
       if (!user) {
-        return res.status(401).json({ success: false, error: 'User not found' });
+        return res.status(401).json({ success: false, message: 'User not found' });
       }
 
       if (user.banned) {
-        return res.status(403).json({ success: false, error: 'Account has been banned' });
+        return res.status(403).json({ success: false, message: 'Account has been banned' });
       }
 
       // Verify refresh token exists in DB (check against stored hashes)
@@ -228,7 +228,7 @@ router.post(
       }
 
       if (!matchedTokenId) {
-        return res.status(401).json({ success: false, error: 'Refresh token not recognized' });
+        return res.status(401).json({ success: false, message: 'Refresh token not recognized' });
       }
 
       // Rotate: delete the used refresh token
@@ -255,13 +255,13 @@ router.post(
       return res.json({
         success: true,
         data: {
-          accessToken: newAccessToken,
+          token: newAccessToken,
           refreshToken: newRefreshToken,
         },
       });
     } catch (err: any) {
       console.error('[Auth] Refresh error:', err);
-      return res.status(500).json({ success: false, error: 'Token refresh failed' });
+      return res.status(500).json({ success: false, message: 'Token refresh failed' });
     }
   }
 );

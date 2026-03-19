@@ -5,13 +5,12 @@
 // ============================================================
 
 import { queryMany, queryOne } from '../config/database';
-import {
+import redis, {
   zAdd,
   zRevRangeWithScores,
   zRank,
   zScore,
   zIncrBy,
-  getRedis,
 } from '../config/redis';
 import { LeaderboardType, LeaderboardEntry, MovementClass } from '../utils/types';
 import {
@@ -86,14 +85,13 @@ export class LeaderboardService {
       // Get total count from Redis
       let total = 0;
       try {
-        const redis = getRedis();
-        total = await redis.zCard(key);
+        total = await redis.zcard(key);
       } catch {
         total = results.length;
       }
 
       // Batch-fetch usernames for all entries
-      const userIds = results.map(r => r.value);
+      const userIds = results.map(r => r.member);
       const users = await queryMany<{ id: string; username: string }>(
         'SELECT id, username FROM users WHERE id = ANY($1)',
         [userIds]
@@ -103,8 +101,8 @@ export class LeaderboardService {
 
       const entries: LeaderboardEntry[] = results.map((result, idx) => ({
         rank: start + idx + 1,
-        user_id: result.value,
-        username: usernameMap.get(result.value) || 'Unknown',
+        user_id: result.member,
+        username: usernameMap.get(result.member) || 'Unknown',
         score: result.score,
       }));
 

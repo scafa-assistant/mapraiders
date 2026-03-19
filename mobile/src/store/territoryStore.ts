@@ -1,8 +1,6 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import api, { territoryApi } from '../services/api';
 import { Territory, BoundingBox } from '../navigation/types';
-
-const API_BASE = 'https://api.gridwalker.app';
 
 interface TerritoryState {
   territories: Territory[];
@@ -26,19 +24,17 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
   fetchTerritories: async (bbox: BoundingBox) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE}/territories`, {
-        params: {
-          north: bbox.north,
-          south: bbox.south,
-          east: bbox.east,
-          west: bbox.west,
-        },
+      const response = await territoryApi.getInBounds({
+        north: bbox.north,
+        south: bbox.south,
+        east: bbox.east,
+        west: bbox.west,
       });
       set({ territories: response.data, isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,
-        error: err.response?.data?.message || 'Failed to load territories.',
+        error: err.message || 'Failed to load territories.',
       });
     }
   },
@@ -46,12 +42,12 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
   fetchMyTerritories: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE}/territories/mine`);
+      const response = await territoryApi.getMine();
       set({ myTerritories: response.data, isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,
-        error: err.response?.data?.message || 'Failed to load your territories.',
+        error: err.message || 'Failed to load your territories.',
       });
     }
   },
@@ -62,7 +58,7 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
 
   challengeTerritory: async (territoryId: string) => {
     try {
-      const response = await axios.post(`${API_BASE}/territories/${territoryId}/challenge`);
+      const response = await api.post(`/territories/${territoryId}/challenge`);
       return response.data.success;
     } catch (_err) {
       return false;

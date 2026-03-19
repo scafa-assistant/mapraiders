@@ -35,6 +35,7 @@ import { leaderboardsRouter } from './routes/leaderboards';
 import { clansRouter } from './routes/clans';
 import { notificationsRouter } from './routes/notifications';
 import { socialRouter } from './routes/social';
+import { weatherRouter } from './routes/weather';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -111,12 +112,13 @@ app.use('/api/leaderboards', leaderboardsRouter);
 app.use('/api/clans', clansRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/social', socialRouter);
+app.use('/api/weather', weatherRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {
   res.status(404).json({
     success: false,
-    error: 'Endpoint not found',
+    message: 'Endpoint not found',
   });
 });
 
@@ -129,7 +131,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(413).json({
       success: false,
-      error: 'File too large',
+      message: 'File too large',
     });
   }
 
@@ -137,7 +139,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   if (err.code === 'LIMIT_UNEXPECTED_FILE') {
     return res.status(400).json({
       success: false,
-      error: 'Unexpected file field',
+      message: 'Unexpected file field',
     });
   }
 
@@ -145,7 +147,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({
       success: false,
-      error: 'Invalid JSON in request body',
+      message: 'Invalid JSON in request body',
     });
   }
 
@@ -157,7 +159,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 
   return res.status(statusCode).json({
     success: false,
-    error: message,
+    message: message,
   });
 });
 

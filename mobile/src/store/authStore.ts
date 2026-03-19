@@ -1,8 +1,6 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import { authApi, userApi, setTokens, clearTokens } from '../services/api';
 import { UserProfile } from '../navigation/types';
-
-const API_BASE = 'https://api.gridwalker.app';
 
 interface AuthState {
   token: string | null;
@@ -25,16 +23,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_BASE}/auth/login`, {
-        email,
-        password,
-      });
+      const response = await authApi.login({ email, password });
       const { token, user } = response.data;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      await setTokens(token, response.data.refreshToken);
       set({ token, user, isLoading: false });
     } catch (err: any) {
-      const message =
-        err.response?.data?.message || 'Login failed. Please check your credentials.';
+      const message = err.message || 'Login failed. Please check your credentials.';
       set({ isLoading: false, error: message });
       throw new Error(message);
     }
@@ -43,24 +37,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (username: string, email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_BASE}/auth/register`, {
-        username,
-        email,
-        password,
-      });
+      const response = await authApi.register({ username, email, password });
       const { token, user } = response.data;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      await setTokens(token, response.data.refreshToken);
       set({ token, user, isLoading: false });
     } catch (err: any) {
-      const message =
-        err.response?.data?.message || 'Registration failed. Please try again.';
+      const message = err.message || 'Registration failed. Please try again.';
       set({ isLoading: false, error: message });
       throw new Error(message);
     }
   },
 
   logout: () => {
-    delete axios.defaults.headers.common['Authorization'];
+    clearTokens();
     set({ token: null, user: null, error: null });
   },
 
@@ -68,7 +57,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { token } = get();
     if (!token) return;
     try {
-      const response = await axios.get(`${API_BASE}/users/me`);
+      const response = await userApi.getMe();
       set({ user: response.data });
     } catch (err: any) {
       if (err.response?.status === 401) {

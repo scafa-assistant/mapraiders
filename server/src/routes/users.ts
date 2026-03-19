@@ -24,7 +24,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     );
 
     if (!user) {
-      return res.status(404).json({ success: false, error: 'User not found' });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     // Get titles
@@ -79,7 +79,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Users] Get me error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get user data' });
+    return res.status(500).json({ success: false, message: 'Failed to get user data' });
   }
 });
 
@@ -95,7 +95,7 @@ router.get('/:id/profile', authenticate, async (req: Request, res: Response) => 
     );
 
     if (!user) {
-      return res.status(404).json({ success: false, error: 'User not found' });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     // Get titles
@@ -143,7 +143,7 @@ router.get('/:id/profile', authenticate, async (req: Request, res: Response) => 
     });
   } catch (err: any) {
     console.error('[Users] Get profile error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get profile' });
+    return res.status(500).json({ success: false, message: 'Failed to get profile' });
   }
 });
 
@@ -175,7 +175,7 @@ router.put(
       });
     } catch (err: any) {
       console.error('[Users] Update settings error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to update settings' });
+      return res.status(500).json({ success: false, message: 'Failed to update settings' });
     }
   }
 );

@@ -6,7 +6,8 @@
 
 import { query, queryOne, queryMany, transaction } from '../config/database';
 import { QUEST, XP } from '../config/constants';
-import { haversineDistance, pointToWkt } from '../utils/geo';
+import { haversineDistance } from '../utils/geo';
+import { toWktPoint as pointToWkt } from '../utils/polygon';
 import { Quest, QuestStep, QuestProgress, VerificationType } from '../utils/types';
 
 /** Input data for creating a new quest */
@@ -565,7 +566,7 @@ export class QuestEngine {
       case 'proximity':
         return true; // Proximity already checked above
 
-      case 'photo_gps':
+      case 'photo':
         return !!proof.data?.media_url;
 
       case 'video':

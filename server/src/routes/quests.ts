@@ -125,7 +125,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Quests] Get quests error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get quests' });
+    return res.status(500).json({ success: false, message: 'Failed to get quests' });
   }
 });
 

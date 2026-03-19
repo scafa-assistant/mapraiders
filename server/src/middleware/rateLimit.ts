@@ -41,7 +41,7 @@ export function rateLimit(windowMs: number, maxRequests: number) {
       if (currentCount > maxRequests) {
         res.status(429).json({
           success: false,
-          error: 'Too many requests, please try again later',
+          message: 'Too many requests, please try again later',
         });
         return;
       }

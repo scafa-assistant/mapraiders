@@ -97,7 +97,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Echos] Get echos error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get echos' });
+    return res.status(500).json({ success: false, message: 'Failed to get echos' });
   }
 });
 
@@ -150,7 +150,7 @@ router.post(
       );
 
       if (!echo) {
-        return res.status(500).json({ success: false, error: 'Failed to create echo' });
+        return res.status(500).json({ success: false, message: 'Failed to create echo' });
       }
 
       // Award instant XP for echo drop
@@ -173,7 +173,7 @@ router.post(
       });
     } catch (err: any) {
       console.error('[Echos] Create echo error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to create echo' });
+      return res.status(500).json({ success: false, message: 'Failed to create echo' });
     }
   }
 );
@@ -200,27 +200,27 @@ router.post('/:id/like', authenticate, async (req: Request, res: Response) => {
     );
 
     if (!echo) {
-      return res.status(404).json({ success: false, error: 'Echo not found or expired' });
+      return res.status(404).json({ success: false, message: 'Echo not found or expired' });
     }
 
     // Check expired
     if (new Date(echo.expires_at) < new Date()) {
-      return res.status(410).json({ success: false, error: 'Echo has expired' });
+      return res.status(410).json({ success: false, message: 'Echo has expired' });
     }
 
     // Cannot like own echo
     if (echo.creator_id === req.userId) {
-      return res.status(400).json({ success: false, error: 'Cannot like your own echo' });
+      return res.status(400).json({ success: false, message: 'Cannot like your own echo' });
     }
 
     // Check if user already liked this echo
     const alreadyLiked = await queryOne(
-      'SELECT id FROM echo_likes WHERE echo_id = $1 AND user_id = $2',
+      'SELECT echo_id FROM echo_likes WHERE echo_id = $1 AND user_id = $2',
       [id, req.userId]
     );
 
     if (alreadyLiked) {
-      return res.status(409).json({ success: false, error: 'Already liked this echo' });
+      return res.status(409).json({ success: false, message: 'Already liked this echo' });
     }
 
     // Record the like
@@ -261,7 +261,7 @@ router.post('/:id/like', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Echos] Like echo error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to like echo' });
+    return res.status(500).json({ success: false, message: 'Failed to like echo' });
   }
 });
 
@@ -279,7 +279,7 @@ router.delete('/:id', authenticate, async (req: Request, res: Response) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ success: false, error: 'Echo not found or not yours' });
+      return res.status(404).json({ success: false, message: 'Echo not found or not yours' });
     }
 
     return res.json({
@@ -288,7 +288,7 @@ router.delete('/:id', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Echos] Delete echo error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to delete echo' });
+    return res.status(500).json({ success: false, message: 'Failed to delete echo' });
   }
 });
 

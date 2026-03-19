@@ -41,12 +41,16 @@ router.post(
 
       // Normalize points to GpsPoint format if needed
       const normalizedPoints: GpsPoint[] = points.map((p: any) => ({
+        latitude: p.lat ?? p.latitude,
+        longitude: p.lng ?? p.longitude,
         lat: p.lat ?? p.latitude,
         lng: p.lng ?? p.longitude,
         timestamp: p.timestamp,
-        accuracy: p.accuracy,
-        altitude: p.altitude,
-        speed: p.speed,
+        accuracy: p.accuracy ?? 0,
+        altitude: p.altitude ?? 0,
+        speed: p.speed ?? 0,
+        bearing: p.bearing ?? 0,
+        source: p.source ?? 'fused',
       }));
 
       // processRouteClaim handles the full pipeline:
@@ -132,7 +136,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Routes] Get routes error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get routes' });
+    return res.status(500).json({ success: false, message: 'Failed to get routes' });
   }
 });
 

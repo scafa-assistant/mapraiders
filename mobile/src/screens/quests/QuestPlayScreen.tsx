@@ -9,6 +9,7 @@ import {
   Alert,
   Dimensions,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
@@ -445,7 +446,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
       <MapView
         ref={mapRef}
         style={styles.map}
-        provider={PROVIDER_GOOGLE}
+        provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
         initialRegion={{
           latitude: currentStep.location.latitude,
           longitude: currentStep.location.longitude,

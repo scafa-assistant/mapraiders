@@ -8,18 +8,18 @@ import {
   Animated,
   Dimensions,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
-import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import { useLocationStore } from '../../store/locationStore';
+import { echoApi } from '../../services/api';
 import { EchoCreateScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
-const API_BASE = 'https://api.gridwalker.app';
 const MAX_DURATION = 30; // seconds
 
 export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) {
@@ -165,9 +165,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       formData.append('radius', radius.toString());
       formData.append('duration', duration.toString());
 
-      await axios.post(`${API_BASE}/echoes`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await echoApi.create(formData);
 
       Alert.alert('Echo Dropped!', 'Your audio echo is now live at this location.', [
         { text: 'OK', onPress: () => navigation.goBack() },
@@ -208,7 +206,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       <View style={styles.mapContainer}>
         <MapView
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
+          provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
           initialRegion={
             currentLocation
               ? {

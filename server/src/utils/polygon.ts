@@ -388,3 +388,19 @@ export function processRouteToPolygon(
 
   return { polygon: wkt, area };
 }
+
+/**
+ * Simplified wrapper: raw GPS points --> polygon GpsPoint array or null.
+ */
+export function routeToPolygon(points: GpsPoint[]): GpsPoint[] | null {
+  const result = processRouteToPolygon(points);
+  if ('error' in result) return null;
+  // processRouteToPolygon returns a WKT string, but callers need points.
+  // Re-run the pipeline to get the closed polygon points.
+  if (points.length < 4) return null;
+  const smoothed = smoothRoute(points);
+  const simplified = simplifyRoute(smoothed, 8);
+  if (simplified.length < 3) return null;
+  const closed = closeRoute(simplified);
+  return closed;
+}

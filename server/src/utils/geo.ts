@@ -281,3 +281,57 @@ export function polygonArea(
 
   return Math.abs(area / 2);
 }
+
+// ---- Aliases & Additional Exports ------------------------------------
+
+/**
+ * Alias for haversineDistance using coordinate objects.
+ * Calculates the distance in meters between two points.
+ */
+export function pointDistance(
+  p1: { latitude: number; longitude: number },
+  p2: { latitude: number; longitude: number },
+): number {
+  return haversineDistance(p1.latitude, p1.longitude, p2.latitude, p2.longitude);
+}
+
+/**
+ * Calculate speed (km/h) between two consecutive GPS points.
+ */
+export function segmentSpeed(
+  p1: { latitude: number; longitude: number; timestamp: number },
+  p2: { latitude: number; longitude: number; timestamp: number },
+): number {
+  const distM = haversineDistance(p1.latitude, p1.longitude, p2.latitude, p2.longitude);
+  const dtS = (p2.timestamp - p1.timestamp) / 1000;
+  if (dtS <= 0) return 0;
+  return (distM / 1000) / (dtS / 3600);
+}
+
+/**
+ * Alias for routeDistance.
+ */
+export const pathDistance = routeDistance;
+
+/**
+ * Calculate the duration of a path in seconds (last timestamp - first timestamp).
+ */
+export function pathDuration(
+  points: { latitude: number; longitude: number; timestamp: number }[],
+): number {
+  if (points.length < 2) return 0;
+  return (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
+}
+
+/**
+ * Alias for polygonArea.
+ */
+export const polygonAreaM2 = polygonArea;
+
+/**
+ * Convert a single coordinate to PostGIS WKT POINT format.
+ * Re-exported from polygon.ts for convenience.
+ */
+export function pointToWkt(lat: number, lng: number): string {
+  return `POINT(${lng} ${lat})`;
+}

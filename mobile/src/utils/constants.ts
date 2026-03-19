@@ -9,6 +9,7 @@ export const CLASS_COLORS: Record<MovementClass, string> = {
   skater: '#FFB800',
   dog_walker: '#7B61FF',
   driver: '#8892B0',
+  unknown: '#555E78',
 };
 
 export const CLASS_ICONS: Record<MovementClass, string> = {
@@ -18,6 +19,7 @@ export const CLASS_ICONS: Record<MovementClass, string> = {
   skater: 'flash-outline',
   dog_walker: 'paw-outline',
   driver: 'car-outline',
+  unknown: 'help-circle-outline',
 };
 
 export const CLASS_LABELS: Record<MovementClass, string> = {
@@ -27,6 +29,7 @@ export const CLASS_LABELS: Record<MovementClass, string> = {
   skater: 'Skater',
   dog_walker: 'Dog Walker',
   driver: 'Driver',
+  unknown: 'Unknown',
 };
 
 // ─── Theme ──────────────────────────────────────────────────────────────────

@@ -108,8 +108,8 @@ api.interceptors.response.use(
         }
 
         const { data } = await axios.post(`${API_BASE}/auth/refresh`, { refreshToken });
-        const newToken = data.token;
-        const newRefreshToken = data.refreshToken;
+        const newToken = data.data.token;
+        const newRefreshToken = data.data.refreshToken;
 
         await setTokens(newToken, newRefreshToken);
         processQueue(null, newToken);
@@ -307,10 +307,10 @@ export const notificationApi = {
 
 export const socialApi = {
   report: (data: { target_type: string; target_id: string; reason: string }) =>
-    api.post('/reports', data),
+    api.post('/social/reports', data),
 
   getFeed: (page?: number) =>
-    api.get('/feed', { params: { page } }),
+    api.get('/social/feed', { params: { page } }),
 };
 
 // ─── Weather API ────────────────────────────────────────────────────────────

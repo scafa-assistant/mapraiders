@@ -99,7 +99,7 @@ router.get('/routes', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Travel] Get routes error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get travel routes' });
+    return res.status(500).json({ success: false, message: 'Failed to get travel routes' });
   }
 });
 
@@ -155,7 +155,7 @@ router.post(
       });
     } catch (err: any) {
       console.error('[Travel] Create route error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to create travel route' });
+      return res.status(500).json({ success: false, message: 'Failed to create travel route' });
     }
   }
 );
@@ -181,11 +181,11 @@ router.put(
       );
 
       if (!existing) {
-        return res.status(404).json({ success: false, error: 'Travel route not found' });
+        return res.status(404).json({ success: false, message: 'Travel route not found' });
       }
 
       if (existing.founder_id !== req.userId) {
-        return res.status(403).json({ success: false, error: 'Not your travel route' });
+        return res.status(403).json({ success: false, message: 'Not your travel route' });
       }
 
       const result = await transaction(async (client) => {
@@ -245,7 +245,7 @@ router.put(
       });
     } catch (err: any) {
       console.error('[Travel] Update route error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to update travel route' });
+      return res.status(500).json({ success: false, message: 'Failed to update travel route' });
     }
   }
 );
@@ -265,19 +265,19 @@ router.post('/routes/:id/complete', authenticate, async (req: Request, res: Resp
     );
 
     if (!route) {
-      return res.status(404).json({ success: false, error: 'Travel route not found' });
+      return res.status(404).json({ success: false, message: 'Travel route not found' });
     }
 
     if (route.founder_id !== req.userId) {
-      return res.status(403).json({ success: false, error: 'Not your travel route' });
+      return res.status(403).json({ success: false, message: 'Not your travel route' });
     }
 
     if (route.status === 'published') {
-      return res.status(400).json({ success: false, error: 'Route is already published' });
+      return res.status(400).json({ success: false, message: 'Route is already published' });
     }
 
     if (route.status === 'archived') {
-      return res.status(400).json({ success: false, error: 'Cannot publish an archived route' });
+      return res.status(400).json({ success: false, message: 'Cannot publish an archived route' });
     }
 
     // Verify route has at least one spot
@@ -304,7 +304,7 @@ router.post('/routes/:id/complete', authenticate, async (req: Request, res: Resp
     });
   } catch (err: any) {
     console.error('[Travel] Complete route error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to complete travel route' });
+    return res.status(500).json({ success: false, message: 'Failed to complete travel route' });
   }
 });
 
@@ -328,12 +328,12 @@ router.get('/routes/:id', authenticate, async (req: Request, res: Response) => {
     );
 
     if (!route) {
-      return res.status(404).json({ success: false, error: 'Travel route not found' });
+      return res.status(404).json({ success: false, message: 'Travel route not found' });
     }
 
     // Only allow viewing drafts if you're the founder
     if (route.status === 'draft' && route.founder_id !== req.userId) {
-      return res.status(404).json({ success: false, error: 'Travel route not found' });
+      return res.status(404).json({ success: false, message: 'Travel route not found' });
     }
 
     // Get spots
@@ -368,7 +368,7 @@ router.get('/routes/:id', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Travel] Get route error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get travel route' });
+    return res.status(500).json({ success: false, message: 'Failed to get travel route' });
   }
 });
 
@@ -467,7 +467,7 @@ router.post(
       });
     } catch (err: any) {
       console.error('[Travel] Rate route error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to rate travel route' });
+      return res.status(500).json({ success: false, message: 'Failed to rate travel route' });
     }
   }
 );

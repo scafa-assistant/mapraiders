@@ -93,7 +93,7 @@ async function formDistrictClans(): Promise<number> {
       const clanResult = await query(
         `INSERT INTO clans (type, name, auto_generated, metadata, created_at)
          VALUES ('district', $1, true, $2, NOW())
-         ON CONFLICT ON CONSTRAINT clans_type_name_unique
+         ON CONFLICT (type, name)
          DO UPDATE SET metadata = $2
          RETURNING id`,
         [
@@ -117,10 +117,10 @@ async function formDistrictClans(): Promise<number> {
 
       for (let i = 0; i < topMembers.length; i++) {
         await query(
-          `INSERT INTO clan_members (clan_id, user_id, role, joined_at)
-           VALUES ($1, $2, $3, NOW())
+          `INSERT INTO clan_members (clan_id, user_id, joined_at)
+           VALUES ($1, $2, NOW())
            ON CONFLICT DO NOTHING`,
-          [clanId, topMembers[i].userId, i === 0 ? 'leader' : 'member'],
+          [clanId, topMembers[i].userId],
         );
       }
 
@@ -163,10 +163,10 @@ async function formRoutePatternClans(): Promise<number> {
     `WITH route_cells AS (
        SELECT
          r.user_id,
-         ROUND(ST_Y(ST_StartPoint(r.polygon::geometry))::numeric, 3) AS start_lat,
-         ROUND(ST_X(ST_StartPoint(r.polygon::geometry))::numeric, 3) AS start_lng,
-         ROUND(ST_Y(ST_EndPoint(r.polygon::geometry))::numeric, 3) AS end_lat,
-         ROUND(ST_X(ST_EndPoint(r.polygon::geometry))::numeric, 3) AS end_lng,
+         ROUND(ST_Y(ST_PointN(ST_ExteriorRing(r.polygon::geometry), 1))::numeric, 3) AS start_lat,
+         ROUND(ST_X(ST_PointN(ST_ExteriorRing(r.polygon::geometry), 1))::numeric, 3) AS start_lng,
+         ROUND(ST_Y(ST_PointN(ST_ExteriorRing(r.polygon::geometry), ST_NPoints(ST_ExteriorRing(r.polygon::geometry))))::numeric, 3) AS end_lat,
+         ROUND(ST_X(ST_PointN(ST_ExteriorRing(r.polygon::geometry), ST_NPoints(ST_ExteriorRing(r.polygon::geometry))))::numeric, 3) AS end_lng,
          EXTRACT(HOUR FROM r.created_at) AS route_hour,
          r.created_at
        FROM routes r
@@ -213,7 +213,7 @@ async function formRoutePatternClans(): Promise<number> {
       const clanResult = await query(
         `INSERT INTO clans (type, name, auto_generated, metadata, created_at)
          VALUES ('commute', $1, true, $2, NOW())
-         ON CONFLICT ON CONSTRAINT clans_type_name_unique
+         ON CONFLICT (type, name)
          DO UPDATE SET metadata = $2
          RETURNING id`,
         [
@@ -229,10 +229,10 @@ async function formRoutePatternClans(): Promise<number> {
 
       for (let i = 0; i < group.length; i++) {
         await query(
-          `INSERT INTO clan_members (clan_id, user_id, role, joined_at)
-           VALUES ($1, $2, $3, NOW())
+          `INSERT INTO clan_members (clan_id, user_id, joined_at)
+           VALUES ($1, $2, NOW())
            ON CONFLICT DO NOTHING`,
-          [clanId, group[i], i === 0 ? 'leader' : 'member'],
+          [clanId, group[i]],
         );
       }
 
@@ -313,7 +313,7 @@ async function formDogParkClans(): Promise<number> {
       const clanResult = await query(
         `INSERT INTO clans (type, name, auto_generated, metadata, created_at)
          VALUES ('dog_park', $1, true, $2, NOW())
-         ON CONFLICT ON CONSTRAINT clans_type_name_unique
+         ON CONFLICT (type, name)
          DO UPDATE SET metadata = $2
          RETURNING id`,
         [
@@ -329,10 +329,10 @@ async function formDogParkClans(): Promise<number> {
 
       for (let i = 0; i < group.length; i++) {
         await query(
-          `INSERT INTO clan_members (clan_id, user_id, role, joined_at)
-           VALUES ($1, $2, $3, NOW())
+          `INSERT INTO clan_members (clan_id, user_id, joined_at)
+           VALUES ($1, $2, NOW())
            ON CONFLICT DO NOTHING`,
-          [clanId, group[i], i === 0 ? 'leader' : 'member'],
+          [clanId, group[i]],
         );
       }
 

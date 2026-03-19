@@ -21,7 +21,7 @@ export function validate(schema: ZodSchema) {
       if (err instanceof ZodError) {
         res.status(400).json({
           success: false,
-          error: 'Validation failed',
+          message: 'Validation failed',
           details: err.errors.map(e => ({
             field: e.path.join('.'),
             message: e.message,
@@ -49,7 +49,7 @@ export function validateQuery(schema: ZodSchema) {
       if (err instanceof ZodError) {
         res.status(400).json({
           success: false,
-          error: 'Invalid query parameters',
+          message: 'Invalid query parameters',
           details: err.errors.map(e => ({
             field: e.path.join('.'),
             message: e.message,
@@ -74,7 +74,7 @@ export function validateParams(schema: ZodSchema) {
       if (err instanceof ZodError) {
         res.status(400).json({
           success: false,
-          error: 'Invalid URL parameters',
+          message: 'Invalid URL parameters',
           details: err.errors.map(e => ({
             field: e.path.join('.'),
             message: e.message,

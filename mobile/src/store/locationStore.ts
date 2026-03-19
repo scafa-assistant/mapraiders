@@ -1,9 +1,7 @@
 import { create } from 'zustand';
 import * as Location from 'expo-location';
-import axios from 'axios';
+import api from '../services/api';
 import { GpsPoint, MovementClass } from '../navigation/types';
-
-const API_BASE = 'https://api.gridwalker.app';
 
 interface LocationState {
   currentLocation: { latitude: number; longitude: number } | null;
@@ -167,7 +165,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
 
     if (currentRoute.length >= 2) {
       try {
-        await axios.post(`${API_BASE}/claims`, {
+        await api.post('/claims', {
           route: currentRoute,
           movementClass: detectedClass,
         });

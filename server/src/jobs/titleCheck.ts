@@ -186,7 +186,7 @@ async function checkUserTitles(userId: string): Promise<string[]> {
  */
 async function awardTitle(userId: string, titleKey: string): Promise<void> {
   await query(
-    `INSERT INTO user_titles (user_id, title_key, awarded_at)
+    `INSERT INTO user_titles (user_id, title_key, earned_at)
      VALUES ($1, $2, NOW())
      ON CONFLICT DO NOTHING`,
     [userId, titleKey],

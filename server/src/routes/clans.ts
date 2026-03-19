@@ -27,7 +27,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Clans] Get my clans error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get clans' });
+    return res.status(500).json({ success: false, message: 'Failed to get clans' });
   }
 });
 
@@ -80,7 +80,7 @@ router.get('/districts/scores', authenticate, async (req: Request, res: Response
     });
   } catch (err: any) {
     console.error('[Clans] Get district scores error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get district scores' });
+    return res.status(500).json({ success: false, message: 'Failed to get district scores' });
   }
 });
 

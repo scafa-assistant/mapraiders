@@ -124,8 +124,8 @@ export interface GpsPoint {
   bearing: number;
   source: 'gps' | 'network' | 'fused';
   // Backward-compatible short-form accessors used by existing code
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
 }
 
 // ---- User -----------------------------------------------------------
@@ -404,11 +404,10 @@ export interface ClaimResult {
 export interface TrustAssessment {
   trust_score: number;
   flags: string[];
-  details: Record<string, any>;
-  // Backward-compatible action booleans
-  auto_reject?: boolean;
-  manual_review?: boolean;
-  account_warning?: boolean;
+  details?: Record<string, any>;
+  auto_reject: boolean;
+  manual_review: boolean;
+  account_warning: boolean;
 }
 
 // ---- API Responses --------------------------------------------------

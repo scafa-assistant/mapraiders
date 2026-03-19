@@ -85,7 +85,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Territories] Get territories error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get territories' });
+    return res.status(500).json({ success: false, message: 'Failed to get territories' });
   }
 });
 
@@ -141,7 +141,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Territories] Get my territories error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get territories' });
+    return res.status(500).json({ success: false, message: 'Failed to get territories' });
   }
 });
 
@@ -167,7 +167,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     );
 
     if (!territory) {
-      return res.status(404).json({ success: false, error: 'Territory not found' });
+      return res.status(404).json({ success: false, message: 'Territory not found' });
     }
 
     // Get recent claim history for this territory's area
@@ -201,7 +201,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Territories] Get territory error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to get territory' });
+    return res.status(500).json({ success: false, message: 'Failed to get territory' });
   }
 });
 
