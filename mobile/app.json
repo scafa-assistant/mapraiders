@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "Gridwalker",
+    "slug": "gridwalker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0E17"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.gridwalker.app",
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Gridwalker needs your location to track your movement, claim territories, and discover nearby quests and echoes.",
+        "NSLocationWhenInUseUsageDescription": "Gridwalker needs your location to show your position on the map and find nearby content.",
+        "NSLocationAlwaysUsageDescription": "Gridwalker uses background location to track your route while walking, running, or cycling.",
+        "NSCameraUsageDescription": "Gridwalker needs camera access to complete quest verification steps and capture proof.",
+        "NSMicrophoneUsageDescription": "Gridwalker needs microphone access to record audio echoes and video challenges.",
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_IOS_KEY"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0E17"
+      },
+      "package": "com.gridwalker.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_ANDROID_KEY"
+        }
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Gridwalker needs your location to track movement and claim territories.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Gridwalker needs camera access for quest verification."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#00D4FF"
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Gridwalker needs microphone access to record echoes."
+        }
+      ]
+    ]
+  }
+}

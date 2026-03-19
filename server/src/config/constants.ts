@@ -1,0 +1,499 @@
+// ============================================================
+// Gridwalker Game Constants
+// Every balance value, multiplier, threshold and configuration
+// referenced in the GDD lives here.
+// ============================================================
+
+import type { MovementClass } from '../utils/types';
+
+// ---- Movement Class Multipliers -------------------------------------
+
+export const CLASS_MULTIPLIERS: Record<MovementClass, number> = {
+  walker: 1.0,
+  dog_walker: 1.2,
+  runner: 2.5,
+  cyclist: 1.3,
+  skater: 2.0,
+  driver: 0.3,
+};
+
+// ---- Speed Limits (km/h) per class ----------------------------------
+
+export const SPEED_LIMITS: Record<
+  MovementClass,
+  { min: number; max: number }
+> = {
+  walker: { min: 1, max: 8 },
+  dog_walker: { min: 1, max: 8 },
+  runner: { min: 7, max: 30 },
+  cyclist: { min: 10, max: 45 },
+  skater: { min: 5, max: 35 },
+  driver: { min: 30, max: 200 },
+};
+
+// Speed ranges in m/s for class detection and anti-cheat
+export const CLASS_SPEED_RANGES: Record<MovementClass, { min: number; max: number }> = {
+  walker: { min: 0.5, max: 2.2 },      // ~1.8 - 8 km/h
+  dog_walker: { min: 0.3, max: 2.5 },   // ~1 - 9 km/h
+  runner: { min: 2.0, max: 7.0 },       // ~7 - 25 km/h
+  cyclist: { min: 2.5, max: 15.0 },     // ~9 - 54 km/h
+  skater: { min: 2.0, max: 10.0 },      // ~7 - 36 km/h
+  driver: { min: 3.0, max: 50.0 },      // ~11 - 180 km/h
+};
+
+// ---- Weather Bonuses ------------------------------------------------
+
+export const WEATHER_BONUSES: Record<string, number> = {
+  clear: 1.0,
+  light_rain: 1.3,
+  heavy_rain: 1.5,
+  snow: 1.5,
+  storm: 2.0,
+  extreme_cold: 1.8,
+  extreme_heat: 1.5,
+};
+
+// Alias for backward compatibility with existing service code
+export const WEATHER_MULTIPLIERS = WEATHER_BONUSES;
+
+// Temperature thresholds for extreme-weather bonus conditions
+export const WEATHER_TEMP_COLD_THRESHOLD = -5;  // Celsius
+export const WEATHER_TEMP_HEAT_THRESHOLD = 35;   // Celsius
+export const WEATHER_CACHE_MINUTES = 15;
+
+// ---- Streak Bonuses -------------------------------------------------
+
+export const STREAK_BONUSES: { days: number; mult: number }[] = [
+  { days: 3, mult: 1.1 },
+  { days: 7, mult: 1.3 },
+  { days: 14, mult: 1.5 },
+  { days: 30, mult: 2.0 },
+  { days: 90, mult: 2.5 },
+];
+
+// Backward-compatible alias (sorted descending for the claim engine)
+export const STREAK_MULTIPLIERS: { days: number; multiplier: number }[] = [
+  { days: 90, multiplier: 2.5 },
+  { days: 30, multiplier: 2.0 },
+  { days: 14, multiplier: 1.5 },
+  { days: 7, multiplier: 1.3 },
+  { days: 3, multiplier: 1.1 },
+];
+
+/**
+ * Return the streak multiplier for the given number of consecutive days.
+ * Picks the highest bracket the player qualifies for.
+ */
+export function getStreakMultiplier(streakDays: number): number {
+  let mult = 1.0;
+  for (const bracket of STREAK_BONUSES) {
+    if (streakDays >= bracket.days) {
+      mult = bracket.mult;
+    }
+  }
+  return mult;
+}
+
+// ---- Novelty Bonuses ------------------------------------------------
+
+export const NOVELTY_BONUSES = {
+  first_ever: 2.0,
+  new_for_player: 1.3,
+  repeat: 1.0,
+} as const;
+
+// Backward-compatible alias
+export const NOVELTY_MULTIPLIERS = {
+  FIRST_EVER_CLAIM: 2.0,
+  NEW_STREET: 1.3,
+  REPEAT: 1.0,
+} as const;
+
+// ---- Time-of-Day Bonuses --------------------------------------------
+
+export const TIME_BONUSES: { start: number; end: number; mult: number }[] = [
+  { start: 5, end: 7, mult: 1.3 },   // early morning
+  { start: 7, end: 22, mult: 1.0 },  // normal
+  { start: 22, end: 5, mult: 1.5 },  // night
+];
+
+// Backward-compatible alias
+export const TIME_MULTIPLIERS: { start: number; end: number; multiplier: number }[] = [
+  { start: 5, end: 7, multiplier: 1.3 },
+  { start: 7, end: 22, multiplier: 1.0 },
+  { start: 22, end: 5, multiplier: 1.5 },
+];
+
+/**
+ * Return the time-of-day multiplier for a given hour (0-23).
+ */
+export function getTimeMultiplier(hour: number): number {
+  if (hour >= 22 || hour < 5) return 1.5;
+  if (hour >= 5 && hour < 7) return 1.3;
+  return 1.0;
+}
+
+// ---- XP Values ------------------------------------------------------
+
+export const XP = {
+  // GDD spec keys
+  claim_mult: 0.5,
+  quest_create: 200,
+  quest_solve_base: 100,
+  quest_solve_per_diff: 40,
+  echo_drop: 50,
+  echo_liked: 100,
+  challenge_base: 50,
+  challenge_per_diff: 90,
+  artifact_base: 50,
+  artifact_per_rarity: 50,
+  streak_per_day: 50,
+  // Backward-compatible aliases used by existing services
+  CLAIM_MULTIPLIER: 0.5,
+  QUEST_CREATE: 200,
+  QUEST_SOLVE_BASE: 100,
+  QUEST_SOLVE_DIFFICULTY: 40,
+  ECHO_DROP_INSTANT: 50,
+  ECHO_DROP_POPULAR: 100,
+  ECHO_POPULAR_THRESHOLD: 10,
+  CHALLENGE_BASE: 50,
+  CHALLENGE_DIFFICULTY: 90,
+  ARTIFACT_BASE: 50,
+  ARTIFACT_RARITY: 50,
+  STREAK_BONUS_PER_DAY: 50,
+} as const;
+
+// ---- Level Curve ----------------------------------------------------
+// XP required to reach level N = round(1000 * N^1.5)
+
+export const LEVEL_CURVE_BASE = 1000;
+export const LEVEL_CURVE_EXPONENT = 1.5;
+
+export function xpForLevel(level: number): number {
+  return Math.round(LEVEL_CURVE_BASE * Math.pow(level, LEVEL_CURVE_EXPONENT));
+}
+
+/**
+ * Determine the level that corresponds to a cumulative XP total.
+ * Levels start at 1; XP required for level N is added cumulatively.
+ */
+export function levelFromXp(totalXp: number): number {
+  let level = 1;
+  let accumulated = 0;
+  while (level < 999) {
+    accumulated += xpForLevel(level);
+    if (totalXp < accumulated) return level;
+    level++;
+  }
+  return 999;
+}
+
+// ---- Decay ----------------------------------------------------------
+
+export const DECAY = {
+  check_hour: 4,
+  grace_days: 1,
+  slow_phase_days: 7,
+  slow_phase_max: 0.7,
+  fast_phase_days: 7,
+  echo_ttl_hours: 48,
+  echo_like_extension_hours: 48,
+  echo_max_days: 30,
+  quest_inactive_days: 30,
+  quest_min_rating: 4.0,
+  challenge_inactive_days: 30,
+  // Backward-compatible nested shape
+  TERRITORY: {
+    GRACE_DAYS: 1,
+    PHASE1_END: 7,
+    PHASE1_MAX: 0.7,
+    PHASE2_DAYS: 7,
+    PHASE2_START: 0.7,
+    MAX: 1.0,
+  },
+  ECHO: {
+    BASE_HOURS: 48,
+    LIKE_BONUS_HOURS: 48,
+    MAX_DAYS: 30,
+  },
+  QUEST: {
+    INACTIVE_DAYS: 30,
+    RATING_PROTECTION: 4.0,
+  },
+  CHALLENGE: {
+    INACTIVE_DAYS: 30,
+  },
+} as const;
+
+// ---- Territory ------------------------------------------------------
+
+export const TERRITORY = {
+  min_area_m2: 500,
+  min_polygon_width_m: 20,
+  max_area_walker: 1_000_000,
+  max_area_cyclist: 5_000_000,
+  max_area_driver: 50_000_000,
+  max_loss_per_day: 0.3,
+  route_close_radius_urban: 50,
+  route_close_radius_rural: 200,
+  min_duration_s: 300,
+  min_distance_m: 200,
+  // Backward-compatible flat keys
+  MIN_AREA_M2: 500,
+  MAX_AREA_M2: 50_000_000,
+} as const;
+
+// ---- Claim Calculation Constants ------------------------------------
+
+export const CLAIM_BASE_AREA_DIVISOR = 100;
+export const CLAIM_LOG_BASE = 2;
+export const CLAIM_MULTIPLIER = 100;
+export const TAKEOVER_DECAY_FACTOR = 0.7;
+
+// ---- Anti-Cheat -----------------------------------------------------
+
+export const ANTI_CHEAT = {
+  max_gps_jump_m: 100,
+  trust_review_threshold: 0.5,
+  trust_reject_threshold: 0.3,
+  trust_warn_threshold: 0.1,
+  // Backward-compatible aliases
+  MAX_GPS_JUMP_M: 100,
+  LOW_SPEED_THRESHOLD_MS: 8.33,  // 30 km/h in m/s
+  TRUST_MANUAL_REVIEW: 0.5,
+  TRUST_AUTO_REJECT: 0.3,
+  TRUST_ACCOUNT_WARNING: 0.1,
+} as const;
+
+// ---- Notifications --------------------------------------------------
+
+export const NOTIFICATIONS = {
+  max_per_day: 5,
+  quiet_start: 23,
+  quiet_end: 7,
+  // Backward-compatible aliases
+  MAX_PUSH_PER_DAY: 5,
+  QUIET_HOURS_START: 23,
+  QUIET_HOURS_END: 7,
+  STREAK_WARNING_HOURS: 23,
+  BATCH_INTERVAL_HOURS: 24,
+} as const;
+
+// ---- Quest ----------------------------------------------------------
+
+export const QUEST = {
+  max_steps: 10,
+  hint_offer_min: 5,
+  hint_auto_min: 10,
+  skip_offer_min: 20,
+  min_level_create: 6,
+  // Backward-compatible aliases
+  MIN_STEPS: 1,
+  MAX_STEPS: 10,
+  HINT_OFFER_MINUTES: 5,
+  HINT_AUTO_SHOW_MINUTES: 10,
+  HINT_SKIP_MINUTES: 20,
+  DEFAULT_STEP_RADIUS_M: 30,
+  RATING_WEIGHT_CREATIVITY: 1,
+  RATING_WEIGHT_DIFFICULTY: 1,
+  RATING_WEIGHT_WORTH_IT: 2,
+} as const;
+
+// ---- Legendary Thresholds -------------------------------------------
+
+export const LEGENDARY = {
+  quest_rating: 4.8,
+  quest_completions: 50,
+  echo_likes: 200,
+  route_rating: 4.8,
+  route_ratings: 20,
+} as const;
+
+// ---- Titles / Prestige ---------------------------------------------
+
+export interface TitleDefinition {
+  key: string;
+  name: string;
+  condition: string;
+  description?: string;
+}
+
+export const TITLES: Record<string, TitleDefinition> = {
+  street_beast: {
+    key: 'street_beast',
+    name: 'Street Beast',
+    condition: '100 fitness challenges',
+  },
+  iron_grip: {
+    key: 'iron_grip',
+    name: 'Iron Grip',
+    condition: '50 pullup challenges',
+  },
+  trail_dog: {
+    key: 'trail_dog',
+    name: 'Trail Dog',
+    condition: '500km with dog',
+  },
+  urban_explorer: {
+    key: 'urban_explorer',
+    name: 'Urban Explorer',
+    condition: '100 different streets',
+  },
+  echo_master: {
+    key: 'echo_master',
+    name: 'Echo Master',
+    condition: '10 permanent echos',
+  },
+  questmaker: {
+    key: 'questmaker',
+    name: 'Questmaker',
+    condition: '20 quests >=4.5 rating',
+  },
+  night_runner: {
+    key: 'night_runner',
+    name: 'Nachtl\u00e4ufer',
+    condition: '50 claims 22:00-05:00',
+  },
+  storm_rider: {
+    key: 'storm_rider',
+    name: 'Sturmreiter',
+    condition: '20 claims in storm',
+  },
+};
+
+// Backward-compatible array-form title definitions used by existing services
+export const TITLE_DEFINITIONS: TitleDefinition[] = [
+  { key: 'first_claim', name: 'Trailblazer', condition: 'Claim your first territory', description: 'Claim your first territory' },
+  { key: 'claim_10', name: 'Landowner', condition: 'Claim 10 territories', description: 'Claim 10 territories' },
+  { key: 'claim_100', name: 'Territory Baron', condition: 'Claim 100 territories', description: 'Claim 100 territories' },
+  { key: 'quest_creator', name: 'Quest Architect', condition: 'Create a quest with a positive rating', description: 'Create a quest with a positive rating' },
+  { key: 'quest_master', name: 'Quest Master', condition: 'Complete 50 quests', description: 'Complete 50 quests' },
+  { key: 'echo_dropper', name: 'Voice of the City', condition: 'Drop 10 echos', description: 'Drop 10 echos' },
+  { key: 'echo_legend', name: 'Echo Legend', condition: 'Get 100 total likes on echos', description: 'Get 100 total likes on echos' },
+  { key: 'streak_7', name: 'Consistent', condition: 'Maintain a 7-day streak', description: 'Maintain a 7-day streak' },
+  { key: 'streak_30', name: 'Dedicated', condition: 'Maintain a 30-day streak', description: 'Maintain a 30-day streak' },
+  { key: 'streak_90', name: 'Unstoppable', condition: 'Maintain a 90-day streak', description: 'Maintain a 90-day streak' },
+  { key: 'streak_365', name: 'Legendary', condition: 'Maintain a 365-day streak', description: 'Maintain a 365-day streak' },
+  { key: 'explorer_100km', name: 'Explorer', condition: 'Walk/run/ride 100km total', description: 'Walk/run/ride 100km total' },
+  { key: 'explorer_1000km', name: 'Grand Explorer', condition: 'Walk/run/ride 1000km total', description: 'Walk/run/ride 1000km total' },
+  { key: 'dog_whisperer', name: 'Dog Whisperer', condition: 'Walk your dog 100 times', description: 'Walk your dog 100 times' },
+  { key: 'night_owl', name: 'Night Owl', condition: 'Claim 20 territories between 22:00-05:00', description: 'Claim 20 territories between 22:00-05:00' },
+  { key: 'early_bird', name: 'Early Bird', condition: 'Claim 20 territories between 05:00-07:00', description: 'Claim 20 territories between 05:00-07:00' },
+  { key: 'storm_chaser', name: 'Storm Chaser', condition: 'Claim 10 territories in storm weather', description: 'Claim 10 territories in storm weather' },
+  { key: 'clan_founder', name: 'Clan Founder', condition: 'Be part of 5 different clans', description: 'Be part of 5 different clans' },
+  { key: 'top_district', name: 'District Champion', condition: 'Be #1 in a district leaderboard', description: 'Be #1 in a district leaderboard' },
+  { key: 'level_10', name: 'Apprentice', condition: 'Reach level 10', description: 'Reach level 10' },
+  { key: 'level_25', name: 'Journeyman', condition: 'Reach level 25', description: 'Reach level 25' },
+  { key: 'level_50', name: 'Expert', condition: 'Reach level 50', description: 'Reach level 50' },
+  { key: 'level_100', name: 'Grandmaster', condition: 'Reach level 100', description: 'Reach level 100' },
+  // GDD titles
+  { key: 'street_beast', name: 'Street Beast', condition: '100 fitness challenges' },
+  { key: 'iron_grip', name: 'Iron Grip', condition: '50 pullup challenges' },
+  { key: 'trail_dog', name: 'Trail Dog', condition: '500km with dog' },
+  { key: 'urban_explorer', name: 'Urban Explorer', condition: '100 different streets' },
+  { key: 'echo_master', name: 'Echo Master', condition: '10 permanent echos' },
+  { key: 'questmaker', name: 'Questmaker', condition: '20 quests >=4.5 rating' },
+  { key: 'night_runner', name: 'Nachtl\u00e4ufer', condition: '50 claims 22:00-05:00' },
+  { key: 'storm_rider', name: 'Sturmreiter', condition: '20 claims in storm' },
+];
+
+// ---- Unlock Levels --------------------------------------------------
+
+export const UNLOCK_LEVELS = {
+  newcomer: 1,
+  claimer: 6,
+  creator: 16,
+  architect: 31,
+  legend: 51,
+} as const;
+
+// ---- Pet Specializations --------------------------------------------
+
+export const PET_SPECS = {
+  explorer: { rare_find_bonus: 1.5 },
+  tracker: { detection_radius_mult: 2.0 },
+  guardian: { decay_reduction: 0.5 },
+} as const;
+
+// ---- Diminishing Returns --------------------------------------------
+// Multipliers for repeating the same route within 24 hours.
+// Index 0 = first run, 1 = second run, etc.
+
+export const DIMINISHING_RETURNS: readonly number[] = [1.0, 0.5, 0.25, 0.1];
+
+// Backward-compatible alias
+export const ANTI_GRIND_RETURNS = DIMINISHING_RETURNS;
+
+// ---- Leaderboard Types ----------------------------------------------
+
+export type LeaderboardType =
+  | 'territory'
+  | 'street_king'
+  | 'questmaker'
+  | 'echo_master'
+  | 'explorer'
+  | 'streak'
+  | 'district'
+  | 'pet';
+
+export const LEADERBOARD_TYPES: LeaderboardType[] = [
+  'territory',
+  'street_king',
+  'questmaker',
+  'echo_master',
+  'explorer',
+  'streak',
+  'district',
+  'pet',
+];
+
+export const LEADERBOARD_PERIODS = ['monthly', 'alltime'] as const;
+export type LeaderboardPeriod = typeof LEADERBOARD_PERIODS[number];
+
+// ---- Echo Settings --------------------------------------------------
+
+export const ECHO = {
+  DEFAULT_RADIUS_M: 40,
+  MIN_RADIUS_M: 10,
+  MAX_RADIUS_M: 200,
+} as const;
+
+// ---- Clan Formation -------------------------------------------------
+
+export const CLAN = {
+  TRANSIT: {
+    TIME_WINDOW_MINUTES: 15,
+    MIN_OVERLAPS: 3,
+    LOOKBACK_DAYS: 7,
+  },
+  DISTRICT: {
+    TOP_PLAYERS: 10,
+  },
+  DOG_PARK: {
+    MIN_VISITS: 3,
+  },
+  DISTRICT_SCORING: {
+    CLAIMS: 0.3,
+    QUEST_COMPLETIONS: 0.3,
+    ECHO_LIKES: 0.2,
+    ACTIVE_PLAYERS: 0.2,
+  },
+} as const;
+
+// ---- Rate Limiting --------------------------------------------------
+
+export const RATE_LIMITS = {
+  AUTH: { windowMs: 15 * 60 * 1000, max: 10 },
+  GENERAL: { windowMs: 60 * 1000, max: 60 },
+  CLAIM: { windowMs: 60 * 1000, max: 5 },
+  ECHO: { windowMs: 60 * 1000, max: 10 },
+} as const;
+
+// ---- Polygon Processing ---------------------------------------------
+
+export const POLYGON = {
+  DOUGLAS_PEUCKER_TOLERANCE: 0.00005,
+  MIN_POINTS: 4,
+  KALMAN_Q: 0.00001,
+  KALMAN_R: 0.0001,
+} as const;
