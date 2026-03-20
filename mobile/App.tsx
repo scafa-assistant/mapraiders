@@ -1,16 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator, StyleSheet, AppState } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from './src/store/authStore';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainNavigator from './src/navigation/MainNavigator';
+import OnboardingScreen from './src/screens/onboarding/OnboardingScreen';
 import { offlineQueue } from './src/services/offlineQueue';
 import { mapRaidersWs } from './src/services/websocket';
 import { setupWsEventHandlers } from './src/services/wsEventHandler';
 import { registerForPushNotifications } from './src/services/notifications';
 import { userApi } from './src/services/api';
+
+const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
 
 const DARK_THEME = {
   dark: true,
@@ -26,6 +30,19 @@ const DARK_THEME = {
 
 function AppContent() {
   const { token, isLoading, refreshProfile } = useAuthStore();
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
+
+  // Check onboarding status on mount
+  useEffect(() => {
+    AsyncStorage.getItem(ONBOARDING_KEY)
+      .then((value) => setOnboardingComplete(value === 'true'))
+      .catch(() => setOnboardingComplete(false));
+  }, []);
+
+  const handleOnboardingComplete = async () => {
+    await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+    setOnboardingComplete(true);
+  };
 
   // DEV: Auto-login bypass for testing
   const autoLoginDone = React.useRef(false);
@@ -104,12 +121,16 @@ function AppContent() {
     return () => subscription.remove();
   }, [token]);
 
-  if (isLoading) {
+  if (isLoading || onboardingComplete === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00D4FF" />
       </View>
     );
+  }
+
+  if (!onboardingComplete) {
+    return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
 
   return token ? <MainNavigator /> : <AuthNavigator />;

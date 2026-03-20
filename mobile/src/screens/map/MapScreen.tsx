@@ -291,13 +291,30 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     fetchNearbyResonance();
   }, [fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance]);
 
-  // Initial location fetch
+  // Initial location fetch - request permission and center map on user
+  const initialLocationDone = useRef(false);
   useEffect(() => {
     (async () => {
       await requestPermissions();
       await getCurrentLocation();
     })();
   }, []);
+
+  // Center map on user once we first get a location
+  useEffect(() => {
+    if (currentLocation && !initialLocationDone.current && mapRef.current) {
+      initialLocationDone.current = true;
+      mapRef.current.animateToRegion(
+        {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: 0.008,
+          longitudeDelta: 0.008,
+        },
+        600
+      );
+    }
+  }, [currentLocation]);
 
   // Fetch territories when region changes
   const handleRegionChange = useCallback(
