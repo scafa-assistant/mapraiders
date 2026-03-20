@@ -160,6 +160,38 @@ class WsService {
   }
 
   /**
+   * Get user IDs of connected clients within a given radius of a point.
+   * Useful for finding nearby players for duels/races.
+   *
+   * @param lat - Center latitude
+   * @param lng - Center longitude
+   * @param radiusM - Radius in meters
+   * @param excludeUserId - Optional user ID to exclude from results
+   * @returns Array of { userId, lat, lng, distance } for nearby clients
+   */
+  getNearbyClients(
+    lat: number,
+    lng: number,
+    radiusM: number,
+    excludeUserId?: string
+  ): { userId: string; lat: number; lng: number; distance: number }[] {
+    const nearby: { userId: string; lat: number; lng: number; distance: number }[] = [];
+
+    for (const [userId, client] of this.clients) {
+      if (excludeUserId && userId === excludeUserId) continue;
+      if (client.lat == null || client.lng == null) continue;
+      if (client.ws.readyState !== WebSocket.OPEN) continue;
+
+      const distance = haversineMeters(lat, lng, client.lat, client.lng);
+      if (distance <= radiusM) {
+        nearby.push({ userId, lat: client.lat, lng: client.lng, distance });
+      }
+    }
+
+    return nearby.sort((a, b) => a.distance - b.distance);
+  }
+
+  /**
    * Broadcast a message to every connected client.
    */
   broadcastAll(event: string, data: any): void {

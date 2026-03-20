@@ -29,6 +29,11 @@ import { notifyTerritoryAttack, notifyTerritoryLost } from './notificationServic
 import { awardWalkXp, checkRareFind } from './petEngine';
 import { wsService } from './wsService';
 import { recordEvent } from './placeMemoryService';
+import { checkTraps } from './trapService';
+import { checkAndClaimBounties } from './bountyService';
+import { balanceService } from './balanceService';
+import { inviteService } from './inviteService';
+import { eventEngine } from './eventEngine';
 
 /** Input data for processing a claim */
 export interface ClaimInput {
@@ -140,7 +145,51 @@ export class ClaimEngine {
     // Anti-grind multiplier
     const antiGrindMultiplier = await this.checkDiminishingReturns(userId, polygonWkt);
 
-    // 6. Calculate claim value
+    // 5b. Balance: First-walk bonus (2x for streets never claimed by anyone)
+    let firstWalkMultiplier = 1.0;
+    try {
+      firstWalkMultiplier = await balanceService.getFirstWalkBonus(centerLat, centerLng);
+    } catch (err) {
+      console.error('[ClaimEngine] First-walk bonus check error:', err);
+    }
+
+    // 5c. Event multipliers: Eclipse (2x) and Blitz (10x)
+    let eventMultiplier = 1.0;
+    try {
+      const eclipse = await eventEngine.getActiveEclipse();
+      if (eclipse) {
+        const config = typeof eclipse.config === 'string' ? JSON.parse(eclipse.config) : eclipse.config;
+        eventMultiplier = config.xp_multiplier ?? 2.0;
+      }
+      const blitzMultiplier = await eventEngine.getBlitzMultiplier(centerLat, centerLng);
+      if (blitzMultiplier > eventMultiplier) {
+        eventMultiplier = blitzMultiplier;
+      }
+    } catch (err) {
+      console.error('[ClaimEngine] Event multiplier check error:', err);
+    }
+
+    // 5d. Return bonus: 2x claim value after 7+ days inactive
+    let returnBonusMultiplier = 1.0;
+    try {
+      const returnBonus = await balanceService.getReturnBonus(userId);
+      if (returnBonus.active) {
+        returnBonusMultiplier = returnBonus.multiplier;
+      }
+    } catch (err) {
+      console.error('[ClaimEngine] Return bonus check error:', err);
+    }
+
+    // 5e. Trap check: detect traps at the claim location and apply slow effects
+    let trapSlowMultiplier = 1.0;
+    try {
+      const trapResult = await checkTraps(centerLat, centerLng, userId);
+      trapSlowMultiplier = trapResult.slowMultiplier;
+    } catch (err) {
+      console.error('[ClaimEngine] Trap check error:', err);
+    }
+
+    // 6. Calculate claim value (trap slow multiplier is applied post-calculation)
     const calculation = this.calculateClaimValue(
       areaM2,
       classMultiplier,
@@ -152,7 +201,18 @@ export class ClaimEngine {
       trustAssessment.trust_score
     );
 
-    // 7. Save route
+    // Apply trap slow effect to final value
+    if (trapSlowMultiplier < 1.0) {
+      calculation.finalValue = Math.max(1, Math.round(calculation.finalValue * trapSlowMultiplier));
+    }
+
+    // Apply balance + event multipliers
+    const combinedBonus = firstWalkMultiplier * eventMultiplier * returnBonusMultiplier;
+    if (combinedBonus > 1.0) {
+      calculation.finalValue = Math.max(1, Math.round(calculation.finalValue * combinedBonus));
+    }
+
+    // 7. Save route (with visibility delay for anti-stalking)
     const distance = pathDistance(points);
     const duration = pathDuration(points);
 
@@ -180,8 +240,24 @@ export class ClaimEngine {
       calculation.finalValue
     );
 
-    // 9. Award XP
-    const xpAmount = calculateClaimXp(calculation.finalValue);
+    // 8b. Bounty auto-claim: if this was a takeover, check for bounties on previous owner
+    if (territoryResult.is_takeover && territoryResult.previous_owner) {
+      try {
+        const claimedBounties = await checkAndClaimBounties(territoryResult.previous_owner, userId);
+        if (claimedBounties.length > 0) {
+          const totalBountyXp = claimedBounties.reduce((sum, b) => sum + b.xpAwarded, 0);
+          console.log(`[ClaimEngine] Auto-claimed ${claimedBounties.length} bounties for ${totalBountyXp} XP`);
+        }
+      } catch (err) {
+        console.error('[ClaimEngine] Bounty auto-claim error:', err);
+      }
+    }
+
+    // 8c. Route visibility delay: already set via visible_after in INSERT (handleTerritoryCreation)
+
+    // 9. Award XP (event multiplier applied to XP as well)
+    const baseXp = calculateClaimXp(calculation.finalValue);
+    const xpAmount = Math.round(baseXp * eventMultiplier);
     await awardXp(userId, xpAmount, 'territory_claim');
 
     // 9b. Pet XP integration: if detected class is 'dog_walker', award pet XP and check rare finds
@@ -193,6 +269,16 @@ export class ClaimEngine {
         await checkRareFind(userId, centerLat, centerLng);
       } catch (err) {
         console.error('[ClaimEngine] Pet XP integration error:', err);
+      }
+    }
+
+    // 9c. Invite system: check if this is the user's first-ever claim and process invite bonus
+    if (noveltyMultiplier >= 2.0) {
+      // noveltyMultiplier >= 2.0 means FIRST_EVER_CLAIM
+      try {
+        await inviteService.checkFirstClaim(userId);
+      } catch (err) {
+        console.error('[ClaimEngine] Invite first-claim check error:', err);
       }
     }
 
@@ -384,11 +470,42 @@ export class ClaimEngine {
       let previous_owner: string | undefined;
 
       for (const existing of overlaps.rows) {
-        const shouldTakeover = this.handleTakeover(claimValue, existing);
+        // Balance: Check daily loss limit on defender
+        let canLose = true;
+        try {
+          canLose = await balanceService.checkDailyLossLimit(existing.owner_id);
+        } catch (err) {
+          console.error('[ClaimEngine] Daily loss check error:', err);
+        }
+
+        if (!canLose) continue; // Defender hit 30% daily loss cap
+
+        // Balance: Newcomer protection on defender (1.5x effective value)
+        let newcomerMultiplier = 1.0;
+        try {
+          newcomerMultiplier = await balanceService.getNewcomerProtection(existing.owner_id);
+        } catch (err) {
+          console.error('[ClaimEngine] Newcomer protection check error:', err);
+        }
+
+        const shouldTakeover = this.handleTakeover(
+          claimValue,
+          {
+            ...existing,
+            claim_value: existing.claim_value * newcomerMultiplier,
+          },
+        );
 
         if (shouldTakeover) {
           is_takeover = true;
           previous_owner = existing.owner_id;
+
+          // Balance: Record territory loss for daily cap tracking
+          try {
+            await balanceService.recordTerritoryLoss(existing.owner_id);
+          } catch (err) {
+            console.error('[ClaimEngine] Record territory loss error:', err);
+          }
 
           // Notify previous owner
           if (existing.owner_id) {
@@ -409,9 +526,10 @@ export class ClaimEngine {
       }
 
       // Create the new territory using PostGIS for valid geometry
+      // Route delay: territory is not visible publicly until 15 min after creation (anti-stalking)
       const result = await client.query(
-        `INSERT INTO territories (owner_id, polygon, class, claim_value)
-         VALUES ($1, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($2)), 4326), $3, $4)
+        `INSERT INTO territories (owner_id, polygon, class, claim_value, visible_after)
+         VALUES ($1, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($2)), 4326), $3, $4, NOW() + INTERVAL '15 minutes')
          RETURNING id`,
         [userId, polygonWkt, cls, claimValue]
       );

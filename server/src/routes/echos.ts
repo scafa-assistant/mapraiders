@@ -30,7 +30,7 @@ import { wsService } from '../services/wsService';
 
 const router = Router();
 
-// ---- Multer setup for audio file uploads ----
+// ---- Multer setup for echo media uploads (audio, photo, video) ----
 const echoUploadStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, path.join(__dirname, '../../uploads/echos'));
@@ -44,13 +44,13 @@ const echoUploadStorage = multer.diskStorage({
 
 const echoUpload = multer({
   storage: echoUploadStorage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max for audio
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB max (video can be larger)
   fileFilter: (_req, file, cb) => {
-    const allowed = /^audio\//;
+    const allowed = /^(audio|image|video)\//;
     if (allowed.test(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only audio files are allowed'));
+      cb(new Error('Only audio, image, and video files are allowed'));
     }
   },
 });
@@ -81,6 +81,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     const echos = await queryMany(
       `SELECT e.id, e.creator_id, e.radius_m, e.audio_url, e.likes,
               e.expires_at, e.created_at, e.time_window,
+              e.media_type, e.media_url, e.caption,
               u.username as creator_username,
               ST_Y(e.location) as lat, ST_X(e.location) as lng,
               ST_Distance(e.location::geography, ST_GeomFromEWKT($1)::geography) as distance_m
@@ -118,7 +119,7 @@ router.post(
   '/',
   authenticate,
   echoLimiter,
-  echoUpload.single('audio'),
+  echoUpload.single('media'),
   async (req: Request, res: Response) => {
     try {
       // Extract location from body (support both nested and flat)
@@ -142,16 +143,42 @@ router.post(
         });
       }
 
-      // Determine audio URL: uploaded file or from body
-      let audio_url = req.body.audio_url;
+      // Determine media type: audio (default), photo, or video
+      const media_type = req.body.media_type || 'audio';
+      const caption = req.body.caption || null;
+
+      // Determine URLs based on media type and uploaded file
+      let audio_url: string | null = null;
+      let media_url: string | null = null;
+
       if (req.file) {
-        audio_url = `/uploads/echos/${req.file.filename}`;
+        const uploadPath = `/uploads/echos/${req.file.filename}`;
+        if (media_type === 'audio') {
+          audio_url = uploadPath;
+        } else {
+          media_url = uploadPath;
+        }
+      } else {
+        // Accept URL from body
+        if (media_type === 'audio') {
+          audio_url = req.body.audio_url || null;
+        } else {
+          media_url = req.body.media_url || null;
+        }
       }
 
-      if (!audio_url) {
+      // Validate that at least one media source is provided
+      if (media_type === 'audio' && !audio_url) {
         return res.status(400).json({
           success: false,
-          error: 'Audio file or audio_url is required',
+          error: 'Audio file or audio_url is required for audio echos',
+        });
+      }
+
+      if ((media_type === 'photo' || media_type === 'video') && !media_url) {
+        return res.status(400).json({
+          success: false,
+          error: `${media_type === 'photo' ? 'Photo' : 'Video'} file or media_url is required`,
         });
       }
 
@@ -164,10 +191,10 @@ router.post(
       const expiresAt = new Date(Date.now() + DECAY.ECHO.BASE_HOURS * 3600 * 1000);
 
       const echo = await queryOne(
-        `INSERT INTO echos (creator_id, location, radius_m, audio_url, expires_at, time_window)
-         VALUES ($1, ST_GeomFromEWKT($2), $3, $4, $5, $6)
-         RETURNING id, radius_m, audio_url, likes, expires_at, status, created_at, time_window`,
-        [req.userId, locationWkt, radius_m, audio_url, expiresAt, time_window]
+        `INSERT INTO echos (creator_id, location, radius_m, audio_url, media_type, media_url, caption, expires_at, time_window)
+         VALUES ($1, ST_GeomFromEWKT($2), $3, $4, $5, $6, $7, $8, $9)
+         RETURNING id, radius_m, audio_url, media_type, media_url, caption, likes, expires_at, status, created_at, time_window`,
+        [req.userId, locationWkt, radius_m, audio_url, media_type, media_url, caption, expiresAt, time_window]
       );
 
       if (!echo) {

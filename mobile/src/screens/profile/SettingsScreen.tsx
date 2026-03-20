@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Location from 'expo-location';
 import { useAuthStore } from '../../store/authStore';
 import { userApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
@@ -43,6 +44,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
+  const [homeZoneSet, setHomeZoneSet] = useState(false);
 
   const updateSetting = async (key: keyof SettingsState, value: boolean) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -115,6 +118,52 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     );
   };
 
+  const handleSetHomeZone = async () => {
+    setIsSettingHomeZone(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location access is needed to set your home zone.');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+      await userApi.setHomeZone(location.coords.latitude, location.coords.longitude);
+      setHomeZoneSet(true);
+      Alert.alert(
+        'Home Zone Set',
+        'Your claims within 200m of this location will be hidden from the public map.'
+      );
+    } catch {
+      Alert.alert('Error', 'Failed to set home zone. Please try again.');
+    } finally {
+      setIsSettingHomeZone(false);
+    }
+  };
+
+  const handleRemoveHomeZone = async () => {
+    Alert.alert(
+      'Remove Home Zone',
+      'Your territories near this location will become visible on the public map.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await userApi.removeHomeZone();
+              setHomeZoneSet(false);
+              Alert.alert('Home Zone Removed', 'Your territories are now fully visible.');
+            } catch {
+              Alert.alert('Error', 'Failed to remove home zone.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
@@ -178,6 +227,40 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         <View style={styles.sectionCard}>
           {renderToggle('High Accuracy GPS', 'locate-outline', 'highAccuracyGps', 'Uses more battery but better tracking')}
           {renderToggle('Background Tracking', 'navigate-outline', 'backgroundTracking', 'Track routes when app is minimized')}
+        </View>
+
+        {/* Privacy Section */}
+        <Text style={styles.sectionHeader}>Privacy</Text>
+        <View style={styles.sectionCard}>
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.7}
+            onPress={homeZoneSet ? handleRemoveHomeZone : handleSetHomeZone}
+            disabled={isSettingHomeZone}
+          >
+            <View style={styles.settingIconCircle}>
+              <Ionicons name="home-outline" size={18} color={THEME.primary} />
+            </View>
+            <View style={styles.settingContent}>
+              <Text style={styles.settingLabel}>
+                {homeZoneSet ? 'Remove Home Zone' : 'Set Home Zone'}
+              </Text>
+              <Text style={styles.settingSubtitle}>
+                {homeZoneSet
+                  ? 'Your claims near home are hidden from the public map'
+                  : 'Hide claims within 200m of your home from the public map'}
+              </Text>
+            </View>
+            {isSettingHomeZone ? (
+              <ActivityIndicator size="small" color={THEME.primary} />
+            ) : (
+              <Ionicons
+                name={homeZoneSet ? 'close-circle-outline' : 'chevron-forward'}
+                size={18}
+                color={homeZoneSet ? THEME.danger : '#2A3450'}
+              />
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Display Section */}

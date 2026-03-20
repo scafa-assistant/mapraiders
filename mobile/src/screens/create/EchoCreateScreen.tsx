@@ -9,12 +9,15 @@ import {
   Dimensions,
   ActivityIndicator,
   Platform,
+  Image,
+  TextInput,
 } from 'react-native';
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import { useLocationStore } from '../../store/locationStore';
 import { echoApi, silentZoneApi } from '../../services/api';
 import { EchoCreateScreenProps } from '../../navigation/types';
@@ -25,9 +28,12 @@ const MAX_DURATION = 30; // seconds
 export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) {
   const { currentLocation } = useLocationStore();
 
+  const [mediaType, setMediaType] = useState<'audio' | 'photo' | 'video'>('audio');
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingUri, setRecordingUri] = useState<string | null>(null);
+  const [mediaUri, setMediaUri] = useState<string | null>(null);
+  const [caption, setCaption] = useState('');
   const [duration, setDuration] = useState(0);
   const [radius, setRadius] = useState(40);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -164,8 +170,37 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
     }
   };
 
+  const pickPhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setMediaUri(result.assets[0].uri);
+    }
+  };
+
+  const pickVideo = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      videoMaxDuration: 15,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setMediaUri(result.assets[0].uri);
+    }
+  };
+
   const handleDrop = async () => {
-    if (!recordingUri || !currentLocation) return;
+    if (!currentLocation) return;
+
+    // Validate media is present based on type
+    if (mediaType === 'audio' && !recordingUri) return;
+    if ((mediaType === 'photo' || mediaType === 'video') && !mediaUri) return;
 
     if (inSilentZone) {
       Alert.alert(
@@ -178,20 +213,40 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
     setIsDropping(true);
     try {
       const formData = new FormData();
-      formData.append('audio', {
-        uri: recordingUri,
-        type: 'audio/m4a',
-        name: 'echo.m4a',
-      } as any);
-      formData.append('latitude', currentLocation.latitude.toString());
-      formData.append('longitude', currentLocation.longitude.toString());
-      formData.append('radius', radius.toString());
-      formData.append('duration', duration.toString());
+      formData.append('media_type', mediaType);
+      formData.append('lat', currentLocation.latitude.toString());
+      formData.append('lng', currentLocation.longitude.toString());
+      formData.append('radius_m', radius.toString());
       formData.append('time_window', timeWindow);
+
+      if (caption.trim()) {
+        formData.append('caption', caption.trim());
+      }
+
+      if (mediaType === 'audio' && recordingUri) {
+        formData.append('media', {
+          uri: recordingUri,
+          type: 'audio/m4a',
+          name: 'echo.m4a',
+        } as any);
+      } else if (mediaType === 'photo' && mediaUri) {
+        formData.append('media', {
+          uri: mediaUri,
+          type: 'image/jpeg',
+          name: 'echo.jpg',
+        } as any);
+      } else if (mediaType === 'video' && mediaUri) {
+        formData.append('media', {
+          uri: mediaUri,
+          type: 'video/mp4',
+          name: 'echo.mp4',
+        } as any);
+      }
 
       await echoApi.create(formData);
 
-      Alert.alert('Echo Dropped!', 'Your audio echo is now live at this location.', [
+      const typeLabel = mediaType === 'audio' ? 'audio echo' : mediaType === 'photo' ? 'photo graffiti' : 'video graffiti';
+      Alert.alert('Echo Dropped!', `Your ${typeLabel} is now live at this location.`, [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (_err) {
@@ -203,6 +258,8 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
 
   const resetRecording = () => {
     setRecordingUri(null);
+    setMediaUri(null);
+    setCaption('');
     setDuration(0);
     if (soundRef.current) {
       soundRef.current.unloadAsync();
@@ -222,7 +279,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#8892B0" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Drop Echo</Text>
+        <Text style={styles.headerTitle}>Drop Graffiti</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -279,83 +336,170 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         </View>
       )}
 
+      {/* Media Type Selector */}
+      <View style={styles.mediaTypeContainer}>
+        {([
+          { value: 'audio' as const, label: 'Audio', icon: 'mic-outline' as const },
+          { value: 'photo' as const, label: 'Photo', icon: 'camera-outline' as const },
+          { value: 'video' as const, label: 'Video', icon: 'videocam-outline' as const },
+        ]).map((opt) => (
+          <TouchableOpacity
+            key={opt.value}
+            style={[
+              styles.mediaTypeChip,
+              mediaType === opt.value && styles.mediaTypeChipActive,
+            ]}
+            onPress={() => {
+              resetRecording();
+              setMediaType(opt.value);
+            }}
+          >
+            <Ionicons
+              name={opt.icon}
+              size={16}
+              color={mediaType === opt.value ? '#7B61FF' : '#555E78'}
+            />
+            <Text
+              style={[
+                styles.mediaTypeChipText,
+                mediaType === opt.value && { color: '#7B61FF' },
+              ]}
+            >
+              {opt.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       {/* Controls */}
       <View style={styles.controls}>
-        {/* Waveform Visualization */}
-        <View style={styles.waveformContainer}>
-          {isRecording ? (
-            <View style={styles.waveform}>
-              {Array.from({ length: 20 }).map((_, i) => (
-                <Animated.View
-                  key={i}
-                  style={[
-                    styles.waveBar,
-                    {
-                      height: waveAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [
-                          4,
-                          Math.random() * 28 + 6,
-                        ],
-                      }),
-                    },
-                  ]}
-                />
-              ))}
+        {/* Audio waveform or Photo/Video preview */}
+        {mediaType === 'audio' ? (
+          <>
+            <View style={styles.waveformContainer}>
+              {isRecording ? (
+                <View style={styles.waveform}>
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <Animated.View
+                      key={i}
+                      style={[
+                        styles.waveBar,
+                        {
+                          height: waveAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [
+                              4,
+                              Math.random() * 28 + 6,
+                            ],
+                          }),
+                        },
+                      ]}
+                    />
+                  ))}
+                </View>
+              ) : recordingUri ? (
+                <View style={styles.waveformStatic}>
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.waveBar,
+                        styles.waveBarStatic,
+                        { height: Math.random() * 28 + 6 },
+                      ]}
+                    />
+                  ))}
+                </View>
+              ) : (
+                <Text style={styles.waveformPlaceholder}>
+                  Tap the microphone to start recording
+                </Text>
+              )}
             </View>
-          ) : recordingUri ? (
-            <View style={styles.waveformStatic}>
-              {Array.from({ length: 20 }).map((_, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.waveBar,
-                    styles.waveBarStatic,
-                    { height: Math.random() * 28 + 6 },
-                  ]}
-                />
-              ))}
-            </View>
-          ) : (
-            <Text style={styles.waveformPlaceholder}>
-              Tap the microphone to start recording
+
+            <Text style={styles.durationText}>
+              {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')} / 0:
+              {MAX_DURATION}
             </Text>
-          )}
-        </View>
 
-        {/* Duration */}
-        <Text style={styles.durationText}>
-          {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')} / 0:
-          {MAX_DURATION}
-        </Text>
-
-        {/* Record Button */}
-        {!recordingUri ? (
-          <TouchableOpacity
-            style={[styles.recordButton, isRecording && styles.recordButtonActive]}
-            onPress={isRecording ? stopRecording : startRecording}
-            activeOpacity={0.7}
-          >
-            {isRecording ? (
-              <View style={styles.stopIcon} />
+            {!recordingUri ? (
+              <TouchableOpacity
+                style={[styles.recordButton, isRecording && styles.recordButtonActive]}
+                onPress={isRecording ? stopRecording : startRecording}
+                activeOpacity={0.7}
+              >
+                {isRecording ? (
+                  <View style={styles.stopIcon} />
+                ) : (
+                  <Ionicons name="mic" size={32} color="#FFFFFF" />
+                )}
+              </TouchableOpacity>
             ) : (
-              <Ionicons name="mic" size={32} color="#FFFFFF" />
+              <View style={styles.previewControls}>
+                <TouchableOpacity style={styles.playButton} onPress={playPreview}>
+                  <Ionicons
+                    name={isPlaying ? 'stop' : 'play'}
+                    size={28}
+                    color="#7B61FF"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
+                  <Ionicons name="refresh" size={20} color="#FF4757" />
+                  <Text style={styles.retakeText}>Retake</Text>
+                </TouchableOpacity>
+              </View>
             )}
-          </TouchableOpacity>
+          </>
         ) : (
-          <View style={styles.previewControls}>
-            <TouchableOpacity style={styles.playButton} onPress={playPreview}>
-              <Ionicons
-                name={isPlaying ? 'stop' : 'play'}
-                size={28}
-                color="#7B61FF"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
-              <Ionicons name="refresh" size={20} color="#FF4757" />
-              <Text style={styles.retakeText}>Retake</Text>
-            </TouchableOpacity>
-          </View>
+          <>
+            {/* Photo / Video preview */}
+            <View style={styles.waveformContainer}>
+              {mediaUri ? (
+                <Image
+                  source={{ uri: mediaUri }}
+                  style={{ width: '100%', height: '100%', borderRadius: 14 }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text style={styles.waveformPlaceholder}>
+                  {mediaType === 'photo'
+                    ? 'Tap below to take a photo'
+                    : 'Tap below to record a video (15s max)'}
+                </Text>
+              )}
+            </View>
+
+            {!mediaUri ? (
+              <TouchableOpacity
+                style={styles.recordButton}
+                onPress={mediaType === 'photo' ? pickPhoto : pickVideo}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={mediaType === 'photo' ? 'camera' : 'videocam'}
+                  size={32}
+                  color="#FFFFFF"
+                />
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.previewControls}>
+                <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
+                  <Ionicons name="refresh" size={20} color="#FF4757" />
+                  <Text style={styles.retakeText}>Retake</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Caption input for photo/video */}
+            <TextInput
+              style={styles.captionInput}
+              placeholder="Add a caption..."
+              placeholderTextColor="#555E78"
+              value={caption}
+              onChangeText={setCaption}
+              maxLength={200}
+            />
+          </>
         )}
 
         {/* Radius Slider */}
@@ -419,18 +563,24 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         <TouchableOpacity
           style={[
             styles.dropButton,
-            (!recordingUri || isDropping) && styles.dropButtonDisabled,
+            (!(mediaType === 'audio' ? recordingUri : mediaUri) || isDropping) && styles.dropButtonDisabled,
           ]}
           onPress={handleDrop}
-          disabled={!recordingUri || isDropping}
+          disabled={!(mediaType === 'audio' ? recordingUri : mediaUri) || isDropping}
           activeOpacity={0.8}
         >
           {isDropping ? (
             <ActivityIndicator color="#0A0E17" size="small" />
           ) : (
             <>
-              <Ionicons name="musical-note" size={20} color="#0A0E17" />
-              <Text style={styles.dropButtonText}>DROP ECHO</Text>
+              <Ionicons
+                name={mediaType === 'audio' ? 'musical-note' : mediaType === 'photo' ? 'image' : 'videocam'}
+                size={20}
+                color="#0A0E17"
+              />
+              <Text style={styles.dropButtonText}>
+                {mediaType === 'audio' ? 'DROP ECHO' : mediaType === 'photo' ? 'DROP PHOTO' : 'DROP VIDEO'}
+              </Text>
             </>
           )}
         </TouchableOpacity>
@@ -655,5 +805,44 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     flex: 1,
     lineHeight: 18,
+  },
+  mediaTypeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+    marginHorizontal: 20,
+    marginTop: 12,
+  },
+  mediaTypeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#141B2D',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  mediaTypeChipActive: {
+    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    borderColor: '#7B61FF',
+  },
+  mediaTypeChipText: {
+    color: '#555E78',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  captionInput: {
+    width: '100%',
+    backgroundColor: '#141B2D',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+    color: '#FFFFFF',
+    fontSize: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
   },
 });

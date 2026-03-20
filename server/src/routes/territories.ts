@@ -49,6 +49,11 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     const bbox = { minLat, maxLat, minLng, maxLng };
     const bboxWkt = bboxToPolygonWkt(bbox);
 
+    // Fetch territories with filters:
+    // 1. Route delay: exclude territories whose visible_after is in the future
+    //    (except for the requesting user's own territories)
+    // 2. Home zone: exclude territories whose centroid falls within any user's
+    //    home zone (except the zone owner's own view)
     const territories = await queryMany(
       `SELECT t.id, t.owner_id, t.class, t.claim_value, t.claimed_at,
               t.last_defended, t.decay_level,
@@ -60,9 +65,22 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
        LEFT JOIN users u ON t.owner_id = u.id
        WHERE ST_Intersects(t.polygon, ST_GeomFromEWKT($1))
        AND t.owner_id IS NOT NULL
+       AND (t.visible_after IS NULL OR t.visible_after <= NOW() OR t.owner_id = $2)
+       AND NOT EXISTS (
+         SELECT 1 FROM users hz
+         WHERE hz.home_zone_lat IS NOT NULL
+           AND hz.home_zone_lng IS NOT NULL
+           AND hz.id != $2
+           AND hz.id = t.owner_id
+           AND ST_DWithin(
+             ST_Centroid(t.polygon)::geography,
+             ST_SetSRID(ST_MakePoint(hz.home_zone_lng, hz.home_zone_lat), 4326)::geography,
+             COALESCE(hz.home_zone_radius, 200)
+           )
+       )
        ORDER BY t.claimed_at DESC
        LIMIT 500`,
-      [bboxWkt]
+      [bboxWkt, req.userId]
     );
 
     return res.json({

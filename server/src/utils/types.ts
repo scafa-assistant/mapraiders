@@ -75,7 +75,9 @@ export type NotificationType =
   | 'level_up'
   | 'new_title'
   | 'clan_formed'
-  | 'quest_rated';
+  | 'quest_rated'
+  | 'content_desert'
+  | 'invite_bonus';
 
 export type ReportTargetType = 'quest' | 'echo' | 'challenge' | 'user' | 'travel_route';
 
@@ -110,7 +112,9 @@ export type TitleKey =
   | 'echo_master'
   | 'questmaker'
   | 'night_runner'
-  | 'storm_rider';
+  | 'storm_rider'
+  | 'pioneer'
+  | 'recruiter';
 
 // ---- GPS Point ------------------------------------------------------
 

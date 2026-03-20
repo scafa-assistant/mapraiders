@@ -25,6 +25,9 @@ import { runClanFormation as runClanFormationJob } from './clanFormation';
 import { checkTitles as checkTitlesJob } from './titleCheck';
 import { weatherService } from '../services/weatherService';
 import { cacheGet, cacheSet } from '../config/redis';
+import { eventEngine } from '../services/eventEngine';
+import { balanceService } from '../services/balanceService';
+import { checkAutoBounty } from '../services/bountyService';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -338,6 +341,263 @@ export function setupCronJobs(): void {
       console.log(`[CRON] Weather content: ${notified} notifications sent for ${activeAreas.length} areas`);
     } catch (err) {
       console.error('[CRON] Weather-activated content check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 5 minutes - Activate scheduled events + complete expired events
+  // ------------------------------------------------------------------
+  cron.schedule('*/5 * * * *', async () => {
+    try {
+      const activated = await eventEngine.activateScheduledEvents();
+      const completed = await eventEngine.completeExpiredEvents();
+      const cleaned = await eventEngine.cleanupExpiredLoot();
+      if (activated > 0 || completed > 0 || cleaned > 0) {
+        console.log(
+          `[CRON] Events: ${activated} activated, ${completed} completed, ${cleaned} loot cleaned`,
+        );
+      }
+    } catch (err) {
+      console.error('[CRON] Event lifecycle check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 12:00 UTC - King of the Hill in a random active area
+  // ------------------------------------------------------------------
+  cron.schedule('0 12 * * *', async () => {
+    console.log('[CRON] Spawning King of the Hill event...');
+    try {
+      // Pick a random active area from recent territory claims
+      const area = await queryMany<{ lat: number; lng: number }>(
+        `SELECT
+           ST_Y(ST_Centroid(polygon))::double precision AS lat,
+           ST_X(ST_Centroid(polygon))::double precision AS lng
+         FROM territories
+         WHERE claimed_at > NOW() - INTERVAL '48 hours'
+           AND owner_id IS NOT NULL
+         ORDER BY RANDOM()
+         LIMIT 1`,
+      );
+
+      if (area.length > 0) {
+        await eventEngine.startKingOfHill(area[0].lat, area[0].lng);
+        console.log(`[CRON] King of the Hill at ${area[0].lat}, ${area[0].lng}`);
+      } else {
+        console.log('[CRON] No active areas for King of the Hill');
+      }
+    } catch (err) {
+      console.error('[CRON] King of the Hill spawn failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Monthly (1st of month, 18:00 UTC) - Eclipse event
+  // ------------------------------------------------------------------
+  cron.schedule('0 18 1 * *', async () => {
+    console.log('[CRON] Starting monthly Eclipse event...');
+    try {
+      await eventEngine.startEclipse();
+      console.log('[CRON] Eclipse event started');
+    } catch (err) {
+      console.error('[CRON] Eclipse start failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 2 hours (at :15) - Random Blitz Claims in active areas
+  // ------------------------------------------------------------------
+  cron.schedule('15 */2 * * *', async () => {
+    console.log('[CRON] Spawning Blitz Claims...');
+    try {
+      const areas = await queryMany<{ lat: number; lng: number }>(
+        `SELECT
+           ST_Y(ST_Centroid(polygon))::double precision AS lat,
+           ST_X(ST_Centroid(polygon))::double precision AS lng
+         FROM territories
+         WHERE claimed_at > NOW() - INTERVAL '24 hours'
+           AND owner_id IS NOT NULL
+         ORDER BY RANDOM()
+         LIMIT 1`,
+      );
+
+      if (areas.length > 0) {
+        await eventEngine.startBlitz(areas[0].lat, areas[0].lng, 300);
+        console.log(`[CRON] Blitz Claims at ${areas[0].lat}, ${areas[0].lng}`);
+      }
+    } catch (err) {
+      console.error('[CRON] Blitz Claims spawn failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 30 minutes - Spawn loot drops in active areas
+  // ------------------------------------------------------------------
+  cron.schedule('*/30 * * * *', async () => {
+    try {
+      const areas = await queryMany<{ lat: number; lng: number }>(
+        `SELECT DISTINCT
+           ROUND(ST_Y(ST_Centroid(polygon))::numeric, 3)::double precision AS lat,
+           ROUND(ST_X(ST_Centroid(polygon))::numeric, 3)::double precision AS lng
+         FROM territories
+         WHERE claimed_at > NOW() - INTERVAL '24 hours'
+           AND owner_id IS NOT NULL
+         ORDER BY RANDOM()
+         LIMIT 5`,
+      );
+
+      let spawned = 0;
+      const lootTypes = ['xp', 'xp', 'xp', 'streak_freeze', 'title'];
+      const lootValues: Record<string, any> = {
+        xp: { xp: 500 },
+        streak_freeze: { streak_freeze: true },
+        title: { title: 'Lucky Finder' },
+      };
+
+      for (const area of areas) {
+        // Offset randomly within ~100m
+        const offsetLat = area.lat + (Math.random() - 0.5) * 0.002;
+        const offsetLng = area.lng + (Math.random() - 0.5) * 0.002;
+        const type = lootTypes[Math.floor(Math.random() * lootTypes.length)];
+
+        await eventEngine.spawnLootDrop(offsetLat, offsetLng, type, lootValues[type]);
+        spawned++;
+      }
+
+      if (spawned > 0) {
+        console.log(`[CRON] Loot drops: ${spawned} spawned`);
+      }
+    } catch (err) {
+      console.error('[CRON] Loot drop spawn failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 05:30 UTC - Monument check for inactive players
+  // ------------------------------------------------------------------
+  cron.schedule('30 5 * * *', async () => {
+    console.log('[CRON] Checking monuments for inactive players...');
+    try {
+      const created = await balanceService.checkAllMonuments();
+      if (created > 0) {
+        console.log(`[CRON] Monuments: ${created} created`);
+      }
+    } catch (err) {
+      console.error('[CRON] Monument check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 03:30 UTC - Auto-bounty check for 14+ day territory dominators
+  // ------------------------------------------------------------------
+  cron.schedule('30 3 * * *', async () => {
+    console.log('[CRON] Checking auto-bounties...');
+    try {
+      const result = await checkAutoBounty();
+      if (result.created > 0) {
+        console.log(`[CRON] Auto-bounties: ${result.created} created`);
+      }
+    } catch (err) {
+      console.error('[CRON] Auto-bounty check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 00:00 UTC - Reset daily territory loss counters
+  // ------------------------------------------------------------------
+  cron.schedule('0 0 * * *', async () => {
+    try {
+      const result = await query(
+        `UPDATE users SET daily_territory_lost = 0, daily_loss_reset_at = NOW()
+         WHERE daily_territory_lost > 0`,
+      );
+      const reset = result.rowCount ?? 0;
+      if (reset > 0) {
+        console.log(`[CRON] Daily loss reset: ${reset} users`);
+      }
+    } catch (err) {
+      console.error('[CRON] Daily loss reset failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 06:30 UTC - Content desert notification
+  // Find territories with no quests, echos, or artifacts and notify owners.
+  // ------------------------------------------------------------------
+  cron.schedule('30 6 * * *', async () => {
+    console.log('[CRON] Checking content deserts...');
+    try {
+      // Find territories that have no content (quests, echos, artifacts) nearby
+      const deserts = await queryMany<{ territory_id: string; owner_id: string }>(
+        `SELECT t.id AS territory_id, t.owner_id
+         FROM territories t
+         WHERE t.owner_id IS NOT NULL
+           AND t.decay_level < 0.5
+           AND t.claimed_at < NOW() - INTERVAL '3 days'
+           AND NOT EXISTS (
+             SELECT 1 FROM quests q
+             WHERE q.territory_id = t.id AND q.status = 'active'
+           )
+           AND NOT EXISTS (
+             SELECT 1 FROM echos e
+             WHERE e.status = 'active'
+               AND e.expires_at > NOW()
+               AND ST_DWithin(e.location::geography, ST_Centroid(t.polygon)::geography, 200)
+           )
+           AND NOT EXISTS (
+             SELECT 1 FROM artifacts a
+             WHERE a.territory_id = t.id
+               AND (a.expires_at IS NULL OR a.expires_at > NOW())
+           )
+         LIMIT 200`,
+      );
+
+      let notified = 0;
+      // De-duplicate by owner to avoid spamming
+      const notifiedOwners = new Set<string>();
+
+      for (const desert of deserts) {
+        if (notifiedOwners.has(desert.owner_id)) continue;
+        notifiedOwners.add(desert.owner_id);
+
+        try {
+          await sendNotification({
+            userId: desert.owner_id,
+            type: 'content_desert',
+            title: 'Empty Territory',
+            body: 'One of your territories has no content. Create a quest, echo, or artifact to bring it to life!',
+            data: { territory_id: desert.territory_id },
+            priority: 'LOW',
+          });
+          notified++;
+        } catch {
+          // Skip individual failures
+        }
+      }
+
+      if (notified > 0) {
+        console.log(`[CRON] Content desert: ${notified} notifications sent`);
+      }
+    } catch (err) {
+      console.error('[CRON] Content desert check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 07:00 UTC - Expire old pending invites
+  // ------------------------------------------------------------------
+  cron.schedule('0 7 * * *', async () => {
+    try {
+      const result = await query(
+        `UPDATE invites SET status = 'expired'
+         WHERE status = 'pending' AND expires_at < NOW()`,
+      );
+      const expired = result.rowCount ?? 0;
+      if (expired > 0) {
+        console.log(`[CRON] Invites: ${expired} expired`);
+      }
+    } catch (err) {
+      console.error('[CRON] Invite expiry check failed:', err);
     }
   }, { timezone: 'UTC' });
 

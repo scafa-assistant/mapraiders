@@ -305,6 +305,12 @@ export const userApi = {
 
   updatePushToken: (token: string) =>
     api.put('/users/me/push-token', { token }),
+
+  setHomeZone: (lat: number, lng: number) =>
+    api.put('/users/me/home-zone', { lat, lng }),
+
+  removeHomeZone: () =>
+    api.delete('/users/me/home-zone'),
 };
 
 // ─── Clans API ──────────────────────────────────────────────────────────────
@@ -403,6 +409,124 @@ export const placeApi = {
 export const resonanceApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/resonance', { params: { lat, lng, radius } }),
+};
+
+// ─── Duels API ──────────────────────────────────────────────────────────────
+
+export const duelApi = {
+  challenge: (data: Record<string, unknown>) =>
+    api.post('/duels', data),
+
+  accept: (id: string) =>
+    api.put(`/duels/${id}/accept`),
+
+  decline: (id: string) =>
+    api.put(`/duels/${id}/decline`),
+
+  submitScore: (id: string, score: number) =>
+    api.post(`/duels/${id}/score`, { score }),
+
+  complete: (id: string) =>
+    api.post(`/duels/${id}/complete`),
+
+  getActive: () =>
+    api.get('/duels/active'),
+
+  getHistory: (limit?: number) =>
+    api.get('/duels/history', { params: { limit } }),
+
+  getNearbyPlayers: (lat: number, lng: number, radius?: number) =>
+    api.get('/duels/nearby-players', { params: { lat, lng, radius } }),
+};
+
+// ─── Races API ──────────────────────────────────────────────────────────────
+
+export const raceApi = {
+  getNearby: (lat: number, lng: number, radius: number) =>
+    api.get('/races', { params: { lat, lng, radius } }),
+
+  getById: (id: string) =>
+    api.get(`/races/${id}`),
+
+  create: (data: Record<string, unknown>) =>
+    api.post('/races', data),
+
+  start: (id: string) =>
+    api.post(`/races/${id}/start`),
+
+  complete: (id: string, data: Record<string, unknown>) =>
+    api.post(`/races/${id}/complete`, data),
+};
+
+// ─── Bounties API ─────────────────────────────────────────────────────────
+
+export const bountyApi = {
+  place: (data: { target_id: string; reason?: string; xp_reward?: number }) =>
+    api.post('/bounties', data),
+
+  getActive: (lat?: number, lng?: number, radius?: number) =>
+    api.get('/bounties', { params: { lat, lng, radius } }),
+
+  getOnMe: () =>
+    api.get('/bounties/on-me'),
+};
+
+// ─── Aliases API ──────────────────────────────────────────────────────────
+
+export const aliasApi = {
+  create: (alias_name: string) =>
+    api.post('/aliases', { alias_name }),
+
+  getMe: () =>
+    api.get('/aliases/me'),
+
+  switch: (active: boolean) =>
+    api.put('/aliases/switch', { active }),
+};
+
+// ─── Traps API ────────────────────────────────────────────────────────────
+
+export const trapApi = {
+  place: (data: { territory_id: string; type: string; lat: number; lng: number }) =>
+    api.post('/traps', data),
+
+  getMine: () =>
+    api.get('/traps/my'),
+
+  disarm: (id: string) =>
+    api.delete(`/traps/${id}`),
+};
+
+// ─── Events API ──────────────────────────────────────────────────────────
+
+export const eventApi = {
+  getActive: (lat?: number, lng?: number) =>
+    api.get('/events', { params: { lat, lng } }),
+
+  getById: (id: string) =>
+    api.get(`/events/${id}`),
+
+  join: (id: string) =>
+    api.post(`/events/${id}/join`),
+
+  getNearbyLoot: (lat: number, lng: number, radius: number) =>
+    api.get('/events/loot', { params: { lat, lng, radius } }),
+
+  collectLoot: (id: string) =>
+    api.post(`/events/loot/${id}/collect`),
+};
+
+// ─── Invites API ──────────────────────────────────────────────────────────
+
+export const inviteApi = {
+  create: () =>
+    api.post('/invites'),
+
+  getMyInvites: () =>
+    api.get('/invites/me'),
+
+  redeem: (code: string) =>
+    api.post('/invites/redeem', { code }),
 };
 
 export default api;

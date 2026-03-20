@@ -623,3 +623,252 @@ COMMENT ON TABLE resonance_spots IS 'Cross-content synergy spots where multiple 
 
 CREATE INDEX IF NOT EXISTS idx_resonance_spots_location ON resonance_spots USING GIST(location);
 CREATE INDEX IF NOT EXISTS idx_resonance_spots_cell ON resonance_spots(grid_cell);
+
+-- ============================================================
+-- DUELS
+-- Player-vs-player competitive encounters.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS duels (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  challenger_id     UUID NOT NULL REFERENCES users(id),
+  defender_id       UUID NOT NULL REFERENCES users(id),
+  location          GEOMETRY(POINT, 4326) NOT NULL,
+  type              VARCHAR(30) NOT NULL DEFAULT 'speed_claim',
+  status            VARCHAR(20) NOT NULL DEFAULT 'pending',
+  winner_id         UUID REFERENCES users(id),
+  challenger_score  NUMERIC DEFAULT 0,
+  defender_score    NUMERIC DEFAULT 0,
+  stake_territory_id UUID REFERENCES territories(id),
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
+  started_at        TIMESTAMPTZ,
+  completed_at      TIMESTAMPTZ,
+  expires_at        TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '5 minutes')
+);
+
+COMMENT ON TABLE duels IS 'PvP duel challenges: speed_claim, distance, area, quiz.';
+
+CREATE INDEX IF NOT EXISTS idx_duels_players  ON duels (challenger_id, defender_id);
+CREATE INDEX IF NOT EXISTS idx_duels_location ON duels USING GIST(location);
+CREATE INDEX IF NOT EXISTS idx_duels_status   ON duels (status) WHERE status IN ('pending', 'active');
+
+-- ============================================================
+-- RACE TRACKS
+-- Player-created race courses with leaderboards.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS race_tracks (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  creator_id        UUID NOT NULL REFERENCES users(id),
+  name              VARCHAR(100) NOT NULL,
+  description       TEXT,
+  start_location    GEOMETRY(POINT, 4326) NOT NULL,
+  end_location      GEOMETRY(POINT, 4326) NOT NULL,
+  route_line        GEOMETRY(LINESTRING, 4326) NOT NULL,
+  distance_m        NUMERIC NOT NULL,
+  class             VARCHAR(20) NOT NULL DEFAULT 'runner',
+  best_time_seconds NUMERIC,
+  best_time_user_id UUID REFERENCES users(id),
+  total_attempts    INT DEFAULT 0,
+  created_at        TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE race_tracks IS 'GPS race courses created by players with per-track leaderboards.';
+
+CREATE INDEX IF NOT EXISTS idx_race_tracks_start   ON race_tracks USING GIST(start_location);
+CREATE INDEX IF NOT EXISTS idx_race_tracks_creator ON race_tracks (creator_id);
+
+-- ============================================================
+-- RACE ATTEMPTS
+-- Individual race runs with times and optional GPS traces.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS race_attempts (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  track_id    UUID NOT NULL REFERENCES race_tracks(id),
+  user_id     UUID NOT NULL REFERENCES users(id),
+  time_seconds NUMERIC NOT NULL,
+  route_line  GEOMETRY(LINESTRING, 4326),
+  is_record   BOOLEAN DEFAULT FALSE,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE race_attempts IS 'Individual race attempts with time records per track.';
+
+CREATE INDEX IF NOT EXISTS idx_race_attempts_track ON race_attempts (track_id, time_seconds ASC);
+CREATE INDEX IF NOT EXISTS idx_race_attempts_user  ON race_attempts (user_id);
+
+-- ============================================================
+-- BOUNTIES
+-- Player-placed or auto-generated bounties on dominant players.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS bounties (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  issuer_id   UUID         NOT NULL REFERENCES users(id),
+  target_id   UUID         NOT NULL REFERENCES users(id),
+  reason      TEXT,
+  xp_reward   INT          NOT NULL DEFAULT 500,
+  is_auto     BOOLEAN      DEFAULT FALSE,
+  status      VARCHAR(20)  NOT NULL DEFAULT 'active',
+  claimed_by  UUID         REFERENCES users(id),
+  created_at  TIMESTAMPTZ  DEFAULT NOW(),
+  expires_at  TIMESTAMPTZ  DEFAULT (NOW() + INTERVAL '7 days')
+);
+
+COMMENT ON TABLE bounties IS 'Player-placed or auto-generated bounties on territory dominators.';
+
+CREATE INDEX IF NOT EXISTS idx_bounties_target ON bounties(target_id) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_bounties_status ON bounties(status);
+CREATE INDEX IF NOT EXISTS idx_bounties_issuer ON bounties(issuer_id);
+
+-- ============================================================
+-- ALIASES
+-- Anonymous second identities for stealth gameplay.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS aliases (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id        UUID         NOT NULL REFERENCES users(id) UNIQUE,
+  alias_name     VARCHAR(50)  NOT NULL UNIQUE,
+  alias_level    INT          DEFAULT 1,
+  alias_xp       INT          DEFAULT 0,
+  is_revealed    BOOLEAN      DEFAULT FALSE,
+  revealed_by    UUID         REFERENCES users(id),
+  created_at     TIMESTAMPTZ  DEFAULT NOW(),
+  cooldown_until TIMESTAMPTZ
+);
+
+COMMENT ON TABLE aliases IS 'Anonymous second identities for stealth territory claiming.';
+
+CREATE INDEX IF NOT EXISTS idx_aliases_user ON aliases(user_id);
+CREATE INDEX IF NOT EXISTS idx_aliases_name ON aliases(alias_name);
+
+-- ============================================================
+-- TRAPS
+-- Defensive mechanisms placed within owned territories.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS traps (
+  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  owner_id     UUID         NOT NULL REFERENCES users(id),
+  territory_id UUID         NOT NULL REFERENCES territories(id),
+  type         VARCHAR(30)  NOT NULL DEFAULT 'slow',
+  location     GEOMETRY(POINT, 4326) NOT NULL,
+  radius_m     INT          DEFAULT 50,
+  is_active    BOOLEAN      DEFAULT TRUE,
+  triggered_by UUID         REFERENCES users(id),
+  triggered_at TIMESTAMPTZ,
+  created_at   TIMESTAMPTZ  DEFAULT NOW(),
+  expires_at   TIMESTAMPTZ  DEFAULT (NOW() + INTERVAL '7 days')
+);
+
+COMMENT ON TABLE traps IS 'Defensive traps placed in owned territories: slow, alert, or decoy.';
+
+CREATE INDEX IF NOT EXISTS idx_traps_location  ON traps USING GIST(location);
+CREATE INDEX IF NOT EXISTS idx_traps_territory ON traps(territory_id) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_traps_owner     ON traps(owner_id);
+
+-- ============================================================
+-- GAME EVENTS
+-- Eclipse, King of the Hill, Blitz Claims, Mystery Zones,
+-- Wave Attacks, Loot Drops — engagement drivers from Kreuzanalyse.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS game_events (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  type            VARCHAR(30)  NOT NULL, -- 'eclipse', 'king_of_hill', 'wave_attack', 'blitz', 'mystery_zone', 'loot_drop'
+  name            VARCHAR(100) NOT NULL,
+  description     TEXT,
+  location        GEOMETRY(POINT, 4326), -- NULL for global events
+  radius_m        INT,
+  status          VARCHAR(20)  NOT NULL DEFAULT 'scheduled', -- 'scheduled', 'active', 'completed'
+  config          JSONB        DEFAULT '{}', -- Event-specific config
+  participants    UUID[]       DEFAULT '{}',
+  winner_id       UUID         REFERENCES users(id),
+  winner_clan_id  UUID         REFERENCES clans(id),
+  starts_at       TIMESTAMPTZ  NOT NULL,
+  ends_at         TIMESTAMPTZ  NOT NULL,
+  created_at      TIMESTAMPTZ  DEFAULT NOW()
+);
+
+COMMENT ON TABLE game_events IS 'Scheduled and live game events: eclipse, king of hill, blitz, mystery zones, wave attacks.';
+
+CREATE INDEX IF NOT EXISTS idx_events_status   ON game_events(status, starts_at);
+CREATE INDEX IF NOT EXISTS idx_events_location ON game_events USING GIST(location);
+
+-- ============================================================
+-- LOOT DROPS
+-- Collectable items scattered on the map by the event engine.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS loot_drops (
+  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  location     GEOMETRY(POINT, 4326) NOT NULL,
+  type         VARCHAR(30)  NOT NULL DEFAULT 'xp', -- 'xp', 'title', 'artifact', 'streak_freeze'
+  value        JSONB        NOT NULL, -- {"xp": 500} or {"title": "Lucky Finder"}
+  collected_by UUID         REFERENCES users(id),
+  spawned_at   TIMESTAMPTZ  DEFAULT NOW(),
+  expires_at   TIMESTAMPTZ  DEFAULT (NOW() + INTERVAL '2 hours')
+);
+
+COMMENT ON TABLE loot_drops IS 'Collectable loot items scattered on the map, expire after 2 hours.';
+
+CREATE INDEX IF NOT EXISTS idx_loot_location ON loot_drops USING GIST(location);
+CREATE INDEX IF NOT EXISTS idx_loot_active   ON loot_drops(collected_by) WHERE collected_by IS NULL;
+
+-- ============================================================
+-- MONUMENTS
+-- Permanent markers left by players who went inactive 30+ days.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS monuments (
+  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id      UUID         NOT NULL REFERENCES users(id),
+  username     VARCHAR(50)  NOT NULL,
+  location     GEOMETRY(POINT, 4326) NOT NULL,
+  total_claims INT,
+  total_xp     INT,
+  created_at   TIMESTAMPTZ  DEFAULT NOW()
+);
+
+COMMENT ON TABLE monuments IS 'Permanent markers honouring long-inactive players at their most-claimed location.';
+
+CREATE INDEX IF NOT EXISTS idx_monuments_location ON monuments USING GIST(location);
+
+-- ============================================================
+-- BALANCE MECHANICS — Home Zone + Daily Loss Tracking
+-- ============================================================
+ALTER TABLE users ADD COLUMN IF NOT EXISTS home_zone_lat NUMERIC;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS home_zone_lng NUMERIC;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS home_zone_radius INT DEFAULT 200;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS daily_territory_lost INT DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS daily_loss_reset_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE users ADD COLUMN IF NOT EXISTS return_bonus_until TIMESTAMPTZ;
+
+-- ============================================================
+-- ROUTE DELAY (Anti-Stalking)
+-- Territories are not visible publicly until 15 min after creation.
+-- ============================================================
+ALTER TABLE territories ADD COLUMN IF NOT EXISTS visible_after TIMESTAMPTZ;
+
+-- ============================================================
+-- INVITES
+-- Referral system: invite friends, earn bonus XP on first claim.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS invites (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  inviter_id  UUID NOT NULL REFERENCES users(id),
+  invite_code VARCHAR(12) NOT NULL UNIQUE,
+  invitee_id  UUID REFERENCES users(id),
+  status      VARCHAR(20) DEFAULT 'pending', -- 'pending', 'registered', 'first_claim', 'expired'
+  bonus_awarded BOOLEAN DEFAULT FALSE,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  expires_at  TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '30 days')
+);
+
+COMMENT ON TABLE invites IS 'Referral invite codes with bonus tracking for inviter and invitee.';
+
+CREATE INDEX IF NOT EXISTS idx_invites_code    ON invites(invite_code);
+CREATE INDEX IF NOT EXISTS idx_invites_inviter ON invites(inviter_id);
+
+-- ============================================================
+-- ECHO MEDIA EXTENSIONS (Photo/Video Graffiti)
+-- Extend echos beyond audio to support photo and video content.
+-- ============================================================
+ALTER TABLE echos ADD COLUMN IF NOT EXISTS media_type VARCHAR(10) DEFAULT 'audio'; -- 'audio', 'photo', 'video'
+ALTER TABLE echos ADD COLUMN IF NOT EXISTS media_url TEXT; -- For photo/video (audio_url remains for audio)
+ALTER TABLE echos ADD COLUMN IF NOT EXISTS caption TEXT;
+-- Make audio_url nullable for photo/video echos
+ALTER TABLE echos ALTER COLUMN audio_url DROP NOT NULL;

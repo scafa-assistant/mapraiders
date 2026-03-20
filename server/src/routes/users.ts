@@ -13,6 +13,7 @@ import { authenticate } from '../middleware/auth';
 import { validateBody } from '../middleware/validation';
 import { updateSettingsSchema } from '../middleware/validation';
 import { queryOne, queryMany, query, transaction } from '../config/database';
+import { balanceService } from '../services/balanceService';
 
 const router = Router();
 
@@ -326,6 +327,56 @@ router.put(
     }
   }
 );
+
+// PUT /api/users/me/home-zone - Set home zone location
+router.put('/me/home-zone', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { lat, lng } = req.body;
+
+    if (typeof lat !== 'number' || typeof lng !== 'number') {
+      return res.status(400).json({
+        success: false,
+        message: 'lat and lng are required as numbers',
+      });
+    }
+
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid coordinates',
+      });
+    }
+
+    await balanceService.setHomeZone(req.userId!, lat, lng);
+
+    return res.json({
+      success: true,
+      message: 'Home zone set',
+      data: { lat, lng, radius_m: 200 },
+    });
+  } catch (err: any) {
+    console.error('[Users] Set home zone error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to set home zone' });
+  }
+});
+
+// DELETE /api/users/me/home-zone - Remove home zone
+router.delete('/me/home-zone', authenticate, async (req: Request, res: Response) => {
+  try {
+    await query(
+      'UPDATE users SET home_zone_lat = NULL, home_zone_lng = NULL WHERE id = $1',
+      [req.userId]
+    );
+
+    return res.json({
+      success: true,
+      data: { home_zone_lat: null, home_zone_lng: null },
+    });
+  } catch (err: any) {
+    console.error('[Users] Remove home zone error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to remove home zone' });
+  }
+});
 
 export const usersRouter = router;
 export default router;

@@ -359,6 +359,16 @@ export const TITLES: Record<string, TitleDefinition> = {
     name: 'Sturmreiter',
     condition: '20 claims in storm',
   },
+  pioneer: {
+    key: 'pioneer',
+    name: 'Pioneer',
+    condition: 'Among the first 100 players in your city',
+  },
+  recruiter: {
+    key: 'recruiter',
+    name: 'Recruiter',
+    condition: 'Successfully invite 5 players',
+  },
 };
 
 // Backward-compatible array-form title definitions used by existing services
@@ -395,6 +405,8 @@ export const TITLE_DEFINITIONS: TitleDefinition[] = [
   { key: 'questmaker', name: 'Questmaker', condition: '20 quests >=4.5 rating' },
   { key: 'night_runner', name: 'Nachtl\u00e4ufer', condition: '50 claims 22:00-05:00' },
   { key: 'storm_rider', name: 'Sturmreiter', condition: '20 claims in storm' },
+  { key: 'pioneer', name: 'Pioneer', condition: 'Among the first 100 players in your city', description: 'Among the first 100 players in your city' },
+  { key: 'recruiter', name: 'Recruiter', condition: 'Successfully invite 5 players', description: 'Successfully invite 5 players' },
 ];
 
 // ---- Unlock Levels --------------------------------------------------

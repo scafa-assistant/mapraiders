@@ -8,6 +8,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { query, queryOne } from '../config/database';
+import { inviteService } from '../services/inviteService';
 import { validateBody } from '../middleware/validation';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../middleware/validation';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../middleware/auth';
@@ -22,7 +23,7 @@ router.post(
   validateBody(registerSchema),
   async (req: Request, res: Response) => {
     try {
-      const { username, email, password } = req.body;
+      const { username, email, password, invite_code } = req.body;
 
       // Check if username or email already exists
       const existingUser = await queryOne(
@@ -65,6 +66,15 @@ router.post(
 
       if (!user) {
         return res.status(500).json({ success: false, message: 'Failed to create user' });
+      }
+
+      // Process invite code if provided
+      if (invite_code && typeof invite_code === 'string') {
+        try {
+          await inviteService.useInvite(invite_code, user.id);
+        } catch (inviteErr) {
+          console.error('[Auth] Invite code processing error (non-blocking):', inviteErr);
+        }
       }
 
       // Generate tokens

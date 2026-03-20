@@ -43,6 +43,13 @@ import { artifactsRouter } from './routes/artifacts';
 import { placesRouter } from './routes/places';
 import { silentZonesRouter } from './routes/silentZones';
 import { resonanceRouter } from './routes/resonance';
+import { invitesRouter } from './routes/invites';
+import { bountiesRouter } from './routes/bounties';
+import { aliasesRouter } from './routes/aliases';
+import { trapsRouter } from './routes/traps';
+import { duelsRouter } from './routes/duels';
+import { racesRouter } from './routes/races';
+import { eventsRouter } from './routes/events';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -128,6 +135,13 @@ app.use('/api/artifacts', artifactsRouter);
 app.use('/api/places', placesRouter);
 app.use('/api/silent-zones', silentZonesRouter);
 app.use('/api/resonance', resonanceRouter);
+app.use('/api/invites', invitesRouter);
+app.use('/api/bounties', bountiesRouter);
+app.use('/api/aliases', aliasesRouter);
+app.use('/api/traps', trapsRouter);
+app.use('/api/duels', duelsRouter);
+app.use('/api/races', racesRouter);
+app.use('/api/events', eventsRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {

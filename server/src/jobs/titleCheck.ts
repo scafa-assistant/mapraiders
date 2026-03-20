@@ -178,6 +178,52 @@ async function checkUserTitles(userId: string): Promise<string[]> {
     }
   }
 
+  // ---- pioneer: Among the first 100 players in their city ----
+  // Approximation: first 100 users by created_at who have at least 1 claim
+  // in a nearby area (same rough city grid cell)
+  if (!existingKeys.has('pioneer')) {
+    const r = await query(
+      `WITH user_city AS (
+         SELECT ROUND(ST_Y(ST_Centroid(polygon))::numeric, 1) AS city_lat,
+                ROUND(ST_X(ST_Centroid(polygon))::numeric, 1) AS city_lng
+         FROM territories
+         WHERE owner_id = $1
+         LIMIT 1
+       ),
+       city_users AS (
+         SELECT DISTINCT t.owner_id, u.created_at
+         FROM territories t
+         JOIN users u ON u.id = t.owner_id
+         JOIN user_city uc ON TRUE
+         WHERE ROUND(ST_Y(ST_Centroid(t.polygon))::numeric, 1) = uc.city_lat
+           AND ROUND(ST_X(ST_Centroid(t.polygon))::numeric, 1) = uc.city_lng
+         ORDER BY u.created_at ASC
+         LIMIT 100
+       )
+       SELECT EXISTS (
+         SELECT 1 FROM city_users WHERE owner_id = $1
+       ) AS is_pioneer`,
+      [userId],
+    );
+    if (r.rows[0]?.is_pioneer) {
+      await awardTitle(userId, 'pioneer');
+      earned.push('pioneer');
+    }
+  }
+
+  // ---- recruiter: 5+ successful invites ----
+  if (!existingKeys.has('recruiter')) {
+    const r = await query(
+      `SELECT COUNT(*) AS c FROM invites
+       WHERE inviter_id = $1 AND status = 'first_claim'`,
+      [userId],
+    );
+    if (parseInt(r.rows[0].c, 10) >= 5) {
+      await awardTitle(userId, 'recruiter');
+      earned.push('recruiter');
+    }
+  }
+
   return earned;
 }
 

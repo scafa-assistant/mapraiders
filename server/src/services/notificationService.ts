@@ -38,6 +38,8 @@ const TYPE_PRIORITY: Record<NotificationType, NotificationPriority> = {
   new_quest_nearby: 'MEDIUM',
   clan_formed: 'MEDIUM',
   quest_rated: 'MEDIUM',
+  content_desert: 'LOW',
+  invite_bonus: 'MEDIUM',
 };
 
 /**
