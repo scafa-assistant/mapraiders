@@ -16,7 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { RegisterScreenProps } from '../../navigation/types';
-import { web3authService } from '../../services/web3auth';
+// Web3Auth temporarily disabled
+// import { web3authService } from '../../services/web3auth';
 
 const { width } = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
-  const { register, web3Login, isLoading, error, clearError } = useAuthStore();
+  const { register, isLoading, error, clearError } = useAuthStore();
 
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
@@ -101,50 +102,8 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
   const strength = getPasswordStrength();
 
-  const handleSocialLogin = async (provider: 'google' | 'apple') => {
-    setSocialLoading(provider);
-    try {
-      await web3authService.init();
-
-      const result = provider === 'google'
-        ? await web3authService.loginWithGoogle()
-        : await web3authService.loginWithApple();
-
-      if (result) {
-        await web3Login(provider, result.idToken, result.userInfo);
-      } else {
-        Alert.alert('Sign up cancelled', 'Social login was cancelled or failed.');
-      }
-    } catch (_err) {
-      // Error is handled by the store
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
-  const handleEmailLink = async () => {
-    if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address first.');
-      return;
-    }
-    setSocialLoading('email');
-    try {
-      await web3authService.init();
-      const result = await web3authService.loginWithEmail(email.trim().toLowerCase());
-
-      if (result) {
-        await web3Login('email', result.idToken, result.userInfo);
-      } else {
-        Alert.alert('Sign up cancelled', 'Email login was cancelled or failed.');
-      }
-    } catch (_err) {
-      // Error is handled by the store
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
-  const isBusy = isLoading || socialLoading !== null;
+  // Web3Auth social login temporarily disabled for stability
+  const isBusy = isLoading;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -182,65 +141,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
             </View>
           )}
 
-          {/* Social Login Buttons */}
-          <View style={styles.socialSection}>
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={() => handleSocialLogin('google')}
-              disabled={isBusy}
-              activeOpacity={0.8}
-            >
-              {socialLoading === 'google' ? (
-                <ActivityIndicator color="#0A0E17" size="small" />
-              ) : (
-                <>
-                  <Ionicons name="logo-google" size={20} color="#0A0E17" style={styles.socialIcon} />
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
-                </>
-              )}
-            </TouchableOpacity>
-
-            {Platform.OS === 'ios' && (
-              <TouchableOpacity
-                style={styles.appleButton}
-                onPress={() => handleSocialLogin('apple')}
-                disabled={isBusy}
-                activeOpacity={0.8}
-              >
-                {socialLoading === 'apple' ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
-                ) : (
-                  <>
-                    <Ionicons name="logo-apple" size={22} color="#FFFFFF" style={styles.socialIcon} />
-                    <Text style={styles.appleButtonText}>Continue with Apple</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity
-              style={styles.emailLinkButton}
-              onPress={handleEmailLink}
-              disabled={isBusy}
-              activeOpacity={0.8}
-            >
-              {socialLoading === 'email' ? (
-                <ActivityIndicator color="#00D4FF" size="small" />
-              ) : (
-                <>
-                  <Ionicons name="link-outline" size={20} color="#00D4FF" style={styles.socialIcon} />
-                  <Text style={styles.emailLinkButtonText}>Sign up with Email Link</Text>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          {/* Divider */}
-          <View style={styles.orDividerRow}>
-            <View style={styles.orDivider} />
-            <Text style={styles.orDividerText}>OR</Text>
-            <View style={styles.orDivider} />
-          </View>
+          {/* Social Login - Coming Soon */}
 
           {/* Username */}
           <View style={styles.fieldGroup}>
