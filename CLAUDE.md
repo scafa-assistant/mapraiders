@@ -66,7 +66,7 @@ mobile/src/
 - Server must compile with `cd server && npx tsc --noEmit` (0 errors)
 - Always verify compilation after changes
 
-## Working with Ralph (project owner)
+## Working with René Scafarti (project owner)
 - Communicate in German
 - Act autonomously — don't ask "soll ich weitermachen?", just execute
 - Deploy multiple agents in parallel for large tasks

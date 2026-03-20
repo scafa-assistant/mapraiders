@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MapRaiders — GPS Territory Game</title>
+<meta name="description" content="MapRaiders: Die Stadt wird nicht mehr nur gesehen — sie wird gespielt. A GPS-based MMO territory game.">
+<meta property="og:title" content="MapRaiders — The City Is Your Battlefield">
+<meta property="og:description" content="Walk. Claim. Create. Compete. A GPS-based MMO territory game.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mapraiders.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #0A0E17;
+  --card:     #141B2D;
+  --card-alt: #1A2340;
+  --primary:  #00D4FF;
+  --accent:   #7B61FF;
+  --text:     #E0E6F0;
+  --muted:    #8892A8;
+  --dim:      #4A5268;
+  --danger:   #FF3B6F;
+  --success:  #00FFB2;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   ANIMATED BACKGROUND — grid + radials
+   ============================================================ */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 10%, rgba(0,212,255,0.06), transparent),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,97,255,0.05), transparent);
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(10,14,23,0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,212,255,0.08);
+  transition: background 0.3s;
+}
+
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--muted);
+  border-radius: 2px;
+  transition: 0.3s;
+}
+
+/* ============================================================
+   SECTIONS — shared
+   ============================================================ */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  opacity: 0.8;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Diagonal scan line */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    rgba(0,212,255,0.02) 40.5%,
+    rgba(0,212,255,0.02) 41%,
+    transparent 41.5%
+  );
+  animation: scanDiag 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scanDiag {
+  0% { transform: translateX(-30%) translateY(-30%); }
+  100% { transform: translateX(30%) translateY(30%); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.2rem;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 2rem;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(0,212,255,0); }
+}
+
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(3rem, 10vw, 7rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, #B0C4DE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 60px rgba(0,212,255,0.15)) drop-shadow(0 0 120px rgba(123,97,255,0.1));
+  position: relative;
+}
+
+/* Glow underline */
+.hero-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+  filter: blur(1px);
+}
+
+.hero-tagline {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto 1rem;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.hero-tagline-de {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: var(--dim);
+  font-style: italic;
+  margin-bottom: 2.5rem;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #000;
+  background: linear-gradient(135deg, var(--primary), #00B8E6);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 30px rgba(0,212,255,0.2), 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(0,212,255,0.35), 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(123,97,255,0.4);
+  box-shadow: 0 0 30px rgba(123,97,255,0.15);
+}
+
+/* Store button icons (SVG inline) */
+.store-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* ============================================================
+   FEATURES
+   ============================================================ */
+.features {
+  padding: 8rem 0;
+}
+
+.features-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.features-header .section-subtitle {
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feature-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,212,255,0.15);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 60px rgba(0,212,255,0.05);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  font-size: 1.5rem;
+  background: rgba(0,212,255,0.08);
+  color: var(--primary);
+}
+
+.feature-card:nth-child(2) .feature-icon { background: rgba(123,97,255,0.08); color: var(--accent); }
+.feature-card:nth-child(3) .feature-icon { background: rgba(255,59,111,0.08); color: var(--danger); }
+.feature-card:nth-child(4) .feature-icon { background: rgba(0,255,178,0.08); color: var(--success); }
+.feature-card:nth-child(5) .feature-icon { background: rgba(123,97,255,0.08); color: var(--accent); }
+.feature-card:nth-child(6) .feature-icon { background: rgba(0,212,255,0.08); color: var(--primary); }
+
+.feature-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.03em;
+}
+
+.feature-desc {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+.how-it-works {
+  padding: 8rem 0;
+  background: linear-gradient(180deg, transparent, rgba(0,212,255,0.015), transparent);
+}
+
+.how-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.how-header .section-subtitle {
+  margin: 0 auto;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  position: relative;
+}
+
+/* Connection line between steps */
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    var(--primary),
+    var(--accent),
+    var(--danger),
+    var(--success)
+  );
+  opacity: 0.2;
+  z-index: 0;
+}
+
+.step {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.step-number {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  position: relative;
+}
+
+.step:nth-child(1) .step-number {
+  background: rgba(0,212,255,0.1);
+  color: var(--primary);
+  box-shadow: 0 0 30px rgba(0,212,255,0.1);
+}
+
+.step:nth-child(2) .step-number {
+  background: rgba(123,97,255,0.1);
+  color: var(--accent);
+  box-shadow: 0 0 30px rgba(123,97,255,0.1);
+}
+
+.step:nth-child(3) .step-number {
+  background: rgba(255,59,111,0.1);
+  color: var(--danger);
+  box-shadow: 0 0 30px rgba(255,59,111,0.1);
+}
+
+.step:nth-child(4) .step-number {
+  background: rgba(0,255,178,0.1);
+  color: var(--success);
+  box-shadow: 0 0 30px rgba(0,255,178,0.1);
+}
+
+.step-icon {
+  font-size: 2rem;
+}
+
+.step-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.step-desc {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats {
+  padding: 6rem 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.2), transparent, rgba(123,97,255,0.2));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================
+   TECH BANNER — terminal style
+   ============================================================ */
+.tech-banner {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, transparent, rgba(123,97,255,0.01), transparent);
+}
+
+.terminal {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #0D1117;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-dot:nth-child(1) { background: #FF5F57; }
+.terminal-dot:nth-child(2) { background: #FEBC2E; }
+.terminal-dot:nth-child(3) { background: #28C840; }
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--dim);
+  letter-spacing: 0.05em;
+}
+
+.terminal-body {
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 2;
+}
+
+.terminal-line {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.terminal-prompt {
+  color: var(--primary);
+  user-select: none;
+}
+
+.terminal-cmd {
+  color: var(--muted);
+}
+
+.terminal-output {
+  color: var(--dim);
+  padding-left: 1.5rem;
+}
+
+.terminal-output .highlight {
+  color: var(--primary);
+}
+
+.terminal-output .highlight-accent {
+  color: var(--accent);
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: var(--primary);
+  animation: blink 1.2s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 4px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ============================================================
+   CTA
+   ============================================================ */
+.cta {
+  padding: 8rem 0;
+  text-align: center;
+}
+
+.cta-box {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  background: var(--card);
+  border: 1px solid rgba(0,212,255,0.1);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-box::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+}
+
+.cta-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.04), transparent 70%);
+  pointer-events: none;
+}
+
+.cta-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-sub {
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
+  line-height: 1.7;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  padding: 3rem 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-brand {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.footer-tagline {
+  color: var(--dim);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-bottom: 0.75rem;
+}
+
+.footer-domain {
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.footer-domain a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-domain a:hover {
+  color: var(--primary);
+}
+
+/* ============================================================
+   FLOATING PARTICLES
+   ============================================================ */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat linear infinite;
+}
+
+.particle:nth-child(1)  { width: 3px; height: 3px; background: var(--primary); left: 8%;  animation-duration: 12s; animation-delay: 0s;   }
+.particle:nth-child(2)  { width: 2px; height: 2px; background: var(--accent);  left: 18%; animation-duration: 15s; animation-delay: 2s;   }
+.particle:nth-child(3)  { width: 4px; height: 4px; background: var(--primary); left: 32%; animation-duration: 10s; animation-delay: 4s;   }
+.particle:nth-child(4)  { width: 2px; height: 2px; background: var(--accent);  left: 45%; animation-duration: 14s; animation-delay: 1s;   }
+.particle:nth-child(5)  { width: 3px; height: 3px; background: var(--primary); left: 58%; animation-duration: 11s; animation-delay: 3s;   }
+.particle:nth-child(6)  { width: 2px; height: 2px; background: var(--accent);  left: 72%; animation-duration: 13s; animation-delay: 5s;   }
+.particle:nth-child(7)  { width: 3px; height: 3px; background: var(--primary); left: 85%; animation-duration: 16s; animation-delay: 0.5s; }
+.particle:nth-child(8)  { width: 2px; height: 2px; background: var(--accent);  left: 92%; animation-duration: 12s; animation-delay: 2.5s; }
+
+@keyframes particleFloat {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 0.4; transform: translateY(80vh) scale(1); }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.reveal-stagger > .reveal:nth-child(1) { transition-delay: 0.05s; }
+.reveal-stagger > .reveal:nth-child(2) { transition-delay: 0.10s; }
+.reveal-stagger > .reveal:nth-child(3) { transition-delay: 0.15s; }
+.reveal-stagger > .reveal:nth-child(4) { transition-delay: 0.20s; }
+.reveal-stagger > .reveal:nth-child(5) { transition-delay: 0.25s; }
+.reveal-stagger > .reveal:nth-child(6) { transition-delay: 0.30s; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(10,14,23,0.95);
+    backdrop-filter: blur(20px);
+    padding: 1.5rem 2rem;
+    gap: 1.2rem;
+    border-bottom: 1px solid rgba(0,212,255,0.08);
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+
+  .steps::before {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .cta-box {
+    padding: 3rem 1.5rem;
+  }
+
+  .terminal-body {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background layers -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- Floating particles -->
+<div class="particles">
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="nav-logo">MAPRAIDERS</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#stats">Stats</a></li>
+    <li><a href="#cta">Get Started</a></li>
+  </ul>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Coming Soon</div>
+    <h1 class="hero-title">MAPRAIDERS</h1>
+    <p class="hero-tagline">The city is no longer just seen &mdash; it&rsquo;s played.</p>
+    <p class="hero-tagline-de">Die Stadt wird nicht mehr nur gesehen &mdash; sie wird gespielt.</p>
+    <div class="hero-cta">
+      <a href="#cta" class="btn-primary">
+        <svg class="store-icon" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+        App Store
+      </a>
+      <a href="#cta" class="btn-secondary">
+        <svg class="store-icon" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 1.33c.576.333.576 1.166 0 1.5l-2.302 1.33-2.535-2.535 2.535-2.625zM5.864 2.658L16.8 8.99l-2.302 2.302-8.635-8.635z" fill="currentColor"/></svg>
+        Google Play
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="features" id="features">
+  <div class="section-inner">
+    <div class="features-header reveal">
+      <div class="section-label">// Core Systems</div>
+      <h2 class="section-title">Built for the Streets</h2>
+      <p class="section-subtitle">Six core systems that transform every sidewalk into a battlefield and every neighborhood into an empire.</p>
+    </div>
+
+    <div class="features-grid reveal-stagger">
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        </div>
+        <h3 class="feature-title">Territory Claiming</h3>
+        <p class="feature-desc">Walk through real streets to claim hexagonal zones. Build resource structures, defend your borders, and expand your empire block by block.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/><path d="M8 12l-2-2"/><path d="M16 12l2-2"/></svg>
+        </div>
+        <h3 class="feature-title">Quests &amp; Echos</h3>
+        <p class="feature-desc">Discover location-bound quests and ghostly echoes left by other players. Every corner holds a story, every alley hides a challenge.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        </div>
+        <h3 class="feature-title">Duels &amp; Races</h3>
+        <p class="feature-desc">Challenge nearby raiders to GPS-tracked races or tactical duels. Speed, strategy, and street knowledge determine the winner.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 class="feature-title">Clan Wars</h3>
+        <p class="feature-desc">Form alliances, build clan headquarters, and wage coordinated wars for district control. Strength in numbers, strategy in movement.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <h3 class="feature-title">Night Layer</h3>
+        <p class="feature-desc">When the sun sets, the map transforms. New zones appear, shadow mechanics activate, and rare resources emerge only in darkness.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </div>
+        <h3 class="feature-title">Weather Events</h3>
+        <p class="feature-desc">Real weather data triggers in-game events. Rain floods spawn water zones, storms unlock lightning mechanics, snow reveals hidden paths.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
+<section class="how-it-works" id="how">
+  <div class="section-inner">
+    <div class="how-header reveal">
+      <div class="section-label">// The Loop</div>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">Four steps. One game loop. Infinite territory.</p>
+    </div>
+
+    <div class="steps reveal-stagger">
+      <div class="step reveal">
+        <div class="step-number"><span class="step-icon">&#128694;</span></div>
+        <h3 class="step-title">Walk</h3>
+        <p class="step-desc">Move through the real world. Your GPS tracks every step, every route, every shortcut.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number"><span class="step-icon">&#9873;</span></div>
+        <h3 class="step-title">Claim</h3>
+        <p class="step-desc">Step into unclaimed hexes to capture them. Build structures. Generate resources passively.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number"><span class="step-icon">&#9881;</span></div>
+        <h3 class="step-title">Create</h3>
+        <p class="step-desc">Place quests, set traps, leave echoes. Shape the world for everyone who walks after you.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number"><span class="step-icon">&#9876;</span></div>
+        <h3 class="step-title">Compete</h3>
+        <p class="step-desc">Duel raiders. Race rivals. Siege clan forts. Rise through the leaderboard by walking harder.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     STATS
+     ============================================================ -->
+<section class="stats" id="stats">
+  <div class="section-inner">
+    <div class="stats-grid reveal-stagger">
+      <div class="stat-card reveal">
+        <div class="stat-value" data-target="45000" data-suffix="+">0</div>
+        <div class="stat-label">Lines of Code</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value" data-target="35" data-suffix="+">0</div>
+        <div class="stat-label">Game Systems</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value" data-target="6" data-suffix="">0</div>
+        <div class="stat-label">Movement Classes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TECH BANNER — terminal
+     ============================================================ -->
+<section class="tech-banner">
+  <div class="section-inner">
+    <div class="terminal reveal">
+      <div class="terminal-header">
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <span class="terminal-title">mapraiders &mdash; system overview</span>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span class="terminal-cmd">mapraiders --status</span>
+        </div>
+        <div class="terminal-output">
+          Engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight">React Native + Node.js</span>
+        </div>
+        <div class="terminal-output">
+          Backend&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight">Express + PostgreSQL + Redis</span>
+        </div>
+        <div class="terminal-output">
+          Realtime&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight-accent">Socket.IO + GPS Streaming</span>
+        </div>
+        <div class="terminal-output">
+          Map&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight-accent">MapLibre GL + Custom Hex Grid</span>
+        </div>
+        <div class="terminal-output">
+          Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight">35+ interconnected game systems</span>
+        </div>
+        <div class="terminal-output">
+          Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: var(--success);">&#9679; BUILDING</span>
+        </div>
+        <div class="terminal-line" style="margin-top: 0.5rem;">
+          <span class="terminal-prompt">$</span>
+          <span class="terminal-cmd"><span class="terminal-cursor"></span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA
+     ============================================================ -->
+<section class="cta" id="cta">
+  <div class="section-inner">
+    <div class="cta-box reveal">
+      <div class="section-label">// Join the Raid</div>
+      <h2 class="cta-title">Claim Your First Territory</h2>
+      <p class="cta-sub">MapRaiders is coming soon. Be among the first to walk the grid.</p>
+      <div class="cta-buttons">
+        <a href="#" class="btn-primary">
+          <svg class="store-icon" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          App Store
+        </a>
+        <a href="#" class="btn-secondary">
+          <svg class="store-icon" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 1.33c.576.333.576 1.166 0 1.5l-2.302 1.33-2.535-2.535 2.535-2.625zM5.864 2.658L16.8 8.99l-2.302 2.302-8.635-8.635z" fill="currentColor"/></svg>
+          Google Play
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="footer-brand">MAPRAIDERS</div>
+  <div class="footer-tagline">Built with GPS. Played with feet.</div>
+  <div class="footer-domain"><a href="https://mapraiders.com">mapraiders.com</a></div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ------- Mobile nav toggle -------
+  const hamburger = document.getElementById('navHamburger');
+  const navLinks  = document.getElementById('navLinks');
+
+  hamburger.addEventListener('click', function() {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close nav on link click
+  navLinks.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // ------- Scroll reveal -------
+  const reveals = document.querySelectorAll('.reveal');
+
+  function checkReveal() {
+    const windowHeight = window.innerHeight;
+    reveals.forEach(function(el) {
+      const top = el.getBoundingClientRect().top;
+      if (top < windowHeight - 80) {
+        el.classList.add('visible');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', checkReveal, { passive: true });
+  window.addEventListener('resize', checkReveal);
+  checkReveal(); // Initial check
+
+  // ------- Counter animation -------
+  const counters = document.querySelectorAll('.stat-value[data-target]');
+  let countersAnimated = false;
+
+  function animateCounters() {
+    if (countersAnimated) return;
+    const statsSection = document.getElementById('stats');
+    if (!statsSection) return;
+
+    const rect = statsSection.getBoundingClientRect();
+    if (rect.top > window.innerHeight - 100) return;
+
+    countersAnimated = true;
+
+    counters.forEach(function(el) {
+      const target = parseInt(el.getAttribute('data-target'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      const duration = 2000;
+      const start = performance.now();
+
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+
+        if (target >= 1000) {
+          el.textContent = current.toLocaleString('en-US') + suffix;
+        } else {
+          el.textContent = current + suffix;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+
+      requestAnimationFrame(update);
+    });
+  }
+
+  window.addEventListener('scroll', animateCounters, { passive: true });
+  animateCounters(); // Initial check
+
+  // ------- Navbar background on scroll -------
+  const navbar = document.getElementById('navbar');
+
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 50) {
+      navbar.style.background = 'rgba(10,14,23,0.95)';
+    } else {
+      navbar.style.background = 'rgba(10,14,23,0.8)';
+    }
+  }, { passive: true });
+
+})();
+</script>
+
+</body>
+</html>

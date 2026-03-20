@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Lost in the Grid | MapRaiders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0A0E17;
+    color: #E0E6F0;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated grid floor */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridScroll 20s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes gridScroll {
+    0% { transform: perspective(500px) rotateX(30deg) translateY(0); }
+    100% { transform: perspective(500px) rotateX(30deg) translateY(60px); }
+  }
+
+  .container {
+    text-align: center;
+    z-index: 1;
+    padding: 2rem;
+  }
+
+  .error-code {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(6rem, 20vw, 14rem);
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #00D4FF, #7B61FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 40px rgba(0,212,255,0.3));
+    animation: glitch 4s infinite;
+  }
+
+  @keyframes glitch {
+    0%, 92%, 100% { opacity: 1; transform: none; }
+    93% { opacity: 0.8; transform: translateX(-4px) skewX(-2deg); }
+    94% { opacity: 1; transform: translateX(4px) skewX(2deg); }
+    95% { opacity: 0.8; transform: translateX(-2px); }
+    96% { opacity: 1; transform: none; }
+  }
+
+  .message {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    font-weight: 700;
+    color: #8892A8;
+    margin-top: 0.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .sub {
+    color: #4A5268;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .home-btn {
+    display: inline-block;
+    margin-top: 2.5rem;
+    padding: 0.85rem 2.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(135deg, #00D4FF, #7B61FF);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 25px rgba(0,212,255,0.25);
+  }
+
+  .home-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px rgba(0,212,255,0.4), 0 0 80px rgba(123,97,255,0.2);
+  }
+
+  /* Floating particles */
+  .particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: #00D4FF;
+    border-radius: 50%;
+    opacity: 0;
+    animation: float 6s infinite;
+    pointer-events: none;
+  }
+  .particle:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 7s; }
+  .particle:nth-child(2) { left: 35%; animation-delay: 1.5s; animation-duration: 5s; }
+  .particle:nth-child(3) { left: 55%; animation-delay: 3s; animation-duration: 8s; }
+  .particle:nth-child(4) { left: 75%; animation-delay: 0.8s; animation-duration: 6s; }
+  .particle:nth-child(5) { left: 90%; animation-delay: 2.2s; animation-duration: 7.5s; }
+
+  @keyframes float {
+    0% { transform: translateY(100vh); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-10vh); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <div class="container">
+    <div class="error-code">404</div>
+    <div class="message">Territory Not Found</div>
+    <p class="sub">This zone hasn't been claimed yet.<br>Maybe you should be the first.</p>
+    <a href="/" class="home-btn">Return to Base</a>
+  </div>
+</body>
+</html>
