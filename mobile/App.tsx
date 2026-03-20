@@ -1,3 +1,6 @@
+import { Buffer } from 'buffer';
+global.Buffer = global.Buffer || Buffer;
+
 import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
