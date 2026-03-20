@@ -2,6 +2,7 @@
 // Auth Routes
 // POST /api/auth/register
 // POST /api/auth/login
+// POST /api/auth/web3
 // POST /api/auth/refresh
 // ============================================================
 
@@ -186,6 +187,102 @@ router.post(
     } catch (err: any) {
       console.error('[Auth] Login error:', err);
       return res.status(500).json({ success: false, message: 'Login failed' });
+    }
+  }
+);
+
+// POST /api/auth/web3
+// Social login via Web3Auth (Google, Apple, Email passwordless)
+router.post(
+  '/web3',
+  authLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const { provider, idToken, userInfo } = req.body;
+      // provider: 'google', 'apple', 'email'
+      // userInfo: { email, name, profileImage, ... }
+
+      if (!idToken || !userInfo?.email) {
+        return res.status(400).json({ success: false, message: 'Invalid Web3Auth data' });
+      }
+
+      // Check if user exists with this email
+      let user = await queryOne<{
+        id: string;
+        username: string;
+        email: string;
+        level: number;
+        xp: number;
+        streak_days: number;
+        banned: boolean;
+        created_at: Date;
+      }>(
+        'SELECT id, username, email, level, xp, streak_days, banned, created_at FROM users WHERE LOWER(email) = LOWER($1)',
+        [userInfo.email]
+      );
+
+      if (user?.banned) {
+        return res.status(403).json({ success: false, message: 'Account has been banned' });
+      }
+
+      if (!user) {
+        // Auto-register: create account from social profile
+        const username = userInfo.name?.replace(/\s+/g, '_').substring(0, 30)
+          || userInfo.email.split('@')[0];
+
+        // Check username uniqueness, append random suffix if needed
+        let finalUsername = username;
+        const existing = await queryOne('SELECT id FROM users WHERE LOWER(username) = LOWER($1)', [username]);
+        if (existing) {
+          finalUsername = username + '_' + Math.random().toString(36).substring(2, 6);
+        }
+
+        user = await queryOne(
+          `INSERT INTO users (username, email, password_hash, web3_provider)
+           VALUES ($1, $2, $3, $4)
+           RETURNING id, username, email, level, xp, streak_days, created_at`,
+          [finalUsername, userInfo.email, 'web3auth_' + provider, provider]
+        );
+
+        if (!user) {
+          return res.status(500).json({ success: false, message: 'Failed to create user' });
+        }
+      }
+
+      // Update last active timestamp
+      await query('UPDATE users SET last_active = NOW() WHERE id = $1', [user.id]);
+
+      // Generate JWT tokens (same as regular login)
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+
+      // Store refresh token hash in database
+      const refreshHash = await bcrypt.hash(refreshToken, 10);
+      await query(
+        `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
+         VALUES ($1, $2, NOW() + INTERVAL '30 days')`,
+        [user.id, refreshHash]
+      );
+
+      return res.json({
+        success: true,
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            level: user.level,
+            xp: user.xp,
+            streak_days: user.streak_days,
+            created_at: user.created_at,
+          },
+          token: accessToken,
+          refreshToken,
+        },
+      });
+    } catch (err: any) {
+      console.error('[Auth] Web3 login error:', err);
+      return res.status(500).json({ success: false, message: 'Web3 login failed' });
     }
   }
 );

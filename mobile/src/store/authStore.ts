@@ -10,6 +10,7 @@ interface AuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
+  web3Login: (provider: string, idToken: string, userInfo: Record<string, any>) => Promise<void>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
   clearError: () => void;
@@ -54,6 +55,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (err: any) {
       const message = err.message || 'Registration failed. Please try again.';
+      set({ isLoading: false, error: message });
+      throw new Error(message);
+    }
+  },
+
+  web3Login: async (provider: string, idToken: string, userInfo: Record<string, any>) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authApi.web3Login({ provider, idToken, userInfo });
+      const { token, user } = response.data;
+      await setTokens(token, response.data.refreshToken);
+      set({ token, user, isLoading: false });
+
+      // Register push token after web3 login
+      registerForPushNotifications().then((pushToken) => {
+        if (pushToken) userApi.updatePushToken(pushToken).catch(() => {});
+      });
+    } catch (err: any) {
+      const message = err.message || 'Social login failed. Please try again.';
       set({ isLoading: false, error: message });
       throw new Error(message);
     }

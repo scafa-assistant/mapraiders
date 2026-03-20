@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
   last_active   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   reputation    DOUBLE PRECISION NOT NULL DEFAULT 1.0,
   banned        BOOLEAN      NOT NULL DEFAULT FALSE,
+  web3_provider  VARCHAR(20),
   push_token    TEXT,
   settings      JSONB        NOT NULL DEFAULT '{
     "notifications": {

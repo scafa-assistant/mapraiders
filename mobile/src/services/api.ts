@@ -149,6 +149,9 @@ export const authApi = {
 
   refresh: (refreshToken: string) =>
     api.post('/auth/refresh', { refreshToken }),
+
+  web3Login: (data: { provider: string; idToken: string; userInfo: Record<string, any> }) =>
+    api.post('/auth/web3', data),
 };
 
 // ─── Routes API ─────────────────────────────────────────────────────────────

@@ -10,11 +10,13 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { LoginScreenProps } from '../../navigation/types';
+import { web3authService } from '../../services/web3auth';
 
 const { width } = Dimensions.get('window');
 
@@ -22,7 +24,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const { login, web3Login, isLoading, error, clearError } = useAuthStore();
 
   const handleLogin = async () => {
     if (!email.trim()) {
@@ -40,13 +43,62 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     }
   };
 
+  const handleSocialLogin = async (provider: 'google' | 'apple') => {
+    setSocialLoading(provider);
+    try {
+      await web3authService.init();
+
+      const result = provider === 'google'
+        ? await web3authService.loginWithGoogle()
+        : await web3authService.loginWithApple();
+
+      if (result) {
+        await web3Login(provider, result.idToken, result.userInfo);
+      } else {
+        Alert.alert('Login cancelled', 'Social login was cancelled or failed.');
+      }
+    } catch (_err) {
+      // Error is handled by the store
+    } finally {
+      setSocialLoading(null);
+    }
+  };
+
+  const handleEmailLink = async () => {
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email address above first.');
+      return;
+    }
+    setSocialLoading('email');
+    try {
+      await web3authService.init();
+      const result = await web3authService.loginWithEmail(email.trim().toLowerCase());
+
+      if (result) {
+        await web3Login('email', result.idToken, result.userInfo);
+      } else {
+        Alert.alert('Login cancelled', 'Email login was cancelled or failed.');
+      }
+    } catch (_err) {
+      // Error is handled by the store
+    } finally {
+      setSocialLoading(null);
+    }
+  };
+
+  const isBusy = isLoading || socialLoading !== null;
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <View style={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {/* Logo / Title */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -56,18 +108,79 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             <Text style={styles.subtitle}>Claim the city. Own the grid.</Text>
           </View>
 
-          {/* Form */}
-          <View style={styles.form}>
-            {error && (
-              <View style={styles.errorBanner}>
-                <Ionicons name="alert-circle" size={18} color="#FF4757" />
-                <Text style={styles.errorText}>{error}</Text>
-                <TouchableOpacity onPress={clearError}>
-                  <Ionicons name="close" size={18} color="#FF4757" />
-                </TouchableOpacity>
-              </View>
+          {/* Error Banner */}
+          {error && (
+            <View style={styles.errorBanner}>
+              <Ionicons name="alert-circle" size={18} color="#FF4757" />
+              <Text style={styles.errorText}>{error}</Text>
+              <TouchableOpacity onPress={clearError}>
+                <Ionicons name="close" size={18} color="#FF4757" />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Social Login Buttons */}
+          <View style={styles.socialSection}>
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={() => handleSocialLogin('google')}
+              disabled={isBusy}
+              activeOpacity={0.8}
+            >
+              {socialLoading === 'google' ? (
+                <ActivityIndicator color="#0A0E17" size="small" />
+              ) : (
+                <>
+                  <Ionicons name="logo-google" size={20} color="#0A0E17" style={styles.socialIcon} />
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                style={styles.appleButton}
+                onPress={() => handleSocialLogin('apple')}
+                disabled={isBusy}
+                activeOpacity={0.8}
+              >
+                {socialLoading === 'apple' ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="logo-apple" size={22} color="#FFFFFF" style={styles.socialIcon} />
+                    <Text style={styles.appleButtonText}>Continue with Apple</Text>
+                  </>
+                )}
+              </TouchableOpacity>
             )}
 
+            <TouchableOpacity
+              style={styles.emailLinkButton}
+              onPress={handleEmailLink}
+              disabled={isBusy}
+              activeOpacity={0.8}
+            >
+              {socialLoading === 'email' ? (
+                <ActivityIndicator color="#00D4FF" size="small" />
+              ) : (
+                <>
+                  <Ionicons name="link-outline" size={20} color="#00D4FF" style={styles.socialIcon} />
+                  <Text style={styles.emailLinkButtonText}>Login with Email Link</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Divider */}
+          <View style={styles.dividerRow}>
+            <View style={styles.divider} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.divider} />
+          </View>
+
+          {/* Email/Password Form */}
+          <View style={styles.form}>
             <View style={styles.inputContainer}>
               <Ionicons name="mail-outline" size={20} color="#8892B0" style={styles.inputIcon} />
               <TextInput
@@ -113,9 +226,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             </View>
 
             <TouchableOpacity
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+              style={[styles.loginButton, isBusy && styles.loginButtonDisabled]}
               onPress={handleLogin}
-              disabled={isLoading}
+              disabled={isBusy}
               activeOpacity={0.8}
             >
               {isLoading ? (
@@ -146,7 +259,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               <Text style={styles.registerButtonText}>CREATE ACCOUNT</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -160,14 +273,15 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 32,
     justifyContent: 'center',
+    paddingVertical: 24,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 32,
   },
   logoContainer: {
     width: 88,
@@ -197,9 +311,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     letterSpacing: 2,
   },
-  form: {
-    marginBottom: 32,
-  },
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -216,6 +327,75 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#FF4757',
     fontSize: 13,
+  },
+  socialSection: {
+    marginBottom: 20,
+    gap: 12,
+  },
+  socialIcon: {
+    marginRight: 10,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    height: 52,
+  },
+  googleButtonText: {
+    color: '#0A0E17',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  appleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+    borderRadius: 12,
+    height: 52,
+  },
+  appleButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  emailLinkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 12,
+    height: 52,
+    borderWidth: 1.5,
+    borderColor: '#00D4FF',
+  },
+  emailLinkButtonText: {
+    color: '#00D4FF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    width: width - 64,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#1A2340',
+  },
+  dividerText: {
+    color: '#555E78',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+    marginHorizontal: 16,
+  },
+  form: {
+    marginBottom: 32,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -273,24 +453,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: 'center',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    width: width - 64,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#1A2340',
-  },
-  dividerText: {
-    color: '#555E78',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    marginHorizontal: 16,
   },
   registerButton: {
     borderWidth: 1.5,
