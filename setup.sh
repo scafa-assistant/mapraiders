@@ -3,7 +3,7 @@ set -e
 
 echo ""
 echo "======================================"
-echo "     GRIDWALKER - First Time Setup    "
+echo "     MAPRAIDERS - First Time Setup    "
 echo "======================================"
 echo ""
 
@@ -53,10 +53,10 @@ if [ ! -f "$SCRIPT_DIR/server/.env" ]; then
 PORT=3000
 HOST=0.0.0.0
 NODE_ENV=development
-DATABASE_URL=postgresql://gridwalker:gridwalker_dev@localhost:5432/gridwalker
+DATABASE_URL=postgresql://mapraiders:mapraiders_dev@localhost:5432/mapraiders
 REDIS_URL=redis://localhost:6379
-JWT_SECRET=gridwalker-dev-secret-change-in-production
-JWT_REFRESH_SECRET=gridwalker-dev-refresh-secret-change-in-production
+JWT_SECRET=mapraiders-dev-secret-change-in-production
+JWT_REFRESH_SECRET=mapraiders-dev-refresh-secret-change-in-production
 JWT_EXPIRES_IN=24h
 JWT_REFRESH_EXPIRES_IN=7d
 CORS_ORIGIN=*

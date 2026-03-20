@@ -1,5 +1,5 @@
 // ============================================================
-// Gridwalker Type Definitions
+// MapRaiders Type Definitions
 // Every interface, type alias, and enum used across the server.
 // ============================================================
 

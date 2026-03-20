@@ -1,6 +1,6 @@
 // ============================================================
 // Decay Cron - Main Cron Job Scheduler
-// Sets up ALL scheduled jobs for the Gridwalker server.
+// Sets up ALL scheduled jobs for the MapRaiders server.
 // ============================================================
 
 import cron from 'node-cron';
@@ -598,6 +598,25 @@ export function setupCronJobs(): void {
       }
     } catch (err) {
       console.error('[CRON] Invite expiry check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Monthly (1st of month, 00:00 UTC) - Reset monthly leaderboards
+  // ------------------------------------------------------------------
+  cron.schedule('0 0 1 * *', async () => {
+    console.log('[CRON] Resetting monthly leaderboards...');
+    try {
+      const { default: redis } = await import('../config/redis');
+      const keys = await redis.keys('lb:*:monthly:*');
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        console.log(`[CRON] Reset ${keys.length} monthly leaderboard keys`);
+      } else {
+        console.log('[CRON] No monthly leaderboard keys to reset');
+      }
+    } catch (err) {
+      console.error('[CRON] Monthly leaderboard reset failed:', err);
     }
   }, { timezone: 'UTC' });
 

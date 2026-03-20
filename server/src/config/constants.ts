@@ -1,5 +1,5 @@
 // ============================================================
-// Gridwalker Game Constants
+// MapRaiders Game Constants
 // Every balance value, multiplier, threshold and configuration
 // referenced in the GDD lives here.
 // ============================================================

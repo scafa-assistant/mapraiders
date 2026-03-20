@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo ""
 echo "======================================"
-echo "       GRIDWALKER - Starting...       "
+echo "       MAPRAIDERS - Starting...       "
 echo "======================================"
 echo ""
 
@@ -80,7 +80,7 @@ docker compose up -d postgres redis
 
 # Wait for DB to be ready
 echo "Waiting for PostgreSQL to be ready..."
-until docker compose exec -T postgres pg_isready -U gridwalker > /dev/null 2>&1; do
+until docker compose exec -T postgres pg_isready -U mapraiders > /dev/null 2>&1; do
     sleep 1
 done
 echo "[OK] PostgreSQL ready"
@@ -104,7 +104,7 @@ trap cleanup EXIT INT TERM
 
 # Start server in background
 echo ""
-echo "Starting Gridwalker server..."
+echo "Starting MapRaiders server..."
 cd "$SCRIPT_DIR/server"
 npx ts-node-dev --respawn --transpile-only src/index.ts &
 SERVER_PID=$!
@@ -123,7 +123,7 @@ echo "[OK] Server running on http://$LOCAL_IP:3000"
 # Print status
 echo ""
 echo "=========================================================="
-echo "  GRIDWALKER IS RUNNING!                                  "
+echo "  MAPRAIDERS IS RUNNING!                                  "
 echo "                                                          "
 echo "  API:        http://$LOCAL_IP:3000/api                   "
 echo "  WebSocket:  ws://$LOCAL_IP:3000                         "

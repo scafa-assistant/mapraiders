@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgis/postgis:16-3.4
     environment:
-      POSTGRES_USER: gridwalker
-      POSTGRES_PASSWORD: gridwalker_dev
-      POSTGRES_DB: gridwalker
+      POSTGRES_USER: mapraiders
+      POSTGRES_PASSWORD: mapraiders_dev
+      POSTGRES_DB: mapraiders
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5433:5432"
@@ -13,7 +13,7 @@ services:
       - ./server/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./server/src/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gridwalker"]
+      test: ["CMD-SHELL", "pg_isready -U mapraiders"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -38,10 +38,10 @@ services:
       NODE_ENV: development
       PORT: 3000
       HOST: 0.0.0.0
-      DATABASE_URL: postgresql://gridwalker:gridwalker_dev@postgres:5432/gridwalker
+      DATABASE_URL: postgresql://mapraiders:mapraiders_dev@postgres:5432/mapraiders
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: gridwalker-dev-secret-change-in-production
-      JWT_REFRESH_SECRET: gridwalker-dev-refresh-secret-change-in-production
+      JWT_SECRET: mapraiders-dev-secret-change-in-production
+      JWT_REFRESH_SECRET: mapraiders-dev-refresh-secret-change-in-production
       JWT_EXPIRES_IN: 24h
       JWT_REFRESH_EXPIRES_IN: 7d
       CORS_ORIGIN: "*"

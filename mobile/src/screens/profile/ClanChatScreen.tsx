@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { clanApi } from '../../services/api';
-import { gridwalkerWs } from '../../services/websocket';
+import { mapRaidersWs } from '../../services/websocket';
 import { useAuthStore } from '../../store/authStore';
 import type { ClanChatScreenProps } from '../../navigation/types';
 
@@ -81,7 +81,7 @@ export default function ClanChatScreen({ navigation, route }: ClanChatScreenProp
 
   // Subscribe to real-time clan_message events
   useEffect(() => {
-    const unsubscribe = gridwalkerWs.on('clan_message', (data: any) => {
+    const unsubscribe = mapRaidersWs.on('clan_message', (data: any) => {
       if (data.clanId !== clanId) return;
 
       const newMsg: ChatMessage = {

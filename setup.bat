@@ -1,5 +1,5 @@
 @echo off
-echo Starting Gridwalker setup...
+echo Starting MapRaiders setup...
 "C:\Program Files\Git\bin\bash.exe" "%~dp0setup.sh"
 if %ERRORLEVEL% NEQ 0 (
     echo.

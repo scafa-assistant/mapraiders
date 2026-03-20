@@ -5,7 +5,7 @@
 // ============================================================
 
 import { query, queryOne, queryMany, transaction } from '../config/database';
-import { QUEST, XP } from '../config/constants';
+import { QUEST, XP, UNLOCK_LEVELS } from '../config/constants';
 import { haversineDistance, isNightTime } from '../utils/geo';
 import { toWktPoint as pointToWkt } from '../utils/polygon';
 import { Quest, QuestStep, QuestProgress, VerificationType } from '../utils/types';
@@ -14,6 +14,7 @@ import { recordEvent } from './placeMemoryService';
 import { seedQuestEngine } from './seedQuestEngine';
 import { resonanceService } from './resonanceService';
 import { wsService } from './wsService';
+import { resetDecayAtPoint } from './decayEngine';
 
 /** Input data for creating a new quest */
 interface CreateQuestRequest {
@@ -81,9 +82,9 @@ export class QuestEngine {
         throw new Error('User not found');
       }
 
-      // Quest creation requires "creator" unlock level (level 16+)
-      if (creator.rows[0].level < 16) {
-        throw new Error('Quest creation requires level 16 or higher');
+      // Quest creation requires "claimer" unlock level (level 6+)
+      if (creator.rows[0].level < UNLOCK_LEVELS.claimer) {
+        throw new Error(`Quest creation requires level ${UNLOCK_LEVELS.claimer} or higher`);
       }
 
       // Validate territory ownership if specified
@@ -308,6 +309,13 @@ export class QuestEngine {
 
     if (!verified) {
       return { verified: false };
+    }
+
+    // Reset territory decay at this step's location (quest activity keeps territories alive)
+    try {
+      await resetDecayAtPoint(step.lat, step.lng);
+    } catch (_err) {
+      // Decay reset is non-critical
     }
 
     // Advance progress
@@ -544,16 +552,17 @@ export class QuestEngine {
     paramIdx++;
 
     const quests = await queryMany<Quest>(
-      `SELECT DISTINCT q.*
+      `SELECT DISTINCT q.*, COALESCE(u.reputation, 0.5) as creator_reputation
        FROM quests q
        JOIN quest_steps qs ON q.id = qs.quest_id
+       LEFT JOIN users u ON q.creator_id = u.id
        WHERE ST_DWithin(
          qs.location::geography,
          ST_GeomFromEWKT($1)::geography,
          $2
        )
        ${filterClauses}
-       ORDER BY q.avg_rating DESC, q.total_completions DESC
+       ORDER BY COALESCE(u.reputation, 0.5) DESC, q.avg_rating DESC, q.total_completions DESC
        LIMIT $3`,
       params
     );

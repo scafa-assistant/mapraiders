@@ -1,7 +1,7 @@
 {
-  "name": "gridwalker-server",
+  "name": "mapraiders-server",
   "version": "1.0.0",
-  "description": "Gridwalker GPS-based city MMO - Backend Server",
+  "description": "MapRaiders GPS-based city MMO - Backend Server",
   "main": "dist/index.js",
   "scripts": {
     "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts",
@@ -13,7 +13,7 @@
     "lint": "tsc --noEmit"
   },
   "keywords": [
-    "gridwalker",
+    "mapraiders",
     "gps",
     "mmo",
     "city",

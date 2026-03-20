@@ -1,6 +1,6 @@
 // ============================================================
 // WebSocket Service
-// Manages real-time connections for Gridwalker clients.
+// Manages real-time connections for MapRaiders clients.
 // Tracks connected users, their locations, and provides
 // targeted + proximity-based broadcasting.
 // ============================================================

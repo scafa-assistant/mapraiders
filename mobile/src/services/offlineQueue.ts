@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo, { NetInfoSubscription } from '@react-native-community/netinfo';
 import { routeApi } from './api';
 
-const QUEUE_KEY = '@gridwalker_offline_queue';
+const QUEUE_KEY = '@mapraiders_offline_queue';
 
 interface QueuedRoute {
   id: string;

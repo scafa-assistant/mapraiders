@@ -1,5 +1,5 @@
 // ============================================================
-// Gridwalker Server - Main Entry Point
+// MapRaiders Server - Main Entry Point
 // GPS-based city MMO backend
 // ============================================================
 
@@ -108,7 +108,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
     success: true,
     data: {
       status: 'ok',
-      service: 'gridwalker-api',
+      service: 'mapraiders-api',
       version: process.env.npm_package_version || '1.0.0',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
@@ -254,7 +254,7 @@ async function startServer(): Promise<void> {
   }
 
   server.listen(PORT, HOST, () => {
-    console.log(`[Server] Gridwalker API running on http://${HOST}:${PORT}`);
+    console.log(`[Server] MapRaiders API running on http://${HOST}:${PORT}`);
     console.log(`[Server] WebSocket server ready`);
     console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
   });

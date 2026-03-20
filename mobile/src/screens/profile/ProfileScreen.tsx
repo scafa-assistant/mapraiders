@@ -281,7 +281,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           </View>
           <View style={styles.petButtonContent}>
             <Text style={styles.petButtonTitle}>Leaderboard</Text>
-            <Text style={styles.petButtonSubtitle}>Top Gridwalkers rankings</Text>
+            <Text style={styles.petButtonSubtitle}>Top MapRaiders rankings</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#2A3450" />
         </TouchableOpacity>

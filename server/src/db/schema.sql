@@ -1,5 +1,5 @@
 -- ============================================================
--- Gridwalker Database Schema
+-- MapRaiders Database Schema
 -- PostgreSQL + PostGIS
 -- Complete foundation schema for the GPS-based city MMO.
 -- ============================================================

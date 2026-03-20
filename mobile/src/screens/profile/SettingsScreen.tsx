@@ -345,7 +345,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         </TouchableOpacity>
 
         {/* Version */}
-        <Text style={styles.versionText}>Gridwalker v1.0.0</Text>
+        <Text style={styles.versionText}>MapRaiders v1.0.0</Text>
 
         <View style={{ height: 100 }} />
       </ScrollView>

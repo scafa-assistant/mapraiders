@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             <View style={styles.logoContainer}>
               <Ionicons name="grid" size={48} color="#00D4FF" />
             </View>
-            <Text style={styles.title}>GRIDWALKER</Text>
+            <Text style={styles.title}>MAPRAIDERS</Text>
             <Text style={styles.subtitle}>Claim the city. Own the grid.</Text>
           </View>
 

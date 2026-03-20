@@ -7,8 +7,8 @@ import jwt from 'jsonwebtoken';
 import { queryOne } from '../config/database';
 import { User } from '../utils/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gridwalker-dev-secret';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'gridwalker-refresh-secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'mapraiders-dev-secret';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'mapraiders-refresh-secret';
 
 // ---- Extend Express Request ----
 

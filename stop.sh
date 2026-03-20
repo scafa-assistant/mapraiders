@@ -3,7 +3,7 @@
 # Get the directory where this script lives
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Stopping Gridwalker..."
+echo "Stopping MapRaiders..."
 
 # Stop Docker services
 cd "$SCRIPT_DIR"

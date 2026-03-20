@@ -394,6 +394,14 @@ class DuelEngine {
           [xpLoser, loserId]
         );
 
+        // Strengthen winner's nearby territories (duel win resets decay)
+        await client.query(
+          `UPDATE territories SET last_defended = NOW()
+           WHERE owner_id = $1
+           AND ST_DWithin(polygon::geography, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, 500)`,
+          [winnerId, parseFloat(duel.lng), parseFloat(duel.lat)]
+        );
+
         // Transfer staked territory if applicable
         if (duel.stake_territory_id && loserId) {
           await client.query(

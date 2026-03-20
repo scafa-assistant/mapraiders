@@ -1,5 +1,5 @@
 -- ============================================================
--- Gridwalker Seed Data
+-- MapRaiders Seed Data
 -- Development / testing data for local environment.
 -- Run AFTER schema.sql has been applied.
 -- ============================================================

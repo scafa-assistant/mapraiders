@@ -32,7 +32,7 @@ router.post(
         success: true,
         data: {
           report_id: reportId,
-          message: 'Report submitted. Thank you for helping keep Gridwalker safe.',
+          message: 'Report submitted. Thank you for helping keep MapRaiders safe.',
         },
       });
     } catch (err: any) {

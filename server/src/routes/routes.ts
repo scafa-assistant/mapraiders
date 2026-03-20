@@ -10,7 +10,7 @@ import { validateBody } from '../middleware/validation';
 import { createRouteSchema, uploadRouteSchema } from '../middleware/validation';
 import { claimLimiter } from '../middleware/rateLimit';
 import { processRouteClaim } from '../services/claimEngine';
-import { queryMany, queryOne } from '../config/database';
+import { queryMany, queryOne, query } from '../config/database';
 import { incrementLeaderboardScore } from '../services/leaderboardService';
 import { MovementClass, GpsPoint } from '../utils/types';
 
@@ -81,6 +81,12 @@ router.post(
     } catch (err: any) {
       console.error('[Routes] Create route error:', err);
 
+      // Award consolation XP for the effort (minimum XP for walking)
+      try {
+        const consolationXp = 10;
+        await query('UPDATE users SET xp = xp + $1 WHERE id = $2', [consolationXp, req.userId]);
+      } catch {}
+
       // Distinguish between user errors and server errors
       const isUserError = err.message?.includes('rejected') ||
                           err.message?.includes('too small') ||
@@ -90,6 +96,7 @@ router.post(
       return res.status(isUserError ? 400 : 500).json({
         success: false,
         error: err.message || 'Failed to process route',
+        consolation_xp: 10,
       });
     }
   }

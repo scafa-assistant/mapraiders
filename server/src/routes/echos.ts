@@ -21,12 +21,13 @@ function pointToWkt(lat: number, lng: number): string {
 }
 import { awardXp } from '../services/progressionEngine';
 import { incrementLeaderboardScore } from '../services/leaderboardService';
-import { DECAY, XP } from '../config/constants';
+import { DECAY, XP, UNLOCK_LEVELS } from '../config/constants';
 import { recordEvent } from '../services/placeMemoryService';
 import { isNightTime } from '../utils/geo';
 import { isInSilentZone } from '../services/silentZoneService';
 import { resonanceService } from '../services/resonanceService';
 import { wsService } from '../services/wsService';
+import { resetDecayAtPoint } from '../services/decayEngine';
 
 const router = Router();
 
@@ -134,6 +135,20 @@ router.post(
         });
       }
 
+      // Check: user must own territory at location OR be Creator level (16+)
+      const userLevel = await queryOne<{ level: number }>('SELECT level FROM users WHERE id = $1', [req.userId]);
+      const ownsTerritory = await queryOne<{ id: string }>(
+        `SELECT id FROM territories WHERE owner_id = $1
+         AND ST_Contains(polygon, ST_SetSRID(ST_MakePoint($2, $3), 4326))`,
+        [req.userId, lng, lat]
+      );
+      if (!ownsTerritory && (!userLevel || userLevel.level < UNLOCK_LEVELS.creator)) {
+        return res.status(403).json({
+          success: false,
+          message: `You must own territory at this location or be Creator level (${UNLOCK_LEVELS.creator}+)`,
+        });
+      }
+
       // Check if location is in a Silent Zone
       const inSilentZone = await isInSilentZone(lat, lng);
       if (inSilentZone) {
@@ -201,6 +216,13 @@ router.post(
         return res.status(500).json({ success: false, message: 'Failed to create echo' });
       }
 
+      // Reset territory decay at this location (content activity keeps territories alive)
+      try {
+        await resetDecayAtPoint(lat, lng);
+      } catch (_err) {
+        // Decay reset is non-critical
+      }
+
       // Award instant XP for echo drop
       const xpResult = await awardXp(req.userId!, XP.ECHO_DROP_INSTANT, 'echo_drop');
 
@@ -260,15 +282,19 @@ router.post('/:id/like', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Get echo
+    // Get echo (include location for decay reset)
     const echo = await queryOne<{
       id: string;
       creator_id: string;
       likes: number;
       expires_at: Date;
       status: string;
+      lat: number;
+      lng: number;
     }>(
-      "SELECT id, creator_id, likes, expires_at, status FROM echos WHERE id = $1 AND status = 'active'",
+      `SELECT id, creator_id, likes, expires_at, status,
+              ST_Y(location) as lat, ST_X(location) as lng
+       FROM echos WHERE id = $1 AND status = 'active'`,
       [id]
     );
 
@@ -317,6 +343,13 @@ router.post('/:id/like', authenticate, async (req: Request, res: Response) => {
        RETURNING likes, expires_at`,
       [newExpiry, id]
     );
+
+    // Reset territory decay at the echo's location (engagement keeps territories alive)
+    try {
+      await resetDecayAtPoint(echo.lat, echo.lng);
+    } catch (_err) {
+      // Decay reset is non-critical
+    }
 
     // Check if echo creator should get bonus XP (crossed popular threshold)
     const newLikes = updated?.likes || echo.likes + 1;

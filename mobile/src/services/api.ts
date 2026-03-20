@@ -6,10 +6,10 @@ import type { GpsPoint } from '../utils/types';
 
 const API_BASE = __DEV__
   ? 'http://192.168.3.60:3000/api'
-  : 'https://api.gridwalker.app/api';
+  : 'https://api.mapraiders.com/api';
 
-const TOKEN_KEY = '@gridwalker_token';
-const REFRESH_TOKEN_KEY = '@gridwalker_refresh_token';
+const TOKEN_KEY = '@mapraiders_token';
+const REFRESH_TOKEN_KEY = '@mapraiders_refresh_token';
 
 // ─── Axios Instance ─────────────────────────────────────────────────────────
 

@@ -9,7 +9,7 @@ import { DECAY } from '../config/constants';
 
 /**
  * Decay engine responsible for all time-based degradation
- * and promotion mechanics in Gridwalker.
+ * and promotion mechanics in MapRaiders.
  *
  * Runs as daily scheduled jobs to:
  * - Decay unclaimed/undefended territories
@@ -323,3 +323,20 @@ export async function runAllDecay(): Promise<void> {
 }
 
 export const decayEngine = decayEngineInstance;
+
+/**
+ * Reset territory decay at a specific GPS point.
+ * Called when content activity (echo, like, quest step) occurs within a territory,
+ * keeping the territory alive by resetting its last_defended timestamp.
+ *
+ * @param lat - Latitude of the activity
+ * @param lng - Longitude of the activity
+ */
+export async function resetDecayAtPoint(lat: number, lng: number): Promise<void> {
+  await query(
+    `UPDATE territories SET last_defended = NOW()
+     WHERE ST_Contains(polygon, ST_SetSRID(ST_MakePoint($1, $2), 4326))
+     AND decay_level < 1.0`,
+    [lng, lat]
+  );
+}

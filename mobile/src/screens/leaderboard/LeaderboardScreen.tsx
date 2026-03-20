@@ -120,7 +120,7 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Leaderboard</Text>
-        <Text style={styles.headerSubtitle}>Top Gridwalkers</Text>
+        <Text style={styles.headerSubtitle}>Top MapRaiders</Text>
       </View>
 
       {/* Type Selector */}

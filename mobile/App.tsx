@@ -7,7 +7,7 @@ import { useAuthStore } from './src/store/authStore';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import MainNavigator from './src/navigation/MainNavigator';
 import { offlineQueue } from './src/services/offlineQueue';
-import { gridwalkerWs } from './src/services/websocket';
+import { mapRaidersWs } from './src/services/websocket';
 import { setupWsEventHandlers } from './src/services/wsEventHandler';
 import { registerForPushNotifications } from './src/services/notifications';
 import { userApi } from './src/services/api';
@@ -53,14 +53,14 @@ function AppContent() {
   // Connect/disconnect WebSocket based on auth state
   useEffect(() => {
     if (token) {
-      gridwalkerWs.connect();
+      mapRaidersWs.connect();
       const cleanupHandlers = setupWsEventHandlers();
       return () => {
         cleanupHandlers();
-        gridwalkerWs.disconnect();
+        mapRaidersWs.disconnect();
       };
     } else {
-      gridwalkerWs.disconnect();
+      mapRaidersWs.disconnect();
     }
   }, [token]);
 

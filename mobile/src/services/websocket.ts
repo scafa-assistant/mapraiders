@@ -1,5 +1,5 @@
 // ============================================================
-// Gridwalker WebSocket Client
+// MapRaiders WebSocket Client
 // Real-time connection to the server for live events such as
 // territory claims, nearby players, echoes, and challenges.
 // Auto-reconnects with exponential backoff.
@@ -9,12 +9,12 @@ import { getToken } from './api';
 
 const WS_URL = __DEV__
   ? 'ws://192.168.3.60:3000'
-  : 'wss://api.gridwalker.app';
+  : 'wss://api.mapraiders.com';
 
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
 
-class GridwalkerWs {
+class MapRaidersWs {
   private ws: WebSocket | null = null;
   private listeners: Map<string, Set<(data: any) => void>> = new Map();
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -172,4 +172,6 @@ class GridwalkerWs {
   }
 }
 
-export const gridwalkerWs = new GridwalkerWs();
+export const mapRaidersWs = new MapRaidersWs();
+/** @deprecated Use mapRaidersWs instead */
+export const gridwalkerWs = mapRaidersWs;

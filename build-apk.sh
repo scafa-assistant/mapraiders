@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo ""
 echo "======================================"
-echo "     GRIDWALKER - Build APK           "
+echo "     MAPRAIDERS - Build APK           "
 echo "======================================"
 echo ""
 

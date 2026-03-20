@@ -58,7 +58,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
     // Configure Android notification channel
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
-        name: 'Gridwalker',
+        name: 'MapRaiders',
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#00D4FF',

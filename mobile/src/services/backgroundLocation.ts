@@ -2,8 +2,8 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BACKGROUND_LOCATION_TASK = 'gridwalker-background-location';
-const BG_POINTS_KEY = '@gridwalker_bg_points';
+const BACKGROUND_LOCATION_TASK = 'mapraiders-background-location';
+const BG_POINTS_KEY = '@mapraiders_bg_points';
 
 // Define the background task OUTSIDE of any component
 TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }) => {
@@ -50,7 +50,7 @@ export async function startBackgroundTracking(): Promise<boolean> {
     distanceInterval: 5,
     showsBackgroundLocationIndicator: true,
     foregroundService: {
-      notificationTitle: 'Gridwalker',
+      notificationTitle: 'MapRaiders',
       notificationBody: 'Recording your route...',
       notificationColor: '#00D4FF',
     },

@@ -1,6 +1,6 @@
 // ============================================================
 // Claim Engine
-// The heart of Gridwalker: processes GPS routes into territory
+// The heart of MapRaiders: processes GPS routes into territory
 // claims with full bonus stacking, overlap handling, and takeovers
 // ============================================================
 
@@ -145,6 +145,14 @@ export class ClaimEngine {
     // Anti-grind multiplier
     const antiGrindMultiplier = await this.checkDiminishingReturns(userId, polygonWkt);
 
+    // Clan proximity bonus: if clan members claimed nearby in last hour, +10% bonus per member
+    let clanBonus = 1.0;
+    try {
+      clanBonus = await this.getClanProximityBonus(userId, centerLat, centerLng);
+    } catch (err) {
+      console.error('[ClaimEngine] Clan proximity bonus error:', err);
+    }
+
     // 5b. Balance: First-walk bonus (2x for streets never claimed by anyone)
     let firstWalkMultiplier = 1.0;
     try {
@@ -153,7 +161,7 @@ export class ClaimEngine {
       console.error('[ClaimEngine] First-walk bonus check error:', err);
     }
 
-    // 5c. Event multipliers: Eclipse (2x) and Blitz (10x)
+    // 5c. Event multipliers: Eclipse (2x), Blitz (10x), Wave Attack
     let eventMultiplier = 1.0;
     try {
       const eclipse = await eventEngine.getActiveEclipse();
@@ -164,6 +172,15 @@ export class ClaimEngine {
       const blitzMultiplier = await eventEngine.getBlitzMultiplier(centerLat, centerLng);
       if (blitzMultiplier > eventMultiplier) {
         eventMultiplier = blitzMultiplier;
+      }
+      // Also check for wave_attack events
+      const waveEvent = await queryOne<{ mult: string }>(`
+        SELECT config->>'xp_multiplier' as mult FROM game_events
+        WHERE type = 'wave_attack' AND status = 'active'
+        AND $1 = ANY(participants)
+      `, [userId]);
+      if (waveEvent) {
+        eventMultiplier = Math.max(eventMultiplier, parseFloat(waveEvent.mult) || 1.0);
       }
     } catch (err) {
       console.error('[ClaimEngine] Event multiplier check error:', err);
@@ -206,8 +223,8 @@ export class ClaimEngine {
       calculation.finalValue = Math.max(1, Math.round(calculation.finalValue * trapSlowMultiplier));
     }
 
-    // Apply balance + event multipliers
-    const combinedBonus = firstWalkMultiplier * eventMultiplier * returnBonusMultiplier;
+    // Apply balance + event + clan multipliers
+    const combinedBonus = firstWalkMultiplier * eventMultiplier * returnBonusMultiplier * clanBonus;
     if (combinedBonus > 1.0) {
       calculation.finalValue = Math.max(1, Math.round(calculation.finalValue * combinedBonus));
     }
@@ -672,6 +689,29 @@ export class ClaimEngine {
     }
 
     return NOVELTY_MULTIPLIERS.REPEAT;
+  }
+
+  /**
+   * Calculate clan proximity bonus based on nearby clan members' recent claims.
+   * +10% per nearby clan member who claimed in the last hour, within 500m.
+   *
+   * @param userId - Claiming player ID
+   * @param lat - Claim center latitude
+   * @param lng - Claim center longitude
+   * @returns Multiplier (1.0 = no bonus, 1.1 = 1 member, 1.2 = 2 members, etc.)
+   */
+  private async getClanProximityBonus(userId: string, lat: number, lng: number): Promise<number> {
+    const result = await queryOne<{ nearby_members: string }>(`
+      SELECT COUNT(DISTINCT t.owner_id) as nearby_members
+      FROM territories t
+      JOIN clan_members cm1 ON cm1.user_id = $1
+      JOIN clan_members cm2 ON cm2.clan_id = cm1.clan_id AND cm2.user_id = t.owner_id
+      WHERE t.owner_id != $1
+      AND t.claimed_at > NOW() - INTERVAL '1 hour'
+      AND ST_DWithin(t.polygon::geography, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, 500)
+    `, [userId, lng, lat]);
+    const members = parseInt(result?.nearby_members || '0');
+    return members > 0 ? 1.0 + (members * 0.1) : 1.0;
   }
 }
 

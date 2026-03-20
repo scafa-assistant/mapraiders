@@ -8,6 +8,7 @@
 import { query, queryOne, queryMany } from '../config/database';
 import { sendNotification } from './notificationService';
 import { wsService } from './wsService';
+import { UNLOCK_LEVELS } from '../config/constants';
 
 /** Trap record from the database */
 export interface Trap {
@@ -69,6 +70,12 @@ export class TrapService {
     // Validate trap type
     if (!VALID_TRAP_TYPES.includes(type as any)) {
       throw new Error(`Invalid trap type. Must be one of: ${VALID_TRAP_TYPES.join(', ')}`);
+    }
+
+    // Level gate: trap placement requires Architect level (31+)
+    const user = await queryOne<{ level: number }>('SELECT level FROM users WHERE id = $1', [userId]);
+    if (!user || user.level < UNLOCK_LEVELS.architect) {
+      throw new Error(`Trap placement requires Architect level (${UNLOCK_LEVELS.architect}+)`);
     }
 
     // Validate coordinates

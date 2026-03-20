@@ -127,7 +127,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
         weather_condition: weatherCondition || undefined,
         time_window: timeWindow,
       });
-      Alert.alert('Challenge Created!', 'Other Gridwalkers nearby can now attempt your challenge.', [
+      Alert.alert('Challenge Created!', 'Other MapRaiders nearby can now attempt your challenge.', [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {

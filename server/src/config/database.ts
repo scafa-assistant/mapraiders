@@ -10,7 +10,7 @@ dotenv.config();
 const poolConfig: PoolConfig = {
   connectionString:
     process.env.DATABASE_URL ||
-    'postgresql://postgres:postgres@localhost:5432/gridwalker',
+    'postgresql://postgres:postgres@localhost:5432/mapraiders',
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
