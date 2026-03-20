@@ -7,9 +7,8 @@
 
 import { getToken } from './api';
 
-const WS_URL = __DEV__
-  ? 'ws://192.168.3.60:3000'
-  : 'wss://api.mapraiders.com';
+// TODO: Change back when server is deployed to production
+const WS_URL = 'ws://192.168.3.60:3000';
 
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
