@@ -26,8 +26,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.login({ email, password });
-      const { token, user } = response.data;
-      await setTokens(token, response.data.refreshToken);
+      const { token, user, refreshToken } = response.data.data;
+      await setTokens(token, refreshToken);
       set({ token, user, isLoading: false });
 
       // Register push token after login
@@ -45,8 +45,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.register({ username, email, password });
-      const { token, user } = response.data;
-      await setTokens(token, response.data.refreshToken);
+      const { token, user, refreshToken } = response.data.data;
+      await setTokens(token, refreshToken);
       set({ token, user, isLoading: false });
 
       // Register push token after registration
@@ -64,8 +64,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.web3Login({ provider, idToken, userInfo });
-      const { token, user } = response.data;
-      await setTokens(token, response.data.refreshToken);
+      const { token, user, refreshToken } = response.data.data;
+      await setTokens(token, refreshToken);
       set({ token, user, isLoading: false });
 
       // Register push token after web3 login

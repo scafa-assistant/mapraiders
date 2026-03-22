@@ -44,33 +44,6 @@ function AppContent() {
     setOnboardingComplete(true);
   };
 
-  // DEV: Auto-login bypass for testing
-  const autoLoginDone = React.useRef(false);
-  useEffect(() => {
-    if (!token && !autoLoginDone.current) {
-      autoLoginDone.current = true;
-      // Set fake token and user to skip login screen
-      useAuthStore.setState({
-        token: 'dev-bypass-token',
-        user: {
-          id: '00000000-0000-0000-0000-000000000001',
-          username: 'TestWalker',
-          email: 'walker@test.com',
-          level: 25,
-          xp: 15000,
-          xpToNextLevel: 20000,
-          totalClaims: 42,
-          totalArea: 85000,
-          questsCompleted: 12,
-          currentStreak: 5,
-          longestStreak: 14,
-          titles: ['Pioneer', 'Trail Blazer'],
-          classBreakdown: { walker: 60, runner: 20, cyclist: 10, dog_walker: 5, skater: 3, driver: 2, unknown: 0 },
-          createdAt: '2026-01-15T10:00:00Z',
-        } as any,
-      });
-    }
-  }, [token]);
   const networkCleanupRef = useRef<(() => void) | null>(null);
 
   // Initialize offline queue and network listener on mount

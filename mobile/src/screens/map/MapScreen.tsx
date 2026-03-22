@@ -411,8 +411,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         style={styles.map}
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
         customMapStyle={DARK_MAP_STYLE}
-        showsUserLocation={false}
-        showsMyLocationButton={false}
+        showsUserLocation={true}
+        showsMyLocationButton={true}
+        followsUserLocation={true}
         showsCompass={false}
         rotateEnabled={false}
         initialRegion={
