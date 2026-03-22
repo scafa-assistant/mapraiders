@@ -9,20 +9,25 @@ const redirectUrl = 'mapraiders://auth';
 class Web3AuthService {
   private web3auth: Web3Auth | null = null;
   private initialized = false;
+  private initPromise: Promise<void> | null = null;
 
   async init(): Promise<void> {
     if (this.initialized) return;
+    // Prevent multiple simultaneous init calls
+    if (this.initPromise) return this.initPromise;
 
+    this.initPromise = this._doInit();
+    return this.initPromise;
+  }
+
+  private async _doInit(): Promise<void> {
     try {
-      this.web3auth = new Web3Auth(WebBrowser, SecureStore, {
+      const web3auth = new Web3Auth(WebBrowser, SecureStore, {
         clientId: WEB3AUTH_CLIENT_ID,
         network: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
         redirectUrl,
-        loginConfig: {},
         whiteLabel: {
           appName: 'MapRaiders',
-          logoLight: '',
-          logoDark: '',
           defaultLanguage: 'en',
           mode: 'dark',
           theme: {
@@ -31,10 +36,18 @@ class Web3AuthService {
         },
       });
 
+      // Web3Auth SDK v7 requires explicit init() call after constructor
+      if (typeof web3auth.init === 'function') {
+        await web3auth.init();
+      }
+
+      this.web3auth = web3auth;
       this.initialized = true;
-      console.log('[Web3Auth] Initialized');
-    } catch (error) {
-      console.error('[Web3Auth] Init error:', error);
+      console.log('[Web3Auth] Initialized successfully');
+    } catch (error: any) {
+      console.error('[Web3Auth] Init error:', error?.message || error);
+      this.initPromise = null; // Allow retry on next call
+      throw error; // Propagate so caller knows init failed
     }
   }
 
@@ -54,26 +67,38 @@ class Web3AuthService {
     provider: string,
     extraOptions?: Record<string, string>
   ): Promise<{ idToken: string; userInfo: any } | null> {
+    // Ensure SDK is initialized
+    if (!this.initialized) {
+      try {
+        await this.init();
+      } catch (error: any) {
+        console.error('[Web3Auth] Cannot login - init failed:', error?.message);
+        throw new Error('Web3Auth initialization failed. Please try again.');
+      }
+    }
+
     if (!this.web3auth) {
-      await this.init();
+      throw new Error('Web3Auth not available');
     }
 
     try {
-      const response = await this.web3auth!.login({
+      console.log('[Web3Auth] Starting login with provider:', provider);
+      const response = await this.web3auth.login({
         loginProvider: provider,
         ...extraOptions,
       });
 
       if (response) {
+        console.log('[Web3Auth] Login successful');
         return {
           idToken: response.privKey || '',
           userInfo: response.userInfo || {},
         };
       }
       return null;
-    } catch (error) {
-      console.error('[Web3Auth] Login error:', error);
-      return null;
+    } catch (error: any) {
+      console.error('[Web3Auth] Login error:', error?.message || error);
+      throw error; // Let the UI handle the error
     }
   }
 
