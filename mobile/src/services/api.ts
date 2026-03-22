@@ -4,8 +4,7 @@ import type { GpsPoint } from '../utils/types';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-// TODO: Change back to api.mapraiders.com when server is deployed to production
-const API_BASE = 'http://192.168.3.60:3000/api';
+const API_BASE = 'https://api.mapraiders.com/api';
 
 const TOKEN_KEY = '@mapraiders_token';
 const REFRESH_TOKEN_KEY = '@mapraiders_refresh_token';
