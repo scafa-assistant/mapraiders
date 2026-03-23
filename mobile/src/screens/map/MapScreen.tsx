@@ -209,9 +209,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
   // Start/stop echo proximity monitoring on mount/unmount
   useEffect(() => {
-    echoProximityService.start();
+    try { echoProximityService.start(); } catch {}
     return () => {
-      echoProximityService.stop();
+      try { echoProximityService.stop(); } catch {}
     };
   }, []);
 
@@ -404,6 +404,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     outputRange: ['rgba(255, 71, 87, 0.8)', 'rgba(255, 71, 87, 1)'],
   });
 
+  // Safe arrays — prevent crash if server returns unexpected format
+  const safeRoute = Array.isArray(currentRoute) ? currentRoute : [];
+  const safeTerritories = Array.isArray(territories) ? territories : [];
+  const safeQuests = Array.isArray(nearbyQuests) ? nearbyQuests : [];
+  const safeEchos = Array.isArray(nearbyEchos) ? nearbyEchos : [];
+  const safeArtifacts = Array.isArray(nearbyArtifacts) ? nearbyArtifacts : [];
+  const safeZones = Array.isArray(silentZones) ? silentZones : [];
+  const safeResonance = Array.isArray(resonanceSpots) ? resonanceSpots : [];
+
   return (
     <View style={styles.container}>
       <MapView
@@ -435,7 +444,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onLongPress={handleMapLongPress}
       >
         {/* Territory Polygons */}
-        {(territories || []).map((territory) => (
+        {safeTerritories.map((territory) => (
           <Polygon
             key={territory.id}
             coordinates={territory.polygon.map((p) => ({
@@ -455,9 +464,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         ))}
 
         {/* Current Route Line */}
-        {isTracking && currentRoute.length >= 2 && (
+        {isTracking && safeRoute.length >= 2 && (
           <Polyline
-            coordinates={currentRoute.map((p) => ({
+            coordinates={safeRoute.map((p) => ({
               latitude: p.latitude,
               longitude: p.longitude,
             }))}
@@ -468,7 +477,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         )}
 
         {/* Nearby Quest Markers */}
-        {nearbyQuests.map((quest) => (
+        {safeQuests.map((quest) => (
           <Marker
             key={`quest-${quest.id}`}
             coordinate={{
@@ -488,7 +497,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         ))}
 
         {/* Nearby Echo Markers */}
-        {nearbyEchos.map((echo) => (
+        {safeEchos.map((echo) => (
           <EchoMarker
             key={`echo-${echo.id}`}
             echo={echo}
@@ -498,7 +507,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         ))}
 
         {/* Nearby Artifact Markers */}
-        {nearbyArtifacts.map((artifact) => {
+        {safeArtifacts.map((artifact) => {
           const rarityColor =
             artifact.rarity === 'legendary'
               ? '#FFB800'
@@ -527,7 +536,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* Silent Zone Polygons */}
-        {silentZones.map((zone) => {
+        {safeZones.map((zone) => {
           const coords = zone.polygon?.coordinates?.[0];
           if (!coords || coords.length < 3) return null;
           return (
@@ -546,7 +555,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* Resonance Spot Markers */}
-        {resonanceSpots.map((spot) => {
+        {safeResonance.map((spot) => {
           const levelColor =
             spot.resonance_level >= 4 ? '#FFB800' :
             spot.resonance_level >= 3 ? '#FF8C00' :
@@ -753,7 +762,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{currentRoute.length}</Text>
+                <Text style={styles.statValue}>{safeRoute.length}</Text>
                 <Text style={styles.statLabel}>Points</Text>
               </View>
             </View>
