@@ -1,120 +1,72 @@
-// Web3Auth Service — LAZY LOADED
-// The Web3Auth SDK crashes on import in Hermes (React Native) because it
-// uses Node.js APIs (EventEmitter.bind, etc.) at module level.
-// Solution: dynamic import() only when the user actually taps a social login button.
+// Social Login Service
+// Uses native Google Sign-In instead of Web3Auth (which is incompatible with Hermes)
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
-const WEB3AUTH_CLIENT_ID = 'BL1ISQZjJwjmZYdNF9g7SwyTihaKXu28jrnWZRSJt1_jAbC2P9t_KeRFHmJ3V82nQElSYxGy9W3DMve6VZvlIs8';
-const redirectUrl = 'mapraiders://auth';
+// Configure Google Sign-In
+GoogleSignin.configure({
+  webClientId: '', // Will be set from Google Cloud Console OAuth client ID
+  offlineAccess: true,
+});
 
-let web3authInstance: any = null;
-let initialized = false;
-let initPromise: Promise<void> | null = null;
-
-async function doInit(): Promise<void> {
-  try {
-    console.log('[Web3Auth] Loading SDK...');
-
-    // Dynamic imports — only loaded when needed, not at app startup
-    const WebBrowser = await import('expo-web-browser');
-    const SecureStore = await import('expo-secure-store');
-    const { default: Web3Auth } = await import('@web3auth/react-native-sdk');
-    const { CommonPrivateKeyProvider } = await import('@web3auth/base-provider');
-
-    const chainConfig = {
-      chainNamespace: 'other' as any,
-      chainId: '0x1',
-      rpcTarget: 'https://rpc.ankr.com/eth',
-    };
-
-    const privateKeyProvider = new CommonPrivateKeyProvider({
-      config: { chainConfig },
-    });
-
-    const w3a = new Web3Auth(WebBrowser, SecureStore, {
-      clientId: WEB3AUTH_CLIENT_ID,
-      network: 'sapphire_devnet' as any,
-      redirectUrl,
-      privateKeyProvider,
-      whiteLabel: {
-        appName: 'MapRaiders',
-        defaultLanguage: 'en',
-        mode: 'dark',
-        theme: { primary: '#00D4FF' },
-      },
-    });
-
-    await w3a.init();
-    web3authInstance = w3a;
-    initialized = true;
-    console.log('[Web3Auth] v8 SDK initialized successfully');
-  } catch (error: any) {
-    console.error('[Web3Auth] Init failed:', error?.message || error);
-    initPromise = null;
-    throw error;
-  }
-}
-
-class Web3AuthService {
-  async init(): Promise<void> {
-    if (initialized) return;
-    if (initPromise) return initPromise;
-    initPromise = doInit();
-    return initPromise;
-  }
-
+class SocialAuthService {
   async loginWithGoogle(): Promise<{ idToken: string; userInfo: any } | null> {
-    return this.login('google');
+    try {
+      console.log('[SocialAuth] Starting Google Sign-In...');
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+
+      if (response.data) {
+        const { idToken } = response.data;
+        const user = response.data.user;
+        console.log('[SocialAuth] Google login successful:', user.email);
+
+        return {
+          idToken: idToken || '',
+          userInfo: {
+            email: user.email,
+            name: user.name,
+            profileImage: user.photo,
+          },
+        };
+      }
+      return null;
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('[SocialAuth] User cancelled Google sign-in');
+        return null;
+      }
+      if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('[SocialAuth] Sign-in already in progress');
+        return null;
+      }
+      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.error('[SocialAuth] Google Play Services not available');
+        throw new Error('Google Play Services not available on this device');
+      }
+      console.error('[SocialAuth] Google login error:', error?.message || error);
+      throw error;
+    }
   }
 
   async loginWithApple(): Promise<{ idToken: string; userInfo: any } | null> {
-    return this.login('apple');
+    // Apple Sign-In not implemented yet for Android
+    throw new Error('Apple Sign-In is only available on iOS');
   }
 
-  async loginWithEmail(email: string): Promise<{ idToken: string; userInfo: any } | null> {
-    return this.login('email_passwordless', { login_hint: email });
-  }
-
-  private async login(
-    provider: string,
-    extraOptions?: Record<string, string>
-  ): Promise<{ idToken: string; userInfo: any } | null> {
-    if (!initialized) {
-      await this.init();
-    }
-
-    if (!web3authInstance) {
-      throw new Error('Web3Auth not available after init');
-    }
-
-    console.log('[Web3Auth] Starting login with provider:', provider);
-    const result = await web3authInstance.login({
-      loginProvider: provider,
-      ...extraOptions,
-    });
-
-    if (result) {
-      const userInfo = web3authInstance.userInfo();
-      console.log('[Web3Auth] Login successful:', userInfo?.email);
-      return {
-        idToken: userInfo?.idToken || '',
-        userInfo: userInfo || {},
-      };
-    }
-    return null;
+  async loginWithEmail(_email: string): Promise<{ idToken: string; userInfo: any } | null> {
+    // Email passwordless — use the server's regular login for now
+    throw new Error('Please use email + password login below');
   }
 
   async logout(): Promise<void> {
-    if (!web3authInstance) return;
     try {
-      await web3authInstance.logout();
-    } catch (error) {
-      console.error('[Web3Auth] Logout error:', error);
-    }
+      await GoogleSignin.signOut();
+    } catch {}
   }
 
   isInitialized(): boolean {
-    return initialized;
+    return true;
   }
 }
 
-export const web3authService = new Web3AuthService();
+export const web3authService = new SocialAuthService();
