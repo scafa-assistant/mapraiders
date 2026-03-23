@@ -231,7 +231,7 @@ export class ClaimEngine {
 
     // 7. Save route (with visibility delay for anti-stalking)
     const distance = pathDistance(points);
-    const duration = pathDuration(points);
+    const duration = Math.round(pathDuration(points));
 
     await query(
       `INSERT INTO routes (user_id, points, polygon, class, distance_m, duration_s, weather_bonus, trust_score)
