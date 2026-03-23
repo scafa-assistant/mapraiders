@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "988585973091-dc1dm5k44dhe0u6u997mq9n73ons9rcv.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mapraiders.app",
-            "certificate_hash": "3fa8de75e954ce93be60dc45f461431b0274beb9"
-          }
-        },
-        {
           "client_id": "988585973091-pe5oe30v67n25jodvcj83ottbvvi3tg2.apps.googleusercontent.com",
           "client_type": 3
         }

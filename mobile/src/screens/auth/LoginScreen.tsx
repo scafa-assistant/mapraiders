@@ -49,11 +49,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       const result = provider === 'google'
         ? await web3authService.loginWithGoogle()
         : await web3authService.loginWithApple();
-      if (result) {
-        await web3Login(provider, result.idToken, result.userInfo);
+      if (result && result.userInfo?.email) {
+        await web3Login(provider, result.idToken || 'google-native', result.userInfo);
       }
-    } catch (_err) {
-      // Error handled by store
+    } catch (err: any) {
+      Alert.alert('Login Error', err?.message || 'Social login failed');
     } finally {
       setSocialLoading(null);
     }

@@ -202,8 +202,8 @@ router.post(
       // provider: 'google', 'apple', 'email'
       // userInfo: { email, name, profileImage, ... }
 
-      if (!idToken || !userInfo?.email) {
-        return res.status(400).json({ success: false, message: 'Invalid Web3Auth data' });
+      if (!userInfo?.email) {
+        return res.status(400).json({ success: false, message: 'Email is required for social login' });
       }
 
       // Check if user exists with this email
