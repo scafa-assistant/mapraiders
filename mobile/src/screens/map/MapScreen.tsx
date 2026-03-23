@@ -898,7 +898,8 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 220,
+    bottom: 195,
+    zIndex: 10,
     width: 64,
     height: 64,
     borderRadius: 32,
@@ -971,19 +972,19 @@ const styles = StyleSheet.create({
   },
   bottomSheet: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 85,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(13, 18, 32, 0.96)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: 'rgba(13, 18, 32, 0.95)',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     borderTopWidth: 1,
     borderColor: '#1A2340',
-    minHeight: 140,
-    paddingBottom: 100,
+    maxHeight: 100,
+    paddingBottom: 8,
   },
   bottomSheetExpanded: {
-    minHeight: 240,
+    maxHeight: 200,
   },
   bottomSheetHandle: {
     alignItems: 'center',
@@ -1065,17 +1066,17 @@ const styles = StyleSheet.create({
   },
   idlePrompt: {
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   idleText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '600',
   },
   idleSubtext: {
     color: '#555E78',
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: 11,
+    marginTop: 2,
   },
   claimOverlay: {
     position: 'absolute',
