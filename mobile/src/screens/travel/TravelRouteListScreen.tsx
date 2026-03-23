@@ -32,7 +32,8 @@ export default function TravelRouteListScreen({ navigation }: TravelRouteListScr
         currentLocation.longitude,
         10000
       );
-      setRoutes(data.data ?? data ?? []);
+      const raw = data?.data?.routes ?? data?.data ?? data?.routes ?? data ?? [];
+      setRoutes(Array.isArray(raw) ? raw : []);
     } catch (_err) {
       // Network error
     } finally {
@@ -55,7 +56,8 @@ export default function TravelRouteListScreen({ navigation }: TravelRouteListScr
     return `${(meters / 1000).toFixed(1)}km`;
   };
 
-  const sortedRoutes = [...routes].sort((a, b) => {
+  const safeRoutes = Array.isArray(routes) ? routes : [];
+  const sortedRoutes = [...safeRoutes].sort((a, b) => {
     switch (sortMode) {
       case 'highest_rated':
         return (b.rating ?? 0) - (a.rating ?? 0);
