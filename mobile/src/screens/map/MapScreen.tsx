@@ -390,6 +390,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         setTimeout(() => setShowClaimResult(false), 4000);
 
         // Refresh territories on the map so the new claim appears
+        // Small delay to ensure server has committed the territory
+        await new Promise(resolve => setTimeout(resolve, 2000));
         if (mapRef.current) {
           try {
             const camera = await mapRef.current.getCamera();

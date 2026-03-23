@@ -561,7 +561,7 @@ export class ClaimEngine {
         const existingId = ownOverlap.rows[0].id;
         result = await client.query(
           `UPDATE territories
-           SET polygon = ST_MakeValid(ST_Union(polygon, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($1)), 4326))),
+           SET polygon = ST_CollectionExtract(ST_MakeValid(ST_Union(polygon, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($1)), 4326))), 3),
                claim_value = claim_value + $2,
                last_defended = NOW()
            WHERE id = $3
