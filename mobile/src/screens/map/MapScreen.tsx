@@ -712,65 +712,33 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         )}
       </TouchableOpacity>
 
-      {/* Bottom Sheet */}
-      <View style={[styles.bottomSheet, bottomSheetExpanded && styles.bottomSheetExpanded]}>
-        <TouchableOpacity
-          style={styles.bottomSheetHandle}
-          onPress={() => setBottomSheetExpanded(!bottomSheetExpanded)}
-        >
-          <View style={styles.handleBar} />
-        </TouchableOpacity>
-
-        <View style={styles.bottomSheetContent}>
-          {/* Class Indicator */}
-          <View style={styles.classRow}>
-            <View
-              style={[
-                styles.classBadge,
-                { backgroundColor: `${CLASS_COLORS[detectedClass]}20` },
-              ]}
-            >
-              <Ionicons
-                name={CLASS_ICONS[detectedClass]}
-                size={18}
-                color={CLASS_COLORS[detectedClass]}
-              />
-              <Text style={[styles.classText, { color: CLASS_COLORS[detectedClass] }]}>
-                {CLASS_LABELS[detectedClass]}
-              </Text>
-            </View>
-
-            {isTracking && (
-              <View style={styles.recordingIndicator}>
-                <View style={styles.recordingDot} />
-                <Text style={styles.recordingText}>REC</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Tracking Stats */}
-          {isTracking && (
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{formatDistance(totalDistance)}</Text>
-                <Text style={styles.statLabel}>Distance</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{formatDuration()}</Text>
-                <Text style={styles.statLabel}>Duration</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{safeRoute.length}</Text>
-                <Text style={styles.statLabel}>Points</Text>
-              </View>
-            </View>
-          )}
-
-          {/* Idle prompt removed - button is self-explanatory */}
-        </View>
+      {/* Small class badge bottom-left */}
+      <View style={styles.classBadgeFloat}>
+        <Ionicons
+          name={CLASS_ICONS[detectedClass]}
+          size={14}
+          color={CLASS_COLORS[detectedClass]}
+        />
+        <Text style={[styles.classBadgeText, { color: CLASS_COLORS[detectedClass] }]}>
+          {CLASS_LABELS[detectedClass]}
+        </Text>
+        {isTracking && <View style={styles.recDotSmall} />}
       </View>
+
+      {/* Tracking Stats Bar (only when recording) */}
+      {isTracking && (
+        <View style={styles.trackingBar}>
+          <Text style={styles.trackingStatText}>{formatDistance(totalDistance)}</Text>
+          <View style={styles.trackingDot} />
+          <Text style={styles.trackingStatText}>{formatDuration()}</Text>
+          <View style={styles.trackingDot} />
+          <Text style={styles.trackingStatText}>{safeRoute.length} pts</Text>
+          <View style={styles.recBadge}>
+            <View style={styles.recDotAnim} />
+            <Text style={styles.recText}>REC</Text>
+          </View>
+        </View>
+      )}
 
       {/* Claim Result Overlay */}
       {showClaimResult && claimResult && (
@@ -961,21 +929,73 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#FFFFFF',
   },
-  bottomSheet: {
+  classBadgeFloat: {
     position: 'absolute',
-    bottom: 85,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(13, 18, 32, 0.95)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopWidth: 1,
+    bottom: 96,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 5,
+    borderWidth: 1,
     borderColor: '#1A2340',
-    maxHeight: 100,
-    paddingBottom: 8,
   },
-  bottomSheetExpanded: {
-    maxHeight: 200,
+  classBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  recDotSmall: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FF4757',
+    marginLeft: 4,
+  },
+  trackingBar: {
+    position: 'absolute',
+    bottom: 96,
+    left: 16,
+    right: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(13, 18, 32, 0.92)',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+  },
+  trackingStatText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  trackingDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: '#555E78',
+  },
+  recBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    gap: 4,
+  },
+  recDotAnim: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FF4757',
+  },
+  recText: {
+    color: '#FF4757',
+    fontSize: 10,
+    fontWeight: '800',
   },
   bottomSheetHandle: {
     alignItems: 'center',
