@@ -235,7 +235,7 @@ export const createEchoSchema = z.object({
 // ---- Challenge Schemas ----
 
 export const createChallengeSchema = z.object({
-  template: z.enum(['photo_spot', 'speed_run', 'collect_items', 'trivia', 'stealth', 'endurance', 'exploration', 'social']),
+  template: z.enum(['distance_sprint', 'area_claim', 'elevation_climb', 'step_count', 'time_walk', 'explore_new', 'photo_spot', 'speed_run', 'collect_items', 'trivia', 'stealth', 'endurance', 'exploration', 'social']),
   location: z.object({
     lat: z.number().min(-90).max(90),
     lng: z.number().min(-180).max(180),
