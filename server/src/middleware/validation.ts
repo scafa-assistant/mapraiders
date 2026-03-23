@@ -121,13 +121,18 @@ export const locationSchema = z.object({
 });
 
 export const gpsPointSchema = z.object({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
-  timestamp: z.number().int().positive(),
+  lat: z.number().min(-90).max(90).optional(),
+  lng: z.number().min(-180).max(180).optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
+  timestamp: z.number(),
   accuracy: z.number().optional(),
   altitude: z.number().optional(),
   speed: z.number().optional(),
-});
+}).refine(
+  (p) => (p.lat != null || p.latitude != null) && (p.lng != null || p.longitude != null),
+  { message: 'Either lat/lng or latitude/longitude is required' }
+);
 
 // ---- Auth Schemas ----
 
