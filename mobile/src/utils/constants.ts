@@ -34,7 +34,7 @@ export const CLASS_LABELS: Record<MovementClass, string> = {
 
 // ─── Theme ──────────────────────────────────────────────────────────────────
 
-export const THEME = {
+export const DARK_THEME = {
   bg: '#0A0E17',
   surface: '#141B2D',
   primary: '#00D4FF',
@@ -46,6 +46,22 @@ export const THEME = {
   textSecondary: '#8892B0',
   border: '#1E293B',
 } as const;
+
+export const LIGHT_THEME: typeof DARK_THEME = {
+  bg: '#F5F5F5',
+  surface: '#FFFFFF',
+  primary: '#0099CC',
+  secondary: '#6B4EFF',
+  accent: '#00CC66',
+  warning: '#FF9900',
+  danger: '#FF3333',
+  text: '#1A1A1A',
+  textSecondary: '#666666',
+  border: '#E0E0E0',
+};
+
+// Backward compatibility — default export points to dark theme
+export const THEME = DARK_THEME;
 
 // ─── Layout ─────────────────────────────────────────────────────────────────
 

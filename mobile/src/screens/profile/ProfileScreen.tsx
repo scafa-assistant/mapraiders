@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { CLASS_COLORS, CLASS_LABELS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
 import { formatArea, formatNumber, formatXP } from '../../utils/formatters';
 import { notificationApi } from '../../services/api';
 import StatBar from '../../components/StatBar';
@@ -20,6 +21,7 @@ import type { ProfileScreenProps, MovementClass } from '../../navigation/types';
 
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const { user, refreshProfile } = useAuthStore();
+  const theme = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
@@ -41,9 +43,9 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
   if (!user) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading profile...</Text>
+          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>Loading profile...</Text>
         </View>
       </SafeAreaView>
     );
@@ -68,40 +70,40 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const titles = (user as any).titles || [];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={THEME.primary}
-            colors={[THEME.primary]}
+            tintColor={theme.primary}
+            colors={[theme.primary]}
           />
         }
       >
         {/* Header with settings */}
         <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
           <TouchableOpacity
-            style={styles.settingsBtn}
+            style={[styles.settingsBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Ionicons name="settings-outline" size={22} color={THEME.textSecondary} />
+            <Ionicons name="settings-outline" size={22} color={theme.textSecondary} />
           </TouchableOpacity>
         </View>
 
         {/* User Card */}
-        <View style={styles.userCard}>
+        <View style={[styles.userCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.avatarCircle}>
-            <Ionicons name="person" size={36} color={THEME.primary} />
+            <Ionicons name="person" size={36} color={theme.primary} />
           </View>
-          <Text style={styles.username}>{user.username}</Text>
+          <Text style={[styles.username, { color: theme.text }]}>{user.username}</Text>
 
           {/* Level + XP */}
           <View style={styles.levelRow}>
             <View style={styles.levelBadge}>
-              <Text style={styles.levelText}>Level {user.level}</Text>
+              <Text style={[styles.levelText, { color: theme.primary }]}>Level {user.level}</Text>
             </View>
             <ClassBadge movementClass={dominantClass} size="sm" />
           </View>
@@ -110,7 +112,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <StatBar
               current={Number(user.xp) || 0}
               max={Number(xpToNextLevel) || 100}
-              color={THEME.primary}
+              color={theme.primary}
               height={8}
               showPercentage={false}
               showValues
@@ -122,12 +124,12 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <View style={styles.titlesRow}>
               {titles.slice(0, 3).map((title) => (
                 <View key={title} style={styles.titleBadge}>
-                  <Ionicons name="ribbon-outline" size={12} color={THEME.warning} />
-                  <Text style={styles.titleText}>{title}</Text>
+                  <Ionicons name="ribbon-outline" size={12} color={theme.warning} />
+                  <Text style={[styles.titleText, { color: theme.warning }]}>{title}</Text>
                 </View>
               ))}
               {titles.length > 3 && (
-                <Text style={styles.moreText}>+{titles.length - 3}</Text>
+                <Text style={[styles.moreText, { color: theme.textSecondary }]}>+{titles.length - 3}</Text>
               )}
             </View>
           )}
@@ -135,46 +137,46 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
-          <View style={styles.statBox}>
-            <Ionicons name="map-outline" size={20} color={THEME.primary} />
-            <Text style={styles.statValue}>{formatNumber(totalClaims)}</Text>
-            <Text style={styles.statLabel}>Claims</Text>
+          <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="map-outline" size={20} color={theme.primary} />
+            <Text style={[styles.statValue, { color: theme.text }]}>{formatNumber(totalClaims)}</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Claims</Text>
           </View>
-          <View style={styles.statBox}>
-            <Ionicons name="resize-outline" size={20} color={THEME.accent} />
-            <Text style={styles.statValue}>{formatArea(totalArea)}</Text>
-            <Text style={styles.statLabel}>Area</Text>
+          <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="resize-outline" size={20} color={theme.accent} />
+            <Text style={[styles.statValue, { color: theme.text }]}>{formatArea(totalArea)}</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Area</Text>
           </View>
-          <View style={styles.statBox}>
-            <Ionicons name="flag-outline" size={20} color={THEME.secondary} />
-            <Text style={styles.statValue}>{formatNumber(questsCompleted)}</Text>
-            <Text style={styles.statLabel}>Quests</Text>
+          <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="flag-outline" size={20} color={theme.secondary} />
+            <Text style={[styles.statValue, { color: theme.text }]}>{formatNumber(questsCompleted)}</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Quests</Text>
           </View>
-          <View style={styles.statBox}>
-            <Ionicons name="star-outline" size={20} color={THEME.warning} />
-            <Text style={styles.statValue}>{formatXP(Number(user.xp) || 0)}</Text>
-            <Text style={styles.statLabel}>Total XP</Text>
+          <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="star-outline" size={20} color={theme.warning} />
+            <Text style={[styles.statValue, { color: theme.text }]}>{formatXP(Number(user.xp) || 0)}</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Total XP</Text>
           </View>
         </View>
 
         {/* Streak */}
-        <View style={styles.streakCard}>
+        <View style={[styles.streakCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.streakLeft}>
             <Ionicons name="flame" size={28} color="#FF6B35" />
             <View>
-              <Text style={styles.streakValue}>{currentStreak} Days</Text>
-              <Text style={styles.streakLabel}>Current Streak</Text>
+              <Text style={[styles.streakValue, { color: theme.text }]}>{currentStreak} Days</Text>
+              <Text style={[styles.streakLabel, { color: theme.textSecondary }]}>Current Streak</Text>
             </View>
           </View>
           <View style={styles.streakRight}>
-            <Text style={styles.bestStreakValue}>{longestStreak}</Text>
-            <Text style={styles.bestStreakLabel}>Best</Text>
+            <Text style={[styles.bestStreakValue, { color: theme.warning }]}>{longestStreak}</Text>
+            <Text style={[styles.bestStreakLabel, { color: theme.textSecondary }]}>Best</Text>
           </View>
         </View>
 
         {/* Class Breakdown */}
-        <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Movement Classes</Text>
+        <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Movement Classes</Text>
           {Object.entries(classBreakdown)
             .filter(([, count]) => Number(count) > 0)
             .sort(([, a], [, b]) => Number(b) - Number(a))
@@ -187,10 +189,10 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
                     <View
                       style={[
                         styles.classDot,
-                        { backgroundColor: CLASS_COLORS[cls as MovementClass] || THEME.textSecondary },
+                        { backgroundColor: CLASS_COLORS[cls as MovementClass] || theme.textSecondary },
                       ]}
                     />
-                    <Text style={styles.classLabel}>
+                    <Text style={[styles.classLabel, { color: theme.textSecondary }]}>
                       {CLASS_LABELS[cls as MovementClass] || cls}
                     </Text>
                   </View>
@@ -200,12 +202,12 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
                         styles.classBarInner,
                         {
                           width: `${pct}%`,
-                          backgroundColor: CLASS_COLORS[cls as MovementClass] || THEME.textSecondary,
+                          backgroundColor: CLASS_COLORS[cls as MovementClass] || theme.textSecondary,
                         },
                       ]}
                     />
                   </View>
-                  <Text style={styles.classPct}>{pct.toFixed(0)}%</Text>
+                  <Text style={[styles.classPct, { color: theme.textSecondary }]}>{pct.toFixed(0)}%</Text>
                 </View>
               );
             })}
@@ -213,32 +215,32 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
         {/* Pet Button */}
         <TouchableOpacity
-          style={styles.petButton}
+          style={[styles.petButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onPress={() => navigation.navigate('Pet')}
           activeOpacity={0.7}
         >
           <View style={styles.petIconCircle}>
-            <Ionicons name="paw" size={22} color={THEME.secondary} />
+            <Ionicons name="paw" size={22} color={theme.secondary} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={styles.petButtonTitle}>My Pet</Text>
-            <Text style={styles.petButtonSubtitle}>View your companion</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>My Pet</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>View your companion</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         {/* Notifications Button */}
         <TouchableOpacity
-          style={styles.navButton}
+          style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onPress={() => navigation.navigate('Notifications')}
           activeOpacity={0.7}
         >
           <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.12)' }]}>
-            <Ionicons name="notifications" size={22} color={THEME.primary} />
+            <Ionicons name="notifications" size={22} color={theme.primary} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={styles.petButtonTitle}>Notifications</Text>
-            <Text style={styles.petButtonSubtitle}>View your alerts</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Notifications</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>View your alerts</Text>
           </View>
           {unreadNotifications > 0 && (
             <View style={styles.badge}>
@@ -247,55 +249,55 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
               </Text>
             </View>
           )}
-          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         {/* Clan Button */}
         <TouchableOpacity
-          style={styles.navButton}
+          style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onPress={() => navigation.navigate('Clan')}
           activeOpacity={0.7}
         >
           <View style={[styles.navIconCircle, { backgroundColor: 'rgba(255, 184, 0, 0.12)' }]}>
-            <Ionicons name="shield" size={22} color={THEME.warning} />
+            <Ionicons name="shield" size={22} color={theme.warning} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={styles.petButtonTitle}>My Clan</Text>
-            <Text style={styles.petButtonSubtitle}>View your clan</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>My Clan</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>View your clan</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         {/* Activity Feed Button */}
         <TouchableOpacity
-          style={styles.navButton}
+          style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onPress={() => navigation.navigate('Feed')}
           activeOpacity={0.7}
         >
           <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 255, 136, 0.12)' }]}>
-            <Ionicons name="newspaper" size={22} color={THEME.accent} />
+            <Ionicons name="newspaper" size={22} color={theme.accent} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={styles.petButtonTitle}>Activity Feed</Text>
-            <Text style={styles.petButtonSubtitle}>See what's happening nearby</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Activity Feed</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>See what's happening nearby</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         {/* Leaderboard Button */}
         <TouchableOpacity
-          style={styles.navButton}
+          style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onPress={() => navigation.navigate('Leaderboard')}
           activeOpacity={0.7}
         >
           <View style={[styles.navIconCircle, { backgroundColor: 'rgba(255, 71, 87, 0.12)' }]}>
-            <Ionicons name="trophy" size={22} color={THEME.danger} />
+            <Ionicons name="trophy" size={22} color={theme.danger} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={styles.petButtonTitle}>Leaderboard</Text>
-            <Text style={styles.petButtonSubtitle}>Top MapRaiders rankings</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Leaderboard</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>Top MapRaiders rankings</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#2A3450" />
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
         <View style={{ height: 100 }} />

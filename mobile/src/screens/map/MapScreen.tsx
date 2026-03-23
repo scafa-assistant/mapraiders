@@ -17,6 +17,7 @@ import { useTerritoryStore } from '../../store/territoryStore';
 import { useQuestStore } from '../../store/questStore';
 import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
+import { useTheme } from '../../hooks/useTheme';
 import * as Haptics from 'expo-haptics';
 import { echoProximityService } from '../../services/echoProximity';
 import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi } from '../../services/api';
@@ -108,6 +109,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const { nearbyQuests, fetchNearby } = useQuestStore();
   const { user } = useAuthStore();
   const { settings } = useSettingsStore();
+  const theme = useTheme();
 
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
@@ -421,7 +423,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const safeResonance = Array.isArray(resonanceSpots) ? resonanceSpots : [];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <MapView
         key={`map-${settings.darkMapStyle ? 'dark' : 'light'}`}
         ref={mapRef}
@@ -627,19 +629,23 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
       {/* Top Status Bar */}
       <SafeAreaView style={styles.topOverlay} edges={['top']}>
-        <View style={styles.statusBar}>
-          <View style={styles.levelBadge}>
-            <Text style={styles.levelText}>Lv {user?.level ?? 1}</Text>
+        <View style={[styles.statusBar, {
+          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+        }]}>
+          <View style={[styles.levelBadge, { backgroundColor: theme.primary }]}>
+            <Text style={[styles.levelText, { color: settings.darkMapStyle ? '#0A0E17' : '#FFFFFF' }]}>Lv {user?.level ?? 1}</Text>
           </View>
           <View style={styles.xpContainer}>
-            <Text style={styles.xpText}>
+            <Text style={[styles.xpText, { color: theme.textSecondary }]}>
               {user?.xp ?? 0} / {user?.xpToNextLevel ?? 100} XP
             </Text>
-            <View style={styles.xpBarBg}>
+            <View style={[styles.xpBarBg, { backgroundColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0' }]}>
               <View
                 style={[
                   styles.xpBarFill,
                   {
+                    backgroundColor: theme.primary,
                     width: `${Math.min(
                       ((user?.xp ?? 0) / (user?.xpToNextLevel ?? 100)) * 100,
                       100
@@ -650,8 +656,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             </View>
           </View>
           <View style={styles.streakBadge}>
-            <Ionicons name="flame" size={14} color="#FFB800" />
-            <Text style={styles.streakText}>{user?.currentStreak ?? 0}</Text>
+            <Ionicons name="flame" size={14} color={theme.warning} />
+            <Text style={[styles.streakText, { color: theme.warning }]}>{user?.currentStreak ?? 0}</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -666,13 +672,16 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
       {/* Weather Badge */}
       {weather && (
-        <View style={styles.weatherBadge}>
+        <View style={[styles.weatherBadge, {
+          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+        }]}>
           <Ionicons
             name={WEATHER_ICONS[weather.condition] || 'partly-sunny'}
             size={16}
-            color={WEATHER_BONUSES[weather.condition]?.multiplier > 1 ? '#00FF88' : '#8892B0'}
+            color={WEATHER_BONUSES[weather.condition]?.multiplier > 1 ? theme.accent : theme.textSecondary}
           />
-          <Text style={styles.weatherText}>{weather.condition}</Text>
+          <Text style={[styles.weatherText, { color: theme.textSecondary }]}>{weather.condition}</Text>
           {WEATHER_BONUSES[weather.condition]?.multiplier > 1 && (
             <View style={styles.weatherMultiplier}>
               <Text style={styles.weatherMultiplierText}>
@@ -692,14 +701,20 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
       {/* Map Control Buttons */}
       <View style={styles.mapControls}>
-        <TouchableOpacity style={styles.controlButton} onPress={centerOnUser}>
-          <Ionicons name="locate" size={22} color="#00D4FF" />
+        <TouchableOpacity style={[styles.controlButton, {
+          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+        }]} onPress={centerOnUser}>
+          <Ionicons name="locate" size={22} color={theme.primary} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.controlButton}
+          style={[styles.controlButton, {
+            backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          }]}
           onPress={() => navigation.navigate('ChallengeList')}
         >
-          <Ionicons name="trophy" size={22} color="#FFB800" />
+          <Ionicons name="trophy" size={22} color={theme.warning} />
         </TouchableOpacity>
       </View>
 
@@ -719,14 +734,17 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             <Ionicons name="stop" size={28} color="#FFFFFF" />
           </Animated.View>
         ) : (
-          <View style={styles.fabInner}>
-            <Ionicons name="footsteps" size={28} color="#0A0E17" />
+          <View style={[styles.fabInner, { backgroundColor: theme.primary }]}>
+            <Ionicons name="footsteps" size={28} color={settings.darkMapStyle ? '#0A0E17' : '#FFFFFF'} />
           </View>
         )}
       </TouchableOpacity>
 
       {/* Small class badge bottom-left */}
-      <View style={styles.classBadgeFloat}>
+      <View style={[styles.classBadgeFloat, {
+        backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.9)' : 'rgba(255, 255, 255, 0.95)',
+        borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+      }]}>
         <Ionicons
           name={CLASS_ICONS[detectedClass]}
           size={14}
@@ -740,12 +758,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
       {/* Tracking Stats Bar (only when recording) */}
       {isTracking && (
-        <View style={styles.trackingBar}>
-          <Text style={styles.trackingStatText}>{formatDistance(totalDistance)}</Text>
+        <View style={[styles.trackingBar, {
+          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+        }]}>
+          <Text style={[styles.trackingStatText, { color: theme.text }]}>{formatDistance(totalDistance)}</Text>
           <View style={styles.trackingDot} />
-          <Text style={styles.trackingStatText}>{formatDuration()}</Text>
+          <Text style={[styles.trackingStatText, { color: theme.text }]}>{formatDuration()}</Text>
           <View style={styles.trackingDot} />
-          <Text style={styles.trackingStatText}>{safeRoute.length} pts</Text>
+          <Text style={[styles.trackingStatText, { color: theme.text }]}>{safeRoute.length} pts</Text>
           <View style={styles.recBadge}>
             <View style={styles.recDotAnim} />
             <Text style={styles.recText}>REC</Text>
@@ -756,19 +777,19 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Claim Result Overlay */}
       {showClaimResult && claimResult && (
         <View style={styles.claimOverlay}>
-          <View style={styles.claimCard}>
-            <Ionicons name="flag" size={36} color="#00FF88" />
-            <Text style={styles.claimTitle}>TERRITORY CLAIMED!</Text>
+          <View style={[styles.claimCard, { backgroundColor: theme.surface }]}>
+            <Ionicons name="flag" size={36} color={theme.accent} />
+            <Text style={[styles.claimTitle, { color: theme.accent }]}>TERRITORY CLAIMED!</Text>
             <View style={styles.claimStats}>
               <View style={styles.claimStatItem}>
-                <Text style={styles.claimStatValue}>{claimResult.area} m²</Text>
-                <Text style={styles.claimStatLabel}>Area Claimed</Text>
+                <Text style={[styles.claimStatValue, { color: theme.accent }]}>{claimResult.area} m²</Text>
+                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Area Claimed</Text>
               </View>
               <View style={styles.claimStatItem}>
-                <Text style={[styles.claimStatValue, { color: '#00D4FF' }]}>
+                <Text style={[styles.claimStatValue, { color: theme.primary }]}>
                   +{claimResult.xp} XP
                 </Text>
-                <Text style={styles.claimStatLabel}>Earned</Text>
+                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Earned</Text>
               </View>
             </View>
           </View>

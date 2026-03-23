@@ -16,11 +16,13 @@ import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { userApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
 import type { SettingsScreenProps } from '../../navigation/types';
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const { logout, user } = useAuthStore();
   const { settings, updateSetting } = useSettingsStore();
+  const theme = useTheme();
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
@@ -113,22 +115,22 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     label: string,
     subtitle: string,
     onPress: () => void,
-    color: string = THEME.primary,
+    color: string = theme.primary,
     loading: boolean = false,
     rightIcon: keyof typeof Ionicons.glyphMap = 'chevron-forward'
   ) => (
-    <TouchableOpacity style={styles.row} onPress={onPress} disabled={loading} activeOpacity={0.7}>
+    <TouchableOpacity style={[styles.row, { borderBottomColor: theme.border }]} onPress={onPress} disabled={loading} activeOpacity={0.7}>
       <View style={[styles.iconCircle, { backgroundColor: `${color}15` }]}>
         <Ionicons name={icon} size={18} color={color} />
       </View>
       <View style={styles.rowContent}>
-        <Text style={styles.rowLabel}>{label}</Text>
-        <Text style={styles.rowSubtitle}>{subtitle}</Text>
+        <Text style={[styles.rowLabel, { color: theme.text }]}>{label}</Text>
+        <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>{subtitle}</Text>
       </View>
       {loading ? (
         <ActivityIndicator size="small" color={color} />
       ) : (
-        <Ionicons name={rightIcon} size={16} color="#2A3450" />
+        <Ionicons name={rightIcon} size={16} color={theme.border} />
       )}
     </TouchableOpacity>
   );
@@ -139,60 +141,60 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     subtitle: string,
     value: boolean,
     onToggle: (val: boolean) => void,
-    color: string = THEME.primary
+    color: string = theme.primary
   ) => (
-    <View style={styles.row}>
+    <View style={[styles.row, { borderBottomColor: theme.border }]}>
       <View style={[styles.iconCircle, { backgroundColor: `${color}15` }]}>
         <Ionicons name={icon} size={18} color={color} />
       </View>
       <View style={styles.rowContent}>
-        <Text style={styles.rowLabel}>{label}</Text>
-        <Text style={styles.rowSubtitle}>{subtitle}</Text>
+        <Text style={[styles.rowLabel, { color: theme.text }]}>{label}</Text>
+        <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>{subtitle}</Text>
       </View>
       <Switch
         value={value}
         onValueChange={onToggle}
-        trackColor={{ false: '#1A2340', true: `${color}60` }}
-        thumbColor={value ? color : '#555E78'}
+        trackColor={{ false: settings.darkMapStyle ? '#1A2340' : '#D0D0D0', true: `${color}60` }}
+        thumbColor={value ? color : settings.darkMapStyle ? '#555E78' : '#AAAAAA'}
       />
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+        <TouchableOpacity style={[styles.backBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>Settings</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Account Info */}
-        <Text style={styles.sectionHeader}>Account</Text>
-        <View style={styles.card}>
-          <View style={styles.row}>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Account</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <View style={[styles.row, { borderBottomColor: theme.border }]}>
             <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.15)' }]}>
-              <Ionicons name="person" size={18} color={THEME.primary} />
+              <Ionicons name="person" size={18} color={theme.primary} />
             </View>
             <View style={styles.rowContent}>
-              <Text style={styles.rowLabel}>{user?.username || 'User'}</Text>
-              <Text style={styles.rowSubtitle}>{user?.email || ''}</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>{user?.username || 'User'}</Text>
+              <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>{user?.email || ''}</Text>
             </View>
           </View>
         </View>
 
         {/* Display */}
-        <Text style={styles.sectionHeader}>Display</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Display</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderToggleRow(
             'moon-outline',
-            'Dark Map Style',
-            'Use dark theme for the map background',
+            'Dark Mode',
+            'Switch between dark and light theme',
             settings.darkMapStyle,
             (val) => updateSetting('darkMapStyle', val),
-            THEME.secondary
+            theme.secondary
           )}
           {renderToggleRow(
             'phone-portrait-outline',
@@ -200,20 +202,20 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             'Vibrate on claims, actions, and buttons',
             settings.hapticFeedback,
             (val) => updateSetting('hapticFeedback', val),
-            THEME.primary
+            theme.primary
           )}
         </View>
 
         {/* Notifications */}
-        <Text style={styles.sectionHeader}>Notifications</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Notifications</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderToggleRow(
             'notifications-outline',
             'Push Notifications',
             'Receive push notifications',
             settings.pushNotifications,
             (val) => updateSetting('pushNotifications', val),
-            THEME.accent
+            theme.accent
           )}
           {renderToggleRow(
             'shield-outline',
@@ -221,7 +223,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             'Alert when someone contests your territory',
             settings.territoryAlerts,
             (val) => updateSetting('territoryAlerts', val),
-            THEME.warning
+            theme.warning
           )}
           {renderToggleRow(
             'compass-outline',
@@ -229,7 +231,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             'Alert when a new quest appears nearby',
             settings.questNearby,
             (val) => updateSetting('questNearby', val),
-            THEME.primary
+            theme.primary
           )}
           {renderToggleRow(
             'time-outline',
@@ -242,8 +244,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         </View>
 
         {/* Privacy */}
-        <Text style={styles.sectionHeader}>Privacy</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Privacy</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderRow(
             'home-outline',
             homeZoneSet ? 'Remove Home Zone' : 'Set Home Zone',
@@ -251,20 +253,20 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               ? 'Claims near home are hidden from the map'
               : 'Hide your claims within 200m of home',
             homeZoneSet ? handleRemoveHomeZone : handleSetHomeZone,
-            THEME.primary,
+            theme.primary,
             isSettingHomeZone
           )}
         </View>
 
         {/* Data */}
-        <Text style={styles.sectionHeader}>Your Data</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Your Data</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderRow(
             'download-outline',
             'Export My Data',
             'Download all your personal data (GDPR)',
             handleExportData,
-            THEME.accent,
+            theme.accent,
             isExporting
           )}
           {renderRow(
@@ -272,15 +274,15 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             'Delete Account',
             'Permanently delete your account and all data',
             handleDeleteAccount,
-            THEME.danger,
+            theme.danger,
             isDeleting
           )}
         </View>
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.7}>
-          <Ionicons name="log-out-outline" size={20} color={THEME.danger} />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Ionicons name="log-out-outline" size={20} color={theme.danger} />
+          <Text style={[styles.logoutText, { color: theme.danger }]}>Logout</Text>
         </TouchableOpacity>
 
         <Text style={styles.version}>MapRaiders v1.0.0</Text>

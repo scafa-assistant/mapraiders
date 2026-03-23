@@ -1,5 +1,5 @@
 import './src/polyfills';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,18 +17,6 @@ import { userApi } from './src/services/api';
 import { useSettingsStore } from './src/store/settingsStore';
 
 const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
-
-const DARK_THEME = {
-  dark: true,
-  colors: {
-    primary: '#00D4FF',
-    background: '#0A0E17',
-    card: '#0D1220',
-    text: '#FFFFFF',
-    border: '#1A2340',
-    notification: '#FF4757',
-  },
-};
 
 function AppContent() {
   const { token, isLoading, refreshProfile } = useAuthStore();
@@ -116,13 +104,34 @@ function AppContent() {
   return token ? <MainNavigator /> : <AuthNavigator />;
 }
 
+function AppShell() {
+  const { settings } = useSettingsStore();
+  const isDark = settings.darkMapStyle;
+
+  const navTheme = useMemo(() => ({
+    dark: isDark,
+    colors: {
+      primary: isDark ? '#00D4FF' : '#0099CC',
+      background: isDark ? '#0A0E17' : '#F5F5F5',
+      card: isDark ? '#0D1220' : '#FFFFFF',
+      text: isDark ? '#FFFFFF' : '#1A1A1A',
+      border: isDark ? '#1A2340' : '#E0E0E0',
+      notification: '#FF4757',
+    },
+  }), [isDark]);
+
+  return (
+    <NavigationContainer theme={navTheme}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <AppContent />
+    </NavigationContainer>
+  );
+}
+
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={DARK_THEME}>
-        <StatusBar style="light" />
-        <AppContent />
-      </NavigationContainer>
+      <AppShell />
     </SafeAreaProvider>
   );
 }
@@ -130,7 +139,6 @@ export default function App() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
     justifyContent: 'center',
     alignItems: 'center',
   },
