@@ -14,6 +14,7 @@ import { validateBody } from '../middleware/validation';
 import { updateSettingsSchema } from '../middleware/validation';
 import { queryOne, queryMany, query, transaction } from '../config/database';
 import { balanceService } from '../services/balanceService';
+import { xpForLevel } from '../config/constants';
 
 const router = Router();
 
@@ -66,10 +67,22 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
         ),
       ]);
 
+    // Compute XP progress within current level
+    const userLevel = user.level || 1;
+    const totalXp = parseInt(user.xp) || 0;
+    let xpAccumulated = 0;
+    for (let i = 1; i < userLevel; i++) {
+      xpAccumulated += xpForLevel(i);
+    }
+    const xpInLevel = Math.max(0, totalXp - xpAccumulated);
+    const xpNeededForLevel = xpForLevel(userLevel);
+
     return res.json({
       success: true,
       data: {
         ...user,
+        xp_in_level: xpInLevel,
+        xp_to_next_level: xpNeededForLevel,
         titles: titles.map(t => t.title_key),
         stats: {
           territories: parseInt(territoryCount?.count || '0', 10),

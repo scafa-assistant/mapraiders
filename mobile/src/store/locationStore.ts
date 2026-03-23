@@ -12,6 +12,15 @@ import {
 } from '../services/backgroundLocation';
 import { sensorFusion } from '../services/sensorFusion';
 import { mapRaidersWs } from '../services/websocket';
+import { useAuthStore } from './authStore';
+
+export interface ClaimResultData {
+  territory_id: string;
+  claim_value: number;
+  xp_earned: number;
+  is_takeover: boolean;
+  area_m2: number;
+}
 
 interface LocationState {
   currentLocation: { latitude: number; longitude: number } | null;
@@ -22,6 +31,7 @@ interface LocationState {
   totalDistance: number;
   locationSubscription: Location.LocationSubscription | null;
   pendingUploads: number;
+  lastClaimResult: ClaimResultData | null;
   startTracking: () => Promise<void>;
   stopTracking: () => Promise<GpsPoint[]>;
   updateLocation: (location: Location.LocationObject) => void;
@@ -69,6 +79,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   totalDistance: 0,
   locationSubscription: null,
   pendingUploads: offlineQueue.getQueueSize(),
+  lastClaimResult: null,
 
   requestPermissions: async () => {
     const { status: foreground } = await Location.requestForegroundPermissionsAsync();
@@ -247,11 +258,27 @@ export const useLocationStore = create<LocationState>((set, get) => ({
         try {
           const result = await routeApi.upload({ points: mergedRoute, class: detectedClass });
           console.log('[Route] Claim successful:', JSON.stringify(result.data).substring(0, 200));
-          // Refresh user profile to update XP
+
+          // Store the server claim result for MapScreen to use
+          const serverData = result.data?.data ?? result.data;
+          if (serverData) {
+            set({
+              lastClaimResult: {
+                territory_id: serverData.territory_id ?? '',
+                claim_value: serverData.claim_value ?? 0,
+                xp_earned: serverData.xp_earned ?? 0,
+                is_takeover: serverData.is_takeover ?? false,
+                area_m2: serverData.claim_value ?? 0,
+              },
+            });
+          }
+
+          // Refresh user profile to update XP display
           try {
-            const { useAuthStore } = require('./authStore');
-            useAuthStore.getState().refreshProfile();
-          } catch {}
+            await useAuthStore.getState().refreshProfile();
+          } catch (profileErr) {
+            console.warn('[Route] Profile refresh failed:', profileErr);
+          }
         } catch (err: any) {
           console.error('[Route] Claim failed:', err?.message);
           // Upload failed despite being online - queue for later

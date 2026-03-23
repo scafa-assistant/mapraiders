@@ -3,6 +3,49 @@ import { authApi, userApi, setTokens, clearTokens } from '../services/api';
 import { UserProfile } from '../navigation/types';
 import { registerForPushNotifications } from '../services/notifications';
 
+// Level curve: XP needed for level N = round(1000 * N^1.5)
+function xpForLevel(level: number): number {
+  return Math.round(1000 * Math.pow(level, 1.5));
+}
+
+/** Map server user data (snake_case, raw DB fields) to client UserProfile */
+function mapServerUser(data: any): UserProfile {
+  if (!data) return {} as UserProfile;
+
+  const totalXp = typeof data.xp === 'string' ? parseInt(data.xp, 10) : (data.xp ?? 0);
+  const level = data.level ?? 1;
+
+  // Use server-computed XP progress if available, else compute locally
+  let xpInLevel = data.xp_in_level;
+  let xpToNextLevel = data.xp_to_next_level;
+
+  if (xpInLevel == null || xpToNextLevel == null) {
+    let accumulated = 0;
+    for (let i = 1; i < level; i++) {
+      accumulated += xpForLevel(i);
+    }
+    xpInLevel = xpInLevel ?? Math.max(0, totalXp - accumulated);
+    xpToNextLevel = xpToNextLevel ?? xpForLevel(level);
+  }
+
+  return {
+    id: data.id,
+    username: data.username,
+    email: data.email,
+    level,
+    xp: xpInLevel,
+    xpToNextLevel,
+    totalClaims: data.stats?.territories ?? data.totalClaims ?? 0,
+    totalArea: data.stats?.total_territory_m2 ?? data.totalArea ?? 0,
+    questsCompleted: data.stats?.quests_completed ?? data.questsCompleted ?? 0,
+    currentStreak: data.streak_days ?? data.currentStreak ?? 0,
+    longestStreak: data.longest_streak ?? data.longestStreak ?? 0,
+    titles: data.titles ?? [],
+    classBreakdown: data.class_breakdown ?? data.classBreakdown ?? ({} as Record<string, number>),
+    createdAt: data.created_at ?? data.createdAt,
+  };
+}
+
 interface AuthState {
   token: string | null;
   user: UserProfile | null;
@@ -28,7 +71,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const response = await authApi.login({ email, password });
       const { token, user, refreshToken } = response.data.data;
       await setTokens(token, refreshToken);
-      set({ token, user, isLoading: false });
+      set({ token, user: mapServerUser(user), isLoading: false });
 
       // Register push token after login
       registerForPushNotifications().then((pushToken) => {
@@ -47,7 +90,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const response = await authApi.register({ username, email, password });
       const { token, user, refreshToken } = response.data.data;
       await setTokens(token, refreshToken);
-      set({ token, user, isLoading: false });
+      set({ token, user: mapServerUser(user), isLoading: false });
 
       // Register push token after registration
       registerForPushNotifications().then((pushToken) => {
@@ -66,7 +109,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const response = await authApi.web3Login({ provider, idToken, userInfo });
       const { token, user, refreshToken } = response.data.data;
       await setTokens(token, refreshToken);
-      set({ token, user, isLoading: false });
+      set({ token, user: mapServerUser(user), isLoading: false });
 
       // Register push token after web3 login
       registerForPushNotifications().then((pushToken) => {
@@ -89,7 +132,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (!token) return;
     try {
       const response = await userApi.getMe();
-      set({ user: response.data });
+      const data = response.data?.data ?? response.data;
+      set({ user: mapServerUser(data) });
     } catch (err: any) {
       if (err.response?.status === 401) {
         get().logout();

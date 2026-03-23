@@ -84,7 +84,7 @@ export class ClaimEngine {
     userId: string,
     points: GpsPoint[],
     movementClass?: MovementClass
-  ): Promise<{ territory?: Territory; xp: number; calculation: ClaimCalculation }> {
+  ): Promise<{ territory?: Territory; xp: number; calculation: ClaimCalculation; is_takeover: boolean; previous_owner?: string }> {
     // 1. Detect movement class
     const detectedClass = movementClass || detectMovementClass(points);
 
@@ -345,6 +345,8 @@ export class ClaimEngine {
       territory: territory ?? undefined,
       xp: xpAmount,
       calculation,
+      is_takeover: territoryResult.is_takeover,
+      previous_owner: territoryResult.previous_owner,
     };
   }
 
@@ -733,7 +735,8 @@ export async function processRouteClaim(input: ClaimInput): Promise<ClaimResult>
     territory_id: result.territory?.id ?? '',
     claim_value: result.calculation.finalValue,
     xp_earned: result.xp,
-    is_takeover: false,
+    is_takeover: result.is_takeover,
+    previous_owner: result.previous_owner,
     bonuses: {
       weather: result.calculation.weatherMultiplier,
       streak: result.calculation.streakMultiplier,

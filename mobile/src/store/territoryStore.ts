@@ -1,6 +1,49 @@
 import { create } from 'zustand';
 import api, { territoryApi } from '../services/api';
-import { Territory, BoundingBox } from '../navigation/types';
+import { Territory, BoundingBox, GpsPoint, MovementClass } from '../navigation/types';
+
+/** Convert a single server territory object to client Territory format */
+function mapServerTerritory(t: any): Territory | null {
+  if (!t) return null;
+
+  // Convert GeoJSON polygon to GpsPoint array
+  let polygon: GpsPoint[] = [];
+  if (t.polygon?.type === 'Polygon' && t.polygon.coordinates?.[0]) {
+    // GeoJSON format: coordinates are [lng, lat] — swap to {latitude, longitude}
+    polygon = t.polygon.coordinates[0].map(([lng, lat]: [number, number]) => ({
+      latitude: lat,
+      longitude: lng,
+      timestamp: 0,
+    }));
+  } else if (Array.isArray(t.polygon)) {
+    // Already in GpsPoint[] format
+    polygon = t.polygon;
+  }
+
+  if (polygon.length < 3) return null;
+
+  return {
+    id: t.id,
+    ownerId: t.owner_id ?? t.ownerId,
+    ownerUsername: t.owner_username ?? t.ownerUsername ?? '',
+    polygon,
+    claimedAt: t.claimed_at ?? t.claimedAt,
+    decayPercent: (parseFloat(t.decay_level) || 0) * 100,
+    movementClass: (t.class ?? t.movementClass ?? 'walker') as MovementClass,
+    area: parseFloat(t.area_m2) || t.area || 0,
+    color: t.color || '',
+  };
+}
+
+/** Extract territory array from various server response formats */
+function extractTerritories(responseData: any): Territory[] {
+  // Server sends { success, data: { territories: [...] } }
+  // Axios gives us response.data = { success, data: { territories: [...] } }
+  const data = responseData?.data ?? responseData;
+  const raw = data?.territories ?? data?.data?.territories ?? (Array.isArray(data) ? data : []);
+  if (!Array.isArray(raw)) return [];
+  return raw.map(mapServerTerritory).filter((t: Territory | null): t is Territory => t !== null);
+}
 
 interface TerritoryState {
   territories: Territory[];
@@ -30,8 +73,8 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
         east: bbox.east,
         west: bbox.west,
       });
-      const territories = response.data?.data || response.data || [];
-      set({ territories: Array.isArray(territories) ? territories : [], isLoading: false });
+      const territories = extractTerritories(response.data);
+      set({ territories, isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,
@@ -44,8 +87,8 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await territoryApi.getMine();
-      const myTerritories = response.data?.data || response.data || [];
-      set({ myTerritories: Array.isArray(myTerritories) ? myTerritories : [], isLoading: false });
+      const myTerritories = extractTerritories(response.data);
+      set({ myTerritories, isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,

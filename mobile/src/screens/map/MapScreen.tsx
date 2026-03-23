@@ -103,6 +103,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     stopTracking,
     getCurrentLocation,
     requestPermissions,
+    lastClaimResult,
   } = useLocationStore();
 
   const { territories, fetchTerritories } = useTerritoryStore();
@@ -361,9 +362,42 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     if (isTracking) {
       const route = await stopTracking();
       if (route.length >= 2) {
-        setClaimResult({ area: Math.round(totalDistance * 12), xp: Math.round(totalDistance * 2) });
+        // Use server claim result if available, else estimate
+        const serverResult = useLocationStore.getState().lastClaimResult;
+        if (serverResult) {
+          setClaimResult({ area: serverResult.area_m2, xp: serverResult.xp_earned });
+        } else {
+          setClaimResult({ area: Math.round(totalDistance * 12), xp: Math.round(totalDistance * 2) });
+        }
         setShowClaimResult(true);
         setTimeout(() => setShowClaimResult(false), 4000);
+
+        // Refresh territories on the map so the new claim appears
+        if (mapRef.current) {
+          try {
+            const camera = await mapRef.current.getCamera();
+            if (camera?.center) {
+              const bbox = {
+                north: camera.center.latitude + 0.01,
+                south: camera.center.latitude - 0.01,
+                east: camera.center.longitude + 0.01,
+                west: camera.center.longitude - 0.01,
+              };
+              fetchTerritories(bbox);
+            }
+          } catch (_err) {
+            // Fallback: use current location for bbox
+            if (currentLocation) {
+              fetchTerritories({
+                north: currentLocation.latitude + 0.01,
+                south: currentLocation.latitude - 0.01,
+                east: currentLocation.longitude + 0.01,
+                west: currentLocation.longitude - 0.01,
+              });
+            }
+          }
+        }
+
         // Haptic feedback on successful territory claim
         if (useSettingsStore.getState().settings.hapticFeedback) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -454,24 +488,27 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onLongPress={handleMapLongPress}
       >
         {/* Territory Polygons */}
-        {safeTerritories.map((territory) => (
-          <Polygon
-            key={territory.id}
-            coordinates={territory.polygon.map((p) => ({
-              latitude: p.latitude,
-              longitude: p.longitude,
-            }))}
-            fillColor={`${territory.color || CLASS_COLORS[territory.movementClass]}${Math.round(
-              (1 - territory.decayPercent / 100) * 0.4 * 255
-            )
-              .toString(16)
-              .padStart(2, '0')}`}
-            strokeColor={territory.color || CLASS_COLORS[territory.movementClass]}
-            strokeWidth={1.5}
-            tappable
-            onPress={() => handleTerritoryPress(territory)}
-          />
-        ))}
+        {safeTerritories.map((territory) => {
+          if (!territory.polygon || territory.polygon.length < 3) return null;
+          const baseColor = territory.color || CLASS_COLORS[territory.movementClass] || '#00D4FF';
+          const decay = isNaN(territory.decayPercent) ? 0 : territory.decayPercent;
+          const alpha = Math.round(Math.max(0.1, (1 - decay / 100)) * 0.4 * 255);
+          const hexAlpha = alpha.toString(16).padStart(2, '0');
+          return (
+            <Polygon
+              key={territory.id}
+              coordinates={territory.polygon.map((p) => ({
+                latitude: p.latitude,
+                longitude: p.longitude,
+              }))}
+              fillColor={`${baseColor}${hexAlpha}`}
+              strokeColor={baseColor}
+              strokeWidth={1.5}
+              tappable
+              onPress={() => handleTerritoryPress(territory)}
+            />
+          );
+        })}
 
         {/* Current Route Line */}
         {isTracking && safeRoute.length >= 2 && (
