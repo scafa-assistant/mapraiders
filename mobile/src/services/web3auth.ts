@@ -4,7 +4,7 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 
 // Configure Google Sign-In
 GoogleSignin.configure({
-  webClientId: '', // Will be set from Google Cloud Console OAuth client ID
+  webClientId: '988585973091-pe5oe30v67n25jodvcj83ottbvvi3tg2.apps.googleusercontent.com',
   offlineAccess: true,
 });
 
