@@ -544,14 +544,40 @@ export class ClaimEngine {
         }
       }
 
-      // Create the new territory using PostGIS for valid geometry
-      // Route delay: territory is not visible publicly until 15 min after creation (anti-stalking)
-      const result = await client.query(
-        `INSERT INTO territories (owner_id, polygon, class, claim_value, visible_after)
-         VALUES ($1, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($2)), 4326), $3, $4, NOW() + INTERVAL '15 minutes')
-         RETURNING id`,
-        [userId, polygonWkt, cls, claimValue]
+      // Check if user already owns overlapping territory — merge instead of duplicate
+      const ownOverlap = await client.query(
+        `SELECT id, claim_value FROM territories
+         WHERE owner_id = $1
+         AND ST_Intersects(polygon, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($2)), 4326))
+         ORDER BY claim_value DESC
+         LIMIT 1
+         FOR UPDATE`,
+        [userId, polygonWkt]
       );
+
+      let result;
+      if (ownOverlap.rows.length > 0) {
+        // MERGE: Extend own territory using ST_Union
+        const existingId = ownOverlap.rows[0].id;
+        result = await client.query(
+          `UPDATE territories
+           SET polygon = ST_MakeValid(ST_Union(polygon, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($1)), 4326))),
+               claim_value = claim_value + $2,
+               last_defended = NOW()
+           WHERE id = $3
+           RETURNING id`,
+          [polygonWkt, Math.round(claimValue), existingId]
+        );
+        console.log(`[ClaimEngine] Merged into existing territory ${existingId}`);
+      } else {
+        // CREATE: New territory
+        result = await client.query(
+          `INSERT INTO territories (owner_id, polygon, class, claim_value, visible_after)
+           VALUES ($1, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($2)), 4326), $3, $4, NOW() + INTERVAL '15 minutes')
+           RETURNING id`,
+          [userId, polygonWkt, cls, Math.round(claimValue)]
+        );
+      }
 
       return {
         territory_id: result.rows[0].id,
