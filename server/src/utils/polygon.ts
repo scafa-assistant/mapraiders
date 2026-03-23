@@ -352,21 +352,15 @@ export function processRouteToPolygon(
     return { error: 'Not enough GPS points (need at least 4)' };
   }
 
-  // Step 1: Smooth
-  const smoothed = smoothRoute(points);
+  // Use the EXACT route points as the polygon — no smoothing or simplification
+  // The user's walked path IS the territory boundary (1:1 mapping)
+  let polyPoints = [...points];
 
-  // Step 2: Simplify
-  const simplified = simplifyRoute(smoothed, 8);
-
-  if (simplified.length < 3) {
-    return { error: 'Route too simple after simplification (fewer than 3 points)' };
-  }
-
-  // Step 3: Close the route
-  const closed = closeRoute(simplified, closeRadiusM);
+  // Close the route (connect last point to first if within threshold)
+  const closed = closeRoute(polyPoints, closeRadiusM);
   if (closed === null) {
-    const first = simplified[0];
-    const last = simplified[simplified.length - 1];
+    const first = polyPoints[0];
+    const last = polyPoints[polyPoints.length - 1];
     const gap = haversineDistance(
       first.latitude, first.longitude,
       last.latitude, last.longitude,
@@ -376,13 +370,7 @@ export function processRouteToPolygon(
     };
   }
 
-  // Step 4: Validate
-  const validation = validatePolygon(closed);
-  if (!validation.valid) {
-    return { error: validation.reason! };
-  }
-
-  // Build WKT and compute area
+  // Build WKT and compute area — PostGIS handles validation via ST_MakeValid
   const area = polygonArea(closed);
   const wkt = toWktPolygon(closed);
 
@@ -398,9 +386,6 @@ export function routeToPolygon(points: GpsPoint[]): GpsPoint[] | null {
   // processRouteToPolygon returns a WKT string, but callers need points.
   // Re-run the pipeline to get the closed polygon points.
   if (points.length < 4) return null;
-  const smoothed = smoothRoute(points);
-  const simplified = simplifyRoute(smoothed, 8);
-  if (simplified.length < 3) return null;
-  const closed = closeRoute(simplified);
+  const closed = closeRoute(points);
   return closed;
 }
