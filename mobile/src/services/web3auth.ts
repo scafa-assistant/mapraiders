@@ -1,19 +1,16 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as SecureStore from 'expo-secure-store';
 import Web3Auth from '@web3auth/react-native-sdk';
-import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
+import { CommonPrivateKeyProvider } from '@web3auth/base-provider';
 
 const WEB3AUTH_CLIENT_ID = 'BL1ISQZjJwjmZYdNF9g7SwyTihaKXu28jrnWZRSJt1_jAbC2P9t_KeRFHmJ3V82nQElSYxGy9W3DMve6VZvlIs8';
 const redirectUrl = 'mapraiders://auth';
 
+// Minimal chain config — MapRaiders doesn't use blockchain, just social auth
 const chainConfig = {
-  chainNamespace: 'eip155' as const,
+  chainNamespace: 'other' as any,
   chainId: '0x1',
   rpcTarget: 'https://rpc.ankr.com/eth',
-  displayName: 'Ethereum Mainnet',
-  blockExplorerUrl: 'https://etherscan.io',
-  ticker: 'ETH',
-  tickerName: 'Ethereum',
 };
 
 class Web3AuthService {
@@ -30,7 +27,7 @@ class Web3AuthService {
 
   private async _doInit(): Promise<void> {
     try {
-      const privateKeyProvider = new EthereumPrivateKeyProvider({
+      const privateKeyProvider = new CommonPrivateKeyProvider({
         config: { chainConfig },
       });
 
@@ -80,7 +77,6 @@ class Web3AuthService {
       try {
         await this.init();
       } catch (error: any) {
-        console.error('[Web3Auth] Cannot login - init failed:', error?.message);
         throw new Error('Web3Auth initialization failed. Please try again.');
       }
     }
@@ -91,12 +87,12 @@ class Web3AuthService {
 
     try {
       console.log('[Web3Auth] Starting login with provider:', provider);
-      const provider_result = await this.web3auth.login({
+      const result = await this.web3auth.login({
         loginProvider: provider,
         ...extraOptions,
       });
 
-      if (provider_result) {
+      if (result) {
         const userInfo = this.web3auth.userInfo();
         console.log('[Web3Auth] Login successful, user:', userInfo?.email);
         return {
