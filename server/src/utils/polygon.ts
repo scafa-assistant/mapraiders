@@ -259,7 +259,7 @@ export function validatePolygon(
  */
 export function closeRoute(
   points: GpsPoint[],
-  maxGapM: number = 200,
+  maxGapM: number = 50,
 ): GpsPoint[] | null {
   if (points.length < 3) return null;
 

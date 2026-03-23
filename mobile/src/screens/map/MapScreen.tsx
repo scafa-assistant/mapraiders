@@ -8,6 +8,7 @@ import {
   Dimensions,
   ActivityIndicator,
   Platform,
+  Alert,
 } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
@@ -112,6 +113,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const { settings } = useSettingsStore();
   const theme = useTheme();
 
+  const [canCloseClaim, setCanCloseClaim] = useState(false);
+  const CLOSE_THRESHOLD_M = 50;
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
     area: number;
@@ -220,6 +223,20 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       try { echoProximityService.stop(); } catch {}
     };
   }, []);
+
+  // Check if user is close enough to start point to close the polygon
+  useEffect(() => {
+    if (!isTracking || !currentLocation || safeRoute.length < 10) {
+      setCanCloseClaim(false);
+      return;
+    }
+    const start = safeRoute[0];
+    if (!start) return;
+    const dlat = currentLocation.latitude - start.latitude;
+    const dlng = currentLocation.longitude - start.longitude;
+    const distM = Math.sqrt(dlat * dlat + dlng * dlng) * 111320;
+    setCanCloseClaim(distM <= CLOSE_THRESHOLD_M);
+  }, [currentLocation, isTracking, safeRoute]);
 
   // Feed location updates to echo proximity service
   useEffect(() => {
@@ -756,20 +773,37 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       </View>
 
       {/* FAB - Record Button */}
+      {/* Green = close enough to finish, Red = recording but too far, Cyan = start */}
       <TouchableOpacity
-        style={[styles.fab, isTracking && styles.fabRecording]}
+        style={[
+          styles.fab,
+          isTracking && (canCloseClaim ? styles.fabCanClose : styles.fabRecording),
+        ]}
         onPress={() => {
           if (useSettingsStore.getState().settings.hapticFeedback) {
             Haptics.selectionAsync();
+          }
+          if (isTracking && !canCloseClaim && safeRoute.length >= 10) {
+            Alert.alert(
+              'Too far from start',
+              `Walk back closer to your starting point to claim territory (within ${CLOSE_THRESHOLD_M}m).`
+            );
+            return;
           }
           toggleRecording();
         }}
         activeOpacity={0.8}
       >
         {isTracking ? (
-          <Animated.View style={[styles.fabInner, { backgroundColor: recordingBg }]}>
-            <Ionicons name="stop" size={28} color="#FFFFFF" />
-          </Animated.View>
+          canCloseClaim ? (
+            <View style={[styles.fabInner, { backgroundColor: '#00FF88' }]}>
+              <Ionicons name="checkmark" size={32} color="#0A0E17" />
+            </View>
+          ) : (
+            <Animated.View style={[styles.fabInner, { backgroundColor: recordingBg }]}>
+              <Ionicons name="stop" size={28} color="#FFFFFF" />
+            </Animated.View>
+          )
         ) : (
           <View style={[styles.fabInner, { backgroundColor: theme.primary }]}>
             <Ionicons name="footsteps" size={28} color={settings.darkMapStyle ? '#0A0E17' : '#FFFFFF'} />
@@ -941,6 +975,12 @@ const styles = StyleSheet.create({
   },
   fabRecording: {
     shadowColor: '#FF4757',
+  },
+  fabCanClose: {
+    shadowColor: '#00FF88',
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
+    elevation: 15,
   },
   fabInner: {
     width: 64,
