@@ -768,16 +768,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             </View>
           )}
 
-          {!isTracking && (
-            <View style={styles.idlePrompt}>
-              <Text style={styles.idleText}>
-                Start walking to claim territory
-              </Text>
-              <Text style={styles.idleSubtext}>
-                Tap the footsteps button to begin recording
-              </Text>
-            </View>
-          )}
+          {/* Idle prompt removed - button is self-explanatory */}
         </View>
       </View>
 

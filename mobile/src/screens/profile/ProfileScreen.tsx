@@ -108,8 +108,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
           <View style={styles.xpBarContainer}>
             <StatBar
-              current={user.xp}
-              max={xpToNextLevel}
+              current={Number(user.xp) || 0}
+              max={Number(xpToNextLevel) || 100}
               color={THEME.primary}
               height={8}
               showPercentage={false}
@@ -152,7 +152,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           </View>
           <View style={styles.statBox}>
             <Ionicons name="star-outline" size={20} color={THEME.warning} />
-            <Text style={styles.statValue}>{formatXP(user.xp)}</Text>
+            <Text style={styles.statValue}>{formatXP(Number(user.xp) || 0)}</Text>
             <Text style={styles.statLabel}>Total XP</Text>
           </View>
         </View>
@@ -176,10 +176,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Movement Classes</Text>
           {Object.entries(classBreakdown)
-            .filter(([, count]) => count > 0)
-            .sort(([, a], [, b]) => b - a)
+            .filter(([, count]) => Number(count) > 0)
+            .sort(([, a], [, b]) => Number(b) - Number(a))
             .map(([cls, count]) => {
-              const pct = totalClassSteps > 0 ? (count / totalClassSteps) * 100 : 0;
+              const numCount = Number(count) || 0;
+              const pct = totalClassSteps > 0 ? (numCount / totalClassSteps) * 100 : 0;
               return (
                 <View key={cls} style={styles.classRow}>
                   <View style={styles.classInfo}>
