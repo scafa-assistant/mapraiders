@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import * as Location from 'expo-location';
 import NetInfo from '@react-native-community/netinfo';
-import api from '../services/api';
+import api, { routeApi } from '../services/api';
 import { GpsPoint, MovementClass } from '../navigation/types';
 import { offlineQueue } from '../services/offlineQueue';
 import {
@@ -238,15 +238,22 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       const isOnline = networkState.isConnected && networkState.isInternetReachable !== false;
 
       const uploadPayload = {
-        route: mergedRoute,
-        movementClass: detectedClass,
+        points: mergedRoute,
+        class: detectedClass,
         sensorData: sensorAnalysis.sampleCount > 0 ? sensorAnalysis : undefined,
       };
 
       if (isOnline) {
         try {
-          await api.post('/claims', uploadPayload);
-        } catch (_err) {
+          const result = await routeApi.upload({ points: mergedRoute, class: detectedClass });
+          console.log('[Route] Claim successful:', JSON.stringify(result.data).substring(0, 200));
+          // Refresh user profile to update XP
+          try {
+            const { useAuthStore } = require('./authStore');
+            useAuthStore.getState().refreshProfile();
+          } catch {}
+        } catch (err: any) {
+          console.error('[Route] Claim failed:', err?.message);
           // Upload failed despite being online - queue for later
           await offlineQueue.enqueue({
             points: mergedRoute,

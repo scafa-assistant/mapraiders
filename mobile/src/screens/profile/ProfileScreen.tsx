@@ -49,12 +49,23 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     );
   }
 
-  const dominantClass = Object.entries(user.classBreakdown).reduce(
-    (max, [cls, count]) => (count > max[1] ? [cls, count] : max),
-    ['unknown', 0] as [string, number]
-  )[0] as MovementClass;
+  const classBreakdown = (user as any).classBreakdown || {};
+  const dominantClass = (Object.entries(classBreakdown).length > 0
+    ? Object.entries(classBreakdown).reduce(
+        (max, [cls, count]) => ((count as number) > (max[1] as number) ? [cls, count] : max),
+        ['walker', 0] as [string, number]
+      )[0]
+    : 'walker') as MovementClass;
 
-  const totalClassSteps = Object.values(user.classBreakdown).reduce((a, b) => a + b, 0);
+  const totalClassSteps = Object.values(classBreakdown).reduce((a: number, b: any) => a + (Number(b) || 0), 0);
+  const stats = (user as any).stats || {};
+  const totalClaims = stats.territories || (user as any).totalClaims || 0;
+  const totalArea = stats.total_territory_m2 || (user as any).totalArea || 0;
+  const questsCompleted = stats.quests_completed || (user as any).questsCompleted || 0;
+  const xpToNextLevel = (user as any).xpToNextLevel || 100;
+  const currentStreak = (user as any).streak_days || (user as any).currentStreak || 0;
+  const longestStreak = (user as any).longestStreak || currentStreak;
+  const titles = (user as any).titles || [];
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -98,7 +109,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <View style={styles.xpBarContainer}>
             <StatBar
               current={user.xp}
-              max={user.xpToNextLevel}
+              max={xpToNextLevel}
               color={THEME.primary}
               height={8}
               showPercentage={false}
@@ -107,16 +118,16 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           </View>
 
           {/* Titles */}
-          {user.titles.length > 0 && (
+          {titles.length > 0 && (
             <View style={styles.titlesRow}>
-              {user.titles.slice(0, 3).map((title) => (
+              {titles.slice(0, 3).map((title) => (
                 <View key={title} style={styles.titleBadge}>
                   <Ionicons name="ribbon-outline" size={12} color={THEME.warning} />
                   <Text style={styles.titleText}>{title}</Text>
                 </View>
               ))}
-              {user.titles.length > 3 && (
-                <Text style={styles.moreText}>+{user.titles.length - 3}</Text>
+              {titles.length > 3 && (
+                <Text style={styles.moreText}>+{titles.length - 3}</Text>
               )}
             </View>
           )}
@@ -126,17 +137,17 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         <View style={styles.statsGrid}>
           <View style={styles.statBox}>
             <Ionicons name="map-outline" size={20} color={THEME.primary} />
-            <Text style={styles.statValue}>{formatNumber(user.totalClaims)}</Text>
+            <Text style={styles.statValue}>{formatNumber(totalClaims)}</Text>
             <Text style={styles.statLabel}>Claims</Text>
           </View>
           <View style={styles.statBox}>
             <Ionicons name="resize-outline" size={20} color={THEME.accent} />
-            <Text style={styles.statValue}>{formatArea(user.totalArea)}</Text>
+            <Text style={styles.statValue}>{formatArea(totalArea)}</Text>
             <Text style={styles.statLabel}>Area</Text>
           </View>
           <View style={styles.statBox}>
             <Ionicons name="flag-outline" size={20} color={THEME.secondary} />
-            <Text style={styles.statValue}>{formatNumber(user.questsCompleted)}</Text>
+            <Text style={styles.statValue}>{formatNumber(questsCompleted)}</Text>
             <Text style={styles.statLabel}>Quests</Text>
           </View>
           <View style={styles.statBox}>
@@ -151,12 +162,12 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <View style={styles.streakLeft}>
             <Ionicons name="flame" size={28} color="#FF6B35" />
             <View>
-              <Text style={styles.streakValue}>{user.currentStreak} Days</Text>
+              <Text style={styles.streakValue}>{currentStreak} Days</Text>
               <Text style={styles.streakLabel}>Current Streak</Text>
             </View>
           </View>
           <View style={styles.streakRight}>
-            <Text style={styles.bestStreakValue}>{user.longestStreak}</Text>
+            <Text style={styles.bestStreakValue}>{longestStreak}</Text>
             <Text style={styles.bestStreakLabel}>Best</Text>
           </View>
         </View>
@@ -164,7 +175,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         {/* Class Breakdown */}
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Movement Classes</Text>
-          {Object.entries(user.classBreakdown)
+          {Object.entries(classBreakdown)
             .filter(([, count]) => count > 0)
             .sort(([, a], [, b]) => b - a)
             .map(([cls, count]) => {
