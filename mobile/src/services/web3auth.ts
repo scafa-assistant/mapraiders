@@ -1,60 +1,65 @@
-import * as WebBrowser from 'expo-web-browser';
-import * as SecureStore from 'expo-secure-store';
-import Web3Auth from '@web3auth/react-native-sdk';
-import { CommonPrivateKeyProvider } from '@web3auth/base-provider';
+// Web3Auth Service — LAZY LOADED
+// The Web3Auth SDK crashes on import in Hermes (React Native) because it
+// uses Node.js APIs (EventEmitter.bind, etc.) at module level.
+// Solution: dynamic import() only when the user actually taps a social login button.
 
 const WEB3AUTH_CLIENT_ID = 'BL1ISQZjJwjmZYdNF9g7SwyTihaKXu28jrnWZRSJt1_jAbC2P9t_KeRFHmJ3V82nQElSYxGy9W3DMve6VZvlIs8';
 const redirectUrl = 'mapraiders://auth';
 
-// Minimal chain config — MapRaiders doesn't use blockchain, just social auth
-const chainConfig = {
-  chainNamespace: 'other' as any,
-  chainId: '0x1',
-  rpcTarget: 'https://rpc.ankr.com/eth',
-};
+let web3authInstance: any = null;
+let initialized = false;
+let initPromise: Promise<void> | null = null;
+
+async function doInit(): Promise<void> {
+  try {
+    console.log('[Web3Auth] Loading SDK...');
+
+    // Dynamic imports — only loaded when needed, not at app startup
+    const WebBrowser = await import('expo-web-browser');
+    const SecureStore = await import('expo-secure-store');
+    const { default: Web3Auth } = await import('@web3auth/react-native-sdk');
+    const { CommonPrivateKeyProvider } = await import('@web3auth/base-provider');
+
+    const chainConfig = {
+      chainNamespace: 'other' as any,
+      chainId: '0x1',
+      rpcTarget: 'https://rpc.ankr.com/eth',
+    };
+
+    const privateKeyProvider = new CommonPrivateKeyProvider({
+      config: { chainConfig },
+    });
+
+    const w3a = new Web3Auth(WebBrowser, SecureStore, {
+      clientId: WEB3AUTH_CLIENT_ID,
+      network: 'sapphire_devnet' as any,
+      redirectUrl,
+      privateKeyProvider,
+      whiteLabel: {
+        appName: 'MapRaiders',
+        defaultLanguage: 'en',
+        mode: 'dark',
+        theme: { primary: '#00D4FF' },
+      },
+    });
+
+    await w3a.init();
+    web3authInstance = w3a;
+    initialized = true;
+    console.log('[Web3Auth] v8 SDK initialized successfully');
+  } catch (error: any) {
+    console.error('[Web3Auth] Init failed:', error?.message || error);
+    initPromise = null;
+    throw error;
+  }
+}
 
 class Web3AuthService {
-  private web3auth: Web3Auth | null = null;
-  private initialized = false;
-  private initPromise: Promise<void> | null = null;
-
   async init(): Promise<void> {
-    if (this.initialized) return;
-    if (this.initPromise) return this.initPromise;
-    this.initPromise = this._doInit();
-    return this.initPromise;
-  }
-
-  private async _doInit(): Promise<void> {
-    try {
-      const privateKeyProvider = new CommonPrivateKeyProvider({
-        config: { chainConfig },
-      });
-
-      const web3auth = new Web3Auth(WebBrowser, SecureStore, {
-        clientId: WEB3AUTH_CLIENT_ID,
-        network: 'sapphire_devnet' as any,
-        redirectUrl,
-        privateKeyProvider,
-        whiteLabel: {
-          appName: 'MapRaiders',
-          defaultLanguage: 'en',
-          mode: 'dark',
-          theme: {
-            primary: '#00D4FF',
-          },
-        },
-      });
-
-      await web3auth.init();
-      this.web3auth = web3auth;
-      this.initialized = true;
-      console.log('[Web3Auth] v8 Initialized successfully');
-    } catch (error: any) {
-      console.error('[Web3Auth] Init error:', error?.message || error);
-      this.initPromise = null;
-      throw error;
-    }
+    if (initialized) return;
+    if (initPromise) return initPromise;
+    initPromise = doInit();
+    return initPromise;
   }
 
   async loginWithGoogle(): Promise<{ idToken: string; userInfo: any } | null> {
@@ -73,51 +78,42 @@ class Web3AuthService {
     provider: string,
     extraOptions?: Record<string, string>
   ): Promise<{ idToken: string; userInfo: any } | null> {
-    if (!this.initialized) {
-      try {
-        await this.init();
-      } catch (error: any) {
-        throw new Error('Web3Auth initialization failed. Please try again.');
-      }
+    if (!initialized) {
+      await this.init();
     }
 
-    if (!this.web3auth) {
-      throw new Error('Web3Auth not available');
+    if (!web3authInstance) {
+      throw new Error('Web3Auth not available after init');
     }
 
-    try {
-      console.log('[Web3Auth] Starting login with provider:', provider);
-      const result = await this.web3auth.login({
-        loginProvider: provider,
-        ...extraOptions,
-      });
+    console.log('[Web3Auth] Starting login with provider:', provider);
+    const result = await web3authInstance.login({
+      loginProvider: provider,
+      ...extraOptions,
+    });
 
-      if (result) {
-        const userInfo = this.web3auth.userInfo();
-        console.log('[Web3Auth] Login successful, user:', userInfo?.email);
-        return {
-          idToken: userInfo?.idToken || '',
-          userInfo: userInfo || {},
-        };
-      }
-      return null;
-    } catch (error: any) {
-      console.error('[Web3Auth] Login error:', error?.message || error);
-      throw error;
+    if (result) {
+      const userInfo = web3authInstance.userInfo();
+      console.log('[Web3Auth] Login successful:', userInfo?.email);
+      return {
+        idToken: userInfo?.idToken || '',
+        userInfo: userInfo || {},
+      };
     }
+    return null;
   }
 
   async logout(): Promise<void> {
-    if (!this.web3auth) return;
+    if (!web3authInstance) return;
     try {
-      await this.web3auth.logout();
+      await web3authInstance.logout();
     } catch (error) {
       console.error('[Web3Auth] Logout error:', error);
     }
   }
 
   isInitialized(): boolean {
-    return this.initialized;
+    return initialized;
   }
 }
 

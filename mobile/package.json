@@ -17,8 +17,6 @@
     "@react-navigation/native-stack": "^6.9.17",
     "@web3auth/auth": "^11.4.0",
     "@web3auth/base": "^9.7.0",
-    "@web3auth/ethereum-provider": "^9.7.0",
-    "@web3auth/no-modal": "^10.15.0",
     "@web3auth/react-native-sdk": "^8.1.0",
     "axios": "^1.6.5",
     "babel-preset-expo": "^55.0.12",
