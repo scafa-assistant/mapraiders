@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "988585973091",
+    "project_id": "mapraiders",
+    "storage_bucket": "mapraiders.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988585973091:android:8ba6df8cede40f29f16f56",
+        "android_client_info": {
+          "package_name": "com.mapraiders.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "988585973091-dc1dm5k44dhe0u6u997mq9n73ons9rcv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mapraiders.app",
+            "certificate_hash": "3fa8de75e954ce93be60dc45f461431b0274beb9"
+          }
+        },
+        {
+          "client_id": "988585973091-pe5oe30v67n25jodvcj83ottbvvi3tg2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD82L0QFQZfzKwczSTB-SYx30R_3A-Cru4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "988585973091-pe5oe30v67n25jodvcj83ottbvvi3tg2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
