@@ -30,7 +30,8 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
         east: bbox.east,
         west: bbox.west,
       });
-      set({ territories: response.data, isLoading: false });
+      const territories = response.data?.data || response.data || [];
+      set({ territories: Array.isArray(territories) ? territories : [], isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,
@@ -43,7 +44,8 @@ export const useTerritoryStore = create<TerritoryState>((set, _get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await territoryApi.getMine();
-      set({ myTerritories: response.data, isLoading: false });
+      const myTerritories = response.data?.data || response.data || [];
+      set({ myTerritories: Array.isArray(myTerritories) ? myTerritories : [], isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,

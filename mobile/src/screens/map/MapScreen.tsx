@@ -435,7 +435,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onLongPress={handleMapLongPress}
       >
         {/* Territory Polygons */}
-        {territories.map((territory) => (
+        {(territories || []).map((territory) => (
           <Polygon
             key={territory.id}
             coordinates={territory.polygon.map((p) => ({

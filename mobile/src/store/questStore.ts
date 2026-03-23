@@ -27,7 +27,8 @@ export const useQuestStore = create<QuestState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await questApi.getNearby(lat, lng, radius);
-      set({ nearbyQuests: response.data, isLoading: false });
+      const quests = response.data?.data || response.data || [];
+      set({ nearbyQuests: Array.isArray(quests) ? quests : [], isLoading: false });
     } catch (err: any) {
       set({
         isLoading: false,
