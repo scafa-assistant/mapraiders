@@ -16,6 +16,8 @@ import { useLocationStore } from '../../store/locationStore';
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useQuestStore } from '../../store/questStore';
 import { useAuthStore } from '../../store/authStore';
+import { useSettingsStore } from '../../store/settingsStore';
+import * as Haptics from 'expo-haptics';
 import { echoProximityService } from '../../services/echoProximity';
 import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
@@ -105,6 +107,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const { territories, fetchTerritories } = useTerritoryStore();
   const { nearbyQuests, fetchNearby } = useQuestStore();
   const { user } = useAuthStore();
+  const { settings } = useSettingsStore();
 
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
@@ -359,6 +362,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         setClaimResult({ area: Math.round(totalDistance * 12), xp: Math.round(totalDistance * 2) });
         setShowClaimResult(true);
         setTimeout(() => setShowClaimResult(false), 4000);
+        // Haptic feedback on successful territory claim
+        if (useSettingsStore.getState().settings.hapticFeedback) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
       }
     } else {
       await startTracking();
@@ -419,7 +426,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         ref={mapRef}
         style={styles.map}
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-        customMapStyle={DARK_MAP_STYLE}
+        customMapStyle={settings.darkMapStyle ? DARK_MAP_STYLE : []}
         showsUserLocation={true}
         showsMyLocationButton={true}
         followsUserLocation={true}
@@ -698,7 +705,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* FAB - Record Button */}
       <TouchableOpacity
         style={[styles.fab, isTracking && styles.fabRecording]}
-        onPress={toggleRecording}
+        onPress={() => {
+          if (useSettingsStore.getState().settings.hapticFeedback) {
+            Haptics.selectionAsync();
+          }
+          toggleRecording();
+        }}
         activeOpacity={0.8}
       >
         {isTracking ? (

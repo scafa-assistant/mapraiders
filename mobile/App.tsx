@@ -14,6 +14,7 @@ import { mapRaidersWs } from './src/services/websocket';
 import { setupWsEventHandlers } from './src/services/wsEventHandler';
 import { registerForPushNotifications } from './src/services/notifications';
 import { userApi } from './src/services/api';
+import { useSettingsStore } from './src/store/settingsStore';
 
 const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
 
@@ -46,6 +47,11 @@ function AppContent() {
   };
 
   const networkCleanupRef = useRef<(() => void) | null>(null);
+
+  // Load persisted settings from AsyncStorage on mount
+  useEffect(() => {
+    useSettingsStore.getState().loadSettings();
+  }, []);
 
   // Initialize offline queue and network listener on mount
   useEffect(() => {

@@ -7,17 +7,20 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAuthStore } from '../../store/authStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import { userApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { SettingsScreenProps } from '../../navigation/types';
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const { logout, user } = useAuthStore();
+  const { settings, updateSetting } = useSettingsStore();
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
@@ -130,6 +133,31 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     </TouchableOpacity>
   );
 
+  const renderToggleRow = (
+    icon: keyof typeof Ionicons.glyphMap,
+    label: string,
+    subtitle: string,
+    value: boolean,
+    onToggle: (val: boolean) => void,
+    color: string = THEME.primary
+  ) => (
+    <View style={styles.row}>
+      <View style={[styles.iconCircle, { backgroundColor: `${color}15` }]}>
+        <Ionicons name={icon} size={18} color={color} />
+      </View>
+      <View style={styles.rowContent}>
+        <Text style={styles.rowLabel}>{label}</Text>
+        <Text style={styles.rowSubtitle}>{subtitle}</Text>
+      </View>
+      <Switch
+        value={value}
+        onValueChange={onToggle}
+        trackColor={{ false: '#1A2340', true: `${color}60` }}
+        thumbColor={value ? color : '#555E78'}
+      />
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
@@ -153,6 +181,64 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               <Text style={styles.rowSubtitle}>{user?.email || ''}</Text>
             </View>
           </View>
+        </View>
+
+        {/* Display */}
+        <Text style={styles.sectionHeader}>Display</Text>
+        <View style={styles.card}>
+          {renderToggleRow(
+            'moon-outline',
+            'Dark Map Style',
+            'Use dark theme for the map background',
+            settings.darkMapStyle,
+            (val) => updateSetting('darkMapStyle', val),
+            THEME.secondary
+          )}
+          {renderToggleRow(
+            'phone-portrait-outline',
+            'Haptic Feedback',
+            'Vibrate on claims, actions, and buttons',
+            settings.hapticFeedback,
+            (val) => updateSetting('hapticFeedback', val),
+            THEME.primary
+          )}
+        </View>
+
+        {/* Notifications */}
+        <Text style={styles.sectionHeader}>Notifications</Text>
+        <View style={styles.card}>
+          {renderToggleRow(
+            'notifications-outline',
+            'Push Notifications',
+            'Receive push notifications',
+            settings.pushNotifications,
+            (val) => updateSetting('pushNotifications', val),
+            THEME.accent
+          )}
+          {renderToggleRow(
+            'shield-outline',
+            'Territory Alerts',
+            'Alert when someone contests your territory',
+            settings.territoryAlerts,
+            (val) => updateSetting('territoryAlerts', val),
+            THEME.warning
+          )}
+          {renderToggleRow(
+            'compass-outline',
+            'Nearby Quests',
+            'Alert when a new quest appears nearby',
+            settings.questNearby,
+            (val) => updateSetting('questNearby', val),
+            THEME.primary
+          )}
+          {renderToggleRow(
+            'time-outline',
+            'Quiet Hours',
+            'No notifications 22:00 - 08:00',
+            settings.quietHours,
+            (val) => updateSetting('quietHours', val),
+            '#8892B0'
+          )}
         </View>
 
         {/* Privacy */}
