@@ -423,6 +423,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   return (
     <View style={styles.container}>
       <MapView
+        key={`map-${settings.darkMapStyle ? 'dark' : 'light'}`}
         ref={mapRef}
         style={styles.map}
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}

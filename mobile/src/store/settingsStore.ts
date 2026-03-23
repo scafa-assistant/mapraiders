@@ -48,9 +48,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   updateSetting: async (key, value) => {
+    console.log(`[Settings] ${key} = ${value}`);
     const newSettings = { ...get().settings, [key]: value };
     set({ settings: newSettings });
-    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+    try {
+      await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+      console.log('[Settings] Saved to AsyncStorage');
+    } catch (e: any) {
+      console.error('[Settings] AsyncStorage error:', e?.message);
+    }
     // Also sync to server (fire-and-forget)
     try { await userApi.updateSettings({ [key]: value }); } catch {}
   },
