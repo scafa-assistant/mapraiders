@@ -89,6 +89,17 @@ const DARK_MAP_STYLE = [
   { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
 ];
 
+function getPolygonCentroid(polygon: { latitude: number; longitude: number }[]): { latitude: number; longitude: number } | null {
+  if (!polygon || polygon.length === 0) return null;
+  let latSum = 0;
+  let lngSum = 0;
+  for (const p of polygon) {
+    latSum += p.latitude;
+    lngSum += p.longitude;
+  }
+  return { latitude: latSum / polygon.length, longitude: lngSum / polygon.length };
+}
+
 export default function MapScreen({ navigation }: MapScreenProps) {
   const mapRef = useRef<MapView>(null);
   const pulseAnim = useRef(new Animated.Value(0)).current;
@@ -531,6 +542,29 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               tappable
               onPress={() => handleTerritoryPress(territory)}
             />
+          );
+        })}
+
+        {/* Defense Shield Markers */}
+        {safeTerritories.filter(t => t.hasDefense).map((territory) => {
+          const centroid = getPolygonCentroid(territory.polygon);
+          if (!centroid) return null;
+          const shieldColor =
+            territory.defenseGameType === 'rock_paper_scissors' ? '#7B61FF' :
+            territory.defenseGameType === 'sprint_race' ? '#00FF88' :
+            territory.defenseGameType === 'trivia' ? '#00D4FF' :
+            '#FFB800';
+          return (
+            <Marker
+              key={`defense-${territory.id}`}
+              coordinate={centroid}
+              anchor={{ x: 0.5, y: 0.5 }}
+              onPress={() => handleTerritoryPress(territory)}
+            >
+              <View style={[styles.defenseMarker, { borderColor: shieldColor, backgroundColor: `${shieldColor}20` }]}>
+                <Ionicons name="shield-checkmark" size={14} color={shieldColor} />
+              </View>
+            </Marker>
           );
         })}
 
@@ -1022,6 +1056,14 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  defenseMarker: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',

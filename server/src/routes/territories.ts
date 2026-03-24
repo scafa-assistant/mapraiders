@@ -60,9 +60,12 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
               u.username as owner_username,
               u.level as owner_level,
               ST_AsGeoJSON(t.polygon) as polygon_geojson,
-              ST_Area(t.polygon::geography) as area_m2
+              ST_Area(t.polygon::geography) as area_m2,
+              CASE WHEN td.id IS NOT NULL THEN true ELSE false END as has_defense,
+              td.game_type as defense_game_type
        FROM territories t
        LEFT JOIN users u ON t.owner_id = u.id
+       LEFT JOIN territory_defenses td ON td.territory_id = t.id AND td.status = 'active'
        WHERE ST_Intersects(t.polygon, ST_GeomFromEWKT($1))
        AND t.owner_id IS NOT NULL
        AND (t.visible_after IS NULL OR t.visible_after <= NOW() OR t.owner_id = $2)
@@ -98,6 +101,8 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
           decay_level: parseFloat(t.decay_level || '0'),
           polygon: t.polygon_geojson ? JSON.parse(t.polygon_geojson) : null,
           area_m2: parseFloat(t.area_m2 || '0'),
+          has_defense: t.has_defense === true || t.has_defense === 't',
+          defense_game_type: t.defense_game_type || null,
         })),
       },
     });
@@ -177,9 +182,13 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
               u.username as owner_username,
               u.level as owner_level,
               ST_AsGeoJSON(t.polygon) as polygon_geojson,
-              ST_Area(t.polygon::geography) as area_m2
+              ST_Area(t.polygon::geography) as area_m2,
+              CASE WHEN td.id IS NOT NULL THEN true ELSE false END as has_defense,
+              td.game_type as defense_game_type,
+              td.id as defense_id
        FROM territories t
        LEFT JOIN users u ON t.owner_id = u.id
+       LEFT JOIN territory_defenses td ON td.territory_id = t.id AND td.status = 'active'
        WHERE t.id = $1`,
       [id]
     );
@@ -214,6 +223,9 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
         decay_level: parseFloat(territory.decay_level || '0'),
         polygon: territory.polygon_geojson ? JSON.parse(territory.polygon_geojson) : null,
         area_m2: parseFloat(territory.area_m2 || '0'),
+        has_defense: territory.has_defense === true || territory.has_defense === 't',
+        defense_game_type: territory.defense_game_type || null,
+        defense_id: territory.defense_id || null,
         recent_claims: recentClaims,
       },
     });

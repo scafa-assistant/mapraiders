@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { TerritoryDetailScreenProps, MovementClass } from '../../navigation/types';
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useAuthStore } from '../../store/authStore';
+import { defenseApi } from '../../services/api';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
   walker: '#00D4FF',
@@ -44,6 +46,12 @@ const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
   unknown: 'help-circle',
 };
 
+const DEFENSE_GAME_LABELS: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
+  rock_paper_scissors: { label: 'Rock Paper Scissors', icon: 'hand-left-outline', color: '#7B61FF' },
+  sprint_race: { label: 'Sprint Race', icon: 'speedometer-outline', color: '#00FF88' },
+  trivia: { label: 'Trivia', icon: 'help-circle-outline', color: '#00D4FF' },
+};
+
 export default function TerritoryDetailScreen({ route, navigation }: TerritoryDetailScreenProps) {
   const { territory } = route.params;
   const { challengeTerritory } = useTerritoryStore();
@@ -55,6 +63,66 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
     territory.decayPercent < 30 ? 'Strong' : territory.decayPercent < 60 ? 'Fading' : 'Weak';
   const decayColor =
     territory.decayPercent < 30 ? '#00FF88' : territory.decayPercent < 60 ? '#FFB800' : '#FF4757';
+
+  // Defense state
+  const [defense, setDefense] = useState<any>(null);
+  const [defenseLoading, setDefenseLoading] = useState(true);
+  const [removingDefense, setRemovingDefense] = useState(false);
+
+  useEffect(() => {
+    fetchDefense();
+  }, [territory.id]);
+
+  const fetchDefense = async () => {
+    setDefenseLoading(true);
+    try {
+      const { data } = await defenseApi.getDefense(territory.id);
+      const defenseData = data?.data ?? data;
+      setDefense(defenseData?.defense ?? defenseData ?? null);
+    } catch {
+      setDefense(null);
+    } finally {
+      setDefenseLoading(false);
+    }
+  };
+
+  const handleRemoveDefense = () => {
+    if (!defense?.id) return;
+    Alert.alert(
+      'Remove Defense',
+      'Are you sure you want to remove the defense from this territory?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            setRemovingDefense(true);
+            try {
+              await defenseApi.removeDefense(defense.id);
+              setDefense(null);
+              Alert.alert('Defense Removed', 'Your territory is no longer defended.');
+            } catch (err: any) {
+              Alert.alert('Error', err.message || 'Failed to remove defense.');
+            } finally {
+              setRemovingDefense(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDefenseChallenge = () => {
+    if (!defense) return;
+    navigation.navigate('DefenseChallenge', {
+      defenseId: defense.id,
+      territoryId: territory.id,
+      gameType: defense.game_type,
+      config: defense.config,
+      ownerUsername: territory.ownerUsername,
+    });
+  };
 
   const handleChallenge = () => {
     Alert.alert(
@@ -175,25 +243,90 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           </View>
         </View>
 
-        {/* Challenge Button */}
-        {!isOwner && (
-          <TouchableOpacity
-            style={styles.challengeButton}
-            onPress={handleChallenge}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="flash" size={22} color="#0A0E17" />
-            <Text style={styles.challengeButtonText}>CHALLENGE TERRITORY</Text>
-          </TouchableOpacity>
-        )}
-
-        {isOwner && (
-          <View style={styles.ownerNotice}>
-            <Ionicons name="shield-checkmark" size={20} color="#00FF88" />
-            <Text style={styles.ownerNoticeText}>
-              This is your territory. Walk through it regularly to prevent decay.
-            </Text>
+        {/* Defense Section */}
+        {defenseLoading ? (
+          <View style={styles.defenseLoading}>
+            <ActivityIndicator size="small" color="#8892B0" />
           </View>
+        ) : (
+          <>
+            {/* Defense Info Badge */}
+            {defense && (() => {
+              const gameInfo = DEFENSE_GAME_LABELS[defense.game_type] || DEFENSE_GAME_LABELS.trivia;
+              return (
+                <View style={[styles.defenseBadge, { borderColor: gameInfo.color }]}>
+                  <Ionicons name="shield-checkmark" size={18} color={gameInfo.color} />
+                  <Ionicons name={gameInfo.icon} size={16} color={gameInfo.color} />
+                  <Text style={[styles.defenseBadgeText, { color: gameInfo.color }]}>
+                    Defended: {gameInfo.label}
+                  </Text>
+                </View>
+              );
+            })()}
+
+            {/* Owner Actions */}
+            {isOwner && !defense && (
+              <TouchableOpacity
+                style={styles.setDefenseButton}
+                onPress={() => navigation.navigate('DefenseSetup', { territoryId: territory.id })}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="shield-outline" size={22} color="#0A0E17" />
+                <Text style={styles.setDefenseButtonText}>SET DEFENSE</Text>
+              </TouchableOpacity>
+            )}
+
+            {isOwner && defense && (
+              <TouchableOpacity
+                style={styles.removeDefenseButton}
+                onPress={handleRemoveDefense}
+                activeOpacity={0.8}
+                disabled={removingDefense}
+              >
+                {removingDefense ? (
+                  <ActivityIndicator size="small" color="#FF4757" />
+                ) : (
+                  <>
+                    <Ionicons name="shield-outline" size={20} color="#FF4757" />
+                    <Text style={styles.removeDefenseButtonText}>REMOVE DEFENSE</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
+
+            {/* Challenger Actions */}
+            {!isOwner && defense && (
+              <TouchableOpacity
+                style={styles.defenseChallengeButton}
+                onPress={handleDefenseChallenge}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="game-controller" size={22} color="#0A0E17" />
+                <Text style={styles.defenseChallengeButtonText}>CHALLENGE!</Text>
+              </TouchableOpacity>
+            )}
+
+            {!isOwner && !defense && (
+              <TouchableOpacity
+                style={styles.challengeButton}
+                onPress={handleChallenge}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="flash" size={22} color="#0A0E17" />
+                <Text style={styles.challengeButtonText}>CHALLENGE TERRITORY</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Owner Notice */}
+            {isOwner && (
+              <View style={[styles.ownerNotice, { marginTop: 12 }]}>
+                <Ionicons name="shield-checkmark" size={20} color="#00FF88" />
+                <Text style={styles.ownerNoticeText}>
+                  This is your territory. Walk through it regularly to prevent decay.
+                </Text>
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -404,5 +537,81 @@ const styles = StyleSheet.create({
     color: '#8892B0',
     fontSize: 13,
     lineHeight: 18,
+  },
+  defenseLoading: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  defenseBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#141B2D',
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 14,
+    marginBottom: 12,
+  },
+  defenseBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+    flex: 1,
+  },
+  setDefenseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFB800',
+    borderRadius: 16,
+    height: 56,
+    gap: 10,
+    shadowColor: '#FFB800',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  setDefenseButtonText: {
+    color: '#0A0E17',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 2,
+  },
+  removeDefenseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+    borderWidth: 1,
+    borderColor: '#FF4757',
+    borderRadius: 16,
+    height: 48,
+    gap: 10,
+  },
+  removeDefenseButtonText: {
+    color: '#FF4757',
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  defenseChallengeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#7B61FF',
+    borderRadius: 16,
+    height: 56,
+    gap: 10,
+    shadowColor: '#7B61FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  defenseChallengeButtonText: {
+    color: '#0A0E17',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 2,
   },
 });

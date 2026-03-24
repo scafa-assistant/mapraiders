@@ -9,6 +9,8 @@ import EchoListScreen from '../screens/map/EchoListScreen';
 import EchoDetailScreen from '../screens/map/EchoDetailScreen';
 import ArtifactDetailScreen from '../screens/map/ArtifactDetailScreen';
 import PlaceHistoryScreen from '../screens/map/PlaceHistoryScreen';
+import DefenseSetupScreen from '../screens/map/DefenseSetupScreen';
+import DefenseChallengeScreen from '../screens/map/DefenseChallengeScreen';
 
 const Stack = createNativeStackNavigator<MapStackParamList>();
 
@@ -59,6 +61,22 @@ export default function MapStack() {
       <Stack.Screen
         name="PlaceHistory"
         component={PlaceHistoryScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="DefenseSetup"
+        component={DefenseSetupScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="DefenseChallenge"
+        component={DefenseChallengeScreen}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',

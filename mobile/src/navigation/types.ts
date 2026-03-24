@@ -64,6 +64,8 @@ export interface Territory {
   movementClass: MovementClass;
   area: number;
   color: string;
+  hasDefense?: boolean;
+  defenseGameType?: string;
 }
 
 export interface Quest {
@@ -157,6 +159,14 @@ export type MapStackParamList = {
   EchoDetail: { echoId: string };
   ArtifactDetail: { artifactId: string };
   PlaceHistory: { lat: number; lng: number };
+  DefenseSetup: { territoryId: string };
+  DefenseChallenge: {
+    defenseId: string;
+    territoryId: string;
+    gameType: string;
+    config: any;
+    ownerUsername: string;
+  };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -176,6 +186,8 @@ export type EchoListScreenProps = NativeStackScreenProps<MapStackParamList, 'Ech
 export type EchoDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'EchoDetail'>;
 export type ArtifactDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'ArtifactDetail'>;
 export type PlaceHistoryScreenProps = NativeStackScreenProps<MapStackParamList, 'PlaceHistory'>;
+export type DefenseSetupScreenProps = NativeStackScreenProps<MapStackParamList, 'DefenseSetup'>;
+export type DefenseChallengeScreenProps = NativeStackScreenProps<MapStackParamList, 'DefenseChallenge'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 

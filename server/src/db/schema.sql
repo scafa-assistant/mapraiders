@@ -873,3 +873,44 @@ ALTER TABLE echos ADD COLUMN IF NOT EXISTS media_url TEXT; -- For photo/video (a
 ALTER TABLE echos ADD COLUMN IF NOT EXISTS caption TEXT;
 -- Make audio_url nullable for photo/video echos
 ALTER TABLE echos ALTER COLUMN audio_url DROP NOT NULL;
+
+-- ============================================================
+-- TERRITORY DEFENSES
+-- Mini-games that protect territories from takeover.
+-- Owner sets a game type + config; challengers must beat it.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS territory_defenses (
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  territory_id     UUID NOT NULL REFERENCES territories(id) ON DELETE CASCADE,
+  owner_id         UUID NOT NULL REFERENCES users(id),
+  game_type        VARCHAR(30) NOT NULL, -- 'rock_paper_scissors', 'sprint_race', 'trivia', 'photo_challenge', 'step_challenge', 'endurance'
+  config           JSONB NOT NULL DEFAULT '{}', -- game-specific config (rounds, distance, question, etc.)
+  owner_secret     TEXT, -- encrypted move/answer (null for non-secret games)
+  owner_benchmark  JSONB, -- sprint time, step goal, etc.
+  status           VARCHAR(20) NOT NULL DEFAULT 'active', -- 'active', 'expired'
+  created_at       TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE territory_defenses IS 'Mini-game defenses set by territory owners to protect against takeovers.';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_defense_territory ON territory_defenses(territory_id) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_defense_owner ON territory_defenses(owner_id);
+
+-- ============================================================
+-- DEFENSE ATTEMPTS
+-- Records of challengers attempting to beat territory defenses.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS defense_attempts (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  defense_id      UUID NOT NULL REFERENCES territory_defenses(id) ON DELETE CASCADE,
+  challenger_id   UUID NOT NULL REFERENCES users(id),
+  challenger_data JSONB NOT NULL DEFAULT '{}', -- move, time, answer, photo_url
+  result          VARCHAR(10), -- 'won', 'lost', 'draw', 'pending'
+  xp_awarded      INT DEFAULT 0,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE defense_attempts IS 'Challenge attempts against territory defense mini-games.';
+
+CREATE INDEX IF NOT EXISTS idx_attempts_defense ON defense_attempts(defense_id);
+CREATE INDEX IF NOT EXISTS idx_attempts_challenger ON defense_attempts(challenger_id);

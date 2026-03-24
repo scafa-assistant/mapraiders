@@ -548,4 +548,17 @@ export const inviteApi = {
     api.post('/invites/redeem', { code }),
 };
 
+// ─── Defenses API ──────────────────────────────────────────────────────────
+
+export const defenseApi = {
+  setDefense: (data: { territoryId: string; gameType: string; config: Record<string, any>; secret?: string; benchmark?: Record<string, any> }) =>
+    api.post('/defenses', data),
+  getDefense: (territoryId: string) =>
+    api.get(`/defenses/${territoryId}`),
+  submitChallenge: (defenseId: string, data: Record<string, any>) =>
+    api.post(`/defenses/${defenseId}/challenge`, data),
+  removeDefense: (defenseId: string) =>
+    api.delete(`/defenses/${defenseId}`),
+};
+
 export default api;

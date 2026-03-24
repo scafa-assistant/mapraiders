@@ -499,6 +499,19 @@ export class ClaimEngine {
 
         if (!canLose) continue; // Defender hit 30% daily loss cap
 
+        // Defense mini-game: skip takeover if territory has active defense
+        try {
+          const defense = await client.query(
+            "SELECT id FROM territory_defenses WHERE territory_id = $1 AND status = 'active' LIMIT 1",
+            [existing.id]
+          );
+          if (defense.rows.length > 0) {
+            continue; // Territory is defended — mobile app will show defense game
+          }
+        } catch (err) {
+          console.error('[ClaimEngine] Defense check error:', err);
+        }
+
         // Balance: Newcomer protection on defender (1.5x effective value)
         let newcomerMultiplier = 1.0;
         try {
