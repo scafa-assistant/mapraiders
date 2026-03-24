@@ -235,7 +235,7 @@ export class ClaimEngine {
 
     await query(
       `INSERT INTO routes (user_id, points, polygon, class, distance_m, duration_s, weather_bonus, trust_score)
-       VALUES ($1, $2, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($3)), 4326), $4, $5, $6, $7, $8)
+       VALUES ($1, $2, ST_CollectionExtract(ST_MakeValid(ST_SetSRID(ST_GeomFromEWKT($3), 4326)), 3), $4, $5, $6, $7, $8)
        RETURNING id`,
       [
         userId,
@@ -586,7 +586,7 @@ export class ClaimEngine {
         // CREATE: New territory
         result = await client.query(
           `INSERT INTO territories (owner_id, polygon, class, claim_value, visible_after)
-           VALUES ($1, ST_SetSRID(ST_MakeValid(ST_GeomFromEWKT($2)), 4326), $3, $4, NOW() + INTERVAL '15 minutes')
+           VALUES ($1, ST_CollectionExtract(ST_MakeValid(ST_SetSRID(ST_GeomFromEWKT($2), 4326)), 3), $3, $4, NOW() + INTERVAL '15 minutes')
            RETURNING id`,
           [userId, polygonWkt, cls, Math.round(claimValue)]
         );
