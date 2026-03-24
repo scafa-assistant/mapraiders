@@ -81,8 +81,10 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
       Alert.alert('Missing Name', 'Please enter an event name.');
       return;
     }
-    if (!pinLocation) {
-      Alert.alert('Missing Location', 'Tap the map to set an event location.');
+    // Use pin location or fall back to current GPS
+    const eventLocation = pinLocation || (currentLocation ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude } : null);
+    if (!eventLocation) {
+      Alert.alert('Missing Location', 'GPS not available. Please tap the map to set a location.');
       return;
     }
     // Build date from picker values
@@ -99,8 +101,8 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
         name: name.trim(),
         description: description.trim() || undefined,
         category,
-        lat: pinLocation.latitude,
-        lng: pinLocation.longitude,
+        lat: eventLocation.latitude,
+        lng: eventLocation.longitude,
         event_date: eventDate.toISOString(),
         max_attendees: maxAttendees.trim() ? parseInt(maxAttendees, 10) : undefined,
       };
