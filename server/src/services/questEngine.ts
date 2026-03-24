@@ -82,10 +82,7 @@ export class QuestEngine {
         throw new Error('User not found');
       }
 
-      // Quest creation requires "claimer" unlock level (level 6+)
-      if (creator.rows[0].level < UNLOCK_LEVELS.claimer) {
-        throw new Error(`Quest creation requires level ${UNLOCK_LEVELS.claimer} or higher`);
-      }
+      // Level check removed — all users can create quests
 
       // Validate territory ownership if specified
       if (data.territory_id) {

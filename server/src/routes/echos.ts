@@ -171,12 +171,7 @@ router.post(
          AND ST_Contains(polygon, ST_SetSRID(ST_MakePoint($2, $3), 4326))`,
         [req.userId, lng, lat]
       );
-      if (!ownsTerritory && (!userLevel || userLevel.level < UNLOCK_LEVELS.creator)) {
-        return res.status(403).json({
-          success: false,
-          message: `You must own territory at this location or be Creator level (${UNLOCK_LEVELS.creator}+)`,
-        });
-      }
+      // Level check removed — all users can create echos
 
       // Check if location is in a Silent Zone
       const inSilentZone = await isInSilentZone(lat, lng);

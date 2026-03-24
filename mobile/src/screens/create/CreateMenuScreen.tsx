@@ -82,17 +82,9 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
   const userLevel = user?.level ?? 1;
   const hasTerritories = (user?.totalClaims ?? 0) > 0;
 
-  const isUnlocked = (option: CreateOption): boolean => {
-    if (userLevel < option.minLevel) return false;
-    if (option.requiresTerritory && !hasTerritories) return false;
-    return true;
-  };
-
-  const getLockedReason = (option: CreateOption): string => {
-    if (userLevel < option.minLevel) return `Reach level ${option.minLevel} to unlock`;
-    if (option.requiresTerritory && !hasTerritories) return 'Claim at least one territory';
-    return '';
-  };
+  // All features unlocked for everyone — no level gates
+  const isUnlocked = (_option: CreateOption): boolean => true;
+  const getLockedReason = (_option: CreateOption): string => '';
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

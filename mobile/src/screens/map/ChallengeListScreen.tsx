@@ -43,7 +43,8 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
         currentLocation.longitude,
         5000
       );
-      setChallenges(response.data);
+      const raw = response.data?.data?.challenges ?? response.data?.data ?? response.data ?? [];
+      setChallenges(Array.isArray(raw) ? raw : []);
     } catch (_err) {
       // Silently handle fetch error
     } finally {

@@ -35,12 +35,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       [req.userId]
     );
 
-    if (!user || user.level < UNLOCK_LEVELS.creator) {
-      return res.status(403).json({
-        success: false,
-        error: `Artifact creation requires level ${UNLOCK_LEVELS.creator} or higher`,
-      });
-    }
+    // Level check removed — all users can create artifacts
 
     const { name, description, type, rarity, lat, lng, territory_id, photo_url } = req.body;
 
