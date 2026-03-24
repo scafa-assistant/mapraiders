@@ -71,9 +71,18 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Auto-set pin when GPS becomes available
+  React.useEffect(() => {
+    if (!pinLocation && currentLocation) {
+      setPinLocation({ latitude: currentLocation.latitude, longitude: currentLocation.longitude });
+    }
+  }, [currentLocation, pinLocation]);
+
   const handleMapPress = (event: MapPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setPinLocation({ latitude, longitude });
+    // Brief haptic feedback
+    try { require('expo-haptics').selectionAsync(); } catch {}
   };
 
   const handleCreate = async () => {
@@ -391,7 +400,7 @@ const styles = StyleSheet.create({
   },
   mapPicker: {
     width: '100%',
-    height: 180,
+    height: 250,
   },
   mapHint: {
     position: 'absolute',
