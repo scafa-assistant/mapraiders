@@ -916,6 +916,50 @@ CREATE INDEX IF NOT EXISTS idx_attempts_defense ON defense_attempts(defense_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_challenger ON defense_attempts(challenger_id);
 
 -- ============================================================
+-- TERRITORY GAMES (Turn-based mini-games: Tic Tac Toe, Mini Chess)
+-- Asynchronous strategy games for territory defense.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS territory_games (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  territory_id    UUID NOT NULL REFERENCES territories(id) ON DELETE CASCADE,
+  defense_id      UUID REFERENCES territory_defenses(id) ON DELETE SET NULL,
+  defender_id     UUID NOT NULL REFERENCES users(id),
+  challenger_id   UUID NOT NULL REFERENCES users(id),
+  game_type       VARCHAR(20) NOT NULL, -- 'tic_tac_toe', 'mini_chess'
+  board_state     JSONB NOT NULL DEFAULT '{}',
+  current_turn    UUID NOT NULL, -- player who plays next
+  turn_number     INT NOT NULL DEFAULT 1,
+  status          VARCHAR(20) NOT NULL DEFAULT 'active', -- 'active', 'completed', 'forfeit', 'timeout', 'draw'
+  winner_id       UUID REFERENCES users(id),
+  turn_deadline   TIMESTAMPTZ NOT NULL,
+  config          JSONB NOT NULL DEFAULT '{}', -- turn_timeout_hours, best_of, etc.
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  completed_at    TIMESTAMPTZ
+);
+
+COMMENT ON TABLE territory_games IS 'Turn-based async mini-games (Tic Tac Toe, Mini Chess) for territory defense/attack.';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_territory_games_active ON territory_games(territory_id) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_territory_games_players ON territory_games(defender_id, challenger_id);
+CREATE INDEX IF NOT EXISTS idx_territory_games_turn ON territory_games(current_turn) WHERE status = 'active';
+
+-- ============================================================
+-- GAME MOVES (Individual moves in turn-based games)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS game_moves (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  game_id     UUID NOT NULL REFERENCES territory_games(id) ON DELETE CASCADE,
+  player_id   UUID NOT NULL REFERENCES users(id),
+  move_data   JSONB NOT NULL, -- {position} for TTT, {from, to} for chess
+  move_number INT NOT NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE game_moves IS 'Individual moves in turn-based territory games.';
+
+CREATE INDEX IF NOT EXISTS idx_game_moves_game ON game_moves(game_id, move_number);
+
+-- ============================================================
 -- MEETUP EVENTS
 -- Player-organized real-world meetups and gatherings.
 -- ============================================================

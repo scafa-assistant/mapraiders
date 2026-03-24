@@ -10,6 +10,7 @@ import { query, queryOne, queryMany } from '../config/database';
 import { awardXp } from './progressionEngine';
 import { notifyTerritoryAttack } from './notificationService';
 import { wsService } from './wsService';
+import { turnGameEngine } from './turnGameEngine';
 
 const GAME_TYPES = [
   'rock_paper_scissors',
@@ -18,6 +19,10 @@ const GAME_TYPES = [
   'photo_challenge',
   'step_challenge',
   'endurance',
+  'coin_flip',
+  'odd_even',
+  'tic_tac_toe',
+  'mini_chess',
 ] as const;
 
 type GameType = typeof GAME_TYPES[number];
@@ -149,17 +154,35 @@ class DefenseGameEngine {
       }
     }
 
-    // 4. Evaluate result
+    // 4. Turn-based games: create a game instance instead of instant evaluation
+    if (defense.game_type === 'tic_tac_toe' || defense.game_type === 'mini_chess') {
+      const game = await turnGameEngine.createGame(
+        defense.territory_id,
+        defense.owner_id,
+        userId,
+        defense.game_type,
+        defenseId
+      );
+      return {
+        attempt_id: null,
+        result: 'game_started',
+        defense_game_type: defense.game_type,
+        game_id: game.id,
+        game: game,
+      } as any;
+    }
+
+    // 5. Evaluate result (instant games)
     const result = this.evaluateGame(defense, challengerData);
 
-    // 5. Store attempt
+    // 6. Store attempt
     const attempt = await queryOne<{ id: string }>(
       `INSERT INTO defense_attempts (defense_id, challenger_id, challenger_data, result)
        VALUES ($1, $2, $3, $4) RETURNING id`,
       [defenseId, userId, JSON.stringify(challengerData), result]
     );
 
-    // 6. Handle outcome
+    // 7. Handle outcome
     if (result === 'won') {
       await this.handleWin(defense, userId, attempt!.id);
     } else if (result === 'lost') {
@@ -232,6 +255,12 @@ class DefenseGameEngine {
         return (challengerData.duration_seconds || 0) >= required ? 'won' : 'lost';
       }
 
+      case 'coin_flip':
+        return this.evaluateCoinFlip(defense.owner_secret, challengerData.flip_result, config);
+
+      case 'odd_even':
+        return this.evaluateOddEven(defense.owner_secret, config, challengerData.fingers);
+
       default:
         return 'lost';
     }
@@ -253,6 +282,59 @@ class DefenseGameEngine {
       return 'won';
     }
     return 'lost';
+  }
+
+  /**
+   * Evaluate Coin Flip (Münzwurf).
+   * Defender bets heads/tails. Challenger flips and reports result.
+   * If defender's bet matches flip → challenger loses (defense holds).
+   */
+  private evaluateCoinFlip(
+    defenderBet: string,
+    flipResult: string,
+    config: any
+  ): 'won' | 'lost' | 'draw' {
+    if (!defenderBet || !flipResult) return 'lost';
+    const bet = defenderBet.toLowerCase().trim();
+    const flip = flipResult.toLowerCase().trim();
+
+    // Normalize: 'kopf'/'heads' → 'heads', 'zahl'/'tails' → 'tails'
+    const normBet = (bet === 'kopf' || bet === 'heads') ? 'heads' : 'tails';
+    const normFlip = (flip === 'kopf' || flip === 'heads') ? 'heads' : 'tails';
+
+    // Defender guessed correctly → defense holds → challenger lost
+    if (normBet === normFlip) return 'lost';
+    return 'won';
+  }
+
+  /**
+   * Evaluate Odd/Even (Gerade oder Ungerade — Finger Poker).
+   * Defender picks odd/even and their finger count (stored as secret).
+   * Challenger shows their fingers. Sum determines winner.
+   * If sum parity matches defender's pick → defense holds → challenger lost.
+   */
+  private evaluateOddEven(
+    defenderSecret: string,
+    config: any,
+    challengerFingers: number
+  ): 'won' | 'lost' | 'draw' {
+    if (!defenderSecret || challengerFingers === undefined) return 'lost';
+
+    // Secret format: "odd:3" or "even:2"
+    const parts = defenderSecret.split(':');
+    const defenderPick = parts[0]; // 'odd' or 'even'
+    const defenderFingers = parseInt(parts[1], 10) || 1;
+
+    const cFingers = Math.max(1, Math.min(5, Math.round(challengerFingers)));
+    const sum = defenderFingers + cFingers;
+    const sumParity = sum % 2 === 0 ? 'even' : 'odd';
+
+    // Normalize: 'gerade'→'even', 'ungerade'→'odd'
+    const normPick = (defenderPick === 'gerade' || defenderPick === 'even') ? 'even' : 'odd';
+
+    // Defender guessed correctly → defense holds → challenger lost
+    if (normPick === sumParity) return 'lost';
+    return 'won';
   }
 
   // ---- Outcome Handlers ----

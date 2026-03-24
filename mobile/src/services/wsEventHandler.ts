@@ -132,5 +132,51 @@ export function setupWsEventHandlers(): () => void {
     Alert.alert('Event Over', resultMsg);
   }));
 
+  // ─── Turn-Based Game Events ─────────────────────────────────────────
+
+  // Game started - defender gets notified
+  unsubs.push(mapRaidersWs.on('game_started', (data) => {
+    Vibration.vibrate([0, 200, 100, 200]);
+    const gameLabel = data.game_type === 'tic_tac_toe' ? 'Tic Tac Toe' : 'Mini-Schach';
+    Alert.alert(
+      `${gameLabel} Herausforderung!`,
+      data.your_turn
+        ? 'Ein Angreifer fordert dein Territorium! Du bist am Zug.'
+        : 'Spiel gestartet! Warte auf den Gegner.',
+    );
+  }));
+
+  // Game turn - it's your move
+  unsubs.push(mapRaidersWs.on('game_turn', (data) => {
+    Vibration.vibrate(300);
+    const gameLabel = data.game_type === 'tic_tac_toe' ? 'Tic Tac Toe' : 'Mini-Schach';
+    Alert.alert(`${gameLabel}`, 'Du bist am Zug!');
+  }));
+
+  // Game ended - result
+  unsubs.push(mapRaidersWs.on('game_ended', (data) => {
+    Vibration.vibrate(500);
+    const resultText = data.result === 'won'
+      ? 'Du hast gewonnen!'
+      : data.result === 'draw'
+      ? 'Unentschieden!'
+      : 'Du hast verloren!';
+    Alert.alert('Spiel beendet', `${resultText}\n${data.message || ''}`);
+    // Refresh territories
+    useTerritoryStore.getState().fetchMyTerritories();
+  }));
+
+  // Defense lost via instant game
+  unsubs.push(mapRaidersWs.on('defense_lost', (_data) => {
+    Vibration.vibrate([0, 300, 100, 300]);
+    Alert.alert('Territorium verloren!', 'Ein Angreifer hat deine Verteidigung durchbrochen!');
+    useTerritoryStore.getState().fetchMyTerritories();
+  }));
+
+  // Defense held - your defense worked
+  unsubs.push(mapRaidersWs.on('defense_held', (_data) => {
+    Alert.alert('Verteidigung hält!', 'Ein Angreifer wurde abgewehrt.');
+  }));
+
   return () => unsubs.forEach(fn => fn());
 }

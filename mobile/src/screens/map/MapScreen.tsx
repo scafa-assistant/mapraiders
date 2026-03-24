@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -384,6 +385,30 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
+  // Refetch territories + content when tab becomes focused (e.g. after returning from Create/Echo screen)
+  useFocusEffect(
+    useCallback(() => {
+      if (!mapRef.current) return;
+      (async () => {
+        try {
+          const camera = await mapRef.current!.getCamera();
+          if (camera?.center) {
+            const bbox = {
+              north: camera.center.latitude + 0.01,
+              south: camera.center.latitude - 0.01,
+              east: camera.center.longitude + 0.01,
+              west: camera.center.longitude - 0.01,
+            };
+            fetchTerritories(bbox);
+            fetchNearbyEchos();
+          }
+        } catch {
+          // Fallback if camera not available
+        }
+      })();
+    }, [fetchTerritories, fetchNearbyEchos])
+  );
+
   // Fetch territories and all content when region changes (using viewport bbox)
   const handleRegionChange = useCallback(
     (region: Region) => {
@@ -401,7 +426,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       fetchNearbyResonance();
       fetchNearbyMeetups();
     },
-    [fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]
+    [fetchTerritories, fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]
   );
 
   // Center map on current location
@@ -575,7 +600,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           );
         })}
 
-        {/* Defense Shield Markers */}
+        {/* Defense Shield Markers (defended territories) */}
         {safeTerritories.filter(t => t.hasDefense).map((territory) => {
           const centroid = getPolygonCentroid(territory.polygon);
           if (!centroid) return null;
@@ -583,6 +608,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             territory.defenseGameType === 'rock_paper_scissors' ? '#7B61FF' :
             territory.defenseGameType === 'sprint_race' ? '#00FF88' :
             territory.defenseGameType === 'trivia' ? '#00D4FF' :
+            territory.defenseGameType === 'coin_flip' ? '#FFB800' :
+            territory.defenseGameType === 'odd_even' ? '#FF69B4' :
+            territory.defenseGameType === 'tic_tac_toe' ? '#00D4FF' :
+            territory.defenseGameType === 'mini_chess' ? '#FFB800' :
             '#FFB800';
           return (
             <Marker
@@ -597,6 +626,27 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             </Marker>
           );
         })}
+
+        {/* Undefended Own Territory Markers — pulsing "DEFEND!" hint */}
+        {safeTerritories
+          .filter(t => t.ownerId === user?.id && !t.hasDefense)
+          .map((territory) => {
+            const centroid = getPolygonCentroid(territory.polygon);
+            if (!centroid) return null;
+            return (
+              <Marker
+                key={`undefended-${territory.id}`}
+                coordinate={centroid}
+                anchor={{ x: 0.5, y: 0.5 }}
+                onPress={() => navigation.navigate('DefenseSetup', { territoryId: territory.id })}
+              >
+                <View style={styles.undefendedMarker}>
+                  <Ionicons name="shield-outline" size={12} color="#FF4757" />
+                  <Text style={styles.undefendedText}>DEFEND</Text>
+                </View>
+              </Marker>
+            );
+          })}
 
         {/* Current Route Line */}
         {isTracking && safeRoute.length >= 2 && (
@@ -1137,6 +1187,23 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  undefendedMarker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 71, 87, 0.9)',
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    gap: 3,
+    borderWidth: 1,
+    borderColor: '#FF4757',
+  },
+  undefendedText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
   locationMarkerContainer: {
     width: 60,

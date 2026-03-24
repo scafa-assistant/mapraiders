@@ -169,6 +169,16 @@ export type MapStackParamList = {
   };
   MeetupDetail: { meetupId: string };
   MeetupChat: { eventId: string; eventName: string };
+  TicTacToeGame: {
+    gameId: string;
+    territoryId: string;
+    opponentUsername: string;
+  };
+  MiniChessGame: {
+    gameId: string;
+    territoryId: string;
+    opponentUsername: string;
+  };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -192,6 +202,8 @@ export type DefenseSetupScreenProps = NativeStackScreenProps<MapStackParamList, 
 export type DefenseChallengeScreenProps = NativeStackScreenProps<MapStackParamList, 'DefenseChallenge'>;
 export type MeetupDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'MeetupDetail'>;
 export type MeetupChatScreenProps = NativeStackScreenProps<MapStackParamList, 'MeetupChat'>;
+export type TicTacToeGameScreenProps = NativeStackScreenProps<MapStackParamList, 'TicTacToeGame'>;
+export type MiniChessGameScreenProps = NativeStackScreenProps<MapStackParamList, 'MiniChessGame'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 

@@ -635,5 +635,21 @@ export function setupCronJobs(): void {
     }
   }, { timezone: 'UTC' });
 
+  // ------------------------------------------------------------------
+  // Every 5 minutes - Turn-based game timeout checks
+  // Forfeits games where the current player has exceeded their turn time.
+  // ------------------------------------------------------------------
+  cron.schedule('*/5 * * * *', async () => {
+    try {
+      const { turnGameEngine } = await import('../services/turnGameEngine');
+      const count = await turnGameEngine.checkTimeouts();
+      if (count > 0) {
+        console.log(`[CRON] Forfeited ${count} timed-out turn games`);
+      }
+    } catch (err) {
+      console.error('[CRON] Turn game timeout check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
   console.log('[CRON] All jobs scheduled.');
 }

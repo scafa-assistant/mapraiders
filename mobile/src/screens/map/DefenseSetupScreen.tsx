@@ -19,7 +19,7 @@ import type { DefenseSetupScreenProps } from '../../navigation/types';
 
 // ─── Game Type Definitions ──────────────────────────────────────────────────
 
-type GameType = 'rock_paper_scissors' | 'sprint_race' | 'trivia';
+type GameType = 'rock_paper_scissors' | 'sprint_race' | 'trivia' | 'coin_flip' | 'odd_even' | 'tic_tac_toe' | 'mini_chess';
 
 interface GameTypeCard {
   id: GameType;
@@ -27,29 +27,65 @@ interface GameTypeCard {
   icon: keyof typeof Ionicons.glyphMap;
   description: string;
   color: string;
+  category: 'instant' | 'strategy';
 }
 
 const GAME_TYPES: GameTypeCard[] = [
   {
     id: 'rock_paper_scissors',
-    name: 'Rock Paper Scissors',
+    name: 'Schnick Schnack Schnuck',
     icon: 'hand-left-outline',
-    description: 'Choose a secret move. Challengers pick theirs — classic showdown!',
+    description: 'Wähle einen geheimen Zug. Herausforderer wählt seinen — Klassiker!',
     color: '#7B61FF',
+    category: 'instant',
+  },
+  {
+    id: 'coin_flip',
+    name: 'Münzwurf',
+    icon: 'ellipse-outline',
+    description: 'Setze auf Kopf oder Zahl. 50/50 Glücksspiel!',
+    color: '#FFB800',
+    category: 'instant',
+  },
+  {
+    id: 'odd_even',
+    name: 'Gerade oder Ungerade',
+    icon: 'finger-print-outline',
+    description: 'Finger-Poker! Zeig 1-5 Finger, die Summe entscheidet.',
+    color: '#FF69B4',
+    category: 'instant',
   },
   {
     id: 'sprint_race',
     name: 'Sprint Race',
     icon: 'speedometer-outline',
-    description: 'Set a benchmark time. Challengers must beat it!',
+    description: 'Setze eine Benchmark-Zeit. Herausforderer muss schneller sein!',
     color: '#00FF88',
+    category: 'instant',
   },
   {
     id: 'trivia',
     name: 'Trivia',
     icon: 'help-circle-outline',
-    description: 'Ask a question. Challengers must answer correctly!',
+    description: 'Stelle eine Frage. Herausforderer muss richtig antworten!',
     color: '#00D4FF',
+    category: 'instant',
+  },
+  {
+    id: 'tic_tac_toe',
+    name: 'Tic Tac Toe',
+    icon: 'grid-outline',
+    description: 'Klassisches 3×3 Strategiespiel. 2h pro Zug. Bei Unentschieden behältst du!',
+    color: '#00D4FF',
+    category: 'strategy',
+  },
+  {
+    id: 'mini_chess',
+    name: 'Mini-Schach 5×5',
+    icon: 'trophy-outline',
+    description: 'König, Turm, Läufer, 3 Bauern. 4h pro Zug. Das ultimative Duell!',
+    color: '#FFB800',
+    category: 'strategy',
   },
 ];
 
@@ -83,6 +119,13 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
   // Trivia state
   const [triviaQuestion, setTriviaQuestion] = useState('');
   const [triviaAnswer, setTriviaAnswer] = useState('');
+
+  // Coin Flip state
+  const [coinBet, setCoinBet] = useState<'heads' | 'tails' | null>(null);
+
+  // Odd/Even state
+  const [oddEvenPick, setOddEvenPick] = useState<'odd' | 'even' | null>(null);
+  const [oeFingers, setOeFingers] = useState<number>(3);
 
   const SPRINT_DISTANCES = [100, 200, 300, 500];
 
@@ -198,6 +241,14 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         return;
       }
     }
+    if (selectedGame === 'coin_flip' && !coinBet) {
+      Alert.alert('Wette fehlt', 'Wähle Kopf oder Zahl.');
+      return;
+    }
+    if (selectedGame === 'odd_even' && !oddEvenPick) {
+      Alert.alert('Wahl fehlt', 'Wähle Gerade oder Ungerade.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -214,6 +265,16 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
       } else if (selectedGame === 'trivia') {
         config = { question: triviaQuestion.trim() };
         secret = triviaAnswer.trim().toLowerCase();
+      } else if (selectedGame === 'coin_flip') {
+        secret = coinBet!;
+        config = { game: 'coin_flip' };
+      } else if (selectedGame === 'odd_even') {
+        secret = `${oddEvenPick}:${oeFingers}`;
+        config = { game: 'odd_even' };
+      } else if (selectedGame === 'tic_tac_toe') {
+        config = { turn_timeout_hours: 2 };
+      } else if (selectedGame === 'mini_chess') {
+        config = { turn_timeout_hours: 4 };
       }
 
       await defenseApi.setDefense({
@@ -383,12 +444,12 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const renderTriviaConfig = () => (
     <View style={styles.configSection}>
-      <Text style={styles.configTitle}>Your Question</Text>
-      <Text style={styles.configHint}>The challenger must answer correctly to win!</Text>
+      <Text style={styles.configTitle}>Deine Frage</Text>
+      <Text style={styles.configHint}>Herausforderer muss richtig antworten!</Text>
 
       <TextInput
         style={styles.triviaInput}
-        placeholder="Enter your trivia question..."
+        placeholder="Trivia-Frage eingeben..."
         placeholderTextColor={THEME.textSecondary}
         value={triviaQuestion}
         onChangeText={setTriviaQuestion}
@@ -396,10 +457,10 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         maxLength={200}
       />
 
-      <Text style={styles.configSubtitle}>Correct Answer</Text>
+      <Text style={styles.configSubtitle}>Richtige Antwort</Text>
       <TextInput
         style={[styles.triviaInput, { height: 48 }]}
-        placeholder="Enter the correct answer..."
+        placeholder="Korrekte Antwort eingeben..."
         placeholderTextColor={THEME.textSecondary}
         value={triviaAnswer}
         onChangeText={setTriviaAnswer}
@@ -407,6 +468,101 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
       />
     </View>
   );
+
+  const renderCoinFlipConfig = () => (
+    <View style={styles.configSection}>
+      <Text style={styles.configTitle}>Deine Wette</Text>
+      <Text style={styles.configHint}>Setze auf Kopf oder Zahl. Der Herausforderer wirft!</Text>
+
+      <View style={styles.rpsRow}>
+        {(['heads', 'tails'] as const).map((bet) => (
+          <TouchableOpacity
+            key={bet}
+            style={[
+              styles.rpsButton,
+              { width: 130, height: 110 },
+              { borderColor: coinBet === bet ? '#FFB800' : THEME.border },
+              coinBet === bet && { backgroundColor: 'rgba(255, 184, 0, 0.15)' },
+            ]}
+            onPress={() => setCoinBet(bet)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.rpsEmoji}>{bet === 'heads' ? '👑' : '🔢'}</Text>
+            <Text style={[styles.rpsLabel, coinBet === bet && { color: '#FFB800' }]}>
+              {bet === 'heads' ? 'Kopf' : 'Zahl'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  const renderOddEvenConfig = () => (
+    <View style={styles.configSection}>
+      <Text style={styles.configTitle}>Gerade oder Ungerade?</Text>
+      <Text style={styles.configHint}>
+        Wähle gerade/ungerade und deine Fingeranzahl. Die Summe beider Spieler entscheidet!
+      </Text>
+
+      <View style={styles.roundsRow}>
+        {(['odd', 'even'] as const).map((pick) => (
+          <TouchableOpacity
+            key={pick}
+            style={[
+              styles.roundButton,
+              oddEvenPick === pick && { borderColor: '#FF69B4', backgroundColor: 'rgba(255, 105, 180, 0.1)' },
+            ]}
+            onPress={() => setOddEvenPick(pick)}
+          >
+            <Text style={[styles.roundButtonText, oddEvenPick === pick && { color: '#FF69B4' }]}>
+              {pick === 'odd' ? 'Ungerade' : 'Gerade'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Text style={styles.configSubtitle}>Deine Finger (1-5)</Text>
+      <View style={styles.distanceRow}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <TouchableOpacity
+            key={n}
+            style={[
+              styles.distanceChip,
+              oeFingers === n && { borderColor: '#FF69B4', backgroundColor: 'rgba(255, 105, 180, 0.1)' },
+            ]}
+            onPress={() => setOeFingers(n)}
+          >
+            <Text style={[styles.distanceChipText, oeFingers === n && { color: '#FF69B4' }]}>
+              {n} {'🤚'.repeat(0)}{n}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  const renderTurnGameConfig = (gameType: 'tic_tac_toe' | 'mini_chess') => {
+    const isTTT = gameType === 'tic_tac_toe';
+    return (
+      <View style={styles.configSection}>
+        <Text style={styles.configTitle}>{isTTT ? 'Tic Tac Toe' : 'Mini-Schach 5×5'}</Text>
+        <Text style={styles.configHint}>
+          {isTTT
+            ? 'Zugbasiertes Strategiespiel. Du spielst X (erster Zug). 2 Stunden pro Zug. Bei Unentschieden behältst du das Territorium!'
+            : 'König, Turm, Läufer und 3 Bauern auf einem 5×5 Brett. Du spielst Weiß (erster Zug). 4 Stunden pro Zug.'}
+        </Text>
+
+        <View style={[styles.rpsRow, { justifyContent: 'center' }]}>
+          <View style={[styles.rpsButton, { width: 260, height: 80, borderColor: isTTT ? '#00D4FF' : '#FFB800', backgroundColor: isTTT ? 'rgba(0, 212, 255, 0.08)' : 'rgba(255, 184, 0, 0.08)' }]}>
+            <Text style={[styles.rpsEmoji, { fontSize: 28 }]}>{isTTT ? '❌⭕' : '♔♚'}</Text>
+            <Text style={[styles.rpsLabel, { color: isTTT ? '#00D4FF' : '#FFB800' }]}>
+              {isTTT ? '2h pro Zug · 5-9 Züge' : '4h pro Zug · 1-3 Tage'}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -424,10 +580,56 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Game Type Selection */}
-        <Text style={styles.sectionHeader}>Choose Defense Game</Text>
+        {/* Instant Games */}
+        <Text style={styles.sectionHeader}>Sofort-Spiele</Text>
         <View style={styles.gameGrid}>
-          {GAME_TYPES.map((game) => (
+          {GAME_TYPES.filter((g) => g.category === 'instant').map((game) => (
+            <TouchableOpacity
+              key={game.id}
+              style={[
+                styles.gameCard,
+                selectedGame === game.id && {
+                  borderColor: game.color,
+                  backgroundColor: `${game.color}10`,
+                },
+              ]}
+              onPress={() => setSelectedGame(game.id)}
+              activeOpacity={0.7}
+            >
+              <View
+                style={[
+                  styles.gameIconCircle,
+                  {
+                    backgroundColor:
+                      selectedGame === game.id ? `${game.color}20` : `${THEME.border}40`,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name={game.icon}
+                  size={28}
+                  color={selectedGame === game.id ? game.color : THEME.textSecondary}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.gameName,
+                  selectedGame === game.id && { color: game.color },
+                ]}
+              >
+                {game.name}
+              </Text>
+              <Text style={styles.gameDesc} numberOfLines={2}>
+                {game.description}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Strategy Games */}
+        <Text style={styles.sectionHeader}>Strategie-Spiele (Zugbasiert)</Text>
+        <View style={styles.gameGrid}>
+          {GAME_TYPES.filter((g) => g.category === 'strategy').map((game) => (
             <TouchableOpacity
               key={game.id}
               style={[
@@ -474,6 +676,10 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         {selectedGame === 'rock_paper_scissors' && renderRpsConfig()}
         {selectedGame === 'sprint_race' && renderSprintConfig()}
         {selectedGame === 'trivia' && renderTriviaConfig()}
+        {selectedGame === 'coin_flip' && renderCoinFlipConfig()}
+        {selectedGame === 'odd_even' && renderOddEvenConfig()}
+        {selectedGame === 'tic_tac_toe' && renderTurnGameConfig('tic_tac_toe')}
+        {selectedGame === 'mini_chess' && renderTurnGameConfig('mini_chess')}
 
         {/* Activate Button */}
         {selectedGame && (

@@ -51,6 +51,7 @@ import { duelsRouter } from './routes/duels';
 import { racesRouter } from './routes/races';
 import { eventsRouter } from './routes/events';
 import { defensesRouter } from './routes/defenses';
+import { turnGamesRouter } from './routes/turnGames';
 import { meetupsRouter } from './routes/meetups';
 
 // Import cron jobs (created by another agent)
@@ -145,6 +146,7 @@ app.use('/api/duels', duelsRouter);
 app.use('/api/races', racesRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/defenses', defensesRouter);
+app.use('/api/games', turnGamesRouter);
 app.use('/api/meetups', meetupsRouter);
 
 // ---- 404 handler for unknown API routes ----

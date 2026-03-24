@@ -573,9 +573,24 @@ export const defenseApi = {
   getDefense: (territoryId: string) =>
     api.get(`/defenses/${territoryId}`),
   submitChallenge: (defenseId: string, data: Record<string, any>) =>
-    api.post(`/defenses/${defenseId}/challenge`, data),
+    api.post(`/defenses/${defenseId}/challenge`, { challengerData: data }),
   removeDefense: (defenseId: string) =>
     api.delete(`/defenses/${defenseId}`),
+};
+
+// ─── Turn-Based Games API ─────────────────────────────────────────────────
+
+export const turnGameApi = {
+  create: (data: { territoryId: string; gameType: string; defenseId?: string }) =>
+    api.post('/games', data),
+  getMyGames: () =>
+    api.get('/games/my'),
+  getGame: (id: string) =>
+    api.get(`/games/${id}`),
+  makeMove: (id: string, moveData: Record<string, any>) =>
+    api.post(`/games/${id}/move`, { moveData }),
+  getMoves: (id: string) =>
+    api.get(`/games/${id}/moves`),
 };
 
 export default api;

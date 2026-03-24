@@ -12,11 +12,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
-import { defenseApi } from '../../services/api';
+import { defenseApi, turnGameApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { DefenseChallengeScreenProps } from '../../navigation/types';
 
 type RpsChoice = 'rock' | 'scissors' | 'paper';
+type CoinSide = 'heads' | 'tails';
 type ChallengeResult = 'win' | 'lose' | 'draw' | null;
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -46,6 +47,39 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
   // Trivia state
   const [triviaAnswer, setTriviaAnswer] = useState('');
+
+  // Coin Flip state
+  const [coinChoice, setCoinChoice] = useState<CoinSide | null>(null);
+  const coinScaleHeads = useRef(new Animated.Value(1)).current;
+  const coinScaleTails = useRef(new Animated.Value(1)).current;
+
+  // Odd/Even state
+  const [oeFingers, setOeFingers] = useState<number>(3);
+
+  // Turn-game redirect: if this is a turn-based game, create the game and redirect
+  useEffect(() => {
+    if (gameType === 'tic_tac_toe' || gameType === 'mini_chess') {
+      const startTurnGame = async () => {
+        try {
+          setIsSubmitting(true);
+          const { data } = await defenseApi.submitChallenge(defenseId, {});
+          const res = data?.data ?? data;
+          if (res.game_id) {
+            const screenName = gameType === 'tic_tac_toe' ? 'TicTacToeGame' : 'MiniChessGame';
+            navigation.replace(screenName as any, {
+              gameId: res.game_id,
+              territoryId,
+              opponentUsername: ownerUsername,
+            });
+          }
+        } catch (err: any) {
+          Alert.alert('Fehler', err.message || 'Spiel konnte nicht gestartet werden.');
+          navigation.goBack();
+        }
+      };
+      startTurnGame();
+    }
+  }, [gameType]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -229,12 +263,61 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
     }
   };
 
+  // ─── Coin Flip Logic ──────────────────────────────────────────────────
+
+  const animateCoinChoice = (side: CoinSide) => {
+    const scales = { heads: coinScaleHeads, tails: coinScaleTails };
+    Object.values(scales).forEach((v) => v.setValue(1));
+    Animated.spring(scales[side], { toValue: 1.15, friction: 3, useNativeDriver: true }).start();
+    setCoinChoice(side);
+  };
+
+  const submitCoinFlip = async (side: CoinSide) => {
+    setIsSubmitting(true);
+    try {
+      const { data } = await defenseApi.submitChallenge(defenseId, { flip_result: side });
+      const res = data?.data ?? data;
+      if (res.result === 'won') {
+        showResult('win', 'Münzwurf gewonnen! Territorium erobert!');
+      } else {
+        showResult('lose', `Falsch! ${ownerUsername} hat richtig gewettet.`);
+      }
+    } catch (err: any) {
+      Alert.alert('Fehler', err.message || 'Münzwurf fehlgeschlagen.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ─── Odd/Even Logic ──────────────────────────────────────────────────
+
+  const submitOddEven = async () => {
+    setIsSubmitting(true);
+    try {
+      const { data } = await defenseApi.submitChallenge(defenseId, { fingers: oeFingers });
+      const res = data?.data ?? data;
+      if (res.result === 'won') {
+        showResult('win', 'Finger-Poker gewonnen! Territorium deins!');
+      } else {
+        showResult('lose', `Verteidigung hält! ${ownerUsername} lag richtig.`);
+      }
+    } catch (err: any) {
+      Alert.alert('Fehler', err.message || 'Finger-Poker fehlgeschlagen.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // ─── Game Type Labels & Colors ────────────────────────────────────────
 
   const gameLabels: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
-    rock_paper_scissors: { label: 'Rock Paper Scissors', icon: 'hand-left-outline', color: '#7B61FF' },
+    rock_paper_scissors: { label: 'Schnick Schnack Schnuck', icon: 'hand-left-outline', color: '#7B61FF' },
     sprint_race: { label: 'Sprint Race', icon: 'speedometer-outline', color: '#00FF88' },
     trivia: { label: 'Trivia', icon: 'help-circle-outline', color: '#00D4FF' },
+    coin_flip: { label: 'Münzwurf', icon: 'ellipse-outline', color: '#FFB800' },
+    odd_even: { label: 'Gerade/Ungerade', icon: 'finger-print-outline', color: '#FF69B4' },
+    tic_tac_toe: { label: 'Tic Tac Toe', icon: 'grid-outline', color: '#00D4FF' },
+    mini_chess: { label: 'Mini-Schach', icon: 'trophy-outline', color: '#FFB800' },
   };
 
   const gameInfo = gameLabels[gameType] || gameLabels.trivia;
@@ -446,6 +529,128 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
     </View>
   );
 
+  // ─── Render: Coin Flip Game ──────────────────────────────────────────
+
+  const renderCoinFlipGame = () => {
+    const sides: { side: CoinSide; emoji: string; label: string }[] = [
+      { side: 'heads', emoji: '👑', label: 'Kopf' },
+      { side: 'tails', emoji: '🔢', label: 'Zahl' },
+    ];
+
+    return (
+      <View style={styles.gameArea}>
+        <Text style={styles.gameInstruction}>Wirf die Münze!</Text>
+        <Text style={styles.gameSubInstruction}>Wähle das Ergebnis deines Wurfs</Text>
+
+        <View style={styles.rpsRow}>
+          {sides.map((s) => (
+            <Animated.View
+              key={s.side}
+              style={{ transform: [{ scale: s.side === 'heads' ? coinScaleHeads : coinScaleTails }] }}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.rpsButton,
+                  { width: 130, height: 130 },
+                  { borderColor: coinChoice === s.side ? '#FFB800' : THEME.border },
+                  coinChoice === s.side && { backgroundColor: 'rgba(255, 184, 0, 0.15)' },
+                ]}
+                onPress={() => {
+                  if (!isSubmitting && result !== 'win' && result !== 'lose') {
+                    animateCoinChoice(s.side);
+                  }
+                }}
+                disabled={isSubmitting || result === 'win' || result === 'lose'}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.rpsEmoji, { fontSize: 44 }]}>{s.emoji}</Text>
+                <Text style={[styles.rpsLabel, coinChoice === s.side && { color: '#FFB800' }]}>
+                  {s.label}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          ))}
+        </View>
+
+        {coinChoice && result !== 'win' && result !== 'lose' && (
+          <TouchableOpacity
+            style={[styles.submitBtn, isSubmitting && { opacity: 0.5 }]}
+            onPress={() => submitCoinFlip(coinChoice)}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#0A0E17" />
+            ) : (
+              <>
+                <Ionicons name="flash" size={20} color="#0A0E17" />
+                <Text style={styles.submitBtnText}>WERFEN!</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
+
+  // ─── Render: Odd/Even Game ─────────────────────────────────────────
+
+  const renderOddEvenGame = () => (
+    <View style={styles.gameArea}>
+      <Text style={styles.gameInstruction}>Zeig deine Finger!</Text>
+      <Text style={styles.gameSubInstruction}>Wähle 1-5 Finger. Die Summe entscheidet!</Text>
+
+      <View style={[styles.rpsRow, { flexWrap: 'wrap', justifyContent: 'center' }]}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <TouchableOpacity
+            key={n}
+            style={[
+              styles.rpsButton,
+              { width: 80, height: 90 },
+              { borderColor: oeFingers === n ? '#FF69B4' : THEME.border },
+              oeFingers === n && { backgroundColor: 'rgba(255, 105, 180, 0.15)' },
+            ]}
+            onPress={() => {
+              if (!isSubmitting && result !== 'win' && result !== 'lose') setOeFingers(n);
+            }}
+            disabled={isSubmitting || result === 'win' || result === 'lose'}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rpsEmoji, { fontSize: 28 }]}>{'✋'.repeat(0)}{n}</Text>
+            <Text style={[styles.rpsLabel, oeFingers === n && { color: '#FF69B4' }]}>
+              {n === 1 ? '☝️' : n === 2 ? '✌️' : n === 3 ? '🤟' : n === 4 ? '🖖' : '🖐️'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {result !== 'win' && result !== 'lose' && (
+        <TouchableOpacity
+          style={[styles.submitBtn, isSubmitting && { opacity: 0.5 }]}
+          onPress={submitOddEven}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator size="small" color="#0A0E17" />
+          ) : (
+            <>
+              <Ionicons name="hand-left" size={20} color="#0A0E17" />
+              <Text style={styles.submitBtnText}>ZEIGEN!</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  // ─── Render: Turn Game Loading ─────────────────────────────────────
+
+  const renderTurnGameLoading = () => (
+    <View style={styles.gameArea}>
+      <ActivityIndicator size="large" color={THEME.primary} />
+      <Text style={styles.gameInstruction}>Spiel wird gestartet...</Text>
+    </View>
+  );
+
   // ─── Main Render ──────────────────────────────────────────────────────
 
   return (
@@ -470,6 +675,9 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
         {gameType === 'rock_paper_scissors' && renderRpsGame()}
         {gameType === 'sprint_race' && renderSprintGame()}
         {gameType === 'trivia' && renderTriviaGame()}
+        {gameType === 'coin_flip' && renderCoinFlipGame()}
+        {gameType === 'odd_even' && renderOddEvenGame()}
+        {(gameType === 'tic_tac_toe' || gameType === 'mini_chess') && renderTurnGameLoading()}
 
         {/* Result Overlay */}
         {renderResultOverlay()}
