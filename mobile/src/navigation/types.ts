@@ -167,6 +167,8 @@ export type MapStackParamList = {
     config: any;
     ownerUsername: string;
   };
+  MeetupDetail: { meetupId: string };
+  MeetupChat: { eventId: string; eventName: string };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -188,6 +190,8 @@ export type ArtifactDetailScreenProps = NativeStackScreenProps<MapStackParamList
 export type PlaceHistoryScreenProps = NativeStackScreenProps<MapStackParamList, 'PlaceHistory'>;
 export type DefenseSetupScreenProps = NativeStackScreenProps<MapStackParamList, 'DefenseSetup'>;
 export type DefenseChallengeScreenProps = NativeStackScreenProps<MapStackParamList, 'DefenseChallenge'>;
+export type MeetupDetailScreenProps = NativeStackScreenProps<MapStackParamList, 'MeetupDetail'>;
+export type MeetupChatScreenProps = NativeStackScreenProps<MapStackParamList, 'MeetupChat'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 
@@ -209,6 +213,7 @@ export type CreateStackParamList = {
   EchoCreate: undefined;
   ChallengeCreate: undefined;
   TravelRouteCreate: undefined;
+  MeetupCreate: undefined;
 };
 
 export type CreateMenuScreenProps = NativeStackScreenProps<CreateStackParamList, 'CreateMenu'>;
@@ -222,6 +227,7 @@ export type TravelRouteCreateScreenProps = NativeStackScreenProps<
   CreateStackParamList,
   'TravelRouteCreate'
 >;
+export type MeetupCreateScreenProps = NativeStackScreenProps<CreateStackParamList, 'MeetupCreate'>;
 
 // ─── Profile Stack ─────────────────────────────────────────────────────────────
 

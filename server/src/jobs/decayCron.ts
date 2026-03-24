@@ -28,6 +28,7 @@ import { cacheGet, cacheSet } from '../config/redis';
 import { eventEngine } from '../services/eventEngine';
 import { balanceService } from '../services/balanceService';
 import { checkAutoBounty } from '../services/bountyService';
+import { meetupService } from '../services/meetupService';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -617,6 +618,20 @@ export function setupCronJobs(): void {
       }
     } catch (err) {
       console.error('[CRON] Monthly leaderboard reset failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 06:00 UTC - Cleanup expired meetup events (24h after event_date)
+  // ------------------------------------------------------------------
+  cron.schedule('0 6 * * *', async () => {
+    try {
+      const count = await meetupService.cleanupExpired();
+      if (count > 0) {
+        console.log(`[CRON] Cleaned up ${count} expired meetup events`);
+      }
+    } catch (err) {
+      console.error('[CRON] Meetup cleanup failed:', err);
     }
   }, { timezone: 'UTC' });
 

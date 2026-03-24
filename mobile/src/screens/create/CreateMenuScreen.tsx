@@ -19,7 +19,7 @@ interface CreateOption {
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
   color: string;
-  screen: 'QuestCreate' | 'EchoCreate' | 'ChallengeCreate' | 'TravelRouteCreate';
+  screen: 'QuestCreate' | 'EchoCreate' | 'ChallengeCreate' | 'TravelRouteCreate' | 'MeetupCreate';
   minLevel: number;
   requiresTerritory: boolean;
 }
@@ -63,6 +63,16 @@ const CREATE_OPTIONS: CreateOption[] = [
     color: '#00FF88',
     screen: 'TravelRouteCreate',
     minLevel: 5,
+    requiresTerritory: false,
+  },
+  {
+    key: 'meetup',
+    title: 'Create Event',
+    description: 'Plan a real-world meetup at a map location.',
+    icon: 'calendar-outline',
+    color: '#FF69B4',
+    screen: 'MeetupCreate',
+    minLevel: 3,
     requiresTerritory: false,
   },
 ];

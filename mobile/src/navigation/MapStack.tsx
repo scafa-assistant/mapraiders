@@ -11,6 +11,8 @@ import ArtifactDetailScreen from '../screens/map/ArtifactDetailScreen';
 import PlaceHistoryScreen from '../screens/map/PlaceHistoryScreen';
 import DefenseSetupScreen from '../screens/map/DefenseSetupScreen';
 import DefenseChallengeScreen from '../screens/map/DefenseChallengeScreen';
+import MeetupDetailScreen from '../screens/map/MeetupDetailScreen';
+import MeetupChatScreen from '../screens/map/MeetupChatScreen';
 
 const Stack = createNativeStackNavigator<MapStackParamList>();
 
@@ -80,6 +82,21 @@ export default function MapStack() {
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="MeetupDetail"
+        component={MeetupDetailScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="MeetupChat"
+        component={MeetupChatScreen}
+        options={{
+          animation: 'slide_from_right',
         }}
       />
     </Stack.Navigator>

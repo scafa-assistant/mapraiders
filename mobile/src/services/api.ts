@@ -516,6 +516,23 @@ export const trapApi = {
     api.delete(`/traps/${id}`),
 };
 
+// ─── Meetups API ─────────────────────────────────────────────────────────
+
+export const meetupApi = {
+  create: (data: Record<string, unknown>) => api.post('/meetups', data),
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/meetups', { params: bbox }),
+  getById: (id: string) => api.get(`/meetups/${id}`),
+  join: (id: string) => api.post(`/meetups/${id}/join`),
+  leave: (id: string) => api.post(`/meetups/${id}/leave`),
+  getMessages: (id: string, before?: string) =>
+    api.get(`/meetups/${id}/messages`, { params: { before } }),
+  sendMessage: (id: string, message: string) =>
+    api.post(`/meetups/${id}/messages`, { message }),
+  markPresent: (id: string, lat: number, lng: number) =>
+    api.post(`/meetups/${id}/present`, { lat, lng }),
+};
+
 // ─── Events API ──────────────────────────────────────────────────────────
 
 export const eventApi = {

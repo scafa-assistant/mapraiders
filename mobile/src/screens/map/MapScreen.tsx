@@ -21,7 +21,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useTheme } from '../../hooks/useTheme';
 import * as Haptics from 'expo-haptics';
 import { echoProximityService } from '../../services/echoProximity';
-import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi } from '../../services/api';
+import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi, meetupApi } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
 import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
@@ -145,6 +145,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const [resonanceSpots, setResonanceSpots] = useState<
     { id: string; lat: number; lng: number; resonance_level: number; bonus_multiplier: number; content_types: string[] }[]
   >([]);
+  const [nearbyMeetups, setNearbyMeetups] = useState<any[]>([]);
   const lastWeatherFetch = useRef<{ lat: number; lng: number } | null>(null);
 
   // Fetch weather on mount and significant location change (>500m)
@@ -324,12 +325,25 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [getMapBounds]);
 
+  const fetchNearbyMeetups = useCallback(async () => {
+    const bbox = await getMapBounds();
+    if (!bbox) return;
+    try {
+      const { data } = await meetupApi.getInBounds(bbox);
+      const meetups = data?.data?.meetups ?? data?.data ?? data ?? [];
+      setNearbyMeetups(Array.isArray(meetups) ? meetups : []);
+    } catch {
+      // Silently fail
+    }
+  }, [getMapBounds]);
+
   useEffect(() => {
     fetchNearbyEchos();
     fetchNearbyArtifacts();
     fetchNearbySilentZones();
     fetchNearbyResonance();
-  }, [fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance]);
+    fetchNearbyMeetups();
+  }, [fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]);
 
   // Initial location fetch - request permission and center map on user
   const initialLocationDone = useRef(false);
@@ -371,8 +385,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       fetchNearbyArtifacts();
       fetchNearbySilentZones();
       fetchNearbyResonance();
+      fetchNearbyMeetups();
     },
-    [fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance]
+    [fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]
   );
 
   // Center map on current location
@@ -490,6 +505,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const safeArtifacts = Array.isArray(nearbyArtifacts) ? nearbyArtifacts : [];
   const safeZones = Array.isArray(silentZones) ? silentZones : [];
   const safeResonance = Array.isArray(resonanceSpots) ? resonanceSpots : [];
+  const safeMeetups = Array.isArray(nearbyMeetups) ? nearbyMeetups : [];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
@@ -684,6 +700,38 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 </View>
               </Marker>
             </React.Fragment>
+          );
+        })}
+
+        {/* Meetup Event Markers */}
+        {safeMeetups.map((meetup) => {
+          const mLat = meetup.lat ?? meetup.latitude ?? 0;
+          const mLng = meetup.lng ?? meetup.longitude ?? 0;
+          if (mLat === 0 && mLng === 0) return null;
+          const cat = meetup.category ?? 'other';
+          const catColor =
+            cat === 'party' ? '#FF69B4' :
+            cat === 'sport' ? '#00FF88' :
+            cat === 'gaming' ? '#7B61FF' :
+            cat === 'meetup' ? '#00D4FF' :
+            '#8892B0';
+          const catIcon: keyof typeof Ionicons.glyphMap =
+            cat === 'party' ? 'calendar' :
+            cat === 'sport' ? 'fitness' :
+            cat === 'gaming' ? 'game-controller' :
+            cat === 'meetup' ? 'people' :
+            'pin';
+          return (
+            <Marker
+              key={`meetup-${meetup.id}`}
+              coordinate={{ latitude: mLat, longitude: mLng }}
+              anchor={{ x: 0.5, y: 0.5 }}
+              onPress={() => navigation.navigate('MeetupDetail', { meetupId: meetup.id })}
+            >
+              <View style={[styles.meetupMarker, { borderColor: catColor, backgroundColor: `${catColor}20` }]}>
+                <Ionicons name={catIcon} size={16} color={catColor} />
+              </View>
+            </Marker>
           );
         })}
 
@@ -1028,6 +1076,14 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     backgroundColor: '#00D4FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  meetupMarker: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },

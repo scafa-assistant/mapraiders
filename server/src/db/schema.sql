@@ -914,3 +914,56 @@ COMMENT ON TABLE defense_attempts IS 'Challenge attempts against territory defen
 
 CREATE INDEX IF NOT EXISTS idx_attempts_defense ON defense_attempts(defense_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_challenger ON defense_attempts(challenger_id);
+
+-- ============================================================
+-- MEETUP EVENTS
+-- Player-organized real-world meetups and gatherings.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS meetup_events (
+  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  creator_id    UUID NOT NULL REFERENCES users(id),
+  location      GEOMETRY(POINT, 4326) NOT NULL,
+  name          VARCHAR(100) NOT NULL,
+  description   TEXT,
+  event_date    TIMESTAMPTZ NOT NULL,
+  category      VARCHAR(20) NOT NULL DEFAULT 'meetup', -- 'party', 'sport', 'gaming', 'meetup', 'other'
+  max_attendees INT,
+  status        VARCHAR(20) NOT NULL DEFAULT 'active', -- 'active', 'live', 'completed', 'cancelled'
+  created_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE meetup_events IS 'Player-organized real-world meetups and gatherings on the map.';
+
+CREATE INDEX IF NOT EXISTS idx_meetup_location ON meetup_events USING GIST(location);
+CREATE INDEX IF NOT EXISTS idx_meetup_date ON meetup_events(event_date) WHERE status IN ('active', 'live');
+CREATE INDEX IF NOT EXISTS idx_meetup_creator ON meetup_events(creator_id);
+
+-- ============================================================
+-- MEETUP ATTENDEES
+-- Players who joined a meetup event.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS meetup_attendees (
+  event_id   UUID NOT NULL REFERENCES meetup_events(id) ON DELETE CASCADE,
+  user_id    UUID NOT NULL REFERENCES users(id),
+  joined_at  TIMESTAMPTZ DEFAULT NOW(),
+  is_present BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (event_id, user_id)
+);
+
+COMMENT ON TABLE meetup_attendees IS 'Junction table tracking meetup attendees and physical presence.';
+
+-- ============================================================
+-- MEETUP MESSAGES
+-- Chat messages within a meetup event.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS meetup_messages (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id   UUID NOT NULL REFERENCES meetup_events(id) ON DELETE CASCADE,
+  sender_id  UUID NOT NULL REFERENCES users(id),
+  message    TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE meetup_messages IS 'Chat messages exchanged between meetup attendees.';
+
+CREATE INDEX IF NOT EXISTS idx_meetup_messages ON meetup_messages(event_id, created_at DESC);
