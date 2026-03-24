@@ -1,9 +1,9 @@
 // ============================================================
-// Territory Defense Routes
-// POST   /api/defenses                     - Set/update a defense
-// GET    /api/defenses/:territoryId        - Get defense for territory
-// POST   /api/defenses/:defenseId/challenge - Challenge a defense
-// DELETE /api/defenses/:defenseId          - Remove a defense
+// Territory Defense Routes — Multi-Layer Defense System
+// POST   /api/defenses                        - Add a defense layer
+// GET    /api/defenses/:territoryId            - Get all defenses + slot info
+// POST   /api/defenses/:defenseId/challenge    - Challenge a specific defense
+// DELETE /api/defenses/:defenseId              - Remove a defense layer
 // ============================================================
 
 import { Router, Request, Response } from 'express';
@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * POST /api/defenses
- * Set or update a defense mini-game on an owned territory.
+ * Add a defense layer to an owned territory.
  */
 router.post('/', authenticate, async (req: Request, res: Response) => {
   try {
@@ -46,7 +46,8 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     if (
       err.message?.includes('Invalid game type') ||
       err.message?.includes('not found') ||
-      err.message?.includes('do not own')
+      err.message?.includes('do not own') ||
+      err.message?.includes('Max ')
     ) {
       return res.status(400).json({ success: false, message: err.message });
     }
@@ -57,21 +58,25 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
 
 /**
  * GET /api/defenses/:territoryId
- * Get the active defense for a territory (public info only).
+ * Get all active defenses + slot info for a territory.
  */
 router.get('/:territoryId', authenticate, async (req: Request, res: Response) => {
   try {
     const territoryId = req.params.territoryId as string;
 
-    const defense = await defenseGameEngine.getDefense(territoryId);
+    const slotInfo = await defenseGameEngine.getSlotInfo(territoryId);
 
-    if (!defense) {
-      return res.status(404).json({ success: false, message: 'No active defense on this territory' });
-    }
+    // Backwards compatible: also include single "defense" for old clients
+    const firstDefense = slotInfo.defenses.length > 0 ? slotInfo.defenses[0] : null;
 
     return res.json({
       success: true,
-      data: { defense },
+      data: {
+        defense: firstDefense,
+        defenses: slotInfo.defenses,
+        max_slots: slotInfo.max_slots,
+        used_slots: slotInfo.used_slots,
+      },
     });
   } catch (err: any) {
     console.error('[Defenses] Get defense error:', err);
@@ -81,21 +86,17 @@ router.get('/:territoryId', authenticate, async (req: Request, res: Response) =>
 
 /**
  * POST /api/defenses/:defenseId/challenge
- * Submit a challenge attempt against a territory defense.
+ * Submit a challenge attempt against a specific defense layer.
  */
 router.post('/:defenseId/challenge', authenticate, async (req: Request, res: Response) => {
   try {
     const defenseId = req.params.defenseId as string;
     const { challengerData } = req.body;
 
-    if (!challengerData) {
-      return res.status(400).json({ success: false, message: 'challengerData is required' });
-    }
-
     const result = await defenseGameEngine.submitChallenge(
       req.userId!,
       defenseId,
-      challengerData
+      challengerData || {}
     );
 
     return res.json({
@@ -124,7 +125,7 @@ router.post('/:defenseId/challenge', authenticate, async (req: Request, res: Res
 
 /**
  * DELETE /api/defenses/:defenseId
- * Remove (expire) a defense. Only the owner can do this.
+ * Remove (expire) a defense layer. Only the owner can do this.
  */
 router.delete('/:defenseId', authenticate, async (req: Request, res: Response) => {
   try {

@@ -876,24 +876,29 @@ ALTER TABLE echos ALTER COLUMN audio_url DROP NOT NULL;
 
 -- ============================================================
 -- TERRITORY DEFENSES
--- Mini-games that protect territories from takeover.
--- Owner sets a game type + config; challengers must beat it.
+-- Multi-layer defense system: games, challenges, quests, echos.
+-- Multiple defenses per territory (slot-based, limited by area).
+-- Attacker must beat ALL active defenses to take the territory.
 -- ============================================================
 CREATE TABLE IF NOT EXISTS territory_defenses (
   id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   territory_id     UUID NOT NULL REFERENCES territories(id) ON DELETE CASCADE,
   owner_id         UUID NOT NULL REFERENCES users(id),
-  game_type        VARCHAR(30) NOT NULL, -- 'rock_paper_scissors', 'sprint_race', 'trivia', 'photo_challenge', 'step_challenge', 'endurance'
-  config           JSONB NOT NULL DEFAULT '{}', -- game-specific config (rounds, distance, question, etc.)
+  game_type        VARCHAR(30) NOT NULL, -- mini-games: 'rock_paper_scissors', 'coin_flip', 'odd_even', 'tic_tac_toe', 'mini_chess', 'sprint_race', 'trivia'
+                                          -- content: 'challenge', 'quest', 'echo'
+  config           JSONB NOT NULL DEFAULT '{}', -- game config OR linked item: {linked_id, linked_title, ...}
   owner_secret     TEXT, -- encrypted move/answer (null for non-secret games)
   owner_benchmark  JSONB, -- sprint time, step goal, etc.
-  status           VARCHAR(20) NOT NULL DEFAULT 'active', -- 'active', 'expired'
+  slot_index       INT NOT NULL DEFAULT 0, -- position in defense stack (0-based)
+  status           VARCHAR(20) NOT NULL DEFAULT 'active', -- 'active', 'expired', 'broken'
   created_at       TIMESTAMPTZ DEFAULT NOW()
 );
 
-COMMENT ON TABLE territory_defenses IS 'Mini-game defenses set by territory owners to protect against takeovers.';
+COMMENT ON TABLE territory_defenses IS 'Multi-layer territory defenses. Each territory can have multiple defenses (slot-limited by area). Attacker must beat all to conquer.';
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_defense_territory ON territory_defenses(territory_id) WHERE status = 'active';
+-- Allow MULTIPLE active defenses per territory (removed old unique constraint)
+DROP INDEX IF EXISTS idx_defense_territory;
+CREATE INDEX IF NOT EXISTS idx_defense_territory_active ON territory_defenses(territory_id) WHERE status = 'active';
 CREATE INDEX IF NOT EXISTS idx_defense_owner ON territory_defenses(owner_id);
 
 -- ============================================================
