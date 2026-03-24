@@ -257,7 +257,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         currentLocation.longitude,
         2000
       );
-      setNearbyEchos(data.data ?? data);
+      const echos = data?.data?.echos ?? data?.data ?? data ?? [];
+      setNearbyEchos(Array.isArray(echos) ? echos : []);
     } catch (_err) {
       // Silently fail
     }
@@ -286,7 +287,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         currentLocation.longitude,
         2000
       );
-      setNearbyArtifacts(data.data ?? data);
+      const arts = data?.data?.artifacts ?? data?.data ?? data ?? [];
+      setNearbyArtifacts(Array.isArray(arts) ? arts : []);
     } catch (_err) {
       // Silently fail
     }

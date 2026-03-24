@@ -171,27 +171,44 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
   };
 
   const pickPhoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setMediaUri(result.assets[0].uri);
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Camera access is required to take photos.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+      if (!result.canceled && result.assets[0]) {
+        setMediaUri(result.assets[0].uri);
+      }
+    } catch (err: any) {
+      Alert.alert('Camera Error', err?.message || 'Failed to open camera');
     }
   };
 
   const pickVideo = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      videoMaxDuration: 15,
-      allowsEditing: true,
-      quality: 0.7,
-    });
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Camera access is required.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['videos'],
+        videoMaxDuration: 15,
+        allowsEditing: true,
+        quality: 0.7,
+      });
 
-    if (!result.canceled && result.assets[0]) {
-      setMediaUri(result.assets[0].uri);
+      if (!result.canceled && result.assets[0]) {
+        setMediaUri(result.assets[0].uri);
+      }
+    } catch (err: any) {
+      Alert.alert('Camera Error', err?.message || 'Failed to open camera');
     }
   };
 
@@ -341,7 +358,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         {([
           { value: 'audio' as const, label: 'Audio', icon: 'mic-outline' as const },
           { value: 'photo' as const, label: 'Photo', icon: 'camera-outline' as const },
-          { value: 'video' as const, label: 'Video', icon: 'videocam-outline' as const },
+          // Video temporarily disabled to save server storage
         ]).map((opt) => (
           <TouchableOpacity
             key={opt.value}
