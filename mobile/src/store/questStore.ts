@@ -9,6 +9,7 @@ interface QuestState {
   isVerifying: boolean;
   error: string | null;
   fetchNearby: (lat: number, lng: number, radius: number) => Promise<void>;
+  fetchInBounds: (bbox: { north: number; south: number; east: number; west: number }) => Promise<void>;
   fetchQuestDetail: (questId: string) => Promise<Quest | null>;
   startQuest: (questId: string) => Promise<void>;
   verifyStep: (questId: string, stepId: string, proof: any) => Promise<boolean>;
@@ -27,7 +28,21 @@ export const useQuestStore = create<QuestState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await questApi.getNearby(lat, lng, radius);
-      const quests = response.data?.data || response.data || [];
+      const quests = response.data?.data?.quests ?? response.data?.data ?? response.data ?? [];
+      set({ nearbyQuests: Array.isArray(quests) ? quests : [], isLoading: false });
+    } catch (err: any) {
+      set({
+        isLoading: false,
+        error: err.message || 'Failed to load quests.',
+      });
+    }
+  },
+
+  fetchInBounds: async (bbox: { north: number; south: number; east: number; west: number }) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await questApi.getInBounds(bbox);
+      const quests = response.data?.data?.quests ?? response.data?.data ?? response.data ?? [];
       set({ nearbyQuests: Array.isArray(quests) ? quests : [], isLoading: false });
     } catch (err: any) {
       set({

@@ -50,24 +50,40 @@ const challengeUpload = multer({
 
 /**
  * GET /api/challenges
- * Get nearby challenges with optional filters.
- * Query params: lat, lng, radius (m), class, template, page, limit
+ * Get challenges with optional filters.
+ * Supports two modes:
+ *   - BBox: north, south, east, west (show all challenges in viewport)
+ *   - Proximity: lat, lng, radius (m)
+ * Additional filters: class, template, weather
  */
 router.get('/', authenticate, async (req: Request, res: Response) => {
   try {
+    const { north, south, east, west } = req.query;
     const lat = parseFloat(req.query.lat as string);
     const lng = parseFloat(req.query.lng as string);
     const radiusM = Math.min(parseFloat(req.query.radius as string) || 5000, 50000);
+    const currentWeather = req.query.weather as string | undefined;
 
-    if (isNaN(lat) || isNaN(lng)) {
+    let challenges: any[];
+
+    if (north && south && east && west) {
+      // BBox mode — show all challenges in viewport
+      challenges = await challengeEngine.getInBounds(
+        parseFloat(north as string),
+        parseFloat(south as string),
+        parseFloat(east as string),
+        parseFloat(west as string),
+        currentWeather
+      );
+    } else if (!isNaN(lat) && !isNaN(lng)) {
+      // Proximity mode — nearby challenges
+      challenges = await challengeEngine.getNearby(lat, lng, radiusM, currentWeather);
+    } else {
       return res.status(400).json({
         success: false,
-        error: 'lat and lng query parameters required',
+        message: 'Provide either bbox (north/south/east/west) or lat/lng params',
       });
     }
-
-    const currentWeather = req.query.weather as string | undefined;
-    const challenges = await challengeEngine.getNearby(lat, lng, radiusM, currentWeather);
 
     // Apply optional client-side filters (template, class)
     const template = req.query.template as string;
@@ -75,10 +91,10 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
 
     let filtered = challenges;
     if (template) {
-      filtered = filtered.filter((c) => c.template === template);
+      filtered = filtered.filter((c: any) => c.template === template);
     }
     if (classFilter) {
-      filtered = filtered.filter((c) => c.class === classFilter || !c.class);
+      filtered = filtered.filter((c: any) => c.class === classFilter || !c.class);
     }
 
     return res.json({

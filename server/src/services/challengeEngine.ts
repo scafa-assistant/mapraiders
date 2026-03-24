@@ -328,6 +328,55 @@ export class ChallengeEngine {
     }));
   }
 
+  /**
+   * Get challenges within a bounding box (for global map view).
+   */
+  async getInBounds(
+    north: number,
+    south: number,
+    east: number,
+    west: number,
+    currentWeather?: string
+  ): Promise<(Challenge & { creator_username: string })[]> {
+    let extraClauses = '';
+    const params: any[] = [west, south, east, north];
+    let paramIdx = 5;
+
+    if (currentWeather) {
+      extraClauses += ` AND (c.weather_condition IS NULL OR c.weather_condition = $${paramIdx})`;
+      params.push(currentWeather);
+      paramIdx++;
+    }
+
+    const timeWindow = isNightTime() ? 'night' : 'day';
+    extraClauses += ` AND (c.time_window = 'any' OR c.time_window = $${paramIdx})`;
+    params.push(timeWindow);
+    paramIdx++;
+
+    const challenges = await queryMany<
+      Challenge & { creator_username: string; lat: number; lng: number }
+    >(
+      `SELECT c.id, c.creator_id, c.template, c.parameters,
+              c.verification_level, c.class, c.total_completions,
+              c.avg_rating, c.status, c.created_at,
+              u.username AS creator_username,
+              ST_Y(c.location) AS lat, ST_X(c.location) AS lng
+       FROM challenges c
+       LEFT JOIN users u ON c.creator_id = u.id
+       WHERE c.status = 'active'
+       AND ST_Intersects(c.location, ST_MakeEnvelope($1, $2, $3, $4, 4326))
+       ${extraClauses}
+       ORDER BY c.created_at DESC
+       LIMIT 200`,
+      params
+    );
+
+    return challenges.map((c) => ({
+      ...c,
+      location: { lat: c.lat, lng: c.lng },
+    }));
+  }
+
   // ---- Submissions ------------------------------------------------------
 
   /**

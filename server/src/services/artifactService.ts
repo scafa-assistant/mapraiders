@@ -173,6 +173,28 @@ export class ArtifactService {
   }
 
   /**
+   * Get artifacts within a bounding box (for global map view).
+   */
+  async getInBounds(north: number, south: number, east: number, west: number): Promise<Artifact[]> {
+    const artifacts = await queryMany<Artifact>(
+      `SELECT a.id, a.creator_id, a.territory_id, a.name, a.description,
+              a.type, a.rarity, a.photo_url, a.permanence_votes, a.is_permanent,
+              a.created_at, a.expires_at,
+              u.username as creator_username,
+              ST_Y(a.location) as lat, ST_X(a.location) as lng
+       FROM artifacts a
+       LEFT JOIN users u ON a.creator_id = u.id
+       WHERE (a.is_permanent = TRUE OR a.expires_at > NOW())
+       AND ST_Intersects(a.location, ST_MakeEnvelope($1, $2, $3, $4, 4326))
+       ORDER BY a.created_at DESC
+       LIMIT 200`,
+      [west, south, east, north]
+    );
+
+    return artifacts;
+  }
+
+  /**
    * Get a single artifact by ID.
    *
    * @param id - Artifact ID
@@ -311,6 +333,10 @@ export async function createArtifact(userId: string, data: CreateArtifactData): 
 
 export async function getNearbyArtifacts(lat: number, lng: number, radiusM: number): Promise<Artifact[]> {
   return artifactServiceInstance.getNearby(lat, lng, radiusM);
+}
+
+export async function getArtifactsInBounds(north: number, south: number, east: number, west: number): Promise<Artifact[]> {
+  return artifactServiceInstance.getInBounds(north, south, east, west);
 }
 
 export async function getArtifactById(id: string): Promise<Artifact | null> {

@@ -108,7 +108,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   } = useLocationStore();
 
   const { territories, fetchTerritories } = useTerritoryStore();
-  const { nearbyQuests, fetchNearby } = useQuestStore();
+  const { nearbyQuests, fetchNearby, fetchInBounds: fetchQuestsInBounds } = useQuestStore();
   const { user } = useAuthStore();
   const { settings } = useSettingsStore();
   const theme = useTheme();
@@ -248,66 +248,70 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
-  // Fetch nearby echos and artifacts
-  const fetchNearbyEchos = useCallback(async () => {
-    if (!currentLocation) return;
+  // Helper to get current map bounding box
+  const getMapBounds = useCallback(async () => {
+    if (!mapRef.current) return null;
     try {
-      const { data } = await echoApi.getNearby(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        2000
-      );
+      const bounds = await mapRef.current.getMapBoundaries();
+      return {
+        north: bounds.northEast.latitude,
+        south: bounds.southWest.latitude,
+        east: bounds.northEast.longitude,
+        west: bounds.southWest.longitude,
+      };
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Fetch echos, artifacts, silent zones, resonance based on map viewport
+  const fetchNearbyEchos = useCallback(async () => {
+    const bbox = await getMapBounds();
+    if (!bbox) return;
+    try {
+      const { data } = await echoApi.getInBounds(bbox);
       const echos = data?.data?.echos ?? data?.data ?? data ?? [];
       setNearbyEchos(Array.isArray(echos) ? echos : []);
     } catch (_err) {
       // Silently fail
     }
-  }, [currentLocation]);
+  }, [getMapBounds]);
 
   const fetchNearbySilentZones = useCallback(async () => {
-    if (!currentLocation) return;
+    const bbox = await getMapBounds();
+    if (!bbox) return;
     try {
-      const { data } = await silentZoneApi.getNearby(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        3000
-      );
+      const { data } = await silentZoneApi.getInBounds(bbox);
       const zones = data.data?.zones ?? data.zones ?? [];
       setSilentZones(zones);
     } catch (_err) {
       // Silently fail
     }
-  }, [currentLocation]);
+  }, [getMapBounds]);
 
   const fetchNearbyArtifacts = useCallback(async () => {
-    if (!currentLocation) return;
+    const bbox = await getMapBounds();
+    if (!bbox) return;
     try {
-      const { data } = await artifactApi.getNearby(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        2000
-      );
+      const { data } = await artifactApi.getInBounds(bbox);
       const arts = data?.data?.artifacts ?? data?.data ?? data ?? [];
       setNearbyArtifacts(Array.isArray(arts) ? arts : []);
     } catch (_err) {
       // Silently fail
     }
-  }, [currentLocation]);
+  }, [getMapBounds]);
 
   const fetchNearbyResonance = useCallback(async () => {
-    if (!currentLocation) return;
+    const bbox = await getMapBounds();
+    if (!bbox) return;
     try {
-      const { data } = await resonanceApi.getNearby(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        2000
-      );
+      const { data } = await resonanceApi.getInBounds(bbox);
       const spots = data.data?.resonance_spots ?? data.resonance_spots ?? [];
       setResonanceSpots(spots);
     } catch (_err) {
       // Silently fail
     }
-  }, [currentLocation]);
+  }, [getMapBounds]);
 
   useEffect(() => {
     fetchNearbyEchos();
@@ -341,24 +345,23 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
-  // Fetch territories when region changes
+  // Fetch territories and all content when region changes (using viewport bbox)
   const handleRegionChange = useCallback(
     (region: Region) => {
-      fetchTerritories({
+      const bbox = {
         north: region.latitude + region.latitudeDelta / 2,
         south: region.latitude - region.latitudeDelta / 2,
         east: region.longitude + region.longitudeDelta / 2,
         west: region.longitude - region.longitudeDelta / 2,
-      });
-      if (currentLocation) {
-        fetchNearby(currentLocation.latitude, currentLocation.longitude, 2000);
-        fetchNearbyEchos();
-        fetchNearbyArtifacts();
-        fetchNearbySilentZones();
-        fetchNearbyResonance();
-      }
+      };
+      fetchTerritories(bbox);
+      fetchQuestsInBounds(bbox);
+      fetchNearbyEchos();
+      fetchNearbyArtifacts();
+      fetchNearbySilentZones();
+      fetchNearbyResonance();
     },
-    [currentLocation, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones]
+    [fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance]
   );
 
   // Center map on current location

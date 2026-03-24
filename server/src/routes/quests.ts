@@ -69,16 +69,37 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     const difficulty = parseInt(req.query.difficulty as string);
     const stepType = req.query.type as string;
     const status = (req.query.status as string) || 'active';
+
+    // BBox params
+    const north = parseFloat(req.query.north as string);
+    const south = parseFloat(req.query.south as string);
+    const east = parseFloat(req.query.east as string);
+    const west = parseFloat(req.query.west as string);
+    const hasBbox = !isNaN(north) && !isNaN(south) && !isNaN(east) && !isNaN(west);
+
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const limit = Math.min(Math.max(1, parseInt(req.query.limit as string) || 20), 100);
+    // Allow higher limit for bbox mode to show more content on the map
+    const maxLimit = hasBbox ? 200 : 100;
+    const defaultLimit = hasBbox ? 200 : 20;
+    const limit = Math.min(Math.max(1, parseInt(req.query.limit as string) || defaultLimit), maxLimit);
     const offset = (page - 1) * limit;
 
     let whereClause = 'WHERE q.status = $1';
     const params: any[] = [status];
     let paramIdx = 2;
 
-    // Location filter: find quests that have at least one step within radius
-    if (!isNaN(lat) && !isNaN(lng)) {
+    // Location filter: find quests that have at least one step in the area
+    if (hasBbox) {
+      // BBox mode — show all quests with steps in viewport
+      whereClause += ` AND EXISTS (
+        SELECT 1 FROM quest_steps qs
+        WHERE qs.quest_id = q.id
+        AND ST_Intersects(qs.location, ST_MakeEnvelope($${paramIdx}, $${paramIdx + 1}, $${paramIdx + 2}, $${paramIdx + 3}, 4326))
+      )`;
+      params.push(west, south, east, north);
+      paramIdx += 4;
+    } else if (!isNaN(lat) && !isNaN(lng)) {
+      // Proximity mode — nearby quests
       whereClause += ` AND EXISTS (
         SELECT 1 FROM quest_steps qs
         WHERE qs.quest_id = q.id

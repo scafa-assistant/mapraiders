@@ -93,6 +93,33 @@ export class SilentZoneService {
   }
 
   /**
+   * Get silent zones within a bounding box (for global map view).
+   */
+  async getInBounds(
+    north: number,
+    south: number,
+    east: number,
+    west: number
+  ): Promise<SilentZone[]> {
+    const zones = await queryMany<SilentZone & { polygon_geojson: string }>(
+      `SELECT sz.id, sz.name, sz.description, sz.created_by,
+              sz.approved, sz.approval_votes, sz.created_at,
+              ST_AsGeoJSON(sz.polygon)::text AS polygon_geojson
+       FROM silent_zones sz
+       WHERE sz.approved = TRUE
+       AND ST_Intersects(sz.polygon, ST_MakeEnvelope($1, $2, $3, $4, 4326))
+       ORDER BY sz.created_at DESC
+       LIMIT 200`,
+      [west, south, east, north]
+    );
+
+    return zones.map((z) => ({
+      ...z,
+      polygon: JSON.parse(z.polygon_geojson),
+    }));
+  }
+
+  /**
    * Propose a new silent zone. Requires level >= 20.
    *
    * @param userId - Proposer's user ID
@@ -260,6 +287,15 @@ export async function getNearbySilentZones(
   radiusM: number
 ): Promise<(SilentZone & { distance_m: number })[]> {
   return silentZoneServiceInstance.getNearby(lat, lng, radiusM);
+}
+
+export async function getSilentZonesInBounds(
+  north: number,
+  south: number,
+  east: number,
+  west: number
+): Promise<SilentZone[]> {
+  return silentZoneServiceInstance.getInBounds(north, south, east, west);
 }
 
 export async function proposeSilentZone(

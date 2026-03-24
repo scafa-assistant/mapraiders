@@ -12,6 +12,7 @@ import { queryOne } from '../config/database';
 import {
   createArtifact,
   getNearbyArtifacts,
+  getArtifactsInBounds,
   getArtifactById,
   votePermanence,
 } from '../services/artifactService';
@@ -128,22 +129,36 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
 
 /**
  * GET /api/artifacts
- * Get nearby artifacts. Query params: lat, lng, radius (meters, default 5000).
+ * Get artifacts. Supports two modes:
+ *   - BBox: north, south, east, west (show all artifacts in viewport)
+ *   - Proximity: lat, lng, radius (meters, default 5000)
  */
 router.get('/', authenticate, async (req: Request, res: Response) => {
   try {
+    const { north, south, east, west } = req.query;
     const lat = parseFloat(req.query.lat as string);
     const lng = parseFloat(req.query.lng as string);
     const radiusM = Math.min(parseFloat(req.query.radius as string) || 5000, 50000);
 
-    if (isNaN(lat) || isNaN(lng)) {
+    let artifacts: any[];
+
+    if (north && south && east && west) {
+      // BBox mode — show all artifacts in viewport
+      artifacts = await getArtifactsInBounds(
+        parseFloat(north as string),
+        parseFloat(south as string),
+        parseFloat(east as string),
+        parseFloat(west as string)
+      );
+    } else if (!isNaN(lat) && !isNaN(lng)) {
+      // Proximity mode — nearby artifacts
+      artifacts = await getNearbyArtifacts(lat, lng, radiusM);
+    } else {
       return res.status(400).json({
         success: false,
-        error: 'lat and lng query parameters required',
+        message: 'Provide either bbox (north/south/east/west) or lat/lng params',
       });
     }
-
-    const artifacts = await getNearbyArtifacts(lat, lng, radiusM);
 
     return res.json({
       success: true,

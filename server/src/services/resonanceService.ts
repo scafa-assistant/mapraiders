@@ -175,6 +175,25 @@ export class ResonanceService {
   }
 
   /**
+   * Get resonance spots within a bounding box (for global map view).
+   */
+  async getInBounds(north: number, south: number, east: number, west: number): Promise<any[]> {
+    const spots = await queryMany(
+      `SELECT id, content_types, resonance_level, bonus_multiplier,
+              discovered_at, expires_at,
+              ST_Y(location) as lat, ST_X(location) as lng
+       FROM resonance_spots
+       WHERE (expires_at IS NULL OR expires_at > NOW())
+       AND ST_Intersects(location, ST_MakeEnvelope($1, $2, $3, $4, 4326))
+       ORDER BY resonance_level DESC
+       LIMIT 200`,
+      [west, south, east, north]
+    );
+
+    return spots;
+  }
+
+  /**
    * Award resonance bonus XP to the user who triggered it.
    */
   async awardResonanceBonus(userId: string, resonanceLevel: number): Promise<number> {

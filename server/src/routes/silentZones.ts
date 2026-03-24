@@ -11,6 +11,7 @@ import { authenticate } from '../middleware/auth';
 import { queryOne } from '../config/database';
 import {
   getNearbySilentZones,
+  getSilentZonesInBounds,
   getSilentZoneById,
   proposeSilentZone,
   voteSilentZone,
@@ -20,22 +21,34 @@ const router = Router();
 
 /**
  * GET /api/silent-zones
- * Get nearby silent zones. Query params: lat, lng, radius (meters, default 5000).
+ * Get silent zones. Supports two modes:
+ *   - BBox: north, south, east, west (show all zones in viewport)
+ *   - Proximity: lat, lng, radius (meters, default 5000)
  */
 router.get('/', authenticate, async (req: Request, res: Response) => {
   try {
+    const { north, south, east, west } = req.query;
     const lat = parseFloat(req.query.lat as string);
     const lng = parseFloat(req.query.lng as string);
     const radiusM = Math.min(parseFloat(req.query.radius as string) || 5000, 50000);
 
-    if (isNaN(lat) || isNaN(lng)) {
+    let zones: any[];
+
+    if (north && south && east && west) {
+      zones = await getSilentZonesInBounds(
+        parseFloat(north as string),
+        parseFloat(south as string),
+        parseFloat(east as string),
+        parseFloat(west as string)
+      );
+    } else if (!isNaN(lat) && !isNaN(lng)) {
+      zones = await getNearbySilentZones(lat, lng, radiusM);
+    } else {
       return res.status(400).json({
         success: false,
-        error: 'lat and lng query parameters required',
+        message: 'Provide either bbox (north/south/east/west) or lat/lng params',
       });
     }
-
-    const zones = await getNearbySilentZones(lat, lng, radiusM);
 
     return res.json({
       success: true,

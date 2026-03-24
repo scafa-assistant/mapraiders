@@ -181,6 +181,9 @@ export const questApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/quests', { params: { lat, lng, radius } }),
 
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/quests', { params: bbox }),
+
   getById: (id: string) =>
     api.get(`/quests/${id}`),
 
@@ -205,6 +208,9 @@ export const echoApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/echos', { params: { lat, lng, radius } }),
 
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/echos', { params: bbox }),
+
   getById: (id: string) =>
     api.get(`/echos/${id}`),
 
@@ -225,6 +231,9 @@ export const echoApi = {
 export const challengeApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/challenges', { params: { lat, lng, radius } }),
+
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/challenges', { params: bbox }),
 
   getById: (id: string) =>
     api.get(`/challenges/${id}`),
@@ -352,6 +361,9 @@ export const artifactApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/artifacts', { params: { lat, lng, radius } }),
 
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/artifacts', { params: bbox }),
+
   getById: (id: string) =>
     api.get(`/artifacts/${id}`),
 
@@ -385,6 +397,9 @@ export const silentZoneApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/silent-zones', { params: { lat, lng, radius } }),
 
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/silent-zones', { params: bbox }),
+
   getById: (id: string) =>
     api.get(`/silent-zones/${id}`),
 
@@ -410,6 +425,9 @@ export const placeApi = {
 export const resonanceApi = {
   getNearby: (lat: number, lng: number, radius: number) =>
     api.get('/resonance', { params: { lat, lng, radius } }),
+
+  getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/resonance', { params: bbox }),
 };
 
 // ─── Duels API ──────────────────────────────────────────────────────────────

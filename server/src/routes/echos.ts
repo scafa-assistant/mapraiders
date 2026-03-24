@@ -59,42 +59,71 @@ const echoUpload = multer({
 /**
  * GET /api/echos
  * Get nearby echos that are active and not expired.
- * Query params: lat, lng, radius (meters, default 5000)
+ * Supports two modes:
+ *   - BBox: north, south, east, west (show all echos in viewport)
+ *   - Proximity: lat, lng, radius (meters, default 5000)
  */
 router.get('/', authenticate, async (req: Request, res: Response) => {
   try {
-    const lat = parseFloat(req.query.lat as string);
-    const lng = parseFloat(req.query.lng as string);
-    const radiusM = Math.min(parseFloat(req.query.radius as string) || 5000, 50000);
+    const { lat, lng, radius, north, south, east, west } = req.query;
 
-    if (isNaN(lat) || isNaN(lng)) {
+    let locationFilter: string;
+    let params: any[];
+    let paramIdx: number;
+    let hasDistance = false;
+
+    if (north && south && east && west) {
+      // BBox mode — show all echos in viewport
+      locationFilter = `ST_Intersects(e.location, ST_MakeEnvelope($1, $2, $3, $4, 4326))`;
+      params = [
+        parseFloat(west as string),
+        parseFloat(south as string),
+        parseFloat(east as string),
+        parseFloat(north as string),
+      ];
+      paramIdx = 5;
+    } else if (lat && lng) {
+      // Proximity mode — nearby echos
+      const radiusM = Math.min(parseFloat(radius as string) || 5000, 50000);
+      const locationWkt = pointToWkt(parseFloat(lat as string), parseFloat(lng as string));
+      locationFilter = `ST_DWithin(e.location::geography, ST_GeomFromEWKT($1)::geography, $2)`;
+      params = [locationWkt, radiusM];
+      paramIdx = 3;
+      hasDistance = true;
+    } else {
       return res.status(400).json({
         success: false,
-        error: 'lat and lng query parameters required',
+        message: 'Provide either bbox (north/south/east/west) or lat/lng params',
       });
     }
 
-    const locationWkt = pointToWkt(lat, lng);
-
     // Night Layer: filter by time_window
     const timeWindow = isNightTime() ? 'night' : 'day';
+    params.push(timeWindow);
+    const timeIdx = paramIdx;
+    paramIdx++;
+
+    const distanceSelect = hasDistance
+      ? `, ST_Distance(e.location::geography, ST_GeomFromEWKT($1)::geography) as distance_m`
+      : '';
+    const orderClause = hasDistance ? 'ORDER BY distance_m ASC' : 'ORDER BY e.created_at DESC';
 
     const echos = await queryMany(
       `SELECT e.id, e.creator_id, e.radius_m, e.audio_url, e.likes,
               e.expires_at, e.created_at, e.time_window,
               e.media_type, e.media_url, e.caption,
               u.username as creator_username,
-              ST_Y(e.location) as lat, ST_X(e.location) as lng,
-              ST_Distance(e.location::geography, ST_GeomFromEWKT($1)::geography) as distance_m
+              ST_Y(e.location) as lat, ST_X(e.location) as lng
+              ${distanceSelect}
        FROM echos e
        LEFT JOIN users u ON e.creator_id = u.id
        WHERE e.status = 'active'
        AND e.expires_at > NOW()
-       AND ST_DWithin(e.location::geography, ST_GeomFromEWKT($1)::geography, $2)
-       AND (e.time_window = 'any' OR e.time_window = $3)
-       ORDER BY distance_m ASC
-       LIMIT 100`,
-      [locationWkt, radiusM, timeWindow]
+       AND ${locationFilter}
+       AND (e.time_window = 'any' OR e.time_window = $${timeIdx})
+       ${orderClause}
+       LIMIT 200`,
+      params
     );
 
     return res.json({
@@ -102,7 +131,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
       data: {
         echos: echos.map(e => ({
           ...e,
-          distance_m: parseFloat(e.distance_m || '0'),
+          distance_m: e.distance_m ? parseFloat(e.distance_m) : undefined,
         })),
       },
     });
