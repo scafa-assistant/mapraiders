@@ -109,8 +109,8 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
       <View style={styles.myRankBar}>
         <Text style={styles.myRankLabel}>Your Rank</Text>
         <View style={styles.myRankContent}>
-          <Text style={styles.myRankNumber}>#{myRank.rank}</Text>
-          <Text style={styles.myRankScore}>{myRank.score.toLocaleString()}</Text>
+          <Text style={styles.myRankNumber}>#{myRank.rank ?? '?'}</Text>
+          <Text style={styles.myRankScore}>{(myRank.score ?? 0).toLocaleString()}</Text>
         </View>
       </View>
     );

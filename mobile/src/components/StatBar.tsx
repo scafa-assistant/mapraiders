@@ -86,7 +86,7 @@ const StatBar: React.FC<StatBarProps> = ({
           <View style={styles.valueContainer}>
             {showValues && (
               <Text style={styles.valueText}>
-                {current.toLocaleString()} / {max.toLocaleString()}
+                {(current ?? 0).toLocaleString()} / {(max ?? 0).toLocaleString()}
               </Text>
             )}
             {showPercentage && (

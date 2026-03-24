@@ -100,7 +100,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
 
   const getExpiryText = (expiresAt: string): string => {
     const now = Date.now();
-    const expiry = new Date(expiresAt).getTime();
+    const expiry = new Date(expiresAt || Date.now()).getTime();
     const diff = expiry - now;
     if (diff <= 0) return 'expired';
     const hours = Math.floor(diff / (1000 * 60 * 60));
