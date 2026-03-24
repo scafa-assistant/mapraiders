@@ -62,7 +62,15 @@ class MeetupService {
    * Validates: name required, date must be in future, max 3 active events per user.
    */
   async createMeetup(userId: string, data: CreateMeetupData): Promise<MeetupEvent> {
-    const { name, description, latitude, longitude, event_date, category, max_attendees } = data;
+    const { name, description, event_date, category, max_attendees } = data;
+    // Accept both lat/lng and latitude/longitude
+    const latitude = (data as any).latitude ?? (data as any).lat;
+    const longitude = (data as any).longitude ?? (data as any).lng;
+
+    // Validate location
+    if (latitude == null || longitude == null) {
+      throw new Error('Location is required (lat/lng)');
+    }
 
     // Validate name
     if (!name || name.trim().length === 0) {
