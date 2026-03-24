@@ -36,7 +36,8 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
   const fetchNotifications = useCallback(async () => {
     try {
       const { data } = await notificationApi.get();
-      setNotifications(data.data ?? data ?? []);
+      const raw = data?.data?.notifications ?? data?.data ?? data ?? [];
+      setNotifications(Array.isArray(raw) ? raw : []);
     } catch {
       // Silently fail - user sees empty state
     } finally {

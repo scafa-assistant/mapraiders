@@ -29,7 +29,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     refreshProfile();
     // Fetch unread notification count
     notificationApi.get().then(({ data }) => {
-      const items = data.data ?? data ?? [];
+      const items = data?.data?.notifications ?? data?.data ?? data ?? [];
       const unread = Array.isArray(items) ? items.filter((n: { read: boolean }) => !n.read).length : 0;
       setUnreadNotifications(unread);
     }).catch(() => {});

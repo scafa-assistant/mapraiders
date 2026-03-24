@@ -38,7 +38,8 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
   const fetchFeed = useCallback(async (pageNum: number, append = false) => {
     try {
       const { data } = await socialApi.getFeed(pageNum);
-      const items: FeedItem[] = data.data ?? data ?? [];
+      const raw = data?.data?.feed ?? data?.data ?? data ?? [];
+      const items: FeedItem[] = Array.isArray(raw) ? raw : [];
       if (append) {
         setFeedItems((prev) => [...prev, ...items]);
       } else {

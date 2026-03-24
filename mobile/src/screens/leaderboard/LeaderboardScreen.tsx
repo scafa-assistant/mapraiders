@@ -36,8 +36,9 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
         leaderboardApi.get(activeType),
         leaderboardApi.getMyRank(activeType),
       ]);
-      setEntries(boardRes.data.entries || []);
-      setMyRank(rankRes.data || null);
+      const entries = boardRes.data?.data?.entries ?? boardRes.data?.entries ?? boardRes.data?.data ?? [];
+      setEntries(Array.isArray(entries) ? entries : []);
+      setMyRank(rankRes.data?.data ?? rankRes.data ?? null);
     } catch {
       setEntries([]);
       setMyRank(null);

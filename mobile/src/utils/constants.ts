@@ -140,9 +140,9 @@ export const XP_LEVEL_SCALING = 1.15;
 // ─── Leaderboard Types ──────────────────────────────────────────────────────
 
 export const LEADERBOARD_TYPES = [
-  { key: 'area', label: 'Area Claimed', icon: 'map-outline' },
-  { key: 'xp', label: 'Total XP', icon: 'star-outline' },
-  { key: 'quests', label: 'Quests Done', icon: 'flag-outline' },
-  { key: 'streaks', label: 'Streaks', icon: 'flame-outline' },
-  { key: 'distance', label: 'Distance', icon: 'footsteps-outline' },
+  { key: 'territory', label: 'Territory', icon: 'map-outline' },
+  { key: 'explorer', label: 'Explorer', icon: 'footsteps-outline' },
+  { key: 'questmaker', label: 'Questmaker', icon: 'flag-outline' },
+  { key: 'echo_master', label: 'Echo Master', icon: 'musical-notes-outline' },
+  { key: 'streak', label: 'Streaks', icon: 'flame-outline' },
 ] as const;

@@ -42,8 +42,9 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
   const fetchClan = useCallback(async () => {
     try {
       const { data } = await clanApi.getMine();
-      const clanData = data.data ?? data;
-      if (!clanData || (typeof clanData === 'object' && Object.keys(clanData).length === 0)) {
+      const clans = data?.data?.clans ?? data?.data ?? data ?? [];
+      const clanData = Array.isArray(clans) ? clans[0] : clans;
+      if (!clanData || (typeof clanData === 'object' && (!clanData.id || Object.keys(clanData).length === 0))) {
         setNoClan(true);
         setClan(null);
       } else {
