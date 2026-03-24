@@ -152,16 +152,16 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   useEffect(() => {
     if (!currentLocation) return;
     const shouldFetch = !lastWeatherFetch.current ||
-      Math.abs(currentLocation.latitude - lastWeatherFetch.current.lat) > 0.005 ||
-      Math.abs(currentLocation.longitude - lastWeatherFetch.current.lng) > 0.005;
+      Math.abs(currentLocation?.latitude ?? 0 - lastWeatherFetch.current.lat) > 0.005 ||
+      Math.abs(currentLocation?.longitude ?? 0 - lastWeatherFetch.current.lng) > 0.005;
 
     if (shouldFetch) {
       lastWeatherFetch.current = {
-        lat: currentLocation.latitude,
-        lng: currentLocation.longitude,
+        lat: currentLocation?.latitude ?? 0,
+        lng: currentLocation?.longitude ?? 0,
       };
       weatherApi
-        .getCurrent(currentLocation.latitude, currentLocation.longitude)
+        .getCurrent(currentLocation?.latitude ?? 0, currentLocation?.longitude ?? 0)
         .then((res) => {
           setWeather(res.data);
           // Count weather-specific quests from nearbyQuests
@@ -244,8 +244,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
     const start = safeRoute[0];
     if (!start) return;
-    const dlat = currentLocation.latitude - start.latitude;
-    const dlng = currentLocation.longitude - start.longitude;
+    const dlat = currentLocation?.latitude ?? 0 - start.latitude;
+    const dlng = currentLocation?.longitude ?? 0 - start.longitude;
     const distM = Math.sqrt(dlat * dlat + dlng * dlng) * 111320;
     setCanCloseClaim(distM <= CLOSE_THRESHOLD_M);
   }, [currentLocation, isTracking, safeRoute]);
@@ -254,8 +254,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   useEffect(() => {
     if (currentLocation) {
       echoProximityService.onLocationUpdate(
-        currentLocation.latitude,
-        currentLocation.longitude
+        currentLocation?.latitude ?? 0,
+        currentLocation?.longitude ?? 0
       );
     }
   }, [currentLocation]);
@@ -360,8 +360,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       initialLocationDone.current = true;
       mapRef.current.animateToRegion(
         {
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
+          latitude: currentLocation?.latitude ?? 0,
+          longitude: currentLocation?.longitude ?? 0,
           latitudeDelta: 0.008,
           longitudeDelta: 0.008,
         },
@@ -395,8 +395,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     if (currentLocation && mapRef.current) {
       mapRef.current.animateToRegion(
         {
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
+          latitude: currentLocation?.latitude ?? 0,
+          longitude: currentLocation?.longitude ?? 0,
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         },
@@ -439,10 +439,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             // Fallback: use current location for bbox
             if (currentLocation) {
               fetchTerritories({
-                north: currentLocation.latitude + 0.01,
-                south: currentLocation.latitude - 0.01,
-                east: currentLocation.longitude + 0.01,
-                west: currentLocation.longitude - 0.01,
+                north: currentLocation?.latitude ?? 0 + 0.01,
+                south: currentLocation?.latitude ?? 0 - 0.01,
+                east: currentLocation?.longitude ?? 0 + 0.01,
+                west: currentLocation?.longitude ?? 0 - 0.01,
               });
             }
           }
@@ -523,8 +523,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         initialRegion={
           currentLocation
             ? {
-                latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude,
+                latitude: currentLocation?.latitude ?? 0,
+                longitude: currentLocation?.longitude ?? 0,
                 latitudeDelta: 0.008,
                 longitudeDelta: 0.008,
               }

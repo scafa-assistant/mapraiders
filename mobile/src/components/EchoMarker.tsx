@@ -78,8 +78,8 @@ const EchoMarker: React.FC<EchoMarkerProps> = ({ echo, onPress, likes = 0 }) => 
       {/* Audio radius circle */}
       <Circle
         center={{
-          latitude: echo.location.latitude,
-          longitude: echo.location.longitude,
+          latitude: echo.location?.latitude ?? echo.lat ?? 0,
+          longitude: echo.location?.longitude ?? echo.lng ?? 0,
         }}
         radius={echo.radius}
         fillColor={`rgba(123, 97, 255, ${baseOpacity * 0.15})`}
@@ -90,8 +90,8 @@ const EchoMarker: React.FC<EchoMarkerProps> = ({ echo, onPress, likes = 0 }) => 
       {/* Marker */}
       <Marker
         coordinate={{
-          latitude: echo.location.latitude,
-          longitude: echo.location.longitude,
+          latitude: echo.location?.latitude ?? echo.lat ?? 0,
+          longitude: echo.location?.longitude ?? echo.lng ?? 0,
         }}
         onPress={onPress}
         anchor={{ x: 0.5, y: 0.5 }}
