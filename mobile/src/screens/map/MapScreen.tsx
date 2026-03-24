@@ -197,6 +197,20 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     return () => pulse.stop();
   }, []);
 
+  // Keep map centered on user while walking/tracking
+  useEffect(() => {
+    if (!currentLocation || !mapRef.current) return;
+    // Only auto-center if tracking OR if user hasn't manually scrolled
+    if (isTracking) {
+      mapRef.current.animateToRegion({
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      }, 500);
+    }
+  }, [currentLocation, isTracking]);
+
   // Recording pulse animation
   useEffect(() => {
     if (isTracking) {

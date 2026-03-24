@@ -57,12 +57,12 @@ const CREATE_OPTIONS: CreateOption[] = [
   },
   {
     key: 'travel',
-    title: 'Create Travel Route',
+    title: 'Create Travel Route (Coming Soon)',
     description: 'Design a curated route with interesting spots for others to explore.',
     icon: 'trail-sign',
-    color: '#00FF88',
+    color: '#555E78',
     screen: 'TravelRouteCreate',
-    minLevel: 5,
+    minLevel: 999,
     requiresTerritory: false,
   },
   {
@@ -82,9 +82,9 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
   const userLevel = user?.level ?? 1;
   const hasTerritories = (user?.totalClaims ?? 0) > 0;
 
-  // All features unlocked for everyone — no level gates
-  const isUnlocked = (_option: CreateOption): boolean => true;
-  const getLockedReason = (_option: CreateOption): string => '';
+  // All features unlocked except Coming Soon items
+  const isUnlocked = (option: CreateOption): boolean => option.minLevel < 900;
+  const getLockedReason = (option: CreateOption): string => option.minLevel >= 900 ? 'Coming Soon' : '';
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
