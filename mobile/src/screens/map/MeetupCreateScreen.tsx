@@ -55,7 +55,13 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [dateTimeText, setDateTimeText] = useState('');
+  // Date picker state — simple day/month/year/hour/minute selectors
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const [day, setDay] = useState(tomorrow.getDate());
+  const [month, setMonth] = useState(tomorrow.getMonth() + 1);
+  const [year, setYear] = useState(tomorrow.getFullYear());
+  const [hour, setHour] = useState(20);
+  const [minute, setMinute] = useState(0);
   const [category, setCategory] = useState<string>('meetup');
   const [maxAttendees, setMaxAttendees] = useState('');
   const [pinLocation, setPinLocation] = useState<{ latitude: number; longitude: number } | null>(
@@ -79,32 +85,8 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
       Alert.alert('Missing Location', 'Tap the map to set an event location.');
       return;
     }
-    if (!dateTimeText.trim()) {
-      Alert.alert('Missing Date/Time', 'Please enter the event date and time.');
-      return;
-    }
-
-    // Parse date: YYYY-MM-DD HH:MM
-    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/;
-    const match = dateTimeText.trim().match(dateRegex);
-    if (!match) {
-      Alert.alert('Invalid Date', 'Please use format: YYYY-MM-DD HH:MM');
-      return;
-    }
-
-    const [, year, month, day, hours, minutes] = match;
-    const eventDate = new Date(
-      parseInt(year, 10),
-      parseInt(month, 10) - 1,
-      parseInt(day, 10),
-      parseInt(hours, 10),
-      parseInt(minutes, 10)
-    );
-
-    if (isNaN(eventDate.getTime())) {
-      Alert.alert('Invalid Date', 'The date you entered is not valid.');
-      return;
-    }
+    // Build date from picker values
+    const eventDate = new Date(year, month - 1, day, hour, minute);
 
     if (eventDate.getTime() <= Date.now()) {
       Alert.alert('Past Date', 'The event date must be in the future.');
@@ -223,17 +205,65 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
             />
           </View>
 
-          {/* Date & Time */}
+          {/* Date & Time Picker */}
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>Date & Time *</Text>
-            <TextInput
-              style={styles.textInput}
-              value={dateTimeText}
-              onChangeText={setDateTimeText}
-              placeholder="YYYY-MM-DD HH:MM"
-              placeholderTextColor={THEME.textSecondary}
-              keyboardType="default"
-            />
+            <View style={styles.datePickerRow}>
+              <View style={styles.datePickerUnit}>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setDay(d => Math.min(31, d + 1))}>
+                  <Ionicons name="chevron-up" size={18} color={THEME.primary} />
+                </TouchableOpacity>
+                <Text style={styles.dateValue}>{String(day).padStart(2, '0')}</Text>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setDay(d => Math.max(1, d - 1))}>
+                  <Ionicons name="chevron-down" size={18} color={THEME.primary} />
+                </TouchableOpacity>
+                <Text style={styles.dateUnitLabel}>Day</Text>
+              </View>
+              <Text style={styles.dateSep}>.</Text>
+              <View style={styles.datePickerUnit}>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setMonth(m => m >= 12 ? 1 : m + 1)}>
+                  <Ionicons name="chevron-up" size={18} color={THEME.primary} />
+                </TouchableOpacity>
+                <Text style={styles.dateValue}>{String(month).padStart(2, '0')}</Text>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setMonth(m => m <= 1 ? 12 : m - 1)}>
+                  <Ionicons name="chevron-down" size={18} color={THEME.primary} />
+                </TouchableOpacity>
+                <Text style={styles.dateUnitLabel}>Mon</Text>
+              </View>
+              <Text style={styles.dateSep}>.</Text>
+              <View style={styles.datePickerUnit}>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setYear(y => y + 1)}>
+                  <Ionicons name="chevron-up" size={18} color={THEME.primary} />
+                </TouchableOpacity>
+                <Text style={styles.dateValue}>{year}</Text>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setYear(y => Math.max(2026, y - 1))}>
+                  <Ionicons name="chevron-down" size={18} color={THEME.primary} />
+                </TouchableOpacity>
+                <Text style={styles.dateUnitLabel}>Year</Text>
+              </View>
+              <View style={{ width: 16 }} />
+              <View style={styles.datePickerUnit}>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setHour(h => h >= 23 ? 0 : h + 1)}>
+                  <Ionicons name="chevron-up" size={18} color={THEME.warning} />
+                </TouchableOpacity>
+                <Text style={styles.dateValue}>{String(hour).padStart(2, '0')}</Text>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setHour(h => h <= 0 ? 23 : h - 1)}>
+                  <Ionicons name="chevron-down" size={18} color={THEME.warning} />
+                </TouchableOpacity>
+                <Text style={styles.dateUnitLabel}>Hr</Text>
+              </View>
+              <Text style={styles.dateSep}>:</Text>
+              <View style={styles.datePickerUnit}>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setMinute(m => m >= 55 ? 0 : m + 5)}>
+                  <Ionicons name="chevron-up" size={18} color={THEME.warning} />
+                </TouchableOpacity>
+                <Text style={styles.dateValue}>{String(minute).padStart(2, '0')}</Text>
+                <TouchableOpacity style={styles.dateBtn} onPress={() => setMinute(m => m <= 0 ? 55 : m - 5)}>
+                  <Ionicons name="chevron-down" size={18} color={THEME.warning} />
+                </TouchableOpacity>
+                <Text style={styles.dateUnitLabel}>Min</Text>
+              </View>
+            </View>
           </View>
 
           {/* Category */}
@@ -446,5 +476,36 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.lg,
     fontWeight: '900',
     letterSpacing: 1,
+  },
+  datePickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  datePickerUnit: {
+    alignItems: 'center',
+    minWidth: 44,
+  },
+  dateBtn: {
+    padding: 6,
+  },
+  dateValue: {
+    color: THEME.text,
+    fontSize: FONT_SIZE.xl,
+    fontWeight: '800',
+    fontVariant: ['tabular-nums'],
+  },
+  dateUnitLabel: {
+    color: THEME.textSecondary,
+    fontSize: 9,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  dateSep: {
+    color: THEME.textSecondary,
+    fontSize: FONT_SIZE.xl,
+    fontWeight: '700',
+    marginBottom: 16,
   },
 });
