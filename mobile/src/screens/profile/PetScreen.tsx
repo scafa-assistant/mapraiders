@@ -36,8 +36,15 @@ export default function PetScreen({ navigation }: PetScreenProps) {
   const fetchPet = useCallback(async () => {
     try {
       const res = await petApi.getMine();
-      setPet(res.data);
-      setShowRegister(false);
+      const pets = res.data?.data?.pets ?? res.data?.data ?? res.data ?? [];
+      const firstPet = Array.isArray(pets) ? pets[0] : (pets?.id ? pets : null);
+      if (firstPet) {
+        setPet(firstPet);
+        setShowRegister(false);
+      } else {
+        setPet(null);
+        setShowRegister(true);
+      }
     } catch {
       setPet(null);
       setShowRegister(true);
@@ -69,7 +76,8 @@ export default function PetScreen({ navigation }: PetScreenProps) {
         species: petSpecies.toLowerCase(),
         breed: petBreed.trim() || undefined,
       });
-      setPet(res.data);
+      const pet = res.data?.data?.pet ?? res.data?.data ?? res.data;
+      setPet(pet);
       setShowRegister(false);
     } catch (err: any) {
       Alert.alert('Error', err.message || 'Could not register pet');

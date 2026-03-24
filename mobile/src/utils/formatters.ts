@@ -3,7 +3,7 @@
  * Under 1000m shows meters, above shows km with one decimal.
  */
 export function formatDistance(meters: number): string {
-  if (meters < 0) return '0 m';
+  if (meters == null || isNaN(meters) || meters < 0) return '0 m';
   if (meters < 1000) {
     return `${Math.round(meters)} m`;
   }
@@ -19,7 +19,7 @@ export function formatDistance(meters: number): string {
  * Under 1,000,000 m2 shows m2, above shows km2.
  */
 export function formatArea(m2: number): string {
-  if (m2 < 0) return '0 m\u00B2';
+  if (m2 == null || isNaN(m2) || m2 < 0) return '0 m\u00B2';
   if (m2 < 1_000_000) {
     return `${m2.toLocaleString('en-US', { maximumFractionDigits: 0 })} m\u00B2`;
   }
@@ -32,7 +32,7 @@ export function formatArea(m2: number): string {
  * Under 1 hour: "5:30", above: "1h 23m".
  */
 export function formatDuration(seconds: number): string {
-  if (seconds < 0) return '0:00';
+  if (seconds == null || isNaN(seconds) || seconds < 0) return '0:00';
   const totalSeconds = Math.floor(seconds);
   const hrs = Math.floor(totalSeconds / 3600);
   const mins = Math.floor((totalSeconds % 3600) / 60);
@@ -48,7 +48,7 @@ export function formatDuration(seconds: number): string {
  * Format XP with K/M suffix for compact display.
  */
 export function formatXP(xp: number): string {
-  if (xp < 0) return '0';
+  if (xp == null || isNaN(xp) || xp < 0) return '0';
   if (xp < 1000) {
     return xp.toString();
   }
@@ -63,9 +63,11 @@ export function formatXP(xp: number): string {
 /**
  * Format a date to a relative time string.
  */
-export function formatRelativeTime(date: Date | string): string {
+export function formatRelativeTime(date: Date | string | null | undefined): string {
+  if (!date) return '';
   const now = new Date();
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '';
   const diffMs = now.getTime() - d.getTime();
   const diffSec = Math.floor(diffMs / 1000);
   const diffMin = Math.floor(diffSec / 60);
@@ -86,6 +88,7 @@ export function formatRelativeTime(date: Date | string): string {
  * Format a numeric rating to a star display string.
  */
 export function formatRating(rating: number): string {
+  if (rating == null || isNaN(rating)) return '0\u2605';
   return `${rating.toFixed(1)}\u2605`;
 }
 
@@ -93,6 +96,7 @@ export function formatRating(rating: number): string {
  * Format a number with comma separators.
  */
 export function formatNumber(n: number): string {
+  if (n == null || isNaN(n)) return '0';
   return n.toLocaleString('en-US');
 }
 
