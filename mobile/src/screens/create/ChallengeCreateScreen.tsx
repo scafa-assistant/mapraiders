@@ -26,57 +26,30 @@ interface ChallengeTemplate {
 
 const TEMPLATES: ChallengeTemplate[] = [
   {
-    id: 'distance_sprint',
-    name: 'Distance Sprint',
-    icon: 'speedometer-outline',
-    description: 'Run a certain distance as fast as possible',
-    parameters: [
-      { key: 'distance', label: 'Distance', unit: 'm', min: 100, max: 5000, default: 500 },
-    ],
-  },
-  {
-    id: 'area_claim',
-    name: 'Area Challenge',
-    icon: 'resize-outline',
-    description: 'Claim a minimum area in one session',
-    parameters: [
-      { key: 'minArea', label: 'Min Area', unit: 'm²', min: 1000, max: 100000, default: 5000 },
-    ],
-  },
-  {
-    id: 'elevation_climb',
-    name: 'Elevation Climb',
-    icon: 'trending-up-outline',
-    description: 'Gain a certain elevation during your route',
-    parameters: [
-      { key: 'elevation', label: 'Elevation', unit: 'm', min: 10, max: 1000, default: 50 },
-    ],
-  },
-  {
     id: 'step_count',
-    name: 'Step Counter',
+    name: 'Schritte-Challenge',
     icon: 'footsteps-outline',
-    description: 'Walk a target number of steps',
+    description: 'Laufe eine bestimmte Anzahl Schritte',
     parameters: [
-      { key: 'steps', label: 'Steps', unit: '', min: 1000, max: 50000, default: 10000 },
+      { key: 'steps', label: 'Schritte', unit: '', min: 1000, max: 50000, default: 10000 },
     ],
   },
   {
     id: 'time_walk',
-    name: 'Timed Walk',
+    name: 'Zeitlauf',
     icon: 'timer-outline',
-    description: 'Walk continuously for a set duration',
+    description: 'Laufe durchgehend für eine bestimmte Dauer',
     parameters: [
-      { key: 'duration', label: 'Duration', unit: 'min', min: 5, max: 180, default: 30 },
+      { key: 'duration', label: 'Dauer', unit: 'min', min: 5, max: 180, default: 30 },
     ],
   },
   {
     id: 'explore_new',
-    name: 'Explorer',
+    name: 'Entdecker',
     icon: 'compass-outline',
-    description: 'Visit a number of new, unclaimed cells',
+    description: 'Besuche neue, unbeanspruchte Gebiete',
     parameters: [
-      { key: 'cells', label: 'New Cells', unit: '', min: 5, max: 100, default: 20 },
+      { key: 'cells', label: 'Neue Zellen', unit: '', min: 5, max: 100, default: 20 },
     ],
   },
 ];

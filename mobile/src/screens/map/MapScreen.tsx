@@ -446,7 +446,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           setClaimResult({ area: Math.round(totalDistance * 12), xp: Math.round(totalDistance * 2) });
         }
         setShowClaimResult(true);
-        setTimeout(() => setShowClaimResult(false), 4000);
+        // No auto-dismiss — user must tap "JETZT VERTEIDIGEN" or "Später"
 
         // Refresh territories on the map so the new claim appears
         // Small delay to ensure server has committed the territory
@@ -616,7 +616,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           );
         })}
 
-        {/* Undefended Own Territory Markers */}
+        {/* Undefended Own Territory Markers — pulsing red warning for owner */}
         {!hideOverlays && safeTerritories
           .filter(t => t.ownerId === user?.id && !t.hasDefense)
           .map((territory) => {
@@ -629,9 +629,29 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 anchor={{ x: 0.5, y: 0.5 }}
                 onPress={() => navigation.navigate('DefenseSetup', { territoryId: territory.id })}
               >
-                <View style={styles.undefendedMarker}>
-                  <Ionicons name="shield-outline" size={12} color="#FF4757" />
-                  <Text style={styles.undefendedText}>DEFEND</Text>
+                <View style={styles.undefendedMarkerOwn}>
+                  <Ionicons name="warning" size={14} color="#FF4757" />
+                  <Text style={styles.undefendedTextOwn}>UNGESCHÜTZT</Text>
+                </View>
+              </Marker>
+            );
+          })}
+
+        {/* Undefended Enemy Territory Markers — visible to attackers */}
+        {!hideOverlays && safeTerritories
+          .filter(t => t.ownerId !== user?.id && t.ownerId && !t.hasDefense)
+          .map((territory) => {
+            const centroid = getPolygonCentroid(territory.polygon);
+            if (!centroid) return null;
+            return (
+              <Marker
+                key={`target-${territory.id}`}
+                coordinate={centroid}
+                anchor={{ x: 0.5, y: 0.5 }}
+                onPress={() => handleTerritoryPress(territory)}
+              >
+                <View style={styles.undefendedMarkerEnemy}>
+                  <Ionicons name="flash" size={10} color="#00FF88" />
                 </View>
               </Marker>
             );
@@ -1021,19 +1041,66 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         <View style={styles.claimOverlay}>
           <View style={[styles.claimCard, { backgroundColor: theme.surface }]}>
             <Ionicons name="flag" size={36} color={theme.accent} />
-            <Text style={[styles.claimTitle, { color: theme.accent }]}>TERRITORY CLAIMED!</Text>
+            <Text style={[styles.claimTitle, { color: theme.accent }]}>TERRITORIUM EROBERT!</Text>
             <View style={styles.claimStats}>
               <View style={styles.claimStatItem}>
                 <Text style={[styles.claimStatValue, { color: theme.accent }]}>{claimResult.area} m²</Text>
-                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Area Claimed</Text>
+                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Fläche</Text>
               </View>
               <View style={styles.claimStatItem}>
-                <Text style={[styles.claimStatValue, { color: theme.primary }]}>
-                  +{claimResult.xp} XP
-                </Text>
-                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Earned</Text>
+                <Text style={[styles.claimStatValue, { color: theme.primary }]}>+{claimResult.xp} XP</Text>
+                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Verdient</Text>
               </View>
             </View>
+
+            {/* Warning: unprotected */}
+            <View style={styles.claimWarningBox}>
+              <Ionicons name="warning" size={22} color="#FF4757" />
+              <Text style={styles.claimWarningText}>
+                Dein Territorium ist ungeschützt! Andere Spieler können es sofort übernehmen.
+              </Text>
+            </View>
+
+            {/* Step-by-step instruction */}
+            <View style={styles.claimStepsBox}>
+              <View style={styles.claimStep}>
+                <View style={styles.claimStepNumber}><Text style={styles.claimStepNumberText}>1</Text></View>
+                <Text style={styles.claimStepText}>Tippe auf dein Territorium auf der Karte</Text>
+              </View>
+              <View style={styles.claimStep}>
+                <View style={styles.claimStepNumber}><Text style={styles.claimStepNumberText}>2</Text></View>
+                <Text style={styles.claimStepText}>Wähle "Verteidigung hinzufügen"</Text>
+              </View>
+              <View style={styles.claimStep}>
+                <View style={[styles.claimStepNumber, { backgroundColor: 'rgba(255, 184, 0, 0.2)' }]}><Text style={[styles.claimStepNumberText, { color: '#FFB800' }]}>3</Text></View>
+                <Text style={styles.claimStepText}>Wähle ein Spiel (Tic Tac Toe, Münzwurf, ...)</Text>
+              </View>
+            </View>
+
+            {/* Direct action buttons */}
+            <TouchableOpacity
+              style={styles.claimDefenseButton}
+              onPress={() => {
+                setShowClaimResult(false);
+                const myTerritories = useTerritoryStore.getState().territories.filter(
+                  t => t.ownerId === user?.id
+                );
+                if (myTerritories.length > 0) {
+                  const newest = myTerritories[myTerritories.length - 1];
+                  navigation.navigate('DefenseSetup', { territoryId: newest.id });
+                }
+              }}
+            >
+              <Ionicons name="shield-checkmark" size={20} color="#0A0E17" />
+              <Text style={styles.claimDefenseButtonText}>JETZT VERTEIDIGEN</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.claimDismissButton}
+              onPress={() => setShowClaimResult(false)}
+            >
+              <Text style={styles.claimDismissButtonText}>Später</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -1206,23 +1273,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  undefendedMarker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 71, 87, 0.9)',
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    gap: 3,
-    borderWidth: 1,
-    borderColor: '#FF4757',
-  },
-  undefendedText: {
-    color: '#FFFFFF',
-    fontSize: 8,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
+  // (old undefendedMarker styles replaced by undefendedMarkerOwn/Enemy above)
   locationMarkerContainer: {
     width: 60,
     height: 60,
@@ -1462,6 +1513,105 @@ const styles = StyleSheet.create({
     color: '#8892B0',
     fontSize: 11,
     marginTop: 4,
+  },
+  claimWarningBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 71, 87, 0.12)',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 16,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 71, 87, 0.3)',
+  },
+  claimWarningText: {
+    flex: 1,
+    color: '#FF4757',
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17,
+  },
+  claimStepsBox: {
+    marginTop: 14,
+    gap: 8,
+  },
+  claimStep: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  claimStepNumber: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  claimStepNumberText: {
+    color: '#00D4FF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  claimStepText: {
+    flex: 1,
+    color: '#8892B0',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  claimDefenseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFB800',
+    borderRadius: 14,
+    paddingVertical: 14,
+    marginTop: 16,
+    gap: 8,
+  },
+  claimDefenseButtonText: {
+    color: '#0A0E17',
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  claimDismissButton: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginTop: 4,
+  },
+  claimDismissButtonText: {
+    color: '#555E78',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  undefendedMarkerOwn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 71, 87, 0.92)',
+    borderRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    gap: 3,
+    borderWidth: 1,
+    borderColor: '#FF4757',
+  },
+  undefendedTextOwn: {
+    color: '#FFFFFF',
+    fontSize: 7,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  undefendedMarkerEnemy: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0, 255, 136, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 255, 136, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   nightBadge: {
     position: 'absolute',

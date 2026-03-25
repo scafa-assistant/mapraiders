@@ -71,18 +71,35 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
       : null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [address, setAddress] = useState('');
+
+  // Reverse geocode pin location to get address
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const Location = await import('expo-location');
+      const results = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      if (results.length > 0) {
+        const r = results[0];
+        const parts = [r.street, r.streetNumber, r.postalCode, r.city].filter(Boolean);
+        setAddress(parts.join(', ') || `${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+      }
+    } catch {
+      setAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+    }
+  };
 
   // Auto-set pin when GPS becomes available
   React.useEffect(() => {
     if (!pinLocation && currentLocation) {
       setPinLocation({ latitude: currentLocation.latitude, longitude: currentLocation.longitude });
+      reverseGeocode(currentLocation.latitude, currentLocation.longitude);
     }
   }, [currentLocation, pinLocation]);
 
   const handleMapPress = (event: MapPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setPinLocation({ latitude, longitude });
-    // Brief haptic feedback
+    reverseGeocode(latitude, longitude);
     try { require('expo-haptics').selectionAsync(); } catch {}
   };
 
@@ -185,7 +202,15 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 </Marker>
               )}
             </MapView>
-            <Text style={styles.mapHint}>Tap to set event location</Text>
+            <Text style={styles.mapHint}>Tippe auf die Karte um den Ort zu wählen</Text>
+            {address ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 6, paddingHorizontal: 4 }}>
+                <Ionicons name="location-outline" size={14} color="#FFB800" />
+                <Text style={{ color: '#FFB800', fontSize: 12, fontWeight: '600', flex: 1 }} numberOfLines={1}>
+                  {address}
+                </Text>
+              </View>
+            ) : null}
           </View>
 
           {/* Name Input */}

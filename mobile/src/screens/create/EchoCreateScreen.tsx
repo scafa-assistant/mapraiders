@@ -266,8 +266,8 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       Alert.alert('Echo Dropped!', `Your ${typeLabel} is now live at this location.`, [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
-    } catch (_err) {
-      Alert.alert('Error', 'Failed to drop echo. Please try again.');
+    } catch (err: any) {
+      Alert.alert('Error', err?.message || 'Failed to drop echo. Please try again.');
     } finally {
       setIsDropping(false);
     }

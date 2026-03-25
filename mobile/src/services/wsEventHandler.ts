@@ -1,13 +1,25 @@
 import { mapRaidersWs } from './websocket';
 import { Alert, Vibration } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useTerritoryStore } from '../store/territoryStore';
+import { useSettingsStore } from '../store/settingsStore';
+
+/** Vibrate only if haptic feedback is enabled in settings */
+function hapticVibrate(pattern?: number | number[]) {
+  if (!useSettingsStore.getState().settings.hapticFeedback) return;
+  if (pattern) {
+    hapticVibrate(pattern);
+  } else {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+}
 
 export function setupWsEventHandlers(): () => void {
   const unsubs: (() => void)[] = [];
 
   // Territory attacked - vibrate + alert
   unsubs.push(mapRaidersWs.on('territory_attacked', (data) => {
-    Vibration.vibrate(500);
+    hapticVibrate(500);
     Alert.alert('Territory Under Attack!', `${data.attacker} is contesting your territory!`);
   }));
 
@@ -28,7 +40,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Resonance discovered - cross-content synergy bonus
   unsubs.push(mapRaidersWs.on('resonance_discovered', (data) => {
-    Vibration.vibrate(300);
+    hapticVibrate(300);
     const typesStr = data.types?.join(' + ') || 'multiple content';
     Alert.alert(
       'Resonance!',
@@ -46,7 +58,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Duel challenge received - show Accept/Decline dialog
   unsubs.push(mapRaidersWs.on('duel_challenge', (data) => {
-    Vibration.vibrate(500);
+    hapticVibrate(500);
     const typeLabel = (data.type || 'speed_claim').replace(/_/g, ' ');
     Alert.alert(
       'Duel Challenge!',
@@ -85,7 +97,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Duel result - show winner
   unsubs.push(mapRaidersWs.on('duel_result', (data) => {
-    Vibration.vibrate(300);
+    hapticVibrate(300);
     if (data.is_draw) {
       Alert.alert('Duel Draw!', `The duel ended in a tie! (${data.challenger_score} - ${data.defender_score})`);
     } else {
@@ -106,7 +118,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Event started - Eclipse, Blitz, King of the Hill, etc.
   unsubs.push(mapRaidersWs.on('event_started', (data) => {
-    Vibration.vibrate(400);
+    hapticVibrate(400);
     const messages: Record<string, string> = {
       eclipse: 'Eclipse has begun! All territories weakened. Double XP for 6 hours!',
       blitz: 'Blitz Claims active nearby! 10x XP for 10 minutes!',
@@ -120,7 +132,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Loot spawned nearby - show pickup prompt
   unsubs.push(mapRaidersWs.on('loot_spawned', (data) => {
-    Vibration.vibrate(200);
+    hapticVibrate(200);
     Alert.alert('Loot Drop!', `A ${data.type || 'loot'} drop appeared nearby!`);
   }));
 
@@ -136,7 +148,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Game started - defender gets notified
   unsubs.push(mapRaidersWs.on('game_started', (data) => {
-    Vibration.vibrate([0, 200, 100, 200]);
+    hapticVibrate([0, 200, 100, 200]);
     const gameLabel = data.game_type === 'tic_tac_toe' ? 'Tic Tac Toe' : 'Mini-Schach';
     Alert.alert(
       `${gameLabel} Herausforderung!`,
@@ -148,14 +160,14 @@ export function setupWsEventHandlers(): () => void {
 
   // Game turn - it's your move
   unsubs.push(mapRaidersWs.on('game_turn', (data) => {
-    Vibration.vibrate(300);
+    hapticVibrate(300);
     const gameLabel = data.game_type === 'tic_tac_toe' ? 'Tic Tac Toe' : 'Mini-Schach';
     Alert.alert(`${gameLabel}`, 'Du bist am Zug!');
   }));
 
   // Game ended - result
   unsubs.push(mapRaidersWs.on('game_ended', (data) => {
-    Vibration.vibrate(500);
+    hapticVibrate(500);
     const resultText = data.result === 'won'
       ? 'Du hast gewonnen!'
       : data.result === 'draw'
@@ -168,7 +180,7 @@ export function setupWsEventHandlers(): () => void {
 
   // Defense lost via instant game
   unsubs.push(mapRaidersWs.on('defense_lost', (_data) => {
-    Vibration.vibrate([0, 300, 100, 300]);
+    hapticVibrate([0, 300, 100, 300]);
     Alert.alert('Territorium verloren!', 'Ein Angreifer hat deine Verteidigung durchbrochen!');
     useTerritoryStore.getState().fetchMyTerritories();
   }));

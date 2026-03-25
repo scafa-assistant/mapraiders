@@ -7,8 +7,10 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import { CreateMenuScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -26,53 +28,53 @@ interface CreateOption {
 
 const CREATE_OPTIONS: CreateOption[] = [
   {
-    key: 'quest',
-    title: 'Create Quest',
-    description: 'Design a multi-step adventure for other walkers to discover and complete.',
-    icon: 'compass',
-    color: '#00D4FF',
-    screen: 'QuestCreate',
-    minLevel: 5,
+    key: 'meetup',
+    title: 'Event erstellen',
+    description: 'Hundespaziergang, Sport-Meetup oder Party an einem Ort planen.',
+    icon: 'calendar-outline',
+    color: '#FFB800',
+    screen: 'MeetupCreate',
+    minLevel: 1,
     requiresTerritory: false,
   },
   {
     key: 'echo',
-    title: 'Drop Echo',
-    description: 'Leave an audio message at your current location for others to discover.',
+    title: 'Echo hinterlassen',
+    description: 'Audio, Foto oder Video an deinem Standort hinterlassen.',
     icon: 'musical-note',
     color: '#7B61FF',
     screen: 'EchoCreate',
+    minLevel: 1,
+    requiresTerritory: false,
+  },
+  {
+    key: 'quest',
+    title: 'Quest erstellen',
+    description: 'Ein mehrstufiges Abenteuer gestalten, das andere entdecken.',
+    icon: 'compass',
+    color: '#00D4FF',
+    screen: 'QuestCreate',
     minLevel: 3,
-    requiresTerritory: true,
+    requiresTerritory: false,
   },
   {
     key: 'challenge',
-    title: 'Set Challenge',
-    description: 'Create a physical challenge at a location for walkers to attempt.',
+    title: 'Challenge setzen',
+    description: 'Physische Herausforderung an einem Ort erstellen.',
     icon: 'barbell',
     color: '#FF4757',
     screen: 'ChallengeCreate',
-    minLevel: 7,
-    requiresTerritory: true,
+    minLevel: 5,
+    requiresTerritory: false,
   },
   {
     key: 'travel',
-    title: 'Create Travel Route (Coming Soon)',
-    description: 'Design a curated route with interesting spots for others to explore.',
+    title: 'Travel Route (Coming Soon)',
+    description: 'Eine kuratierte Route mit Sehenswürdigkeiten gestalten.',
     icon: 'trail-sign',
     color: '#555E78',
     screen: 'TravelRouteCreate',
     minLevel: 999,
-    requiresTerritory: false,
-  },
-  {
-    key: 'meetup',
-    title: 'Create Event',
-    description: 'Plan a real-world meetup at a map location.',
-    icon: 'calendar-outline',
-    color: '#FF69B4',
-    screen: 'MeetupCreate',
-    minLevel: 3,
     requiresTerritory: false,
   },
 ];
@@ -110,6 +112,9 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
               ]}
               onPress={() => {
                 if (unlocked) {
+                  if (useSettingsStore.getState().settings.hapticFeedback) {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
                   navigation.navigate(option.screen);
                 }
               }}

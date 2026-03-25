@@ -8,8 +8,10 @@ import {
   Alert,
   ActivityIndicator,
   Switch,
+  Vibration,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAuthStore } from '../../store/authStore';
@@ -199,10 +201,33 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
           {renderToggleRow(
             'phone-portrait-outline',
             'Haptic Feedback',
-            'Vibrate on claims, actions, and buttons',
+            'Vibration bei Aktionen und Buttons',
             settings.hapticFeedback,
             (val) => updateSetting('hapticFeedback', val),
             theme.primary
+          )}
+          {settings.hapticFeedback && (
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: `${theme.primary}15`,
+                borderRadius: 12,
+                paddingVertical: 12,
+                marginTop: 8,
+                gap: 8,
+              }}
+              onPress={() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Vibration.vibrate(200);
+              }}
+            >
+              <Ionicons name="pulse" size={18} color={theme.primary} />
+              <Text style={{ color: theme.primary, fontSize: 13, fontWeight: '700' }}>
+                Haptic testen
+              </Text>
+            </TouchableOpacity>
           )}
         </View>
 

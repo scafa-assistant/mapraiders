@@ -19,14 +19,20 @@ import { useSettingsStore } from './src/store/settingsStore';
 const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
 
 function AppContent() {
-  const { token, isLoading, refreshProfile } = useAuthStore();
+  const { token, isLoading, refreshProfile, restoreSession } = useAuthStore();
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
+  const [restoringSession, setRestoringSession] = useState(true);
 
   // Check onboarding status on mount
   useEffect(() => {
     AsyncStorage.getItem(ONBOARDING_KEY)
       .then((value) => setOnboardingComplete(value === 'true'))
       .catch(() => setOnboardingComplete(false));
+  }, []);
+
+  // Restore persisted session on app start
+  useEffect(() => {
+    restoreSession().finally(() => setRestoringSession(false));
   }, []);
 
   const handleOnboardingComplete = async () => {
@@ -89,7 +95,7 @@ function AppContent() {
     return () => subscription.remove();
   }, [token]);
 
-  if (isLoading || onboardingComplete === null) {
+  if (isLoading || restoringSession || onboardingComplete === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00D4FF" />

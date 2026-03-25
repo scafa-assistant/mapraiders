@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi, userApi, setTokens, clearTokens } from '../services/api';
+import { authApi, userApi, setTokens, clearTokens, getToken } from '../services/api';
 import { UserProfile } from '../navigation/types';
 import { registerForPushNotifications } from '../services/notifications';
 
@@ -56,6 +56,7 @@ interface AuthState {
   web3Login: (provider: string, idToken: string, userInfo: Record<string, any>) => Promise<void>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
+  restoreSession: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -138,6 +139,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (err.response?.status === 401) {
         get().logout();
       }
+    }
+  },
+
+  restoreSession: async () => {
+    try {
+      const savedToken = await getToken();
+      if (!savedToken) return;
+      // Set token in store so the app navigates to MainNavigator
+      set({ token: savedToken });
+      // Fetch user profile from server to validate token and populate user data
+      const response = await userApi.getMe();
+      const data = response.data?.data ?? response.data;
+      set({ user: mapServerUser(data) });
+    } catch (_err) {
+      // Token expired or invalid — clear it
+      await clearTokens();
+      set({ token: null, user: null });
     }
   },
 
