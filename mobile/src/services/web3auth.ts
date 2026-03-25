@@ -13,6 +13,8 @@ class SocialAuthService {
     try {
       console.log('[SocialAuth] Starting Google Sign-In...');
       await GoogleSignin.hasPlayServices();
+      // Sign out first to force account picker (otherwise auto-selects last account)
+      try { await GoogleSignin.signOut(); } catch {}
       const response = await GoogleSignin.signIn();
 
       if (response.data) {

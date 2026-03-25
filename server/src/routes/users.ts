@@ -116,6 +116,33 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   }
 });
 
+// PUT /api/users/me/username - Change username
+router.put('/me/username', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { username } = req.body;
+    if (!username || typeof username !== 'string') {
+      return res.status(400).json({ success: false, message: 'Username ist erforderlich' });
+    }
+    const trimmed = username.trim();
+    if (trimmed.length < 3 || trimmed.length > 30) {
+      return res.status(400).json({ success: false, message: 'Username muss 3-30 Zeichen lang sein' });
+    }
+    if (!/^[a-zA-Z0-9_.\-äöüÄÖÜß]+$/.test(trimmed)) {
+      return res.status(400).json({ success: false, message: 'Username darf nur Buchstaben, Zahlen, _, . und - enthalten' });
+    }
+    // Check uniqueness
+    const existing = await queryOne('SELECT id FROM users WHERE LOWER(username) = LOWER($1) AND id != $2', [trimmed, req.userId]);
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'Dieser Username ist bereits vergeben' });
+    }
+    await query('UPDATE users SET username = $1 WHERE id = $2', [trimmed, req.userId]);
+    return res.json({ success: true, data: { username: trimmed } });
+  } catch (err: any) {
+    console.error('[Users] Username change error:', err);
+    return res.status(500).json({ success: false, message: 'Username konnte nicht geändert werden' });
+  }
+});
+
 // PUT /api/users/me/avatar - Upload profile picture
 router.put('/me/avatar', authenticate, avatarUpload.single('avatar'), async (req: Request, res: Response) => {
   try {

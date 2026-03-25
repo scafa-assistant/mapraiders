@@ -257,5 +257,70 @@ router.post('/:id/present', authenticate, async (req: Request, res: Response) =>
   }
 });
 
+/**
+ * DELETE /api/meetups/:id
+ * Delete/cancel a meetup event.
+ * - No attendees: delete completely
+ * - Has attendees: cancel with notification (event stays visible as cancelled)
+ */
+router.delete('/:id', authenticate, async (req: Request, res: Response) => {
+  try {
+    const eventId = req.params.id as string;
+    const userId = req.userId!;
+
+    // Import query functions
+    const { queryOne, query: dbQuery, queryMany } = await import('../config/database');
+
+    // Get event
+    const event = await queryOne<{ id: string; creator_id: string; status: string; name: string }>(
+      'SELECT id, creator_id, status, name FROM meetup_events WHERE id = $1',
+      [eventId]
+    );
+    if (!event) return res.status(404).json({ success: false, message: 'Event nicht gefunden' });
+    if (event.creator_id !== userId) return res.status(403).json({ success: false, message: 'Nur der Ersteller kann das Event absagen' });
+    if (event.status === 'cancelled') return res.status(400).json({ success: false, message: 'Event ist bereits abgesagt' });
+
+    // Check attendees
+    const attendees = await queryMany<{ user_id: string }>(
+      'SELECT user_id FROM meetup_attendees WHERE event_id = $1',
+      [eventId]
+    );
+
+    if (attendees.length === 0) {
+      // No attendees — delete completely
+      await dbQuery('DELETE FROM meetup_messages WHERE event_id = $1', [eventId]);
+      await dbQuery('DELETE FROM meetup_events WHERE id = $1', [eventId]);
+      return res.json({ success: true, data: { deleted: true, message: 'Event gelöscht' } });
+    } else {
+      // Has attendees — cancel, don't delete (they can see it was cancelled)
+      await dbQuery("UPDATE meetup_events SET status = 'cancelled' WHERE id = $1", [eventId]);
+
+      // Notify all attendees
+      try {
+        const { wsService } = await import('../services/wsService');
+        for (const a of attendees) {
+          wsService.sendToUser(a.user_id, 'event_cancelled', {
+            event_id: eventId,
+            event_name: event.name,
+            message: `"${event.name}" wurde vom Ersteller abgesagt.`,
+          });
+        }
+      } catch {}
+
+      return res.json({
+        success: true,
+        data: {
+          cancelled: true,
+          attendees_notified: attendees.length,
+          message: `Event abgesagt. ${attendees.length} Teilnehmer wurden benachrichtigt.`,
+        },
+      });
+    }
+  } catch (err: any) {
+    console.error('[Meetups] Delete error:', err);
+    return res.status(500).json({ success: false, message: 'Fehler beim Absagen' });
+  }
+});
+
 export const meetupsRouter = router;
 export default router;

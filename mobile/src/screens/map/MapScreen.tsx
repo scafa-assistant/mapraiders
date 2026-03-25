@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   Alert,
+  TextInput,
 } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
@@ -417,6 +418,36 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     },
     [fetchTerritories, fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]
   );
+
+  // City/place search
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    setIsSearching(true);
+    try {
+      const Location = await import('expo-location');
+      const results = await Location.geocodeAsync(searchQuery.trim());
+      if (results.length > 0 && mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: results[0].latitude,
+          longitude: results[0].longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        }, 800);
+        setShowSearch(false);
+        setSearchQuery('');
+      } else {
+        Alert.alert('Nicht gefunden', 'Kein Ort mit diesem Namen gefunden.');
+      }
+    } catch {
+      Alert.alert('Fehler', 'Suche fehlgeschlagen.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   // Center map on current location
   const centerOnUser = () => {
@@ -923,6 +954,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         }]} onPress={centerOnUser}>
           <Ionicons name="locate" size={22} color={theme.primary} />
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.controlButton, {
+          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+        }]} onPress={() => setShowSearch(true)}>
+          <Ionicons name="search" size={22} color={theme.primary} />
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.controlButton, {
             backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
@@ -933,6 +970,32 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           <Ionicons name="trophy" size={22} color={theme.warning} />
         </TouchableOpacity>
       </View>
+
+      {/* City/Place Search Overlay */}
+      {showSearch && (
+        <View style={styles.searchOverlay}>
+          <View style={[styles.searchBar, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="search" size={20} color={theme.textSecondary} />
+            <TextInput
+              style={[styles.searchInput, { color: theme.text }]}
+              placeholder="Stadt oder Adresse suchen..."
+              placeholderTextColor={theme.textSecondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={handleSearch}
+              autoFocus
+              returnKeyType="search"
+            />
+            {isSearching ? (
+              <ActivityIndicator size="small" color={theme.primary} />
+            ) : (
+              <TouchableOpacity onPress={() => { setShowSearch(false); setSearchQuery(''); }}>
+                <Ionicons name="close" size={22} color={theme.textSecondary} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
 
       {/* FAB - Record Button */}
       {/* Green = close enough to finish, Red = recording but too far, Cyan = start */}
@@ -1197,10 +1260,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  searchOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 60,
+    paddingHorizontal: 16,
+    zIndex: 100,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+    paddingVertical: 2,
+  },
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 195,
+    bottom: 100,
     zIndex: 10,
     width: 64,
     height: 64,
@@ -1297,7 +1389,7 @@ const styles = StyleSheet.create({
   },
   classBadgeFloat: {
     position: 'absolute',
-    bottom: 96,
+    bottom: 100,
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',

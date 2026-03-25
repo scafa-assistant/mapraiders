@@ -150,7 +150,34 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
               <Ionicons name="camera" size={14} color="#fff" />
             </View>
           </TouchableOpacity>
-          <Text style={[styles.username, { color: theme.text }]}>{user.username}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.prompt
+                ? Alert.prompt('Username ändern', 'Neuer Username:', async (newName) => {
+                    if (!newName?.trim()) return;
+                    try {
+                      await userApi.changeUsername(newName.trim());
+                      fetchProfile();
+                      Alert.alert('Fertig', `Username geändert zu "${newName.trim()}"`);
+                    } catch (err: any) {
+                      Alert.alert('Fehler', err?.response?.data?.message || 'Username konnte nicht geändert werden.');
+                    }
+                  }, 'plain-text', user.username)
+                : // Android fallback
+                  (() => {
+                    // For Android, show a simple alert with info to use settings
+                    Alert.alert(
+                      'Username ändern',
+                      `Aktueller Name: ${user.username}\n\nGib deinen neuen Username in den Einstellungen ein.`,
+                      [{ text: 'OK' }]
+                    );
+                  })();
+            }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+          >
+            <Text style={[styles.username, { color: theme.text }]}>{user.username}</Text>
+            <Ionicons name="pencil" size={14} color={theme.textSecondary} />
+          </TouchableOpacity>
 
           {/* Level + XP */}
           <View style={styles.levelRow}>
@@ -304,6 +331,22 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
 
+        {/* Friends Button */}
+        <TouchableOpacity
+          style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
+          onPress={() => navigation.navigate('Friends' as any)}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.12)' }]}>
+            <Ionicons name="people" size={22} color={theme.primary} />
+          </View>
+          <View style={styles.petButtonContent}>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Freunde</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>Suchen, hinzufügen, verwalten</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={theme.border} />
+        </TouchableOpacity>
+
         {/* Clan Button */}
         <TouchableOpacity
           style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
@@ -314,8 +357,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="shield" size={22} color={theme.warning} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>My Clan</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>View your clan</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Mein Clan</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>Erstellen, beitreten, verwalten</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>

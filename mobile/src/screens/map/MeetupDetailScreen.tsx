@@ -119,6 +119,36 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
     }
   };
 
+  const handleCancel = () => {
+    const hasAttendees = attendeeCount > 0;
+    Alert.alert(
+      hasAttendees ? 'Event absagen?' : 'Event löschen?',
+      hasAttendees
+        ? `${attendeeCount} Teilnehmer werden benachrichtigt, dass das Event abgesagt wurde. Das Event bleibt als "Abgesagt" sichtbar.`
+        : 'Das Event wird komplett gelöscht.',
+      [
+        { text: 'Zurück', style: 'cancel' },
+        {
+          text: hasAttendees ? 'Absagen' : 'Löschen',
+          style: 'destructive',
+          onPress: async () => {
+            setActionLoading(true);
+            try {
+              const { data } = await meetupApi.cancel(meetupId);
+              const msg = data?.data?.message || 'Event abgesagt.';
+              Alert.alert('Erledigt', msg);
+              navigation.goBack();
+            } catch (err: any) {
+              Alert.alert('Fehler', err.message || 'Event konnte nicht abgesagt werden.');
+            } finally {
+              setActionLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleMarkPresent = async () => {
     if (!currentLocation) {
       Alert.alert('Location Required', 'Please enable GPS to check in.');
@@ -279,25 +309,44 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       <View style={styles.actionBar}>
         {actionLoading ? (
           <ActivityIndicator size="large" color={THEME.primary} />
+        ) : meetup?.status === 'cancelled' ? (
+          <View style={{ alignItems: 'center', paddingVertical: 8 }}>
+            <Text style={{ color: THEME.danger, fontSize: 16, fontWeight: '800' }}>EVENT ABGESAGT</Text>
+          </View>
         ) : !isJoined ? (
-          <TouchableOpacity style={styles.joinBtn} onPress={handleJoin} activeOpacity={0.8}>
-            <Ionicons name="add-circle" size={22} color={THEME.bg} />
-            <Text style={styles.joinBtnText}>JOIN EVENT</Text>
-          </TouchableOpacity>
+          <View style={{ gap: 8 }}>
+            <TouchableOpacity style={styles.joinBtn} onPress={handleJoin} activeOpacity={0.8}>
+              <Ionicons name="add-circle" size={22} color={THEME.bg} />
+              <Text style={styles.joinBtnText}>BEITRETEN</Text>
+            </TouchableOpacity>
+            {isCreator && (
+              <TouchableOpacity style={styles.leaveBtn} onPress={handleCancel} activeOpacity={0.8}>
+                <Ionicons name="trash-outline" size={18} color={THEME.danger} />
+                <Text style={styles.leaveBtnText}>Event löschen</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         ) : (
           <View style={styles.joinedActions}>
             <TouchableOpacity style={styles.presentBtn} onPress={handleMarkPresent} activeOpacity={0.8}>
               <Ionicons name="location" size={20} color={THEME.bg} />
-              <Text style={styles.presentBtnText}>I'M HERE</Text>
+              <Text style={styles.presentBtnText}>BIN DA</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.chatBtn} onPress={handleChat} activeOpacity={0.8}>
               <Ionicons name="chatbubbles" size={20} color={THEME.primary} />
               <Text style={styles.chatBtnText}>CHAT</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.leaveBtn} onPress={handleLeave} activeOpacity={0.8}>
-              <Ionicons name="exit-outline" size={20} color={THEME.danger} />
-              <Text style={styles.leaveBtnText}>LEAVE</Text>
-            </TouchableOpacity>
+            {isCreator ? (
+              <TouchableOpacity style={styles.leaveBtn} onPress={handleCancel} activeOpacity={0.8}>
+                <Ionicons name="close-circle" size={20} color={THEME.danger} />
+                <Text style={styles.leaveBtnText}>{attendeeCount > 0 ? 'ABSAGEN' : 'LÖSCHEN'}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.leaveBtn} onPress={handleLeave} activeOpacity={0.8}>
+                <Ionicons name="exit-outline" size={20} color={THEME.danger} />
+                <Text style={styles.leaveBtnText}>VERLASSEN</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </View>

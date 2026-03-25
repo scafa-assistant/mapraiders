@@ -331,6 +331,8 @@ export const userApi = {
     api.put('/users/me/avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
+  changeUsername: (username: string) =>
+    api.put('/users/me/username', { username }),
 };
 
 // ─── Clans API ──────────────────────────────────────────────────────────────
@@ -578,6 +580,8 @@ export const meetupApi = {
     api.post(`/meetups/${id}/messages`, { message }),
   markPresent: (id: string, lat: number, lng: number) =>
     api.post(`/meetups/${id}/present`, { lat, lng }),
+  cancel: (id: string) =>
+    api.delete(`/meetups/${id}`),
 };
 
 // ─── Events API ──────────────────────────────────────────────────────────

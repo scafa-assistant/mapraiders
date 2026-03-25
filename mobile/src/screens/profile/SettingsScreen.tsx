@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Switch,
   Vibration,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -173,16 +174,56 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Account Info */}
+        {/* Account Info + Username Change */}
         <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Account</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={[styles.row, { borderBottomColor: theme.border }]}>
             <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.15)' }]}>
-              <Ionicons name="person" size={18} color={theme.primary} />
+              <Ionicons name="mail" size={18} color={theme.primary} />
             </View>
             <View style={styles.rowContent}>
-              <Text style={[styles.rowLabel, { color: theme.text }]}>{user?.username || 'User'}</Text>
-              <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>{user?.email || ''}</Text>
+              <Text style={[styles.rowLabel, { color: theme.text }]}>{user?.email || ''}</Text>
+              <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>E-Mail (nicht änderbar)</Text>
+            </View>
+          </View>
+          <View style={[styles.row, { borderBottomWidth: 0 }]}>
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 255, 136, 0.15)' }]}>
+              <Ionicons name="person" size={18} color="#00FF88" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rowSubtitle, { color: theme.textSecondary, marginBottom: 6 }]}>Username</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <TextInput
+                  style={{
+                    flex: 1,
+                    backgroundColor: theme.bg,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: theme.border,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    color: theme.text,
+                    fontSize: 15,
+                    fontWeight: '600',
+                  }}
+                  defaultValue={user?.username || ''}
+                  maxLength={30}
+                  onEndEditing={async (e) => {
+                    const newName = e.nativeEvent.text.trim();
+                    if (!newName || newName === user?.username) return;
+                    try {
+                      const { userApi: uApi } = await import('../../services/api');
+                      await uApi.changeUsername(newName);
+                      Alert.alert('Fertig', `Username geändert zu "${newName}"`);
+                    } catch (err: any) {
+                      Alert.alert('Fehler', err?.response?.data?.message || 'Username konnte nicht geändert werden.');
+                    }
+                  }}
+                  placeholder="Dein Username"
+                  placeholderTextColor={theme.textSecondary}
+                />
+                <Ionicons name="pencil" size={16} color={theme.textSecondary} />
+              </View>
             </View>
           </View>
         </View>

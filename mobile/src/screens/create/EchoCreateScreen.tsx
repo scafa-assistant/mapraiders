@@ -12,13 +12,14 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, Marker, Polygon, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocationStore } from '../../store/locationStore';
+import { useTerritoryStore } from '../../store/territoryStore';
 import { echoApi, silentZoneApi } from '../../services/api';
 import { EchoCreateScreenProps } from '../../navigation/types';
 
@@ -27,6 +28,7 @@ const MAX_DURATION = 30; // seconds
 
 export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) {
   const { currentLocation } = useLocationStore();
+  const { territories } = useTerritoryStore();
 
   const [mediaType, setMediaType] = useState<'audio' | 'photo' | 'video'>('audio');
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
@@ -321,9 +323,25 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                 }
           }
           showsUserLocation
-          scrollEnabled={false}
-          zoomEnabled={false}
+          scrollEnabled={true}
+          zoomEnabled={true}
+          rotateEnabled={false}
+          pitchEnabled={false}
+          customMapStyle={[{elementType:'geometry',stylers:[{color:'#0A0E17'}]},{elementType:'labels.text.fill',stylers:[{color:'#8892B0'}]},{elementType:'labels.text.stroke',stylers:[{color:'#0A0E17'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#1A2340'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#080C15'}]}]}
         >
+          {/* Territory Polygons */}
+          {Array.isArray(territories) && territories.map((t) => {
+            if (!t.polygon || t.polygon.length < 3) return null;
+            return (
+              <Polygon
+                key={t.id}
+                coordinates={t.polygon.map((p: any) => ({ latitude: p.latitude, longitude: p.longitude }))}
+                fillColor="rgba(0, 212, 255, 0.15)"
+                strokeColor="#00D4FF"
+                strokeWidth={1}
+              />
+            );
+          })}
           {currentLocation && (
             <>
               <Circle
