@@ -250,9 +250,14 @@ export type ProfileStackParamList = {
   Pet: undefined;
   Notifications: undefined;
   Clan: undefined;
+  CreateClan: undefined;
   ClanChat: { clanId: string; clanName: string };
   Feed: undefined;
   Leaderboard: undefined;
+  Friends: undefined;
+  FriendRequests: undefined;
+  PlayerSearch: undefined;
+  PlayerProfile: { playerId: string };
 };
 
 export type ProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
@@ -263,6 +268,10 @@ export type ClanScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Cla
 export type ClanChatScreenProps = NativeStackScreenProps<ProfileStackParamList, 'ClanChat'>;
 export type FeedScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Feed'>;
 export type ProfileLeaderboardScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Leaderboard'>;
+export type FriendsScreenProps = NativeStackScreenProps<ProfileStackParamList, 'Friends'>;
+export type FriendRequestsScreenProps = NativeStackScreenProps<ProfileStackParamList, 'FriendRequests'>;
+export type PlayerSearchScreenProps = NativeStackScreenProps<ProfileStackParamList, 'PlayerSearch'>;
+export type PlayerProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'PlayerProfile'>;
 
 // ─── Travel Stack ─────────────────────────────────────────────────────────────
 

@@ -192,6 +192,14 @@ class WsService {
   }
 
   /**
+   * Check whether a user is currently connected via WebSocket.
+   */
+  isUserOnline(userId: string): boolean {
+    const client = this.clients.get(userId);
+    return !!client && client.ws.readyState === WebSocket.OPEN;
+  }
+
+  /**
    * Broadcast a message to every connected client.
    */
   broadcastAll(event: string, data: any): void {

@@ -6,9 +6,13 @@ import SettingsScreen from '../screens/profile/SettingsScreen';
 import PetScreen from '../screens/profile/PetScreen';
 import NotificationsScreen from '../screens/profile/NotificationsScreen';
 import ClanScreen from '../screens/profile/ClanScreen';
+import CreateClanScreen from '../screens/profile/CreateClanScreen';
 import ClanChatScreen from '../screens/profile/ClanChatScreen';
 import FeedScreen from '../screens/profile/FeedScreen';
 import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
+import FriendsScreen from '../screens/social/FriendsScreen';
+import FriendRequestsScreen from '../screens/social/FriendRequestsScreen';
+import PlayerSearchScreen from '../screens/social/PlayerSearchScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -26,9 +30,13 @@ export default function ProfileStack() {
       <Stack.Screen name="Pet" component={PetScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Clan" component={ClanScreen} />
+      <Stack.Screen name="CreateClan" component={CreateClanScreen} />
       <Stack.Screen name="ClanChat" component={ClanChatScreen} />
       <Stack.Screen name="Feed" component={FeedScreen} />
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Stack.Screen name="Friends" component={FriendsScreen} />
+      <Stack.Screen name="FriendRequests" component={FriendRequestsScreen} />
+      <Stack.Screen name="PlayerSearch" component={PlayerSearchScreen} />
     </Stack.Navigator>
   );
 }

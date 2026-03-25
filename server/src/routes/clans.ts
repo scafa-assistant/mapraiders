@@ -1,7 +1,16 @@
 // ============================================================
 // Clan Routes
 // GET  /api/clans/me               - Get user's clans
+// GET  /api/clans/search            - Search manual clans
 // GET  /api/clans/districts/scores  - Get district vs district scores
+// POST /api/clans                   - Create manual clan
+// PUT  /api/clans/:id               - Update manual clan
+// DELETE /api/clans/:id             - Disband manual clan
+// POST /api/clans/:id/leave         - Leave clan
+// PUT  /api/clans/:id/transfer      - Transfer leadership
+// GET  /api/clans/:id/members       - Get clan members with roles
+// PUT  /api/clans/:id/members/:userId/role - Set member role
+// DELETE /api/clans/:id/members/:userId    - Kick member
 // GET  /api/clans/:id               - Get clan details with members
 // GET  /api/clans/:id/messages      - Get paginated clan chat messages
 // POST /api/clans/:id/messages      - Send a clan chat message
@@ -10,6 +19,7 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { getUserClans, getClanDetails, getDistrictScore } from '../services/clanService';
+import { manualClanService } from '../services/manualClanService';
 import { queryMany, queryOne } from '../config/database';
 import { CLAN } from '../config/constants';
 import { wsService } from '../services/wsService';
@@ -31,6 +41,69 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('[Clans] Get my clans error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get clans' });
+  }
+});
+
+// ============================================================
+// Manual Clan Endpoints
+// ============================================================
+
+/**
+ * POST /api/clans
+ * Create a new manual clan.
+ * Body: { name, description, tag, color, privacy }
+ */
+router.post('/', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { name, description, tag, color, privacy } = req.body;
+
+    if (!name || !tag) {
+      return res.status(400).json({ success: false, message: 'Name and tag are required' });
+    }
+
+    const clan = await manualClanService.createClan(
+      req.userId!,
+      name,
+      description || '',
+      tag,
+      color || '#4A90D9',
+      privacy || 'open',
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: { clan },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Create clan error:', err);
+    const status = err.message?.includes('already') ? 409 : 400;
+    return res.status(status).json({ success: false, message: err.message || 'Failed to create clan' });
+  }
+});
+
+/**
+ * GET /api/clans/search
+ * Search manual clans by name or tag.
+ * Query params: q (search term), limit (default 20)
+ */
+router.get('/search', authenticate, async (req: Request, res: Response) => {
+  try {
+    const q = (req.query.q as string) || '';
+    const limit = parseInt(req.query.limit as string, 10) || 20;
+
+    if (!q || q.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'Search query is required' });
+    }
+
+    const clans = await manualClanService.searchClans(q.trim(), limit);
+
+    return res.json({
+      success: true,
+      data: { clans },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Search clans error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to search clans' });
   }
 });
 
@@ -84,6 +157,164 @@ router.get('/districts/scores', authenticate, async (req: Request, res: Response
   } catch (err: any) {
     console.error('[Clans] Get district scores error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get district scores' });
+  }
+});
+
+/**
+ * PUT /api/clans/:id
+ * Update a manual clan (leader or officer only).
+ * Body: { name?, description?, color?, privacy? }
+ */
+router.put('/:id', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    const { name, description, color, privacy } = req.body;
+
+    const updated = await manualClanService.updateClan(clanId, req.userId!, {
+      name,
+      description,
+      color,
+      privacy,
+    });
+
+    return res.json({
+      success: true,
+      data: { clan: updated },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Update clan error:', err);
+    return res.status(400).json({ success: false, message: err.message || 'Failed to update clan' });
+  }
+});
+
+/**
+ * DELETE /api/clans/:id
+ * Disband a manual clan (leader only).
+ */
+router.delete('/:id', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    await manualClanService.disbandClan(clanId, req.userId!);
+
+    return res.json({
+      success: true,
+      data: { message: 'Clan disbanded' },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Disband clan error:', err);
+    return res.status(403).json({ success: false, message: err.message || 'Failed to disband clan' });
+  }
+});
+
+/**
+ * POST /api/clans/:id/leave
+ * Leave a clan. If leader, transfers leadership or disbands if last member.
+ */
+router.post('/:id/leave', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    await manualClanService.leaveClan(clanId, req.userId!);
+
+    return res.json({
+      success: true,
+      data: { message: 'Left clan' },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Leave clan error:', err);
+    return res.status(400).json({ success: false, message: err.message || 'Failed to leave clan' });
+  }
+});
+
+/**
+ * PUT /api/clans/:id/transfer
+ * Transfer clan leadership to another member.
+ * Body: { userId: string }
+ */
+router.put('/:id/transfer', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
+    await manualClanService.transferLeadership(clanId, req.userId!, userId);
+
+    return res.json({
+      success: true,
+      data: { message: 'Leadership transferred' },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Transfer leadership error:', err);
+    return res.status(403).json({ success: false, message: err.message || 'Failed to transfer leadership' });
+  }
+});
+
+/**
+ * GET /api/clans/:id/members
+ * Get clan members with roles, ordered by role hierarchy then join date.
+ */
+router.get('/:id/members', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    const members = await manualClanService.getClanMembers(clanId);
+
+    return res.json({
+      success: true,
+      data: { members },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Get members error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to get members' });
+  }
+});
+
+/**
+ * PUT /api/clans/:id/members/:userId/role
+ * Set a member's role (leader only).
+ * Body: { role: 'officer' | 'member' }
+ */
+router.put('/:id/members/:userId/role', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    const targetId = req.params.userId as string;
+    const { role } = req.body;
+
+    if (!role) {
+      return res.status(400).json({ success: false, message: 'Role is required' });
+    }
+
+    await manualClanService.setMemberRole(clanId, req.userId!, targetId, role);
+
+    return res.json({
+      success: true,
+      data: { message: 'Role updated' },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Set role error:', err);
+    return res.status(403).json({ success: false, message: err.message || 'Failed to set role' });
+  }
+});
+
+/**
+ * DELETE /api/clans/:id/members/:userId
+ * Kick a member from the clan (leader or officer with higher rank).
+ */
+router.delete('/:id/members/:userId', authenticate, async (req: Request, res: Response) => {
+  try {
+    const clanId = req.params.id as string;
+    const targetId = req.params.userId as string;
+
+    await manualClanService.kickMember(clanId, req.userId!, targetId);
+
+    return res.json({
+      success: true,
+      data: { message: 'Member kicked' },
+    });
+  } catch (err: any) {
+    console.error('[Clans] Kick member error:', err);
+    return res.status(403).json({ success: false, message: err.message || 'Failed to kick member' });
   }
 });
 

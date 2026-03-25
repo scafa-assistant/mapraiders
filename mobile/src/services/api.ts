@@ -338,18 +338,55 @@ export const userApi = {
 export const clanApi = {
   getMine: () =>
     api.get('/clans/me'),
-
   getById: (id: string) =>
     api.get(`/clans/${id}`),
-
   getMessages: (clanId: string, before?: string) =>
     api.get(`/clans/${clanId}/messages`, { params: { before } }),
-
   sendMessage: (clanId: string, message: string) =>
     api.post(`/clans/${clanId}/messages`, { message }),
-
   getDistrictScores: () =>
     api.get('/clans/districts/scores'),
+  // Manual clan management
+  create: (data: { name: string; description: string; tag: string; color: string; privacy: string }) =>
+    api.post('/clans', data),
+  update: (id: string, data: Record<string, unknown>) =>
+    api.put(`/clans/${id}`, data),
+  disband: (id: string) =>
+    api.delete(`/clans/${id}`),
+  leave: (id: string) =>
+    api.post(`/clans/${id}/leave`),
+  getMembers: (id: string) =>
+    api.get(`/clans/${id}/members`),
+  setRole: (clanId: string, userId: string, role: string) =>
+    api.put(`/clans/${clanId}/members/${userId}/role`, { role }),
+  kickMember: (clanId: string, userId: string) =>
+    api.delete(`/clans/${clanId}/members/${userId}`),
+  transferLeadership: (id: string, userId: string) =>
+    api.put(`/clans/${id}/transfer`, { userId }),
+  search: (q: string) =>
+    api.get('/clans/search', { params: { q } }),
+};
+
+// ─── Friends API ──────────────────────────────────────────────────────────
+
+export const friendApi = {
+  getAll: () => api.get('/friends'),
+  sendRequest: (userId: string) => api.post('/friends/request', { userId }),
+  getRequests: () => api.get('/friends/requests'),
+  getSentRequests: () => api.get('/friends/requests/sent'),
+  acceptRequest: (id: string) => api.put(`/friends/requests/${id}/accept`),
+  declineRequest: (id: string) => api.put(`/friends/requests/${id}/decline`),
+  remove: (userId: string) => api.delete(`/friends/${userId}`),
+  block: (userId: string) => api.post('/friends/block', { userId }),
+  unblock: (userId: string) => api.delete(`/friends/block/${userId}`),
+  getBlocked: () => api.get('/friends/blocked'),
+};
+
+// ─── Player Search API ────────────────────────────────────────────────────
+
+export const playerApi = {
+  search: (q: string, limit?: number) => api.get('/players/search', { params: { q, limit } }),
+  getProfile: (id: string) => api.get(`/players/${id}/profile`),
 };
 
 // ─── Notifications API ──────────────────────────────────────────────────────

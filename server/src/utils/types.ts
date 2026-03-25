@@ -38,7 +38,7 @@ export type TravelStatus =
   | 'published'
   | 'legendary';
 
-export type ClanType = 'commute' | 'district' | 'dog_park' | 'route';
+export type ClanType = 'commute' | 'district' | 'dog_park' | 'route' | 'manual';
 
 export type NotificationPriority = 'high' | 'medium' | 'low' | 'HIGH' | 'MEDIUM' | 'LOW';
 

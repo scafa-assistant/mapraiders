@@ -1018,3 +1018,94 @@ CREATE TABLE IF NOT EXISTS meetup_messages (
 COMMENT ON TABLE meetup_messages IS 'Chat messages exchanged between meetup attendees.';
 
 CREATE INDEX IF NOT EXISTS idx_meetup_messages ON meetup_messages(event_id, created_at DESC);
+
+-- ============================================================
+-- SOCIAL SYSTEM: Friends, Blocks, Clan Invitations
+-- ============================================================
+
+-- Friendships (bidirectional, canonical ordering user_a < user_b)
+CREATE TABLE IF NOT EXISTS friendships (
+  user_a     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_b     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_a, user_b),
+  CHECK (user_a < user_b)
+);
+CREATE INDEX IF NOT EXISTS idx_friendships_a ON friendships(user_a);
+CREATE INDEX IF NOT EXISTS idx_friendships_b ON friendships(user_b);
+
+-- Friend Requests
+CREATE TABLE IF NOT EXISTS friend_requests (
+  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  sender_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  receiver_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status       VARCHAR(10) NOT NULL DEFAULT 'pending',
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  responded_at TIMESTAMPTZ,
+  UNIQUE (sender_id, receiver_id)
+);
+CREATE INDEX IF NOT EXISTS idx_friend_req_receiver ON friend_requests(receiver_id, status);
+
+-- Blocked Users
+CREATE TABLE IF NOT EXISTS blocked_users (
+  blocker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  blocked_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (blocker_id, blocked_id)
+);
+
+-- Clan Invitations
+CREATE TABLE IF NOT EXISTS clan_invitations (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  clan_id    UUID NOT NULL REFERENCES clans(id) ON DELETE CASCADE,
+  inviter_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  invitee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status     VARCHAR(10) NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '7 days')
+);
+CREATE INDEX IF NOT EXISTS idx_clan_inv_invitee ON clan_invitations(invitee_id, status);
+
+-- Clan Join Requests
+CREATE TABLE IF NOT EXISTS clan_join_requests (
+  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  clan_id      UUID NOT NULL REFERENCES clans(id) ON DELETE CASCADE,
+  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status       VARCHAR(10) NOT NULL DEFAULT 'pending',
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  responded_by UUID REFERENCES users(id),
+  responded_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_clan_join_req ON clan_join_requests(clan_id, status);
+
+-- Clan Invite Codes
+CREATE TABLE IF NOT EXISTS clan_invite_codes (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  clan_id    UUID NOT NULL REFERENCES clans(id) ON DELETE CASCADE,
+  code       VARCHAR(10) NOT NULL UNIQUE,
+  created_by UUID NOT NULL REFERENCES users(id),
+  uses       INT NOT NULL DEFAULT 0,
+  max_uses   INT,
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Extend clans table for manual clans
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS tag VARCHAR(6);
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS color VARCHAR(7) DEFAULT '#7B61FF';
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS privacy VARCHAR(10) DEFAULT 'public';
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS leader_id UUID REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS max_members INT DEFAULT 20;
+ALTER TABLE clans ADD COLUMN IF NOT EXISTS disbanded BOOLEAN DEFAULT FALSE;
+
+-- Add role to clan members
+ALTER TABLE clan_members ADD COLUMN IF NOT EXISTS role VARCHAR(10) DEFAULT 'member';
+
+-- User visibility setting
+ALTER TABLE users ADD COLUMN IF NOT EXISTS visibility VARCHAR(10) DEFAULT 'public';
+
+-- Trigram index for fuzzy player search
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX IF NOT EXISTS idx_users_username_trgm ON users USING GIN (username gin_trgm_ops);
