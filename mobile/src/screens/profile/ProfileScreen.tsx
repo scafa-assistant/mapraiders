@@ -6,7 +6,10 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  Image,
+  Alert,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
@@ -14,7 +17,7 @@ import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { CLASS_COLORS, CLASS_LABELS } from '../../utils/constants';
 import { useTheme } from '../../hooks/useTheme';
 import { formatArea, formatNumber, formatXP } from '../../utils/formatters';
-import { notificationApi } from '../../services/api';
+import { notificationApi, userApi } from '../../services/api';
 import StatBar from '../../components/StatBar';
 import ClassBadge from '../../components/ClassBadge';
 import type { ProfileScreenProps, MovementClass } from '../../navigation/types';
@@ -24,9 +27,17 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const theme = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     refreshProfile();
+    // Fetch avatar URL
+    userApi.getMe().then(({ data }) => {
+      const userData = data?.data ?? data;
+      if (userData?.avatar_url) {
+        setAvatarUrl(userData.avatar_url);
+      }
+    }).catch(() => {});
     // Fetch unread notification count
     notificationApi.get().then(({ data }) => {
       const items = data?.data?.notifications ?? data?.data ?? data ?? [];
@@ -40,6 +51,35 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     await refreshProfile();
     setRefreshing(false);
   }, [refreshProfile]);
+
+  const handleAvatarPick = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets?.[0]) return;
+
+      const asset = result.assets[0];
+      const formData = new FormData();
+      formData.append('avatar', {
+        uri: asset.uri,
+        type: asset.mimeType || 'image/jpeg',
+        name: asset.fileName || 'avatar.jpg',
+      } as any);
+
+      const { data } = await userApi.uploadAvatar(formData);
+      const responseData = data?.data ?? data;
+      if (responseData?.avatar_url) {
+        setAvatarUrl(responseData.avatar_url);
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to upload avatar. Please try again.');
+    }
+  };
 
   if (!user) {
     return (
@@ -95,9 +135,21 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
         {/* User Card */}
         <View style={[styles.userCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <View style={styles.avatarCircle}>
-            <Ionicons name="person" size={36} color={theme.primary} />
-          </View>
+          <TouchableOpacity onPress={handleAvatarPick} activeOpacity={0.7} style={styles.avatarWrapper}>
+            {avatarUrl ? (
+              <Image
+                source={{ uri: 'https://api.mapraiders.com' + avatarUrl }}
+                style={styles.avatarImage}
+              />
+            ) : (
+              <View style={styles.avatarCircle}>
+                <Ionicons name="person" size={36} color={theme.primary} />
+              </View>
+            )}
+            <View style={styles.cameraOverlay}>
+              <Ionicons name="camera" size={14} color="#fff" />
+            </View>
+          </TouchableOpacity>
           <Text style={[styles.username, { color: theme.text }]}>{user.username}</Text>
 
           {/* Level + XP */}
@@ -354,16 +406,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: THEME.border,
   },
+  avatarWrapper: {
+    position: 'relative',
+    marginBottom: SPACING.md,
+  },
   avatarCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: 'rgba(0, 212, 255, 0.1)',
     borderWidth: 2,
     borderColor: 'rgba(0, 212, 255, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: 'rgba(0, 212, 255, 0.3)',
+  },
+  cameraOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: THEME.surface,
   },
   username: {
     color: THEME.text,

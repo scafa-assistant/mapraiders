@@ -79,7 +79,11 @@ export default function MainNavigator() {
         tabBarItemStyle: styles.tabItem,
       })}
     >
-      <Tab.Screen name="Map" component={MapStack} />
+      <Tab.Screen
+        name="Map"
+        component={MapStack}
+        options={{ freezeOnBlur: false }}
+      />
       <Tab.Screen name="Quests" component={QuestStack} />
       <Tab.Screen
         name="Create"

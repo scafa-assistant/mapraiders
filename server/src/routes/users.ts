@@ -15,15 +15,31 @@ import { updateSettingsSchema } from '../middleware/validation';
 import { queryOne, queryMany, query, transaction } from '../config/database';
 import { balanceService } from '../services/balanceService';
 import { xpForLevel } from '../config/constants';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
+
+// ---- Multer for avatar uploads ----
+const avatarDir = path.join(__dirname, '../../uploads/avatars');
+if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
+
+const avatarStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, avatarDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `avatar-${Date.now()}-${Math.floor(Math.random() * 1e9)}${ext}`);
+  },
+});
+const avatarUpload = multer({ storage: avatarStorage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // GET /api/users/me - Get current user's full profile
 router.get('/me', authenticate, async (req: Request, res: Response) => {
   try {
     const user = await queryOne(
       `SELECT id, username, email, level, xp, streak_days, last_active,
-              reputation, settings, created_at
+              reputation, settings, created_at, avatar_url
        FROM users WHERE id = $1`,
       [req.userId]
     );
@@ -97,6 +113,21 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('[Users] Get me error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get user data' });
+  }
+});
+
+// PUT /api/users/me/avatar - Upload profile picture
+router.put('/me/avatar', authenticate, avatarUpload.single('avatar'), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image uploaded' });
+    }
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    await query('UPDATE users SET avatar_url = $1 WHERE id = $2', [avatarUrl, req.userId]);
+    return res.json({ success: true, data: { avatar_url: avatarUrl } });
+  } catch (err: any) {
+    console.error('[Users] Avatar upload error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to upload avatar' });
   }
 });
 

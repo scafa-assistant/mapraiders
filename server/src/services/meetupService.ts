@@ -64,12 +64,14 @@ class MeetupService {
   async createMeetup(userId: string, data: CreateMeetupData): Promise<MeetupEvent> {
     const { name, description, event_date, category, max_attendees } = data;
     // Accept both lat/lng and latitude/longitude
-    const latitude = (data as any).latitude ?? (data as any).lat;
-    const longitude = (data as any).longitude ?? (data as any).lng;
+    const rawLat = (data as any).latitude ?? (data as any).lat;
+    const rawLng = (data as any).longitude ?? (data as any).lng;
+    const latitude = typeof rawLat === 'number' ? rawLat : parseFloat(rawLat);
+    const longitude = typeof rawLng === 'number' ? rawLng : parseFloat(rawLng);
 
     // Validate location
-    if (latitude == null || longitude == null) {
-      throw new Error('Location is required (lat/lng)');
+    if (latitude == null || longitude == null || isNaN(latitude) || isNaN(longitude)) {
+      throw new Error('Valid location is required (latitude/longitude or lat/lng)');
     }
 
     // Validate name
@@ -90,7 +92,7 @@ class MeetupService {
     }
 
     // Validate category
-    const validCategories = ['party', 'sport', 'gaming', 'meetup', 'other'];
+    const validCategories = ['party', 'sport', 'gaming', 'meetup', 'dog_walk', 'other'];
     const cat = category || 'meetup';
     if (!validCategories.includes(cat)) {
       throw new Error(`Invalid category. Must be one of: ${validCategories.join(', ')}`);

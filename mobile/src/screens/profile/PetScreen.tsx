@@ -9,9 +9,11 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { petApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import PetCard from '../../components/PetCard';
@@ -28,10 +30,8 @@ export default function PetScreen({ navigation }: PetScreenProps) {
   const [showRegister, setShowRegister] = useState(false);
   const [registerStep, setRegisterStep] = useState<RegisterStep>('form');
   const [petName, setPetName] = useState('');
-  const [petSpecies, setPetSpecies] = useState('Dog');
   const [petBreed, setPetBreed] = useState('');
-
-  const SPECIES_OPTIONS = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird', 'Other'];
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
 
   const fetchPet = useCallback(async () => {
     try {
@@ -63,9 +63,50 @@ export default function PetScreen({ navigation }: PetScreenProps) {
     setRefreshing(false);
   };
 
+  const pickPhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please allow photo library access to add a dog photo.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets?.[0]) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please allow camera access to take a dog photo.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets?.[0]) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
+
+  const handlePickPhoto = () => {
+    Alert.alert('Add Dog Photo', 'Choose an option', [
+      { text: 'Take Photo', onPress: takePhoto },
+      { text: 'Choose from Library', onPress: pickPhoto },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   const handleRegister = async () => {
     if (!petName.trim()) {
-      Alert.alert('Name required', 'Please give your pet a name!');
+      Alert.alert('Name required', 'Please give your dog a name!');
       return;
     }
 
@@ -73,14 +114,37 @@ export default function PetScreen({ navigation }: PetScreenProps) {
     try {
       const res = await petApi.register({
         name: petName.trim(),
-        species: petSpecies.toLowerCase(),
+        species: 'dog',
         breed: petBreed.trim() || undefined,
       });
-      const pet = res.data?.data?.pet ?? res.data?.data ?? res.data;
-      setPet(pet);
+      const newPet = res.data?.data?.pet ?? res.data?.data ?? res.data;
+
+      // Upload photo if one was selected
+      if (photoUri && newPet?.id) {
+        try {
+          const formData = new FormData();
+          const filename = photoUri.split('/').pop() || 'photo.jpg';
+          const ext = filename.split('.').pop()?.toLowerCase() || 'jpg';
+          const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
+          formData.append('photo', {
+            uri: photoUri,
+            name: filename,
+            type: mimeType,
+          } as any);
+          const photoRes = await petApi.uploadPhoto(newPet.id, formData);
+          const photoUrl = photoRes.data?.data?.photo_url ?? photoRes.data?.photo_url;
+          if (photoUrl) {
+            newPet.photo_url = photoUrl;
+          }
+        } catch {
+          // Photo upload failed, but pet was registered — continue
+        }
+      }
+
+      setPet(newPet);
       setShowRegister(false);
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Could not register pet');
+      Alert.alert('Error', err.message || 'Could not register dog');
       setRegisterStep('form');
     }
   };
@@ -93,7 +157,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={THEME.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>My Pet</Text>
+          <Text style={styles.headerTitle}>My Dog</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.loadingContainer}>
@@ -111,14 +175,14 @@ export default function PetScreen({ navigation }: PetScreenProps) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={THEME.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Register Pet</Text>
+          <Text style={styles.headerTitle}>Register Dog</Text>
           <View style={{ width: 40 }} />
         </View>
 
         {registerStep === 'loading' ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={THEME.secondary} />
-            <Text style={styles.loadingText}>Registering your companion...</Text>
+            <Text style={styles.loadingText}>Registering your dog...</Text>
           </View>
         ) : (
           <ScrollView
@@ -128,17 +192,24 @@ export default function PetScreen({ navigation }: PetScreenProps) {
           >
             {/* Hero */}
             <View style={styles.registerHero}>
-              <View style={styles.registerPawCircle}>
-                <Ionicons name="paw" size={48} color={THEME.secondary} />
-              </View>
-              <Text style={styles.registerTitle}>Add Your Companion</Text>
+              <TouchableOpacity onPress={handlePickPhoto} activeOpacity={0.7}>
+                {photoUri ? (
+                  <Image source={{ uri: photoUri }} style={styles.registerPhotoCircle} />
+                ) : (
+                  <View style={styles.registerPawCircle}>
+                    <Ionicons name="camera" size={36} color={THEME.secondary} />
+                    <Text style={styles.addPhotoHint}>Add Photo</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              <Text style={styles.registerTitle}>Register Your Dog</Text>
               <Text style={styles.registerSubtitle}>
-                Your pet walks with you, earns XP, and finds rare items!
+                Your dog walks with you, earns XP, and finds rare items!
               </Text>
             </View>
 
             {/* Name Input */}
-            <Text style={styles.inputLabel}>Pet Name</Text>
+            <Text style={styles.inputLabel}>Dog Name</Text>
             <TextInput
               style={styles.textInput}
               placeholder="What's their name?"
@@ -147,30 +218,6 @@ export default function PetScreen({ navigation }: PetScreenProps) {
               onChangeText={setPetName}
               maxLength={24}
             />
-
-            {/* Species */}
-            <Text style={styles.inputLabel}>Species</Text>
-            <View style={styles.speciesGrid}>
-              {SPECIES_OPTIONS.map((sp) => (
-                <TouchableOpacity
-                  key={sp}
-                  style={[
-                    styles.speciesChip,
-                    petSpecies === sp && styles.speciesChipActive,
-                  ]}
-                  onPress={() => setPetSpecies(sp)}
-                >
-                  <Text
-                    style={[
-                      styles.speciesChipText,
-                      petSpecies === sp && styles.speciesChipTextActive,
-                    ]}
-                  >
-                    {sp}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
 
             {/* Breed */}
             <Text style={styles.inputLabel}>Breed (optional)</Text>
@@ -194,7 +241,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
               activeOpacity={0.7}
             >
               <Ionicons name="paw" size={20} color="#0A0E17" />
-              <Text style={styles.registerBtnText}>Register Companion</Text>
+              <Text style={styles.registerBtnText}>Register Dog</Text>
             </TouchableOpacity>
 
             <View style={{ height: 100 }} />
@@ -211,7 +258,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Pet</Text>
+        <Text style={styles.headerTitle}>My Dog</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -301,15 +348,29 @@ const styles = StyleSheet.create({
     marginVertical: SPACING.xl,
   },
   registerPawCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: 'rgba(123, 97, 255, 0.12)',
     borderWidth: 2,
     borderColor: 'rgba(123, 97, 255, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.lg,
+  },
+  registerPhotoCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: THEME.secondary,
+    marginBottom: SPACING.lg,
+  },
+  addPhotoHint: {
+    color: THEME.secondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '600',
+    marginTop: 4,
   },
   registerTitle: {
     color: THEME.text,
@@ -340,31 +401,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.md,
     borderWidth: 1,
     borderColor: THEME.border,
-  },
-  speciesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  speciesChip: {
-    backgroundColor: THEME.surface,
-    borderRadius: RADIUS.full,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  speciesChipActive: {
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
-    borderColor: THEME.secondary,
-  },
-  speciesChipText: {
-    color: THEME.textSecondary,
-    fontSize: FONT_SIZE.sm,
-    fontWeight: '600',
-  },
-  speciesChipTextActive: {
-    color: THEME.secondary,
   },
   registerBtn: {
     flexDirection: 'row',

@@ -114,6 +114,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     totalDistance,
     startTracking,
     stopTracking,
+    cancelTracking,
     getCurrentLocation,
     requestPermissions,
     lastClaimResult,
@@ -259,8 +260,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
     const start = safeRoute[0];
     if (!start) return;
-    const dlat = currentLocation?.latitude ?? 0 - start.latitude;
-    const dlng = currentLocation?.longitude ?? 0 - start.longitude;
+    const dlat = (currentLocation?.latitude ?? 0) - start.latitude;
+    const dlng = (currentLocation?.longitude ?? 0) - start.longitude;
     const distM = Math.sqrt(dlat * dlat + dlng * dlng) * 111320;
     setCanCloseClaim(distM <= CLOSE_THRESHOLD_M);
   }, [currentLocation, isTracking, safeRoute]);
@@ -385,28 +386,46 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
-  // Refetch territories + content when tab becomes focused (e.g. after returning from Create/Echo screen)
+  // Force MapView to re-render when tab becomes focused.
+  // Triggers a tiny re-animation which fires onRegionChangeComplete → handleRegionChange → fetches everything.
+  // This is the ONLY reliable way to fix react-native-maps polygon rendering after screen freeze.
   useFocusEffect(
     useCallback(() => {
-      if (!mapRef.current) return;
-      (async () => {
+      // Small delay to ensure MapView is fully active after screen unfreezing
+      const timer = setTimeout(async () => {
+        if (!mapRef.current) return;
         try {
-          const camera = await mapRef.current!.getCamera();
+          const camera = await mapRef.current.getCamera();
           if (camera?.center) {
-            const bbox = {
-              north: camera.center.latitude + 0.01,
-              south: camera.center.latitude - 0.01,
-              east: camera.center.longitude + 0.01,
-              west: camera.center.longitude - 0.01,
-            };
-            fetchTerritories(bbox);
-            fetchNearbyEchos();
+            // Nudge the map by a tiny invisible amount to force onRegionChangeComplete
+            mapRef.current.animateToRegion(
+              {
+                latitude: camera.center.latitude + 0.000001,
+                longitude: camera.center.longitude,
+                latitudeDelta: 0.008,
+                longitudeDelta: 0.008,
+              },
+              1 // 1ms = instant, invisible to user
+            );
           }
         } catch {
-          // Fallback if camera not available
+          // Camera not available — try with GPS location
+          const loc = useLocationStore.getState().currentLocation;
+          if (loc?.latitude && loc?.longitude) {
+            mapRef.current?.animateToRegion(
+              {
+                latitude: loc.latitude,
+                longitude: loc.longitude,
+                latitudeDelta: 0.008,
+                longitudeDelta: 0.008,
+              },
+              1
+            );
+          }
         }
-      })();
-    }, [fetchTerritories, fetchNearbyEchos])
+      }, 300);
+      return () => clearTimeout(timer);
+    }, [])
   );
 
   // Fetch territories and all content when region changes (using viewport bbox)
@@ -478,10 +497,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             // Fallback: use current location for bbox
             if (currentLocation) {
               fetchTerritories({
-                north: currentLocation?.latitude ?? 0 + 0.01,
-                south: currentLocation?.latitude ?? 0 - 0.01,
-                east: currentLocation?.longitude ?? 0 + 0.01,
-                west: currentLocation?.longitude ?? 0 - 0.01,
+                north: (currentLocation?.latitude ?? 0) + 0.01,
+                south: (currentLocation?.latitude ?? 0) - 0.01,
+                east: (currentLocation?.longitude ?? 0) + 0.01,
+                west: (currentLocation?.longitude ?? 0) - 0.01,
               });
             }
           }
@@ -938,8 +957,18 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           }
           if (isTracking && !canCloseClaim && safeRoute.length >= 10) {
             Alert.alert(
-              'Too far from start',
-              `Walk back closer to your starting point to claim territory (within ${CLOSE_THRESHOLD_M}m).`
+              'Zu weit vom Start',
+              `Geh zurück zum Startpunkt (innerhalb ${CLOSE_THRESHOLD_M}m) um das Territorium zu beanspruchen.`,
+              [
+                { text: 'OK', style: 'cancel' },
+                {
+                  text: 'Route abbrechen',
+                  style: 'destructive',
+                  onPress: () => {
+                    cancelTracking();
+                  },
+                },
+              ]
             );
             return;
           }
@@ -986,6 +1015,25 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
           borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
         }]}>
+          <TouchableOpacity
+            style={styles.trackingCancelBtn}
+            onPress={() => {
+              Alert.alert(
+                'Route abbrechen?',
+                'Die aktuelle Route wird verworfen und nicht gespeichert.',
+                [
+                  { text: 'Weiter laufen', style: 'cancel' },
+                  {
+                    text: 'Abbrechen',
+                    style: 'destructive',
+                    onPress: () => cancelTracking(),
+                  },
+                ]
+              );
+            }}
+          >
+            <Ionicons name="close" size={18} color="#FF4757" />
+          </TouchableOpacity>
           <Text style={[styles.trackingStatText, { color: theme.text }]}>{formatDistance(totalDistance)}</Text>
           <View style={styles.trackingDot} />
           <Text style={[styles.trackingStatText, { color: theme.text }]}>{formatDuration()}</Text>
@@ -1265,6 +1313,16 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1,
     borderColor: '#1A2340',
+  } as any,
+  trackingCancelBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 71, 87, 0.15)',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 71, 87, 0.3)',
   },
   trackingStatText: {
     color: '#FFFFFF',

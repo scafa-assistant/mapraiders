@@ -12,8 +12,24 @@ import { validateBody } from '../middleware/validation';
 import { createPetSchema, updatePetSchema } from '../middleware/validation';
 import { queryMany, queryOne, query } from '../config/database';
 import { xpForLevel, levelFromXp } from '../config/constants';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
+
+// ---- Multer for pet photo uploads ----
+const petPhotoDir = path.join(__dirname, '../../uploads/pets');
+if (!fs.existsSync(petPhotoDir)) fs.mkdirSync(petPhotoDir, { recursive: true });
+
+const petPhotoStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, petPhotoDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `pet-${Date.now()}-${Math.floor(Math.random() * 1e9)}${ext}`);
+  },
+});
+const petPhotoUpload = multer({ storage: petPhotoStorage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 /**
  * GET /api/pets/me
@@ -23,7 +39,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   try {
     const pets = await queryMany(
       `SELECT id, name, species, breed, level, xp, specialization,
-              total_distance_km, total_walks, rare_finds, created_at
+              total_distance_km, total_walks, rare_finds, photo_url, created_at
        FROM pets
        WHERE owner_id = $1
        ORDER BY created_at ASC`,
@@ -69,7 +85,7 @@ router.post(
         `INSERT INTO pets (owner_id, name, species, breed)
          VALUES ($1, $2, $3, $4)
          RETURNING id, name, species, breed, level, xp, specialization,
-                  total_distance_km, total_walks, rare_finds, created_at`,
+                  total_distance_km, total_walks, rare_finds, photo_url, created_at`,
         [req.userId, name, species, breed || null]
       );
 
@@ -144,7 +160,7 @@ router.put(
       const pet = await queryOne(
         `UPDATE pets SET ${updates.join(', ')} WHERE id = $${paramIdx}
          RETURNING id, name, species, breed, level, xp, specialization,
-                  total_distance_km, total_walks, rare_finds, created_at`,
+                  total_distance_km, total_walks, rare_finds, photo_url, created_at`,
         values
       );
 
@@ -245,6 +261,32 @@ router.get('/:id/stats', authenticate, async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('[Pets] Get pet stats error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get pet stats' });
+  }
+});
+
+/**
+ * PUT /api/pets/:id/photo
+ * Upload a photo for a pet. Only the owner can upload.
+ */
+router.put('/:id/photo', authenticate, petPhotoUpload.single('photo'), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No photo uploaded' });
+    }
+
+    // Verify ownership
+    const existing = await queryOne('SELECT id FROM pets WHERE id = $1 AND owner_id = $2', [req.params.id, req.userId]);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Pet not found or not yours' });
+    }
+
+    const photoUrl = `/uploads/pets/${req.file.filename}`;
+    await query('UPDATE pets SET photo_url = $1 WHERE id = $2', [photoUrl, req.params.id]);
+
+    return res.json({ success: true, data: { photo_url: photoUrl } });
+  } catch (err: any) {
+    console.error('[Pets] Photo upload error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to upload photo' });
   }
 });
 

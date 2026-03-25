@@ -136,6 +136,7 @@ export interface Pet {
   totalDistance: number;
   totalWalks: number;
   rareFinds: number;
+  photo_url?: string;
 }
 
 // ─── Auth Navigator ────────────────────────────────────────────────────────────

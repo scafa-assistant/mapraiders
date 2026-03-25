@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 COMMENT ON TABLE users IS 'Player accounts with progression, reputation and settings.';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT; -- Profile picture URL
 
 CREATE INDEX IF NOT EXISTS idx_users_username    ON users (username);
 CREATE INDEX IF NOT EXISTS idx_users_email       ON users (email);
@@ -284,7 +285,8 @@ CREATE TABLE IF NOT EXISTS pets (
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE pets IS 'Player companion pets with progression and specializations.';
+COMMENT ON TABLE pets IS 'Player companion dogs with progression and specializations.';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS photo_url TEXT; -- Dog photo URL
 
 CREATE INDEX IF NOT EXISTS idx_pets_owner          ON pets (owner_id);
 CREATE INDEX IF NOT EXISTS idx_pets_specialization ON pets (specialization);

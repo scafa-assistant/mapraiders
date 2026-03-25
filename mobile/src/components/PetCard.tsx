@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { formatDistance, formatNumber } from '../utils/formatters';
@@ -50,9 +50,16 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
       {/* Header: avatar + name/breed */}
       <View style={styles.header}>
-        <View style={styles.avatarCircle}>
-          <Ionicons name="paw" size={28} color={THEME.secondary} />
-        </View>
+        {pet.photo_url ? (
+          <Image
+            source={{ uri: 'https://api.mapraiders.com' + pet.photo_url }}
+            style={styles.avatarPhoto}
+          />
+        ) : (
+          <View style={styles.avatarCircle}>
+            <Ionicons name="paw" size={28} color={THEME.secondary} />
+          </View>
+        )}
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{pet.name}</Text>
           <Text style={styles.breed}>
@@ -162,6 +169,14 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(123, 97, 255, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  avatarPhoto: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    borderColor: THEME.secondary,
     marginRight: SPACING.md,
   },
   headerInfo: {

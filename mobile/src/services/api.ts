@@ -261,6 +261,11 @@ export const petApi = {
 
   update: (id: string, data: Record<string, unknown>) =>
     api.put(`/pets/${id}`, data),
+
+  uploadPhoto: (id: string, formData: FormData) =>
+    api.put(`/pets/${id}/photo`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 };
 
 // ─── Travel API ─────────────────────────────────────────────────────────────
@@ -321,6 +326,11 @@ export const userApi = {
 
   removeHomeZone: () =>
     api.delete('/users/me/home-zone'),
+
+  uploadAvatar: (formData: FormData) =>
+    api.put('/users/me/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 };
 
 // ─── Clans API ──────────────────────────────────────────────────────────────

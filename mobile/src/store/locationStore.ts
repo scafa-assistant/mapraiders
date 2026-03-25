@@ -34,6 +34,7 @@ interface LocationState {
   lastClaimResult: ClaimResultData | null;
   startTracking: () => Promise<void>;
   stopTracking: () => Promise<GpsPoint[]>;
+  cancelTracking: () => void;
   updateLocation: (location: Location.LocationObject) => void;
   requestPermissions: () => Promise<boolean>;
   getCurrentLocation: () => Promise<void>;
@@ -301,5 +302,27 @@ export const useLocationStore = create<LocationState>((set, get) => ({
     }
 
     return mergedRoute;
+  },
+
+  /**
+   * Cancel tracking WITHOUT uploading the route. Discards the current route.
+   */
+  cancelTracking: () => {
+    const { locationSubscription } = get();
+    if (locationSubscription) {
+      locationSubscription.remove();
+    }
+    sensorFusion.stop();
+    sensorFusion.reset();
+    stopBackgroundTracking().catch(() => {});
+    clearBackgroundPoints().catch(() => {});
+    set({
+      isTracking: false,
+      locationSubscription: null,
+      recordingStartTime: null,
+      currentRoute: [],
+      totalDistance: 0,
+    });
+    console.log('[LocationStore] Tracking cancelled — route discarded');
   },
 }));
