@@ -42,11 +42,12 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { key: 'party', label: 'Party', emoji: '\uD83C\uDF89', color: '#FF69B4' },
+  { key: 'dog_walk', label: 'Hundespaziergang', emoji: '\uD83D\uDC15', color: '#FFB800' },
   { key: 'sport', label: 'Sport', emoji: '\uD83C\uDFC3', color: '#00FF88' },
+  { key: 'party', label: 'Party', emoji: '\uD83C\uDF89', color: '#FF69B4' },
   { key: 'gaming', label: 'Gaming', emoji: '\uD83C\uDFAE', color: '#7B61FF' },
   { key: 'meetup', label: 'Meetup', emoji: '\uD83E\uDD1D', color: '#00D4FF' },
-  { key: 'other', label: 'Other', emoji: '\uD83D\uDCCC', color: '#8892B0' },
+  { key: 'other', label: 'Sonstiges', emoji: '\uD83D\uDCCC', color: '#8892B0' },
 ];
 
 export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenProps) {

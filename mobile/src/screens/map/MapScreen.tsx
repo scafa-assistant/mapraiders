@@ -127,6 +127,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const theme = useTheme();
 
   const [canCloseClaim, setCanCloseClaim] = useState(false);
+  const [hideOverlays, setHideOverlays] = useState(false); // Briefly hides polygons to force native re-render
   const CLOSE_THRESHOLD_M = 50;
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
@@ -386,44 +387,13 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [currentLocation]);
 
-  // Force MapView to re-render when tab becomes focused.
-  // Triggers a tiny re-animation which fires onRegionChangeComplete → handleRegionChange → fetches everything.
-  // This is the ONLY reliable way to fix react-native-maps polygon rendering after screen freeze.
+  // Fix: react-native-maps Android doesn't repaint Polygon overlays after screen freeze.
+  // Solution: Remove all overlays from the native layer, wait one frame, re-add them.
+  // This forces Android MapView to fully re-render all polygons/markers.
   useFocusEffect(
     useCallback(() => {
-      // Small delay to ensure MapView is fully active after screen unfreezing
-      const timer = setTimeout(async () => {
-        if (!mapRef.current) return;
-        try {
-          const camera = await mapRef.current.getCamera();
-          if (camera?.center) {
-            // Nudge the map by a tiny invisible amount to force onRegionChangeComplete
-            mapRef.current.animateToRegion(
-              {
-                latitude: camera.center.latitude + 0.000001,
-                longitude: camera.center.longitude,
-                latitudeDelta: 0.008,
-                longitudeDelta: 0.008,
-              },
-              1 // 1ms = instant, invisible to user
-            );
-          }
-        } catch {
-          // Camera not available — try with GPS location
-          const loc = useLocationStore.getState().currentLocation;
-          if (loc?.latitude && loc?.longitude) {
-            mapRef.current?.animateToRegion(
-              {
-                latitude: loc.latitude,
-                longitude: loc.longitude,
-                latitudeDelta: 0.008,
-                longitudeDelta: 0.008,
-              },
-              1
-            );
-          }
-        }
-      }, 300);
+      setHideOverlays(true);
+      const timer = setTimeout(() => setHideOverlays(false), 100);
       return () => clearTimeout(timer);
     }, [])
   );
@@ -596,8 +566,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onRegionChangeComplete={handleRegionChange}
         onLongPress={handleMapLongPress}
       >
-        {/* Territory Polygons */}
-        {safeTerritories.map((territory) => {
+        {/* Territory Polygons — hidden briefly on tab focus to force native re-render */}
+        {!hideOverlays && safeTerritories.map((territory) => {
           if (!territory.polygon || territory.polygon.length < 3) return null;
           const baseColor = territory.color || CLASS_COLORS[territory.movementClass] || '#00D4FF';
           const decay = isNaN(territory.decayPercent) ? 0 : territory.decayPercent;
@@ -620,7 +590,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* Defense Shield Markers (defended territories) */}
-        {safeTerritories.filter(t => t.hasDefense).map((territory) => {
+        {!hideOverlays && safeTerritories.filter(t => t.hasDefense).map((territory) => {
           const centroid = getPolygonCentroid(territory.polygon);
           if (!centroid) return null;
           const shieldColor =
@@ -646,8 +616,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           );
         })}
 
-        {/* Undefended Own Territory Markers — pulsing "DEFEND!" hint */}
-        {safeTerritories
+        {/* Undefended Own Territory Markers */}
+        {!hideOverlays && safeTerritories
           .filter(t => t.ownerId === user?.id && !t.hasDefense)
           .map((territory) => {
             const centroid = getPolygonCentroid(territory.polygon);
