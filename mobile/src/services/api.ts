@@ -333,6 +333,8 @@ export const userApi = {
     }),
   changeUsername: (username: string) =>
     api.put('/users/me/username', { username }),
+  changeTerritoryColor: (color: string) =>
+    api.put('/users/me/color', { color }),
 };
 
 // ─── Clans API ──────────────────────────────────────────────────────────────

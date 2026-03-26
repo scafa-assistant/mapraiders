@@ -30,6 +30,19 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
   const [homeZoneSet, setHomeZoneSet] = useState(false);
+  const [territoryColor, setTerritoryColor] = useState('#00D4FF');
+
+  // Load territory color from server
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const { userApi: uApi } = await import('../../services/api');
+        const { data } = await uApi.getMe();
+        const userData = data?.data ?? data;
+        if (userData?.territory_color) setTerritoryColor(userData.territory_color);
+      } catch {}
+    })();
+  }, []);
 
   const handleExportData = async () => {
     setIsExporting(true);
@@ -270,6 +283,41 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               </Text>
             </TouchableOpacity>
           )}
+        </View>
+
+        {/* Territory Color */}
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Territorium-Farbe</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border, padding: 16 }]}>
+          <Text style={{ color: theme.textSecondary, fontSize: 12, marginBottom: 12 }}>
+            Wähle die Farbe deiner Territorien auf der Karte
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+            {['#00D4FF', '#7B61FF', '#00FF88', '#FFB800', '#FF4757', '#FF69B4', '#FF6B35', '#00BFFF',
+              '#E040FB', '#76FF03', '#FFEA00', '#FF1744', '#00E5FF', '#D500F9', '#1DE9B6', '#F50057',
+            ].map((c) => (
+              <TouchableOpacity
+                key={c}
+                style={{
+                  width: 36, height: 36, borderRadius: 18,
+                  backgroundColor: c,
+                  borderWidth: territoryColor === c ? 3 : 1,
+                  borderColor: territoryColor === c ? '#FFFFFF' : 'rgba(255,255,255,0.2)',
+                }}
+                onPress={async () => {
+                  setTerritoryColor(c);
+                  try {
+                    const { userApi: uApi } = await import('../../services/api');
+                    await uApi.changeTerritoryColor(c);
+                  } catch {}
+                }}
+              />
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 12, gap: 8 }}>
+            <View style={{ width: 50, height: 30, borderRadius: 6, backgroundColor: territoryColor, opacity: 0.4 }} />
+            <Text style={{ color: theme.text, fontSize: 13, fontWeight: '600' }}>Vorschau</Text>
+            <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{territoryColor}</Text>
+          </View>
         </View>
 
         {/* Notifications */}

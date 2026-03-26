@@ -39,7 +39,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   try {
     const user = await queryOne(
       `SELECT id, username, email, level, xp, streak_days, last_active,
-              reputation, settings, created_at, avatar_url
+              reputation, settings, created_at, avatar_url, territory_color
        FROM users WHERE id = $1`,
       [req.userId]
     );
@@ -113,6 +113,20 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('[Users] Get me error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get user data' });
+  }
+});
+
+// PUT /api/users/me/color - Change territory color
+router.put('/me/color', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { color } = req.body;
+    if (!color || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+      return res.status(400).json({ success: false, message: 'Ungültige Farbe. Format: #RRGGBB' });
+    }
+    await query('UPDATE users SET territory_color = $1 WHERE id = $2', [color, req.userId]);
+    return res.json({ success: true, data: { territory_color: color } });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: 'Farbe konnte nicht geändert werden' });
   }
 });
 

@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 COMMENT ON TABLE users IS 'Player accounts with progression, reputation and settings.';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT; -- Profile picture URL
+ALTER TABLE users ADD COLUMN IF NOT EXISTS territory_color VARCHAR(7) DEFAULT '#00D4FF'; -- Custom territory color hex
 
 CREATE INDEX IF NOT EXISTS idx_users_username    ON users (username);
 CREATE INDEX IF NOT EXISTS idx_users_email       ON users (email);
