@@ -84,7 +84,7 @@ export class ClaimEngine {
     userId: string,
     points: GpsPoint[],
     movementClass?: MovementClass
-  ): Promise<{ territory?: Territory; xp: number; calculation: ClaimCalculation; is_takeover: boolean; previous_owner?: string }> {
+  ): Promise<{ territory?: Territory; xp: number; calculation: ClaimCalculation; is_takeover: boolean; previous_owner?: string; blocked_by_defenses?: any[] }> {
     // 1. Detect movement class
     const detectedClass = movementClass || detectMovementClass(points);
 
@@ -347,6 +347,7 @@ export class ClaimEngine {
       calculation,
       is_takeover: territoryResult.is_takeover,
       previous_owner: territoryResult.previous_owner,
+      blocked_by_defenses: territoryResult.blocked_by_defenses,
     };
   }
 
@@ -471,8 +472,10 @@ export class ClaimEngine {
     polygonWkt: string,
     cls: MovementClass,
     claimValue: number
-  ): Promise<{ territory_id: string; is_takeover: boolean; previous_owner?: string }> {
+  ): Promise<{ territory_id: string; is_takeover: boolean; previous_owner?: string; blocked_by_defenses?: any[] }> {
     return transaction(async (client) => {
+      const blocked_by_defenses: any[] = [];
+
       // Find overlapping territories (lock for update)
       const overlaps = await client.query(
         `SELECT id, owner_id, claim_value, decay_level
@@ -499,14 +502,20 @@ export class ClaimEngine {
 
         if (!canLose) continue; // Defender hit 30% daily loss cap
 
-        // Defense mini-game: skip takeover if territory has active defense
+        // Defense mini-game: collect defended territories instead of silently skipping
         try {
-          const defense = await client.query(
-            "SELECT id FROM territory_defenses WHERE territory_id = $1 AND status = 'active' LIMIT 1",
+          const defenseRows = await client.query(
+            "SELECT id, game_type, slot_index FROM territory_defenses WHERE territory_id = $1 AND status = 'active' ORDER BY slot_index",
             [existing.id]
           );
-          if (defense.rows.length > 0) {
-            continue; // Territory is defended — mobile app will show defense game
+          if (defenseRows.rows.length > 0) {
+            blocked_by_defenses.push({
+              territory_id: existing.id,
+              owner_id: existing.owner_id,
+              defense_count: defenseRows.rows.length,
+              defenses: defenseRows.rows.map((d: any) => ({ id: d.id, game_type: d.game_type })),
+            });
+            continue; // Can't takeover — must beat defense games first
           }
         } catch (err) {
           console.error('[ClaimEngine] Defense check error:', err);
@@ -596,6 +605,7 @@ export class ClaimEngine {
         territory_id: result.rows[0].id,
         is_takeover,
         previous_owner,
+        blocked_by_defenses: blocked_by_defenses.length > 0 ? blocked_by_defenses : undefined,
       };
     });
   }
@@ -776,6 +786,7 @@ export async function processRouteClaim(input: ClaimInput): Promise<ClaimResult>
     xp_earned: result.xp,
     is_takeover: result.is_takeover,
     previous_owner: result.previous_owner,
+    blocked_by_defenses: result.blocked_by_defenses,
     bonuses: {
       weather: result.calculation.weatherMultiplier,
       streak: result.calculation.streakMultiplier,

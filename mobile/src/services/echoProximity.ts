@@ -101,7 +101,9 @@ class EchoProximityService {
         500 // 500m search radius
       );
 
-      const echos = response.data?.data ?? response.data ?? [];
+      const raw = response.data?.data ?? response.data ?? [];
+      const echos = Array.isArray(raw) ? raw : (raw?.echos ?? raw?.data ?? []);
+      if (!Array.isArray(echos)) { this.nearbyEchos = []; return; }
       this.nearbyEchos = echos.map((echo: any) => ({
         id: echo.id,
         latitude: echo.latitude ?? echo.location?.latitude,

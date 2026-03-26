@@ -91,15 +91,20 @@ const DARK_MAP_STYLE = [
   { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
 ];
 
-function getPolygonCentroid(polygon: { latitude: number; longitude: number }[]): { latitude: number; longitude: number } | null {
-  if (!polygon || polygon.length === 0) return null;
+function getPolygonCentroid(polygon: any[]): { latitude: number; longitude: number } | null {
+  if (!polygon || !Array.isArray(polygon) || polygon.length === 0) return null;
   let latSum = 0;
   let lngSum = 0;
+  let count = 0;
   for (const p of polygon) {
-    latSum += p.latitude;
-    lngSum += p.longitude;
+    if (p && typeof p.latitude === 'number' && typeof p.longitude === 'number') {
+      latSum += p.latitude;
+      lngSum += p.longitude;
+      count++;
+    }
   }
-  return { latitude: latSum / polygon.length, longitude: lngSum / polygon.length };
+  if (count === 0) return null;
+  return { latitude: latSum / count, longitude: lngSum / count };
 }
 
 export default function MapScreen({ navigation }: MapScreenProps) {
@@ -473,6 +478,19 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         const serverResult = useLocationStore.getState().lastClaimResult;
         if (serverResult) {
           setClaimResult({ area: serverResult.area_m2, xp: serverResult.xp_earned });
+
+          // Show defended territory alert if any territories were blocked
+          if (serverResult.blocked_by_defenses && serverResult.blocked_by_defenses.length > 0) {
+            const blocked = serverResult.blocked_by_defenses;
+            const count = blocked.reduce((sum, b) => sum + b.defense_count, 0);
+            setTimeout(() => {
+              Alert.alert(
+                'Verteidigtes Territorium!',
+                `${blocked.length} Territorium(e) mit ${count} Verteidigung(en) blockiert deinen Angriff!\n\nTippe auf das gegnerische Land auf der Karte und besiege die Verteidigungen um es zu erobern.`,
+                [{ text: 'Verstanden' }]
+              );
+            }, 500);
+          }
         } else {
           setClaimResult({ area: Math.round(totalDistance * 12), xp: Math.round(totalDistance * 2) });
         }
@@ -599,7 +617,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       >
         {/* Territory Polygons — hidden briefly on tab focus to force native re-render */}
         {!hideOverlays && safeTerritories.map((territory) => {
-          if (!territory.polygon || territory.polygon.length < 3) return null;
+          if (!territory.polygon || !Array.isArray(territory.polygon) || territory.polygon.length < 3) return null;
+          // Filter out any invalid points
+          const validCoords = territory.polygon
+            .filter((p: any) => p && typeof p.latitude === 'number' && typeof p.longitude === 'number')
+            .map((p: any) => ({ latitude: p.latitude, longitude: p.longitude }));
+          if (validCoords.length < 3) return null;
           const baseColor = territory.color || CLASS_COLORS[territory.movementClass] || '#00D4FF';
           const decay = isNaN(territory.decayPercent) ? 0 : territory.decayPercent;
           const alpha = Math.round(Math.max(0.1, (1 - decay / 100)) * 0.4 * 255);
@@ -607,10 +630,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           return (
             <Polygon
               key={territory.id}
-              coordinates={territory.polygon.map((p) => ({
-                latitude: p.latitude,
-                longitude: p.longitude,
-              }))}
+              coordinates={validCoords}
               fillColor={`${baseColor}${hexAlpha}`}
               strokeColor={baseColor}
               strokeWidth={1.5}
@@ -702,7 +722,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         )}
 
         {/* Nearby Quest Markers */}
-        {safeQuests.map((quest) => (
+        {safeQuests.filter((q: any) => q.location?.latitude && q.location?.longitude).map((quest) => (
           <Marker
             key={`quest-${quest.id}`}
             coordinate={{
@@ -732,7 +752,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         ))}
 
         {/* Nearby Artifact Markers */}
-        {safeArtifacts.map((artifact) => {
+        {safeArtifacts.filter((a: any) => a.location?.latitude && a.location?.longitude).map((artifact) => {
           const rarityColor =
             artifact.rarity === 'legendary'
               ? '#FFB800'

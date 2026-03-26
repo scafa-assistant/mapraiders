@@ -20,6 +20,7 @@ export interface ClaimResultData {
   xp_earned: number;
   is_takeover: boolean;
   area_m2: number;
+  blocked_by_defenses?: { territory_id: string; owner_id: string; defense_count: number; defenses: { id: string; game_type: string }[] }[];
 }
 
 interface LocationState {
@@ -93,7 +94,8 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   getCurrentLocation: async () => {
     try {
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.BestForNavigation,
+        maximumAge: 5000, // Accept cached location only if < 5 seconds old
       });
       set({
         currentLocation: {
@@ -270,6 +272,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
                 xp_earned: serverData.xp_earned ?? 0,
                 is_takeover: serverData.is_takeover ?? false,
                 area_m2: serverData.claim_value ?? 0,
+                blocked_by_defenses: serverData.blocked_by_defenses ?? undefined,
               },
             });
           }

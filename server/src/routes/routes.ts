@@ -76,6 +76,7 @@ router.post(
           is_takeover: result.is_takeover,
           previous_owner: result.previous_owner || null,
           bonuses: result.bonuses,
+          blocked_by_defenses: result.blocked_by_defenses || null,
         },
       });
     } catch (err: any) {

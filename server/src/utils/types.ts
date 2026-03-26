@@ -398,6 +398,7 @@ export interface ClaimResult {
   xp_earned: number;
   is_takeover: boolean;
   previous_owner?: string;
+  blocked_by_defenses?: { territory_id: string; owner_id: string; defense_count: number; defenses: { id: string; game_type: string }[] }[];
   bonuses: {
     weather: number;
     streak: number;
