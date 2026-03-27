@@ -31,7 +31,7 @@ function mapServerTerritory(t: any): Territory | null {
     decayPercent: (parseFloat(t.decay_level) || 0) * 100,
     movementClass: (t.class ?? t.movementClass ?? 'walker') as MovementClass,
     area: parseFloat(t.area_m2) || t.area || 0,
-    color: t.color || '',
+    color: t.color || t.owner_color || '',
     hasDefense: t.has_defense ?? t.hasDefense ?? false,
     defenseGameType: t.defense_game_type ?? t.defenseGameType ?? undefined,
   };

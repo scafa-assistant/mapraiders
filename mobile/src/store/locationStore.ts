@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import * as Location from 'expo-location';
 import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api, { routeApi } from '../services/api';
 import { GpsPoint, MovementClass } from '../navigation/types';
 import { offlineQueue } from '../services/offlineQueue';
@@ -124,6 +125,14 @@ export const useLocationStore = create<LocationState>((set, get) => ({
         longitude: newPoint.longitude,
       },
     });
+
+    // Persist last known location for faster startup
+    try {
+      AsyncStorage.setItem('@mapraiders_last_location', JSON.stringify({
+        latitude: newPoint.latitude,
+        longitude: newPoint.longitude,
+      }));
+    } catch {}
 
     // Send location update via WebSocket
     mapRaidersWs.sendLocationUpdate(newPoint.latitude, newPoint.longitude);

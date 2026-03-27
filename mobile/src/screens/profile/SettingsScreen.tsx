@@ -31,6 +31,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
   const [homeZoneSet, setHomeZoneSet] = useState(false);
   const [territoryColor, setTerritoryColor] = useState('#00D4FF');
+  const [editUsername, setEditUsername] = useState(user?.username || '');
 
   // Load territory color from server
   React.useEffect(() => {
@@ -219,22 +220,54 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                     fontSize: 15,
                     fontWeight: '600',
                   }}
-                  defaultValue={user?.username || ''}
+                  value={editUsername}
+                  onChangeText={setEditUsername}
                   maxLength={30}
-                  onEndEditing={async (e) => {
-                    const newName = e.nativeEvent.text.trim();
+                  placeholder="Dein Username"
+                  placeholderTextColor={theme.textSecondary}
+                />
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: editUsername !== (user?.username || '') ? '#00FF88' : theme.border,
+                    borderRadius: 10,
+                    paddingHorizontal: 14,
+                    paddingVertical: 9,
+                  }}
+                  disabled={!editUsername || editUsername === (user?.username || '')}
+                  onPress={async () => {
+                    const newName = editUsername.trim();
                     if (!newName || newName === user?.username) return;
+                    // Client-side validation with clear messages
+                    if (newName.length < 3) {
+                      Alert.alert('Zu kurz', 'Username muss mindestens 3 Zeichen haben.');
+                      return;
+                    }
+                    if (newName.length > 30) {
+                      Alert.alert('Zu lang', 'Username darf maximal 30 Zeichen haben.');
+                      return;
+                    }
+                    if (/\s/.test(newName)) {
+                      Alert.alert('Keine Leerzeichen', 'Username darf keine Leerzeichen enthalten. Verwende _ oder - stattdessen.');
+                      return;
+                    }
+                    if (!/^[a-zA-Z0-9_.\-äöüÄÖÜß]+$/.test(newName)) {
+                      Alert.alert('Ungültige Zeichen', 'Username darf nur Buchstaben, Zahlen, _, . und - enthalten.');
+                      return;
+                    }
                     try {
                       const { userApi: uApi } = await import('../../services/api');
                       await uApi.changeUsername(newName);
                       Alert.alert('Fertig', `Username geändert zu "${newName}"`);
                     } catch (err: any) {
-                      Alert.alert('Fehler', err?.response?.data?.message || 'Username konnte nicht geändert werden.');
+                      const serverMsg = err?.response?.data?.message;
+                      Alert.alert('Fehler', serverMsg || 'Username konnte nicht geändert werden.');
                     }
                   }}
-                  placeholder="Dein Username"
-                  placeholderTextColor={theme.textSecondary}
-                />
+                >
+                  <Text style={{ color: editUsername !== (user?.username || '') ? '#0A0E17' : theme.textSecondary, fontWeight: '700', fontSize: 13 }}>
+                    Speichern
+                  </Text>
+                </TouchableOpacity>
                 <Ionicons name="pencil" size={16} color={theme.textSecondary} />
               </View>
             </View>

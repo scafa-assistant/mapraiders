@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -114,6 +114,16 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
   const [benchmarkStartTime, setBenchmarkStartTime] = useState<number | null>(null);
   const [benchmarkDistanceCovered, setBenchmarkDistanceCovered] = useState(0);
   const benchmarkSubscription = useRef<Location.LocationSubscription | null>(null);
+
+  // Cleanup GPS watcher on unmount
+  useEffect(() => {
+    return () => {
+      if (benchmarkSubscription.current) {
+        benchmarkSubscription.current.remove();
+        benchmarkSubscription.current = null;
+      }
+    };
+  }, []);
   const lastBenchmarkLocation = useRef<{ latitude: number; longitude: number } | null>(null);
 
   // Trivia state

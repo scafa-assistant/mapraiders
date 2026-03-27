@@ -8,7 +8,7 @@ import { useSettingsStore } from '../store/settingsStore';
 function hapticVibrate(pattern?: number | number[]) {
   if (!useSettingsStore.getState().settings.hapticFeedback) return;
   if (pattern) {
-    hapticVibrate(pattern);
+    Vibration.vibrate(pattern);
   } else {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
@@ -19,8 +19,9 @@ export function setupWsEventHandlers(): () => void {
 
   // Territory attacked - vibrate + alert
   unsubs.push(mapRaidersWs.on('territory_attacked', (data) => {
+    if (!data) return;
     hapticVibrate(500);
-    Alert.alert('Territory Under Attack!', `${data.attacker} is contesting your territory!`);
+    Alert.alert('Territorium angegriffen!', `${data.attacker || 'Ein Spieler'} greift dein Territorium an!`);
   }));
 
   // Territory claimed nearby - refresh my territories
@@ -30,12 +31,14 @@ export function setupWsEventHandlers(): () => void {
 
   // Level up
   unsubs.push(mapRaidersWs.on('level_up', (data) => {
-    Alert.alert('Level Up!', `You reached level ${data.level}!`);
+    if (!data) return;
+    Alert.alert('Level Up!', `Du hast Level ${data.level || '?'} erreicht!`);
   }));
 
   // Notification
   unsubs.push(mapRaidersWs.on('notification', (data) => {
-    console.log('[WS] Notification:', data.title);
+    if (!data) return;
+    console.log('[WS] Notification:', data.title || 'unknown');
   }));
 
   // Resonance discovered - cross-content synergy bonus

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt &amp; FAQ — MapRaiders</title>
+    <meta name="description" content="Kontakt und h&auml;ufig gestellte Fragen zu MapRaiders, dem GPS-basierten MMO Territory Game.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0A0E17;
+            --card: #141B2D;
+            --primary: #00D4FF;
+            --text: #E0E6F0;
+            --muted: #8892A8;
+            --border: #1E2A40;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        nav .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        nav .links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav .links a:hover,
+        nav .links a.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.15rem;
+            color: var(--primary);
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p { margin-bottom: 0.85rem; }
+
+        a { color: var(--primary); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-hero {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 212, 255, 0.02) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .contact-hero .email-link {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 0.75rem 2rem;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .contact-hero .email-link:hover {
+            background: rgba(0, 212, 255, 0.12);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .contact-hero p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* FAQ Accordion */
+        .faq-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            padding: 1.15rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            transition: color 0.2s;
+        }
+
+        .faq-question:hover {
+            color: var(--primary);
+        }
+
+        .faq-question .icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--muted);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--muted);
+            transition: all 0.3s;
+        }
+
+        .faq-item.open .faq-question .icon {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+            padding: 0 1.5rem 1.25rem;
+        }
+
+        .faq-answer p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .response-info {
+            background: rgba(0, 212, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            main { padding: 1.5rem 1rem 3rem; }
+            .card { padding: 1.25rem; }
+            .contact-hero { padding: 1.75rem 1.25rem; }
+            .contact-hero .email-link { font-size: 1.05rem; padding: 0.6rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="https://mapraiders.com" class="logo">MapRaiders</a>
+        <div class="links">
+            <a href="https://mapraiders.com">Home</a>
+            <a href="agb.html">AGB</a>
+            <a href="datenschutz.html">Datenschutz</a>
+            <a href="impressum.html">Impressum</a>
+            <a href="kontakt.html" class="active">Kontakt</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <h1>Kontakt &amp; FAQ</h1>
+    <p class="subtitle">Fragen, Feedback oder Probleme? Wir helfen gerne weiter.</p>
+
+    <!-- Contact Hero -->
+    <div class="contact-hero">
+        <p>Du hast eine Frage, m&ouml;chtest einen Bug melden oder Feedback geben?</p>
+        <p>Schreib uns einfach eine E-Mail:</p>
+        <a href="mailto:contact@mapraiders.com" class="email-link">contact@mapraiders.com</a>
+        <div class="response-info">
+            Wir antworten in der Regel innerhalb von 48 Stunden. F&uuml;r DSGVO-Anfragen (Auskunft, L&ouml;schung, Datenexport) betr&auml;gt die Frist max. 30 Tage.
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <h2>H&auml;ufig gestellte Fragen (FAQ)</h2>
+
+    <!-- FAQ 1 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Wie kann ich meinen Account l&ouml;schen?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Du kannst deinen Account direkt in der App l&ouml;schen. Gehe dazu in die <strong>Einstellungen</strong> (Zahnrad-Symbol im Profil) und tippe auf <strong>&bdquo;Account l&ouml;schen&ldquo;</strong>. Best&auml;tige die L&ouml;schung, und alle deine Daten werden unwiderruflich entfernt.</p>
+            <p>Alternativ kannst du uns eine E-Mail an <a href="mailto:contact@mapraiders.com">contact@mapraiders.com</a> schicken mit dem Betreff &bdquo;Account l&ouml;schen&ldquo; und der E-Mail-Adresse, die mit deinem Konto verkn&uuml;pft ist. Wir l&ouml;schen dein Konto gem&auml;&szlig; Art. 17 DSGVO innerhalb von 30 Tagen.</p>
+            <p>Bei der L&ouml;schung werden entfernt: Profildaten, GPS-Daten, Spielfortschritt, Territorien, erstellte Quests, Echos und alle anderen nutzerbezogenen Daten.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 2 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Wie kann ich meinen Benutzernamen &auml;ndern?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Deinen Benutzernamen kannst du direkt in der App &auml;ndern. Gehe in die <strong>Einstellungen</strong> und tippe auf deinen aktuellen Benutzernamen, um ihn zu bearbeiten. Der neue Name muss eindeutig sein und darf keine beleidigenden oder anst&ouml;&szlig;igen Begriffe enthalten.</p>
+            <p>Benutzernamen k&ouml;nnen 3&ndash;20 Zeichen lang sein und d&uuml;rfen Buchstaben, Zahlen und Unterstriche enthalten.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 3 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Mein Territory wird nicht auf der Karte angezeigt &mdash; was tun?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Wenn dein Territory nicht sichtbar ist, pr&uuml;fe bitte folgende Punkte:</p>
+            <p><strong>1. GPS-Signal:</strong> Stelle sicher, dass dein GPS aktiv ist und ein gutes Signal hat. In Geb&auml;uden, Tunneln oder dicht bebauten Gebieten kann das GPS-Signal ungenau sein.</p>
+            <p><strong>2. Internetverbindung:</strong> Eine aktive Datenverbindung ist n&ouml;tig, damit beanspruchte Gebiete an den Server &uuml;bermittelt und auf der Karte dargestellt werden k&ouml;nnen.</p>
+            <p><strong>3. Zoom-Level:</strong> Territory-Felder sind erst ab einer bestimmten Zoom-Stufe sichtbar. Zoome n&auml;her heran, um einzelne Felder zu sehen.</p>
+            <p><strong>4. Territory-Verfall:</strong> Gebiete verfallen &uuml;ber die Zeit, wenn sie nicht regelm&auml;&szlig;ig durchlaufen werden. Pr&uuml;fe, ob dein Territory m&ouml;glicherweise verfallen ist.</p>
+            <p><strong>5. App neustarten:</strong> Manchmal hilft es, die App komplett zu schlie&szlig;en und neu zu starten, um die Kartendaten neu zu laden.</p>
+            <p>Wenn das Problem weiterhin besteht, schicke uns eine E-Mail mit einem Screenshot und deinem Benutzernamen.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 4 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Wie funktioniert die Verteidigung meiner Territorien?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Territorien in MapRaiders k&ouml;nnen von anderen Spielern beansprucht werden, wenn sie physisch durch dein Gebiet laufen. Um deine Gebiete zu sch&uuml;tzen, stehen dir verschiedene Verteidigungsmechanismen zur Verf&uuml;gung:</p>
+            <p><strong>Passive Verteidigung:</strong> Je &ouml;fter du ein Gebiet durchl&auml;ufst, desto st&auml;rker wird es befestigt. Gut befestigte Territorien sind schwieriger zu &uuml;bernehmen.</p>
+            <p><strong>Verteidigungsstrukturen:</strong> Du kannst auf deinen Territorien Verteidigungen platzieren, die Angreifer vor Herausforderungen stellen (z.&nbsp;B. Mini-Games oder Quiz-Fragen).</p>
+            <p><strong>Clans:</strong> Clan-Mitglieder k&ouml;nnen gemeinsam Gebiete halten und verteidigen. Clan-Territorien sind besonders schwer einzunehmen.</p>
+            <p>Beachte: Territory-Verfall findet kontinuierlich statt. Besuche deine Gebiete regelm&auml;&szlig;ig, um sie aktiv zu halten.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 5 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Ist MapRaiders kostenlos?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p><strong>Ja, MapRaiders ist vollst&auml;ndig kostenlos.</strong> Die App befindet sich derzeit in der offenen Beta-Phase und ist ohne In-App-K&auml;ufe oder Abonnements nutzbar.</p>
+            <p>Alle Spielinhalte &mdash; Territory Claiming, Quests, Echos, Duelle, Clans und alle anderen Funktionen &mdash; sind kostenfrei verf&uuml;gbar. Es gibt keine Pay-to-Win-Mechaniken.</p>
+            <p>Die App enth&auml;lt au&szlig;erdem <strong>keine Werbung</strong>.</p>
+            <p>Sollte sich das Gesch&auml;ftsmodell in Zukunft &auml;ndern (z.&nbsp;B. optionale Kosmetik-K&auml;ufe), werden Nutzer rechtzeitig dar&uuml;ber informiert. Bereits vorhandene kostenlose Funktionen bleiben erhalten.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 6 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Wie alt muss ich sein, um MapRaiders zu spielen?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Das Mindestalter f&uuml;r die Nutzung von MapRaiders betr&auml;gt <strong>16 Jahre</strong>.</p>
+            <p>Nutzer zwischen 16 und 17 Jahren ben&ouml;tigen die Einwilligung eines Erziehungsberechtigten. Mit der Registrierung best&auml;tigt der Nutzer, das Mindestalter erreicht zu haben bzw. die entsprechende Einwilligung vorzulegen.</p>
+            <p>Da MapRaiders GPS-Standortdaten erhebt, sind wir gem&auml;&szlig; DSGVO (insbesondere Art. 8) verpflichtet, ein angemessenes Mindestalter festzulegen. Wir empfehlen au&szlig;erdem, dass j&uuml;ngere Spieler stets auf ihre Umgebung achten und nicht allein in unbekannten Gebieten spielen.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 7 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Welche Daten werden &uuml;ber mich gespeichert?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Wir nehmen Datenschutz sehr ernst. Eine vollst&auml;ndige &Uuml;bersicht aller erhobenen Daten findest du in unserer <a href="datenschutz.html">Datenschutzerkl&auml;rung</a>. Hier eine Kurzfassung:</p>
+            <p><strong>Kontodaten:</strong> E-Mail, Benutzername (und Google-ID bei Google-Login)</p>
+            <p><strong>GPS-Daten:</strong> Standort w&auml;hrend du spielst (detaillierte Routen werden nach 90 Tagen gel&ouml;scht)</p>
+            <p><strong>Spielfortschritt:</strong> Territorien, Quests, Statistiken, Clan-Daten</p>
+            <p>Wir verwenden <strong>keine Werbe-Tracker</strong>, verkaufen <strong>keine Daten an Dritte</strong> und nutzen deine GPS-Daten <strong>ausschlie&szlig;lich</strong> f&uuml;r den Spielbetrieb. Du kannst jederzeit einen vollst&auml;ndigen Datenexport oder die L&ouml;schung deiner Daten anfordern.</p>
+        </div>
+    </div>
+
+    <!-- FAQ 8 -->
+    <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Ich habe einen Bug gefunden &mdash; wie melde ich ihn?</span>
+            <span class="icon">+</span>
+        </button>
+        <div class="faq-answer">
+            <p>Bug-Reports sind extrem wertvoll f&uuml;r uns! Schicke eine E-Mail an <a href="mailto:contact@mapraiders.com">contact@mapraiders.com</a> mit folgenden Infos:</p>
+            <p><strong>1.</strong> Dein Benutzername</p>
+            <p><strong>2.</strong> Dein Ger&auml;t und Betriebssystem (z.&nbsp;B. &bdquo;Samsung Galaxy S24, Android 15&ldquo;)</p>
+            <p><strong>3.</strong> Beschreibung des Bugs: Was ist passiert? Was h&auml;ttest du erwartet?</p>
+            <p><strong>4.</strong> Screenshots oder Bildschirmaufnahmen (wenn m&ouml;glich)</p>
+            <p><strong>5.</strong> Schritte zum Reproduzieren des Fehlers</p>
+            <p>Wir schauen uns jeden Bug-Report an und melden uns, wenn wir weitere Informationen brauchen.</p>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    &copy; 2026 MapRaiders &mdash; Ren&eacute; Scafarti
+</footer>
+
+<script>
+    function toggleFaq(button) {
+        var item = button.parentElement;
+        var allItems = document.querySelectorAll('.faq-item');
+        allItems.forEach(function(other) {
+            if (other !== item) {
+                other.classList.remove('open');
+            }
+        });
+        item.classList.toggle('open');
+    }
+</script>
+
+</body>
+</html>

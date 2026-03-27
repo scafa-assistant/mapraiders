@@ -155,7 +155,18 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     { id: string; lat: number; lng: number; resonance_level: number; bonus_multiplier: number; content_types: string[] }[]
   >([]);
   const [nearbyMeetups, setNearbyMeetups] = useState<any[]>([]);
+  const [lastKnownLocation, setLastKnownLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const lastWeatherFetch = useRef<{ lat: number; lng: number } | null>(null);
+
+  // Load last known location from storage for instant map positioning
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await (await import('@react-native-async-storage/async-storage')).default.getItem('@mapraiders_last_location');
+        if (stored) setLastKnownLocation(JSON.parse(stored));
+      } catch {}
+    })();
+  }, []);
 
   // Fetch weather on mount and significant location change (>500m)
   useEffect(() => {
@@ -582,6 +593,16 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const safeArtifacts = Array.isArray(nearbyArtifacts) ? nearbyArtifacts : [];
   const safeZones = Array.isArray(silentZones) ? silentZones : [];
   const safeResonance = Array.isArray(resonanceSpots) ? resonanceSpots : [];
+
+  // Deduplicate territories (server may return duplicates from JOIN with defenses)
+  const uniqueTerritories = React.useMemo(() => {
+    const seen = new Set<string>();
+    return safeTerritories.filter(t => {
+      if (!t?.id || seen.has(t.id)) return false;
+      seen.add(t.id);
+      return true;
+    });
+  }, [safeTerritories]);
   const safeMeetups = Array.isArray(nearbyMeetups) ? nearbyMeetups : [];
 
   return (
@@ -606,8 +627,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 longitudeDelta: 0.008,
               }
             : {
-                latitude: 44.4268,
-                longitude: 26.1025,
+                latitude: lastKnownLocation?.latitude ?? 51.3642,
+                longitude: lastKnownLocation?.longitude ?? 7.9812,
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01,
               }
@@ -616,7 +637,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onLongPress={handleMapLongPress}
       >
         {/* Territory Polygons — hidden briefly on tab focus to force native re-render */}
-        {!hideOverlays && safeTerritories.map((territory) => {
+        {!hideOverlays && uniqueTerritories.map((territory) => {
           if (!territory.polygon || !Array.isArray(territory.polygon) || territory.polygon.length < 3) return null;
           // Filter out any invalid points
           const validCoords = territory.polygon
@@ -641,7 +662,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* Defense Shield Markers (defended territories) */}
-        {!hideOverlays && safeTerritories.filter(t => t.hasDefense).map((territory) => {
+        {!hideOverlays && uniqueTerritories.filter(t => t.hasDefense).map((territory) => {
           const centroid = getPolygonCentroid(territory.polygon);
           if (!centroid) return null;
           const shieldColor =
@@ -655,7 +676,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             '#FFB800';
           return (
             <Marker
-              key={`defense-${territory.id}`}
+              key={`def-${territory.id}`}
               coordinate={centroid}
               anchor={{ x: 0.5, y: 0.5 }}
               onPress={() => handleTerritoryPress(territory)}
@@ -668,7 +689,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* Undefended Own Territory Markers — pulsing red warning for owner */}
-        {!hideOverlays && safeTerritories
+        {!hideOverlays && uniqueTerritories
           .filter(t => t.ownerId === user?.id && !t.hasDefense)
           .map((territory) => {
             const centroid = getPolygonCentroid(territory.polygon);
@@ -689,7 +710,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           })}
 
         {/* Undefended Enemy Territory Markers — visible to attackers */}
-        {!hideOverlays && safeTerritories
+        {!hideOverlays && uniqueTerritories
           .filter(t => t.ownerId !== user?.id && t.ownerId && !t.hasDefense)
           .map((territory) => {
             const centroid = getPolygonCentroid(territory.polygon);
@@ -827,24 +848,46 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           );
         })}
 
-        {/* Meetup Event Markers */}
+        {/* Meetup Event Markers — animated for events starting within 24h */}
         {safeMeetups.map((meetup) => {
           const mLat = meetup.lat ?? meetup.latitude ?? 0;
           const mLng = meetup.lng ?? meetup.longitude ?? 0;
           if (mLat === 0 && mLng === 0) return null;
           const cat = meetup.category ?? 'other';
           const catColor =
+            cat === 'dog_walk' ? '#FFB800' :
             cat === 'party' ? '#FF69B4' :
             cat === 'sport' ? '#00FF88' :
             cat === 'gaming' ? '#7B61FF' :
             cat === 'meetup' ? '#00D4FF' :
             '#8892B0';
           const catIcon: keyof typeof Ionicons.glyphMap =
-            cat === 'party' ? 'calendar' :
+            cat === 'dog_walk' ? 'paw' :
+            cat === 'party' ? 'musical-notes' :
             cat === 'sport' ? 'fitness' :
             cat === 'gaming' ? 'game-controller' :
             cat === 'meetup' ? 'people' :
             'pin';
+
+          // Check if event is spontaneous (within 24h)
+          const eventDate = new Date(meetup.event_date ?? meetup.eventDate ?? 0);
+          const now = Date.now();
+          const msUntilStart = eventDate.getTime() - now;
+          const hoursUntil = msUntilStart / (1000 * 60 * 60);
+          const isSpontaneous = hoursUntil > 0 && hoursUntil <= 24;
+          const isLive = hoursUntil <= 0.5 && hoursUntil > -2; // Started or starting in 30min
+          const isUpcoming = isSpontaneous && !isLive;
+
+          // Countdown text
+          let countdownText = '';
+          if (isLive) {
+            countdownText = 'JETZT!';
+          } else if (hoursUntil > 0 && hoursUntil < 1) {
+            countdownText = `${Math.round(hoursUntil * 60)}min`;
+          } else if (hoursUntil >= 1 && hoursUntil <= 24) {
+            countdownText = `${Math.round(hoursUntil)}h`;
+          }
+
           return (
             <Marker
               key={`meetup-${meetup.id}`}
@@ -852,8 +895,35 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               anchor={{ x: 0.5, y: 0.5 }}
               onPress={() => navigation.navigate('MeetupDetail', { meetupId: meetup.id })}
             >
-              <View style={[styles.meetupMarker, { borderColor: catColor, backgroundColor: `${catColor}20` }]}>
-                <Ionicons name={catIcon} size={16} color={catColor} />
+              <View style={{ alignItems: 'center' }}>
+                {/* Pulsing ring for spontaneous events */}
+                {(isSpontaneous || isLive) && (
+                  <Animated.View style={[
+                    styles.spontanPulse,
+                    {
+                      borderColor: isLive ? '#FF4757' : catColor,
+                      transform: [{ scale: pulseScale }],
+                      opacity: pulseOpacity,
+                    },
+                  ]} />
+                )}
+                {/* Main marker */}
+                <View style={[
+                  styles.meetupMarker,
+                  { borderColor: catColor, backgroundColor: `${catColor}20` },
+                  isLive && { backgroundColor: `${catColor}40`, borderWidth: 2.5 },
+                ]}>
+                  <Ionicons name={catIcon} size={16} color={catColor} />
+                </View>
+                {/* Countdown badge */}
+                {countdownText ? (
+                  <View style={[
+                    styles.countdownBadge,
+                    { backgroundColor: isLive ? '#FF4757' : catColor },
+                  ]}>
+                    <Text style={styles.countdownText}>{countdownText}</Text>
+                  </View>
+                ) : null}
               </View>
             </Marker>
           );
@@ -1347,6 +1417,30 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  spontanPulse: {
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    top: -8,
+  },
+  countdownBadge: {
+    position: 'absolute',
+    top: -8,
+    right: -14,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 8,
+    minWidth: 22,
+    alignItems: 'center',
+  },
+  countdownText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '900',
+    letterSpacing: 0.3,
   },
   questMarker: {
     width: 32,

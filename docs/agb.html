@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGB — MapRaiders</title>
+    <meta name="description" content="Allgemeine Geschäftsbedingungen von MapRaiders, dem GPS-basierten MMO Territory Game.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0A0E17;
+            --card: #141B2D;
+            --primary: #00D4FF;
+            --text: #E0E6F0;
+            --muted: #8892A8;
+            --border: #1E2A40;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        nav .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        nav .links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav .links a:hover,
+        nav .links a.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        /* Main */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.15rem;
+            color: var(--primary);
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 0.85rem; }
+
+        ul, ol {
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+
+        li { margin-bottom: 0.35rem; }
+
+        a { color: var(--primary); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            main { padding: 1.5rem 1rem 3rem; }
+            .card { padding: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="https://mapraiders.com" class="logo">MapRaiders</a>
+        <div class="links">
+            <a href="https://mapraiders.com">Home</a>
+            <a href="agb.html" class="active">AGB</a>
+            <a href="datenschutz.html">Datenschutz</a>
+            <a href="impressum.html">Impressum</a>
+            <a href="kontakt.html">Kontakt</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <h1>Allgemeine Gesch&auml;ftsbedingungen</h1>
+    <p class="subtitle">Stand: M&auml;rz 2026 &mdash; MapRaiders, ein GPS-basiertes MMO Territory Game</p>
+
+    <div class="card">
+        <h2>&sect; 1 &mdash; Geltungsbereich</h2>
+        <p>Diese Allgemeinen Gesch&auml;ftsbedingungen (AGB) regeln die Nutzung der mobilen Anwendung &bdquo;MapRaiders&ldquo; (nachfolgend &bdquo;App&ldquo; oder &bdquo;Dienst&ldquo;), betrieben von Ren&eacute; Scafarti, Einzelunternehmer, Deutschland (nachfolgend &bdquo;Betreiber&ldquo;).</p>
+        <p>MapRaiders ist ein GPS-basiertes Multiplayer-Online-Spiel, bei dem Spieler durch physische Bewegung (Gehen, Laufen, Radfahren) reale Gebiete auf einer digitalen Karte beanspruchen, verteidigen und um Territorien konkurrieren k&ouml;nnen.</p>
+        <p>Die App befindet sich derzeit in einer <strong>kostenlosen Beta-Phase</strong>. W&auml;hrend dieser Phase k&ouml;nnen Funktionen hinzugef&uuml;gt, ge&auml;ndert oder entfernt werden. Es besteht kein Anspruch auf dauerhaften Zugang zu bestimmten Funktionen.</p>
+        <p>Mit der Registrierung bzw. Nutzung der App akzeptiert der Nutzer diese AGB. Widerspricht der Nutzer diesen Bedingungen, ist die Nutzung der App nicht gestattet.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 2 &mdash; Registrierung und Benutzerkonto</h2>
+        <p><strong>2.1</strong> Die Nutzung von MapRaiders erfordert die Erstellung eines Benutzerkontos. Die Registrierung erfolgt &uuml;ber Google Sign-In oder &uuml;ber E-Mail und Passwort.</p>
+        <p><strong>2.2</strong> Der Nutzer muss mindestens <strong>16 Jahre</strong> alt sein. Nutzer unter 18 Jahren ben&ouml;tigen die Einwilligung eines Erziehungsberechtigten. Mit der Registrierung best&auml;tigt der Nutzer, dass er das Mindestalter erreicht hat bzw. die entsprechende Einwilligung vorliegt.</p>
+        <p><strong>2.3</strong> Der Nutzer ist verpflichtet, wahrheitsgem&auml;&szlig;e Angaben bei der Registrierung zu machen und seine Zugangsdaten vertraulich zu behandeln. F&uuml;r alle Aktivit&auml;ten, die unter seinem Konto stattfinden, ist der Nutzer selbst verantwortlich.</p>
+        <p><strong>2.4</strong> Jeder Nutzer darf nur ein Benutzerkonto besitzen. Die Erstellung mehrerer Konten (&bdquo;Multi-Accounting&ldquo;) ist untersagt und kann zur Sperrung aller betroffenen Konten f&uuml;hren.</p>
+        <p><strong>2.5</strong> Der Betreiber beh&auml;lt sich vor, Benutzerkonten zu sperren oder zu l&ouml;schen, wenn ein Versto&szlig; gegen diese AGB vorliegt.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 3 &mdash; Nutzung der App und GPS-Tracking</h2>
+        <p><strong>3.1</strong> MapRaiders nutzt die GPS-Funktion des Endger&auml;tes, um den Standort des Spielers in Echtzeit zu erfassen. Diese Standortdaten sind f&uuml;r die Kernfunktionalit&auml;t des Spiels (Territory Claiming, Quests, Duelle) erforderlich.</p>
+        <p><strong>3.2</strong> Der Nutzer erteilt durch die Nutzung der App seine ausdr&uuml;ckliche Einwilligung zur Erhebung und Verarbeitung seiner Standortdaten gem&auml;&szlig; der Datenschutzerkl&auml;rung.</p>
+        <p><strong>3.3</strong> Die Nutzung der App erfolgt auf eigene Gefahr. Der Nutzer ist selbst daf&uuml;r verantwortlich, seine Umgebung im Auge zu behalten und die geltenden Verkehrsregeln und Gesetze einzuhalten. Das Spielen in gef&auml;hrlichen Gebieten, auf Privatgel&auml;nde ohne Erlaubnis oder unter Missachtung lokaler Vorschriften ist untersagt.</p>
+        <p><strong>3.4</strong> Territory Claiming: Spieler k&ouml;nnen durch physische Bewegung Gebietsfelder auf der Spielkarte beanspruchen. Die Zuweisung von Territorien innerhalb des Spiels begr&uuml;ndet keinerlei reale Eigentumsanspr&uuml;che oder Rechte an den entsprechenden geographischen Gebieten.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 4 &mdash; Verhaltensregeln</h2>
+        <p>Der Nutzer verpflichtet sich, folgende Regeln einzuhalten:</p>
+        <ul>
+            <li><strong>Kein GPS-Spoofing:</strong> Das Vort&auml;uschen eines falschen Standorts durch technische Hilfsmittel (Mock-Location-Apps, VPN-basierte GPS-Manipulation, Emulatoren etc.) ist strengstens untersagt. Verst&ouml;&szlig;e f&uuml;hren zur sofortigen und dauerhaften Sperrung des Kontos.</li>
+            <li><strong>Kein Cheating:</strong> Die Verwendung von Bots, Skripten, modifizierten Clients, Exploits oder anderen Mitteln zur Erlangung eines unfairen Vorteils ist untersagt.</li>
+            <li><strong>Kein Hatespeech:</strong> Beleidigende, rassistische, sexistische, diskriminierende oder anderweitig anst&ouml;&szlig;ige Inhalte in Benutzernamen, Nachrichten, Echos, Quests oder anderen nutzergenerierten Inhalten sind verboten.</li>
+            <li><strong>Kein Harassment:</strong> Das gezielte Bel&auml;stigen, Verfolgen oder Einsch&uuml;chtern anderer Spieler &mdash; sowohl im Spiel als auch im realen Leben &mdash; ist untersagt.</li>
+            <li><strong>Kein Missbrauch:</strong> Das gezielte Ausnutzen von Fehlern (Bugs) zum eigenen Vorteil ist untersagt. Bugs sind dem Betreiber zu melden.</li>
+        </ul>
+        <p>Der Betreiber beh&auml;lt sich vor, bei Verst&ouml;&szlig;en Verwarnungen auszusprechen, Konten vor&uuml;bergehend oder dauerhaft zu sperren und/oder Spielfortschritt zur&uuml;ckzusetzen.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 5 &mdash; Nutzergenerierte Inhalte (User-Generated Content)</h2>
+        <p><strong>5.1</strong> MapRaiders erm&ouml;glicht Nutzern, eigene Inhalte zu erstellen, darunter Quests, Echos (Sprachnachrichten an Orten), Herausforderungen, Artefakte und Clan-Beschreibungen (nachfolgend &bdquo;UGC&ldquo;).</p>
+        <p><strong>5.2</strong> Der Nutzer beh&auml;lt die Urheberrechte an seinen erstellten Inhalten. Durch das Einstellen von UGC gew&auml;hrt der Nutzer dem Betreiber jedoch ein nicht-exklusives, weltweites, unentgeltliches Nutzungsrecht, diese Inhalte im Rahmen des Spielbetriebs zu speichern, anzuzeigen und anderen Nutzern zur Verf&uuml;gung zu stellen.</p>
+        <p><strong>5.3</strong> Der Nutzer ist allein f&uuml;r die von ihm erstellten Inhalte verantwortlich. UGC darf keine Rechte Dritter verletzen, keine illegalen Inhalte enthalten und muss den Verhaltensregeln gem&auml;&szlig; &sect; 4 entsprechen.</p>
+        <p><strong>5.4</strong> Der Betreiber ist berechtigt, UGC ohne Vorank&uuml;ndigung zu entfernen, wenn diese gegen diese AGB oder geltendes Recht versto&szlig;en.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 6 &mdash; Virtuelle Gegenst&auml;nde und In-Game-W&auml;hrung</h2>
+        <p><strong>6.1</strong> MapRaiders kann virtuelle Gegenst&auml;nde, Erfahrungspunkte, Titel, Territorien und andere spielinterne Werte enthalten. Diese haben <strong>keinen realen monet&auml;ren Wert</strong> und k&ouml;nnen nicht in echtes Geld umgetauscht, verkauft oder &uuml;bertragen werden.</p>
+        <p><strong>6.2</strong> Der Betreiber beh&auml;lt sich vor, die Spielmechaniken, den Wert virtueller Gegenst&auml;nde und die Spielbalance jederzeit anzupassen, insbesondere w&auml;hrend der Beta-Phase.</p>
+        <p><strong>6.3</strong> Bei Kontol&ouml;schung oder -sperrung besteht kein Anspruch auf Erstattung oder Kompensation f&uuml;r virtuelle Gegenst&auml;nde oder Spielfortschritt.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 7 &mdash; Haftungsausschluss und Haftungsbeschr&auml;nkung</h2>
+        <p><strong>7.1</strong> Die App wird &bdquo;wie besehen&ldquo; (&bdquo;as is&ldquo;) zur Verf&uuml;gung gestellt, insbesondere w&auml;hrend der Beta-Phase. Der Betreiber &uuml;bernimmt keine Gew&auml;hr f&uuml;r die ununterbrochene Verf&uuml;gbarkeit, Fehlerfreiheit oder Vollst&auml;ndigkeit des Dienstes.</p>
+        <p><strong>7.2 GPS-Genauigkeit:</strong> Der Betreiber haftet nicht f&uuml;r Ungenauigkeiten der GPS-Ortung, die zu fehlerhafter Gebietsmarkierung, falschen Spielereignissen oder anderen spieltechnischen Abweichungen f&uuml;hren k&ouml;nnen. Die GPS-Genauigkeit h&auml;ngt von Faktoren ab, die au&szlig;erhalb der Kontrolle des Betreibers liegen (Ger&auml;t, Umgebung, Wetter, Signalqualit&auml;t).</p>
+        <p><strong>7.3 Unf&auml;lle und k&ouml;rperliche Sch&auml;den:</strong> Der Betreiber haftet nicht f&uuml;r Unf&auml;lle, Verletzungen oder Sch&auml;den, die durch die Nutzung der App im Stra&szlig;enverkehr, in gef&auml;hrlichen Gebieten oder durch Unachtsamkeit w&auml;hrend des Spielens entstehen. Der Nutzer spielt auf eigenes Risiko und ist verpflichtet, stets auf seine Umgebung und Sicherheit zu achten.</p>
+        <p><strong>7.4</strong> Die Haftung des Betreibers ist auf F&auml;lle von Vorsatz und grober Fahrl&auml;ssigkeit beschr&auml;nkt. Dies gilt nicht f&uuml;r Sch&auml;den aus der Verletzung des Lebens, des K&ouml;rpers oder der Gesundheit sowie f&uuml;r zwingende gesetzliche Haftungsregelungen.</p>
+        <p><strong>7.5 Datenverlust:</strong> Der Betreiber haftet nicht f&uuml;r den Verlust von Spielfortschritt, Territorien oder anderen spielinternen Daten, insbesondere bei technischen St&ouml;rungen, Server-Wartungen oder w&auml;hrend der Beta-Phase.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 8 &mdash; Datenschutz</h2>
+        <p>Die Erhebung und Verarbeitung personenbezogener Daten erfolgt gem&auml;&szlig; der <a href="datenschutz.html">Datenschutzerkl&auml;rung</a>, die Bestandteil dieser AGB ist. Dort informieren wir im Detail &uuml;ber Art, Umfang und Zweck der Datenverarbeitung, insbesondere hinsichtlich der GPS-Standortdaten, sowie &uuml;ber die Rechte der betroffenen Personen gem&auml;&szlig; der DSGVO.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 9 &mdash; &Auml;nderungen der AGB</h2>
+        <p><strong>9.1</strong> Der Betreiber beh&auml;lt sich vor, diese AGB jederzeit zu &auml;ndern, insbesondere um sie an ge&auml;nderte rechtliche Anforderungen, neue Funktionen oder ge&auml;nderte Gesch&auml;ftsprozesse anzupassen.</p>
+        <p><strong>9.2</strong> &Uuml;ber wesentliche &Auml;nderungen wird der Nutzer in geeigneter Weise informiert (z.&nbsp;B. per In-App-Benachrichtigung oder E-Mail). Die weitere Nutzung der App nach Benachrichtigung gilt als Zustimmung zu den ge&auml;nderten AGB.</p>
+        <p><strong>9.3</strong> Widerspricht der Nutzer den ge&auml;nderten AGB, steht ihm das Recht zu, sein Konto zu l&ouml;schen und die Nutzung der App einzustellen.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 10 &mdash; K&uuml;ndigung und Kontol&ouml;schung</h2>
+        <p><strong>10.1</strong> Der Nutzer kann sein Konto jederzeit und ohne Angabe von Gr&uuml;nden l&ouml;schen. Die L&ouml;schung kann &uuml;ber die App-Einstellungen oder durch eine formlose Anfrage an <a href="mailto:contact@mapraiders.com">contact@mapraiders.com</a> erfolgen.</p>
+        <p><strong>10.2</strong> Gem&auml;&szlig; Art. 17 DSGVO (Recht auf L&ouml;schung) werden bei Kontol&ouml;schung alle personenbezogenen Daten des Nutzers unwiderruflich gel&ouml;scht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Dies umfasst:</p>
+        <ul>
+            <li>Profildaten (Benutzername, E-Mail-Adresse)</li>
+            <li>GPS-Standortdaten und Bewegungshistorie</li>
+            <li>Spielfortschritt, Territorien, Statistiken</li>
+            <li>Nutzergenerierte Inhalte (Quests, Echos, etc.)</li>
+        </ul>
+        <p><strong>10.3</strong> Der Betreiber kann das Nutzungsverh&auml;ltnis jederzeit aus wichtigem Grund k&uuml;ndigen, insbesondere bei Verst&ouml;&szlig;en gegen diese AGB.</p>
+        <p><strong>10.4</strong> Der Nutzer kann zudem jederzeit seine unter Art. 15&ndash;21 DSGVO gew&auml;hrten Betroffenenrechte geltend machen, insbesondere das Recht auf Datenportabilit&auml;t (Art. 20 DSGVO).</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 11 &mdash; Salvatorische Klausel</h2>
+        <p>Sollte eine Bestimmung dieser AGB unwirksam oder undurchf&uuml;hrbar sein oder werden, so wird die Wirksamkeit der &uuml;brigen Bestimmungen hierdurch nicht ber&uuml;hrt. Die unwirksame Bestimmung ist durch eine wirksame zu ersetzen, die dem wirtschaftlichen Zweck der unwirksamen Bestimmung am n&auml;chsten kommt.</p>
+    </div>
+
+    <div class="card">
+        <h2>&sect; 12 &mdash; Anwendbares Recht und Gerichtsstand</h2>
+        <p><strong>12.1</strong> Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts (CISG).</p>
+        <p><strong>12.2</strong> F&uuml;r Streitigkeiten mit Verbrauchern gelten die gesetzlichen Bestimmungen &uuml;ber den Gerichtsstand.</p>
+        <p><strong>12.3</strong> Die Europ&auml;ische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">https://ec.europa.eu/consumers/odr/</a>. Wir sind zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle weder verpflichtet noch bereit.</p>
+    </div>
+
+</main>
+
+<footer>
+    &copy; 2026 MapRaiders &mdash; Ren&eacute; Scafarti
+</footer>
+
+</body>
+</html>

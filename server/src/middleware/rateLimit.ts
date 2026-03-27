@@ -57,8 +57,8 @@ export function rateLimit(windowMs: number, maxRequests: number) {
 
 // ---- Presets ----
 
-/** General API rate limit: 100 requests per 15 minutes */
-export const apiLimiter = rateLimit(15 * 60 * 1000, 100);
+/** General API rate limit: 1000 requests per 15 minutes (map apps need high limits) */
+export const apiLimiter = rateLimit(15 * 60 * 1000, 1000);
 
 /** Auth endpoints rate limit: 10 requests per 15 minutes */
 export const authLimiter = rateLimit(15 * 60 * 1000, 10);
