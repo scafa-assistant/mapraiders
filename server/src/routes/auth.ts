@@ -15,6 +15,7 @@ import { validateBody } from '../middleware/validation';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../middleware/validation';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, authenticate } from '../middleware/auth';
 import { authLimiter } from '../middleware/rateLimit';
+import { sanitizeText } from '../utils/sanitize';
 
 const router = Router();
 
@@ -263,7 +264,7 @@ router.post(
 
       if (!user) {
         // Auto-register: create account from verified social profile
-        const baseName = (verifiedName?.replace(/[^a-zA-Z0-9_]/g, '_').substring(0, 30))
+        const baseName = (verifiedName ? sanitizeText(verifiedName).replace(/[^a-zA-Z0-9_]/g, '_').substring(0, 30) : '')
           || verifiedEmail.split('@')[0];
 
         // Check username uniqueness, append random suffix if needed

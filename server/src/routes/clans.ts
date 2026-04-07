@@ -24,6 +24,7 @@ import { queryMany, queryOne } from '../config/database';
 import { CLAN } from '../config/constants';
 import { wsService } from '../services/wsService';
 import { moderationService } from '../services/moderationService';
+import { sanitizeText } from '../utils/sanitize';
 
 const router = Router();
 
@@ -473,11 +474,12 @@ router.post('/:id/messages', authenticate, async (req: Request, res: Response) =
     }
 
     // Insert message
+    const sanitizedMessage = sanitizeText(message);
     const result = await queryOne<{ id: string; created_at: Date }>(
       `INSERT INTO clan_messages (clan_id, sender_id, message)
        VALUES ($1, $2, $3)
        RETURNING id, created_at`,
-      [clanId, req.userId, message.trim()]
+      [clanId, req.userId, sanitizedMessage]
     );
 
     const messageData = {
@@ -485,7 +487,7 @@ router.post('/:id/messages', authenticate, async (req: Request, res: Response) =
       clanId,
       senderId: req.userId,
       senderUsername: sender.username,
-      message: message.trim(),
+      message: sanitizedMessage,
       createdAt: result!.created_at,
     };
 
