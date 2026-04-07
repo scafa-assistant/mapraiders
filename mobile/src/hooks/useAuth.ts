@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { setTokens, clearTokens } from '../services/api';
+import type { UserProfile } from '../navigation/types';
 
 interface UseAuthReturn {
   /** Current user profile, or null if not logged in. */
-  user: ReturnType<typeof useAuthStore>['user'];
+  user: UserProfile | null;
   /** Auth token, or null. */
   token: string | null;
   /** Whether a user is currently logged in. */

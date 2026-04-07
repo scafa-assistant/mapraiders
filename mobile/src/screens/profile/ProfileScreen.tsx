@@ -157,7 +157,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
                     if (!newName?.trim()) return;
                     try {
                       await userApi.changeUsername(newName.trim());
-                      fetchProfile();
+                      refreshProfile();
                       Alert.alert('Fertig', `Username geändert zu "${newName.trim()}"`);
                     } catch (err: any) {
                       Alert.alert('Fehler', err?.response?.data?.message || 'Username konnte nicht geändert werden.');
@@ -201,7 +201,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           {/* Titles */}
           {titles.length > 0 && (
             <View style={styles.titlesRow}>
-              {titles.slice(0, 3).map((title) => (
+              {titles.slice(0, 3).map((title: string) => (
                 <View key={title} style={styles.titleBadge}>
                   <Ionicons name="ribbon-outline" size={12} color={theme.warning} />
                   <Text style={[styles.titleText, { color: theme.warning }]}>{title}</Text>

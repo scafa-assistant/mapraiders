@@ -133,7 +133,6 @@ export const useLocationStore = create<LocationState>((set, get) => ({
     try {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.BestForNavigation,
-        maximumAge: 5000, // Accept cached location only if < 5 seconds old
       });
       set({
         currentLocation: {
@@ -335,7 +334,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
           await offlineQueue.enqueue({
             points: mergedRoute,
             class: detectedClass,
-            sensorData: sensorAnalysis.sampleCount > 0 ? sensorAnalysis : undefined,
+            sensorData: sensorAnalysis.sampleCount > 0 ? (sensorAnalysis as unknown as Record<string, unknown>) : undefined,
           });
           set({ pendingUploads: offlineQueue.getQueueSize() });
         }
@@ -344,7 +343,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
         await offlineQueue.enqueue({
           points: mergedRoute,
           class: detectedClass,
-          sensorData: sensorAnalysis.sampleCount > 0 ? sensorAnalysis : undefined,
+          sensorData: sensorAnalysis.sampleCount > 0 ? (sensorAnalysis as unknown as Record<string, unknown>) : undefined,
         });
         set({ pendingUploads: offlineQueue.getQueueSize() });
       }

@@ -8,6 +8,7 @@ interface QueuedRoute {
   id: string;
   points: { latitude: number; longitude: number; timestamp: number; speed?: number; altitude?: number }[];
   class?: string;
+  sensorData?: Record<string, unknown>;
   queuedAt: number;
 }
 

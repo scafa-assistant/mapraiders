@@ -107,6 +107,8 @@ export interface Echo {
   creatorId: string;
   creatorUsername: string;
   location: { latitude: number; longitude: number };
+  lat?: number;
+  lng?: number;
   radius: number;
   audioUrl: string;
   duration: number;

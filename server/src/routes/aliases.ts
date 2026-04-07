@@ -29,7 +29,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const { alias_name } = req.body;
 
     if (!alias_name || typeof alias_name !== 'string' || alias_name.trim().length === 0) {
-      return res.status(400).json({ success: false, error: 'alias_name is required' });
+      return res.status(400).json({ success: false, message: 'alias_name is required' });
     }
 
     const alias = await createAlias(req.userId!, alias_name);
@@ -95,7 +95,7 @@ router.put('/switch', authenticate, async (req: Request, res: Response) => {
     const { active } = req.body;
 
     if (typeof active !== 'boolean') {
-      return res.status(400).json({ success: false, error: 'active (boolean) is required' });
+      return res.status(400).json({ success: false, message: 'active (boolean) is required' });
     }
 
     if (active) {

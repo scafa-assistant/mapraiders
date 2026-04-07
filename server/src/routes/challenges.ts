@@ -165,7 +165,7 @@ router.post(
         err.message?.includes('must be a number') ||
         err.message?.includes('must own a territory')
       ) {
-        return res.status(400).json({ success: false, error: err.message });
+        return res.status(400).json({ success: false, message: err.message });
       }
 
       return res.status(500).json({ success: false, message: 'Failed to create challenge' });
@@ -276,7 +276,7 @@ router.post(
 
       // Surface domain errors as 400/404
       if (err.message?.includes('not found')) {
-        return res.status(404).json({ success: false, error: err.message });
+        return res.status(404).json({ success: false, message: err.message });
       }
       if (
         err.message?.includes('not active') ||
@@ -284,7 +284,7 @@ router.post(
         err.message?.includes('Too far') ||
         err.message?.includes('proof is required')
       ) {
-        return res.status(400).json({ success: false, error: err.message });
+        return res.status(400).json({ success: false, message: err.message });
       }
 
       return res.status(500).json({ success: false, message: 'Failed to submit challenge' });
@@ -340,10 +340,10 @@ router.post(
       console.error('[Challenges] Verify submission error:', err);
 
       if (err.message?.includes('not found')) {
-        return res.status(404).json({ success: false, error: err.message });
+        return res.status(404).json({ success: false, message: err.message });
       }
       if (err.message?.includes('Only the challenge creator')) {
-        return res.status(403).json({ success: false, error: err.message });
+        return res.status(403).json({ success: false, message: err.message });
       }
 
       return res.status(500).json({ success: false, message: 'Failed to verify submission' });

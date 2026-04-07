@@ -106,11 +106,11 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const { name, description, polygon } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      return res.status(400).json({ success: false, error: 'Name is required' });
+      return res.status(400).json({ success: false, message: 'Name is required' });
     }
 
     if (name.length > 100) {
-      return res.status(400).json({ success: false, error: 'Name must be 100 characters or less' });
+      return res.status(400).json({ success: false, message: 'Name must be 100 characters or less' });
     }
 
     if (!polygon || !Array.isArray(polygon)) {

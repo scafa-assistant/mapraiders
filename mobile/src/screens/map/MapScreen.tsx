@@ -270,6 +270,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     };
   }, []);
 
+  // Safe route array — declared before useEffects that reference it
+  const safeRoute = Array.isArray(currentRoute) ? currentRoute : [];
+
   // Check if user is close enough to start point to close the polygon
   useEffect(() => {
     if (!isTracking || !currentLocation || safeRoute.length < 10) {
@@ -586,7 +589,6 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   });
 
   // Safe arrays — prevent crash if server returns unexpected format
-  const safeRoute = Array.isArray(currentRoute) ? currentRoute : [];
   const safeTerritories = Array.isArray(territories) ? territories : [];
   const safeQuests = Array.isArray(nearbyQuests) ? nearbyQuests : [];
   const safeEchos = Array.isArray(nearbyEchos) ? nearbyEchos : [];

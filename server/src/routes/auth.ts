@@ -16,6 +16,7 @@ import { registerSchema, loginSchema, refreshTokenSchema } from '../middleware/v
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, authenticate } from '../middleware/auth';
 import { authLimiter } from '../middleware/rateLimit';
 import { sanitizeText } from '../utils/sanitize';
+import redis from '../config/redis';
 
 const router = Router();
 
@@ -124,6 +125,18 @@ router.post(
     try {
       const { email, password } = req.body;
 
+      // Check for account lockout due to too many failed attempts
+      const lockoutKey = `login_fails:${email.toLowerCase()}`;
+      const failCountRaw = await redis.get(lockoutKey);
+      const failCount = failCountRaw ? parseInt(failCountRaw, 10) : 0;
+
+      if (failCount > 5) {
+        return res.status(429).json({
+          success: false,
+          message: 'Account temporarily locked. Try again in 15 minutes.',
+        });
+      }
+
       // Find user by email
       const user = await queryOne<{
         id: string;
@@ -142,6 +155,9 @@ router.post(
       );
 
       if (!user) {
+        // Increment failed attempts even for non-existent accounts (prevent enumeration timing)
+        await redis.incr(lockoutKey);
+        await redis.expire(lockoutKey, 900); // 15 minutes
         return res.status(401).json({ success: false, message: 'Invalid email or password' });
       }
 
@@ -152,8 +168,14 @@ router.post(
       // Verify password
       const validPassword = await bcrypt.compare(password, user.password_hash);
       if (!validPassword) {
+        // Increment failed attempts counter with 15 minute TTL
+        await redis.incr(lockoutKey);
+        await redis.expire(lockoutKey, 900); // 15 minutes
         return res.status(401).json({ success: false, message: 'Invalid email or password' });
       }
+
+      // Successful login — clear failed attempts counter
+      await redis.del(lockoutKey);
 
       // Update last active timestamp
       await query('UPDATE users SET last_active = NOW() WHERE id = $1', [user.id]);

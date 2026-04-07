@@ -23,11 +23,11 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const { name, description, points, class: raceClass } = req.body;
 
     if (!name) {
-      return res.status(400).json({ success: false, error: 'name is required' });
+      return res.status(400).json({ success: false, message: 'name is required' });
     }
 
     if (!points || !Array.isArray(points) || points.length < 2) {
-      return res.status(400).json({ success: false, error: 'At least 2 GPS points are required' });
+      return res.status(400).json({ success: false, message: 'At least 2 GPS points are required' });
     }
 
     const track = await raceEngine.createTrack(
@@ -50,7 +50,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       err.message?.includes('must be') ||
       err.message?.includes('At least')
     ) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to create race track' });
@@ -130,10 +130,10 @@ router.post('/:id/start', authenticate, async (req: Request, res: Response) => {
     console.error('[Races] Start attempt error:', err);
 
     if (err.message?.includes('not found')) {
-      return res.status(404).json({ success: false, error: err.message });
+      return res.status(404).json({ success: false, message: err.message });
     }
     if (err.message?.includes('already have an active')) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to start race' });
@@ -149,11 +149,11 @@ router.post('/:id/complete', authenticate, async (req: Request, res: Response) =
     const { points, time_seconds } = req.body;
 
     if (!points || !Array.isArray(points) || points.length < 2) {
-      return res.status(400).json({ success: false, error: 'GPS points are required' });
+      return res.status(400).json({ success: false, message: 'GPS points are required' });
     }
 
     if (!time_seconds || typeof time_seconds !== 'number' || time_seconds <= 0) {
-      return res.status(400).json({ success: false, error: 'time_seconds (positive number) is required' });
+      return res.status(400).json({ success: false, message: 'time_seconds (positive number) is required' });
     }
 
     const result = await raceEngine.completeAttempt(
@@ -171,7 +171,7 @@ router.post('/:id/complete', authenticate, async (req: Request, res: Response) =
     console.error('[Races] Complete attempt error:', err);
 
     if (err.message?.includes('not found')) {
-      return res.status(404).json({ success: false, error: err.message });
+      return res.status(404).json({ success: false, message: err.message });
     }
     if (
       err.message?.includes('No active race') ||
@@ -179,7 +179,7 @@ router.post('/:id/complete', authenticate, async (req: Request, res: Response) =
       err.message?.includes('required') ||
       err.message?.includes('must be')
     ) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to complete race' });

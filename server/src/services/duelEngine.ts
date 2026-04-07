@@ -328,9 +328,10 @@ class DuelEngine {
    * Determine the winner, award XP, and optionally transfer staked territory.
    *
    * @param duelId - Duel UUID
+   * @param userId - Requesting user's ID (must be a participant)
    * @returns Completed duel with winner
    */
-  async completeDuel(duelId: string): Promise<Duel & { xp_winner: number; xp_loser: number }> {
+  async completeDuel(duelId: string, userId: string): Promise<Duel & { xp_winner: number; xp_loser: number }> {
     return transaction(async (client) => {
       // Lock the duel row
       const duelRow = await client.query(
@@ -346,6 +347,11 @@ class DuelEngine {
       }
 
       const duel = duelRow.rows[0];
+
+      // Verify the requesting user is a participant
+      if (duel.challenger_id !== userId && duel.defender_id !== userId) {
+        throw new Error('You are not a participant in this duel');
+      }
 
       if (duel.status !== 'active') {
         throw new Error('Duel is not active');

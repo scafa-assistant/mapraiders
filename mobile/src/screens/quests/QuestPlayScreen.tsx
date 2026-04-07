@@ -232,7 +232,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
   const handleRatingSubmit = async (ratingData: Rating) => {
     setIsRatingSubmitting(true);
     try {
-      await questApi.rate(questId, ratingData);
+      await questApi.rate(questId, ratingData as unknown as Record<string, unknown>);
     } catch (_err) {
       // Rating submission failed silently
     }

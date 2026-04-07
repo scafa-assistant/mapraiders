@@ -34,7 +34,20 @@ export const CLASS_LABELS: Record<MovementClass, string> = {
 
 // ─── Theme ──────────────────────────────────────────────────────────────────
 
-export const DARK_THEME = {
+export interface Theme {
+  bg: string;
+  surface: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+  warning: string;
+  danger: string;
+  text: string;
+  textSecondary: string;
+  border: string;
+}
+
+export const DARK_THEME: Theme = {
   bg: '#0A0E17',
   surface: '#141B2D',
   primary: '#00D4FF',
@@ -45,9 +58,9 @@ export const DARK_THEME = {
   text: '#FFFFFF',
   textSecondary: '#8892B0',
   border: '#1E293B',
-} as const;
+};
 
-export const LIGHT_THEME: typeof DARK_THEME = {
+export const LIGHT_THEME: Theme = {
   bg: '#F5F5F5',
   surface: '#FFFFFF',
   primary: '#0099CC',
@@ -140,6 +153,7 @@ export const XP_LEVEL_SCALING = 1.15;
 // ─── Leaderboard Types ──────────────────────────────────────────────────────
 
 export const LEADERBOARD_TYPES = [
+  { key: 'area', label: 'Area', icon: 'resize-outline' },
   { key: 'territory', label: 'Territory', icon: 'map-outline' },
   { key: 'explorer', label: 'Explorer', icon: 'footsteps-outline' },
   { key: 'questmaker', label: 'Questmaker', icon: 'flag-outline' },

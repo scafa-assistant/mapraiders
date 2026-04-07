@@ -27,22 +27,22 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const { territory_id, type, lat, lng } = req.body;
 
     if (!territory_id || typeof territory_id !== 'string') {
-      return res.status(400).json({ success: false, error: 'territory_id is required' });
+      return res.status(400).json({ success: false, message: 'territory_id is required' });
     }
 
     if (!type || typeof type !== 'string') {
-      return res.status(400).json({ success: false, error: 'type is required (slow, alert, decoy)' });
+      return res.status(400).json({ success: false, message: 'type is required (slow, alert, decoy)' });
     }
 
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
 
     if (isNaN(parsedLat) || isNaN(parsedLng)) {
-      return res.status(400).json({ success: false, error: 'Valid lat and lng are required' });
+      return res.status(400).json({ success: false, message: 'Valid lat and lng are required' });
     }
 
     if (parsedLat < -90 || parsedLat > 90 || parsedLng < -180 || parsedLng > 180) {
-      return res.status(400).json({ success: false, error: 'lat/lng out of range' });
+      return res.status(400).json({ success: false, message: 'lat/lng out of range' });
     }
 
     const trap = await placeTrap(req.userId!, territory_id, type, parsedLat, parsedLng);

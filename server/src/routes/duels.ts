@@ -25,11 +25,11 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const { defender_id, type, lat, lng, stake_territory_id } = req.body;
 
     if (!defender_id) {
-      return res.status(400).json({ success: false, error: 'defender_id is required' });
+      return res.status(400).json({ success: false, message: 'defender_id is required' });
     }
 
     if (lat === undefined || lng === undefined) {
-      return res.status(400).json({ success: false, error: 'lat and lng are required' });
+      return res.status(400).json({ success: false, message: 'lat and lng are required' });
     }
 
     const duel = await duelEngine.challengePlayer(
@@ -53,7 +53,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       err.message?.includes('already have an active duel') ||
       err.message?.includes('not found or not owned')
     ) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to create duel' });
@@ -76,14 +76,14 @@ router.put('/:id/accept', authenticate, async (req: Request, res: Response) => {
     console.error('[Duels] Accept error:', err);
 
     if (err.message?.includes('not found')) {
-      return res.status(404).json({ success: false, error: err.message });
+      return res.status(404).json({ success: false, message: err.message });
     }
     if (
       err.message?.includes('Only the challenged') ||
       err.message?.includes('cannot be accepted') ||
       err.message?.includes('expired')
     ) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to accept duel' });
@@ -106,13 +106,13 @@ router.put('/:id/decline', authenticate, async (req: Request, res: Response) => 
     console.error('[Duels] Decline error:', err);
 
     if (err.message?.includes('not found')) {
-      return res.status(404).json({ success: false, error: err.message });
+      return res.status(404).json({ success: false, message: err.message });
     }
     if (
       err.message?.includes('Only the challenged') ||
       err.message?.includes('cannot be declined')
     ) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to decline duel' });
@@ -128,7 +128,7 @@ router.post('/:id/score', authenticate, async (req: Request, res: Response) => {
     const { score } = req.body;
 
     if (score === undefined || typeof score !== 'number') {
-      return res.status(400).json({ success: false, error: 'score (number) is required' });
+      return res.status(400).json({ success: false, message: 'score (number) is required' });
     }
 
     const duel = await duelEngine.submitScore(req.params.id as string, req.userId!, score);
@@ -141,13 +141,13 @@ router.post('/:id/score', authenticate, async (req: Request, res: Response) => {
     console.error('[Duels] Submit score error:', err);
 
     if (err.message?.includes('not found')) {
-      return res.status(404).json({ success: false, error: err.message });
+      return res.status(404).json({ success: false, message: err.message });
     }
     if (
       err.message?.includes('not active') ||
       err.message?.includes('not a participant')
     ) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to submit score' });
@@ -160,7 +160,7 @@ router.post('/:id/score', authenticate, async (req: Request, res: Response) => {
  */
 router.post('/:id/complete', authenticate, async (req: Request, res: Response) => {
   try {
-    const result = await duelEngine.completeDuel(req.params.id as string);
+    const result = await duelEngine.completeDuel(req.params.id as string, req.userId!);
 
     return res.json({
       success: true,
@@ -170,10 +170,13 @@ router.post('/:id/complete', authenticate, async (req: Request, res: Response) =
     console.error('[Duels] Complete error:', err);
 
     if (err.message?.includes('not found')) {
-      return res.status(404).json({ success: false, error: err.message });
+      return res.status(404).json({ success: false, message: err.message });
+    }
+    if (err.message?.includes('not a participant')) {
+      return res.status(403).json({ success: false, message: err.message });
     }
     if (err.message?.includes('not active')) {
-      return res.status(400).json({ success: false, error: err.message });
+      return res.status(400).json({ success: false, message: err.message });
     }
 
     return res.status(500).json({ success: false, message: 'Failed to complete duel' });
@@ -228,7 +231,7 @@ router.get('/nearby-players', authenticate, async (req: Request, res: Response) 
     const radius = Math.min(parseFloat(req.query.radius as string) || 500, 5000);
 
     if (isNaN(lat) || isNaN(lng)) {
-      return res.status(400).json({ success: false, error: 'lat and lng query parameters required' });
+      return res.status(400).json({ success: false, message: 'lat and lng query parameters required' });
     }
 
     const players = await duelEngine.getNearbyPlayers(lat, lng, radius);

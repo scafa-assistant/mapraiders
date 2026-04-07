@@ -26,7 +26,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const { target_id, reason, xp_reward } = req.body;
 
     if (!target_id || typeof target_id !== 'string') {
-      return res.status(400).json({ success: false, error: 'target_id is required' });
+      return res.status(400).json({ success: false, message: 'target_id is required' });
     }
 
     const parsedReward = xp_reward ? parseInt(xp_reward, 10) : undefined;
@@ -74,7 +74,7 @@ router.get('/', authenticate, async (req: Request, res: Response) => {
     const radius = req.query.radius ? Math.min(parseFloat(req.query.radius as string), 50000) : undefined;
 
     if ((lat !== undefined && isNaN(lat)) || (lng !== undefined && isNaN(lng))) {
-      return res.status(400).json({ success: false, error: 'Invalid lat/lng' });
+      return res.status(400).json({ success: false, message: 'Invalid lat/lng' });
     }
 
     const bounties = await getActiveBounties(lat, lng, radius);
