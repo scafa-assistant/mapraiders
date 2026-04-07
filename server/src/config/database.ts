@@ -7,6 +7,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && !process.env.DATABASE_URL) {
+  console.error('[FATAL] DATABASE_URL environment variable is required in production');
+  process.exit(1);
+}
+
 const poolConfig: PoolConfig = {
   connectionString:
     process.env.DATABASE_URL ||
@@ -14,6 +21,7 @@ const poolConfig: PoolConfig = {
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
+  ...(isProduction ? { ssl: { rejectUnauthorized: true } } : {}),
 };
 
 export const pool = new Pool(poolConfig);

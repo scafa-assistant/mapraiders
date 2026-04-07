@@ -1,1312 +1,382 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MapRaiders — GPS Territory Game</title>
-<meta name="description" content="MapRaiders: Die Stadt wird nicht mehr nur gesehen — sie wird gespielt. A GPS-based MMO territory game.">
-<meta property="og:title" content="MapRaiders — The City Is Your Battlefield">
-<meta property="og:description" content="Walk. Claim. Create. Compete. A GPS-based MMO territory game.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MapRaiders — Social Media. Neu definiert.</title>
+<meta name="description" content="Hör auf zu swipen. Fang an zu laufen. MapRaiders: Social Media findet draußen statt.">
+<meta property="og:title" content="MapRaiders — Social Media. Neu definiert.">
+<meta property="og:description" content="Deine Stadt. Dein Spielfeld. Deine Regeln.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mapraiders.com">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg:       #0A0E17;
-  --card:     #141B2D;
-  --card-alt: #1A2340;
-  --primary:  #00D4FF;
-  --accent:   #7B61FF;
-  --text:     #E0E6F0;
-  --muted:    #8892A8;
-  --dim:      #4A5268;
-  --danger:   #FF3B6F;
-  --success:  #00FFB2;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ============================================================
-   ANIMATED BACKGROUND — grid + radials
-   ============================================================ */
-.bg-grid {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-  background-size: 80px 80px;
-}
-
-.bg-glow {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 10%, rgba(0,212,255,0.06), transparent),
-    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,97,255,0.05), transparent);
-}
-
-/* ============================================================
-   NAVBAR
-   ============================================================ */
-.navbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: rgba(10,14,23,0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0,212,255,0.08);
-  transition: background 0.3s;
-}
-
-.nav-logo {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 800;
-  font-size: 1.15rem;
-  letter-spacing: 0.12em;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-}
-
-.nav-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: var(--primary);
-}
-
-.nav-hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 4px;
-}
-
-.nav-hamburger span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--muted);
-  border-radius: 2px;
-  transition: 0.3s;
-}
-
-/* ============================================================
-   SECTIONS — shared
-   ============================================================ */
-section {
-  position: relative;
-  z-index: 1;
-}
-
-.section-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.section-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 0.75rem;
-  opacity: 0.8;
-}
-
-.section-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  color: var(--muted);
-  font-size: 1.05rem;
-  max-width: 600px;
-  line-height: 1.7;
-}
-
-/* ============================================================
-   HERO
-   ============================================================ */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 6rem 2rem 4rem;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Diagonal scan line */
-.hero::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    135deg,
-    transparent 40%,
-    rgba(0,212,255,0.02) 40.5%,
-    rgba(0,212,255,0.02) 41%,
-    transparent 41.5%
-  );
-  animation: scanDiag 8s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes scanDiag {
-  0% { transform: translateX(-30%) translateY(-30%); }
-  100% { transform: translateX(30%) translateY(30%); }
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1.2rem;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.2);
-  border-radius: 100px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 2rem;
-}
-
-.hero-badge::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--primary);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
-  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(0,212,255,0); }
-}
-
-.hero-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(3rem, 10vw, 7rem);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, #B0C4DE 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 0 60px rgba(0,212,255,0.15)) drop-shadow(0 0 120px rgba(123,97,255,0.1));
-  position: relative;
-}
-
-/* Glow underline */
-.hero-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
-  filter: blur(1px);
-}
-
-.hero-tagline {
-  font-size: clamp(1rem, 2.5vw, 1.35rem);
-  color: var(--muted);
-  max-width: 600px;
-  margin: 0 auto 1rem;
-  line-height: 1.7;
-  font-weight: 400;
-}
-
-.hero-tagline-de {
-  font-size: clamp(0.85rem, 2vw, 1rem);
-  color: var(--dim);
-  font-style: italic;
-  margin-bottom: 2.5rem;
-}
-
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 2.5rem;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.9rem 2rem;
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #000;
-  background: linear-gradient(135deg, var(--primary), #00B8E6);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 0 30px rgba(0,212,255,0.2), 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 50px rgba(0,212,255,0.35), 0 8px 30px rgba(0,0,0,0.4);
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.9rem 2rem;
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--text);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-}
-
-.btn-secondary:hover {
-  transform: translateY(-2px);
-  border-color: rgba(123,97,255,0.4);
-  box-shadow: 0 0 30px rgba(123,97,255,0.15);
-}
-
-/* Store button icons (SVG inline) */
-.store-icon {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
-
-/* ============================================================
-   FEATURES
-   ============================================================ */
-.features {
-  padding: 8rem 0;
-}
-
-.features-header {
-  text-align: center;
-  margin-bottom: 4rem;
-}
-
-.features-header .section-subtitle {
-  margin: 0 auto;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.feature-card {
-  position: relative;
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: 16px;
-  padding: 2rem;
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-  overflow: hidden;
-}
-
-.feature-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(0,212,255,0.15);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 60px rgba(0,212,255,0.05);
-}
-
-.feature-card:hover::before {
-  opacity: 1;
-}
-
-.feature-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  margin-bottom: 1.25rem;
-  font-size: 1.5rem;
-  background: rgba(0,212,255,0.08);
-  color: var(--primary);
-}
-
-.feature-card:nth-child(2) .feature-icon { background: rgba(123,97,255,0.08); color: var(--accent); }
-.feature-card:nth-child(3) .feature-icon { background: rgba(255,59,111,0.08); color: var(--danger); }
-.feature-card:nth-child(4) .feature-icon { background: rgba(0,255,178,0.08); color: var(--success); }
-.feature-card:nth-child(5) .feature-icon { background: rgba(123,97,255,0.08); color: var(--accent); }
-.feature-card:nth-child(6) .feature-icon { background: rgba(0,212,255,0.08); color: var(--primary); }
-
-.feature-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.6rem;
-  letter-spacing: 0.03em;
-}
-
-.feature-desc {
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-/* ============================================================
-   HOW IT WORKS
-   ============================================================ */
-.how-it-works {
-  padding: 8rem 0;
-  background: linear-gradient(180deg, transparent, rgba(0,212,255,0.015), transparent);
-}
-
-.how-header {
-  text-align: center;
-  margin-bottom: 4rem;
-}
-
-.how-header .section-subtitle {
-  margin: 0 auto;
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  position: relative;
-}
-
-/* Connection line between steps */
-.steps::before {
-  content: '';
-  position: absolute;
-  top: 40px;
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  background: linear-gradient(90deg,
-    var(--primary),
-    var(--accent),
-    var(--danger),
-    var(--success)
-  );
-  opacity: 0.2;
-  z-index: 0;
-}
-
-.step {
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
-.step-number {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 900;
-  position: relative;
-}
-
-.step:nth-child(1) .step-number {
-  background: rgba(0,212,255,0.1);
-  color: var(--primary);
-  box-shadow: 0 0 30px rgba(0,212,255,0.1);
-}
-
-.step:nth-child(2) .step-number {
-  background: rgba(123,97,255,0.1);
-  color: var(--accent);
-  box-shadow: 0 0 30px rgba(123,97,255,0.1);
-}
-
-.step:nth-child(3) .step-number {
-  background: rgba(255,59,111,0.1);
-  color: var(--danger);
-  box-shadow: 0 0 30px rgba(255,59,111,0.1);
-}
-
-.step:nth-child(4) .step-number {
-  background: rgba(0,255,178,0.1);
-  color: var(--success);
-  box-shadow: 0 0 30px rgba(0,255,178,0.1);
-}
-
-.step-icon {
-  font-size: 2rem;
-}
-
-.step-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.05em;
-}
-
-.step-desc {
-  color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.6;
-  max-width: 200px;
-  margin: 0 auto;
-}
-
-/* ============================================================
-   STATS
-   ============================================================ */
-.stats {
-  padding: 6rem 0;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-}
-
-.stat-card {
-  text-align: center;
-  padding: 2.5rem 1.5rem;
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 16px;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(0,212,255,0.2), transparent, rgba(123,97,255,0.2));
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.stat-value {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-}
-
-.stat-label {
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-}
-
-/* ============================================================
-   TECH BANNER — terminal style
-   ============================================================ */
-.tech-banner {
-  padding: 5rem 0;
-  background: linear-gradient(180deg, transparent, rgba(123,97,255,0.01), transparent);
-}
-
-.terminal {
-  max-width: 700px;
-  margin: 0 auto;
-  background: #0D1117;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-}
-
-.terminal-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.75rem 1rem;
-  background: rgba(255,255,255,0.03);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.terminal-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.terminal-dot:nth-child(1) { background: #FF5F57; }
-.terminal-dot:nth-child(2) { background: #FEBC2E; }
-.terminal-dot:nth-child(3) { background: #28C840; }
-
-.terminal-title {
-  flex: 1;
-  text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--dim);
-  letter-spacing: 0.05em;
-}
-
-.terminal-body {
-  padding: 1.5rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  line-height: 2;
-}
-
-.terminal-line {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.terminal-prompt {
-  color: var(--primary);
-  user-select: none;
-}
-
-.terminal-cmd {
-  color: var(--muted);
-}
-
-.terminal-output {
-  color: var(--dim);
-  padding-left: 1.5rem;
-}
-
-.terminal-output .highlight {
-  color: var(--primary);
-}
-
-.terminal-output .highlight-accent {
-  color: var(--accent);
-}
-
-.terminal-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 15px;
-  background: var(--primary);
-  animation: blink 1.2s step-end infinite;
-  vertical-align: text-bottom;
-  margin-left: 4px;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* ============================================================
-   CTA
-   ============================================================ */
-.cta {
-  padding: 8rem 0;
-  text-align: center;
-}
-
-.cta-box {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 4rem 3rem;
-  background: var(--card);
-  border: 1px solid rgba(0,212,255,0.1);
-  border-radius: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.cta-box::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 20%;
-  right: 20%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
-}
-
-.cta-box::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.04), transparent 70%);
-  pointer-events: none;
-}
-
-.cta-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  font-weight: 800;
-  margin-bottom: 1rem;
-  position: relative;
-  z-index: 1;
-}
-
-.cta-sub {
-  color: var(--muted);
-  margin-bottom: 2.5rem;
-  font-size: 1rem;
-  position: relative;
-  z-index: 1;
-  line-height: 1.7;
-}
-
-.cta-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 1;
-}
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-.footer {
-  padding: 3rem 2rem;
-  text-align: center;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  position: relative;
-  z-index: 1;
-}
-
-.footer-brand {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-}
-
-.footer-tagline {
-  color: var(--dim);
-  font-size: 0.8rem;
-  font-style: italic;
-  margin-bottom: 0.75rem;
-}
-
-.footer-domain {
-  color: var(--muted);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-}
-
-.footer-domain a {
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.footer-domain a:hover {
-  color: var(--primary);
-}
-
-/* ============================================================
-   FLOATING PARTICLES
-   ============================================================ */
-.particles {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0;
-  animation: particleFloat linear infinite;
-}
-
-.particle:nth-child(1)  { width: 3px; height: 3px; background: var(--primary); left: 8%;  animation-duration: 12s; animation-delay: 0s;   }
-.particle:nth-child(2)  { width: 2px; height: 2px; background: var(--accent);  left: 18%; animation-duration: 15s; animation-delay: 2s;   }
-.particle:nth-child(3)  { width: 4px; height: 4px; background: var(--primary); left: 32%; animation-duration: 10s; animation-delay: 4s;   }
-.particle:nth-child(4)  { width: 2px; height: 2px; background: var(--accent);  left: 45%; animation-duration: 14s; animation-delay: 1s;   }
-.particle:nth-child(5)  { width: 3px; height: 3px; background: var(--primary); left: 58%; animation-duration: 11s; animation-delay: 3s;   }
-.particle:nth-child(6)  { width: 2px; height: 2px; background: var(--accent);  left: 72%; animation-duration: 13s; animation-delay: 5s;   }
-.particle:nth-child(7)  { width: 3px; height: 3px; background: var(--primary); left: 85%; animation-duration: 16s; animation-delay: 0.5s; }
-.particle:nth-child(8)  { width: 2px; height: 2px; background: var(--accent);  left: 92%; animation-duration: 12s; animation-delay: 2.5s; }
-
-@keyframes particleFloat {
-  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-  10%  { opacity: 0.4; transform: translateY(80vh) scale(1); }
-  90%  { opacity: 0.4; }
-  100% { transform: translateY(-10vh) scale(0); opacity: 0; }
-}
-
-/* ============================================================
-   SCROLL REVEAL
-   ============================================================ */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger children */
-.reveal-stagger > .reveal:nth-child(1) { transition-delay: 0.05s; }
-.reveal-stagger > .reveal:nth-child(2) { transition-delay: 0.10s; }
-.reveal-stagger > .reveal:nth-child(3) { transition-delay: 0.15s; }
-.reveal-stagger > .reveal:nth-child(4) { transition-delay: 0.20s; }
-.reveal-stagger > .reveal:nth-child(5) { transition-delay: 0.25s; }
-.reveal-stagger > .reveal:nth-child(6) { transition-delay: 0.30s; }
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 1024px) {
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .nav-hamburger { display: flex; }
-
-  .nav-links.open {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: rgba(10,14,23,0.95);
-    backdrop-filter: blur(20px);
-    padding: 1.5rem 2rem;
-    gap: 1.2rem;
-    border-bottom: 1px solid rgba(0,212,255,0.08);
-  }
-
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .steps {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-  }
-
-  .steps::before {
-    display: none;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .cta-box {
-    padding: 3rem 1.5rem;
-  }
-
-  .terminal-body {
-    font-size: 0.7rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .steps {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-cta {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .btn-primary, .btn-secondary {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-  }
-}
+/* ====== RESET ====== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;-webkit-font-smoothing:antialiased;font-family:'Sora',sans-serif}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ====== THEME ====== */
+:root{
+  --bg:#F5F7FA;--bg-alt:#EDF0F5;--card:#FFFFFF;--card-border:rgba(0,0,0,0.06);
+  --text:#1A1F2E;--muted:#6B7A99;--dim:#B0B8C8;
+  --cyan:#00D4FF;--violet:#7B61FF;--green:#00FF88;--gold:#FFB800;--red:#FF3B6F;
+  --glass:rgba(255,255,255,0.72);--glass-border:rgba(0,0,0,0.04);
+  --shadow:0 2px 20px rgba(0,0,0,0.06);--shadow-lg:0 12px 48px rgba(0,0,0,0.1);
+  --particle-color:0,60,120;
+  --nav-bg:rgba(245,247,250,0.82);
+}
+[data-theme="dark"]{
+  --bg:#0A0E17;--bg-alt:#0F1524;--card:#141B2D;--card-border:rgba(255,255,255,0.04);
+  --text:#E8ECF4;--muted:#6B7A99;--dim:#3A4560;
+  --glass:rgba(20,27,45,0.72);--glass-border:rgba(0,212,255,0.06);
+  --shadow:0 2px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 48px rgba(0,0,0,0.4);
+  --particle-color:0,180,220;
+  --nav-bg:rgba(10,14,23,0.82);
+}
+body{background:var(--bg);color:var(--text);transition:background .5s,color .5s}
+
+/* ====== UTILITIES ====== */
+.mx{max-width:1140px;margin:0 auto;padding:0 24px}
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.v{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+/* ====== PARTICLES ====== */
+#P{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ====== CURSOR GLOW ====== */
+#G{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(var(--particle-color),.05),transparent 70%);pointer-events:none;z-index:0;transform:translate(-50%,-50%);transition:left .2s ease-out,top .2s ease-out}
+@media(max-width:800px){#G{display:none}}
+
+/* ====== NAV ====== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:18px 0;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-border);transition:all .4s}
+.nav.s{padding:12px 0}
+.nav-i{display:flex;align-items:center;justify-content:space-between;max-width:1140px;margin:0 auto;padding:0 24px}
+.nav-l{font-family:'Orbitron';font-weight:800;font-size:17px;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-r{display:flex;gap:24px;align-items:center}
+.nav-r a{font-size:13px;font-weight:500;color:var(--muted);transition:color .3s}
+.nav-r a:hover{color:var(--text)}
+.nav-dl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 22px;border-radius:99px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#fff;transition:all .3s;box-shadow:0 4px 20px rgba(0,212,255,.25)}
+.nav-dl:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,212,255,.4)}
+#thm{font-size:18px;color:var(--muted);padding:4px;transition:color .3s;cursor:pointer}
+#thm:hover{color:var(--text)}
+@media(max-width:700px){.nav-r a:not(.nav-dl):not(#thm){display:none}.nav-l{font-size:14px}}
+
+/* ====== HERO ====== */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding:120px 24px 80px}
+.hero-glow{position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.07),rgba(123,97,255,.04),transparent 70%);animation:gp 7s ease-in-out infinite;pointer-events:none}
+@keyframes gp{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}50%{transform:translate(-50%,-50%) scale(1.2);opacity:.9}}
+.hero-c{position:relative;z-index:2}
+.badge{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono';font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cyan);padding:7px 18px;border-radius:99px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.06);margin-bottom:28px;animation:fi .8s .2s both}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:bk 1.8s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{font-family:'Orbitron';font-size:clamp(34px,8vw,88px);font-weight:900;line-height:1;letter-spacing:-2px;animation:fi .8s .4s both}
+.hero h1 .gr{display:block;background:linear-gradient(135deg,var(--cyan),var(--violet),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gs 6s ease infinite}
+@keyframes gs{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero-sub{font-size:clamp(15px,2.2vw,21px);color:var(--muted);max-width:560px;margin:20px auto 40px;line-height:1.65;animation:fi .8s .6s both}
+.hero-sub b{color:var(--text);font-weight:600}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fi .8s .8s both}
+.btn-p{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:15px 32px;border-radius:99px;background:linear-gradient(135deg,var(--cyan),#0099CC);color:#fff;box-shadow:0 4px 24px rgba(0,212,255,.3);transition:all .3s;position:relative;overflow:hidden}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 8px 36px rgba(0,212,255,.45)}
+.btn-p::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.15),transparent);transform:translateX(-100%);transition:transform .5s}
+.btn-p:hover::after{transform:translateX(100%)}
+.btn-g{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;padding:15px 28px;border-radius:99px;border:1px solid var(--dim);color:var(--text);transition:all .3s}
+.btn-g:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.04)}
+.hero-arrow{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);animation:fi .8s 1.2s both}
+.hero-arrow span{display:block;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:6px;text-align:center}
+.arrow-l{width:1px;height:36px;margin:0 auto;background:linear-gradient(var(--cyan),transparent);animation:ap 2s infinite}
+@keyframes ap{0%{opacity:0;transform:scaleY(.4) translateY(-8px)}50%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(.4) translateY(8px)}}
+@keyframes fi{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+
+/* ====== SCROLL-FREEZE ====== */
+.freeze{position:relative;padding:100px 0;overflow:hidden}
+.freeze::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.freeze-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.freeze-grid{grid-template-columns:1fr;gap:28px}}
+.freeze-text h2{font-family:'Orbitron';font-size:clamp(22px,4.5vw,46px);font-weight:800;line-height:1.15;margin-bottom:20px}
+.freeze-text h2 em{font-style:normal;color:var(--cyan);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:3px}
+.freeze-text p{font-size:17px;color:var(--muted);line-height:1.8;max-width:480px}
+.freeze-text p b{color:var(--text)}
+.quotes{display:flex;flex-direction:column;gap:16px}
+.q{padding:22px 26px;border-radius:14px;background:var(--card);border:1px solid var(--card-border);border-left:3px solid;font-size:17px;font-weight:600;line-height:1.4;transition:transform .3s;box-shadow:var(--shadow)}
+.q:hover{transform:translateX(6px)}
+.q.r{border-left-color:var(--red);color:var(--red)}.q.c{border-left-color:var(--cyan);color:var(--cyan)}.q.g{border-left-color:var(--green);color:var(--green)}
+.q small{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:5px}
+
+/* ====== STATS ====== */
+.stats{padding:56px 0;border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border);background:var(--bg-alt);transition:background .5s}
+.stats-g{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+@media(max-width:600px){.stats-g{grid-template-columns:repeat(2,1fr)}}
+.sn{font-family:'Orbitron';font-size:clamp(28px,5vw,52px);font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sl{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px;font-weight:500}
+
+/* ====== FEATURES ====== */
+.feat{padding:110px 0}
+.feat-hd{text-align:center;margin-bottom:72px}
+.feat-hd h2{font-family:'Orbitron';font-size:clamp(24px,4vw,42px);font-weight:800;margin-bottom:12px}
+.feat-hd p{font-size:15px;color:var(--muted);max-width:460px;margin:0 auto}
+.feat-g{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.feat-g{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.feat-g{grid-template-columns:1fr}}
+.fc{display:block;position:relative;padding:32px 24px;border-radius:18px;background:var(--card);border:1px solid var(--card-border);overflow:hidden;transition:all .4s cubic-bezier(.16,1,.3,1);box-shadow:var(--shadow)}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ac);opacity:0;transition:opacity .3s}
+.fc:hover{transform:translateY(-7px);box-shadow:var(--shadow-lg);border-color:rgba(0,212,255,.1)}
+.fc:hover::before{opacity:1}
+.fc-i{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:22px;transition:transform .3s}
+.fc:hover .fc-i{transform:scale(1.1) rotate(-4deg)}
+.fc h3{font-family:'Orbitron';font-size:14px;font-weight:700;letter-spacing:.8px;margin-bottom:8px}
+.fc p{font-size:13px;color:var(--muted);line-height:1.65}
+.fc .more{display:block;margin-top:14px;font-size:11px;font-weight:600;letter-spacing:1px;opacity:.7;transition:opacity .3s}
+.fc:hover .more{opacity:1}
+
+/* ====== SPLIT (1000 likes vs 1 begegnung) ====== */
+.split{padding:120px 0;overflow:hidden}
+.split-row{display:grid;grid-template-columns:1fr 1fr;min-height:400px;border-radius:24px;overflow:hidden;box-shadow:var(--shadow-lg)}
+@media(max-width:768px){.split-row{grid-template-columns:1fr;min-height:auto}}
+.split-l{background:#1a1f2e;color:#6b7a99;padding:48px 40px;display:flex;flex-direction:column;justify-content:center}
+.split-l .num{font-family:'Orbitron';font-size:52px;font-weight:900;color:#3a4560;line-height:1}
+.split-l .lbl{font-size:14px;margin-top:6px;margin-bottom:20px}
+.split-l .desc{font-size:14px;line-height:1.7;color:#4a5268}
+.split-r{background:linear-gradient(135deg,#fff8e7,#fff3d4);color:#1a1f2e;padding:48px 40px;display:flex;flex-direction:column;justify-content:center}
+[data-theme="dark"] .split-r{background:linear-gradient(135deg,#2a2210,#1f1a08)}
+.split-r .num{font-family:'Orbitron';font-size:52px;font-weight:900;color:var(--gold);line-height:1}
+.split-r .lbl{font-size:14px;margin-top:6px;margin-bottom:20px;color:var(--muted)}
+.split-r .desc{font-size:14px;line-height:1.7;color:var(--muted)}
+.split-quote{text-align:center;margin-top:48px;font-family:'Orbitron';font-size:clamp(16px,2.5vw,24px);font-weight:700;line-height:1.5;color:var(--text)}
+
+/* ====== ECHO ====== */
+.echo{position:relative;padding:140px 0;overflow:hidden}
+.echo::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(123,97,255,.06),transparent 60%);pointer-events:none}
+.echo-g{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media(max-width:768px){.echo-g{grid-template-columns:1fr;text-align:center}}
+.echo-vis{position:relative;display:flex;justify-content:center}
+.rings{position:relative;width:260px;height:260px}
+.ring{position:absolute;inset:0;border:1px solid rgba(123,97,255,.18);border-radius:50%;animation:re 4s ease-out infinite}
+.ring:nth-child(2){animation-delay:1s}.ring:nth-child(3){animation-delay:2s}.ring:nth-child(4){animation-delay:3s}
+@keyframes re{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.ring-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 50px rgba(123,97,255,.35)}
+.echo-txt h2{font-family:'Orbitron';font-size:clamp(22px,3.5vw,38px);font-weight:800;margin-bottom:18px}
+.echo-txt h2 span{color:var(--violet)}
+.echo-txt p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:20px}
+.terminal{font-family:'Space Mono';font-size:14px;color:var(--violet);padding:14px 18px;border:1px solid rgba(123,97,255,.2);border-radius:10px;background:rgba(123,97,255,.04);display:inline-block}
+.cursor-blink::after{content:'_';animation:cb 1s step-end infinite}
+@keyframes cb{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ====== SPONTAN EVENT ====== */
+.spontan{padding:120px 0;text-align:center}
+.spontan-hd{font-family:'Orbitron';font-size:clamp(20px,3.5vw,34px);font-weight:800;margin-bottom:48px}
+.ev-card{max-width:420px;margin:0 auto;background:var(--card);border:2px solid var(--gold);border-radius:20px;padding:32px 28px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(255,184,0,.12);animation:evp 3s ease-in-out infinite}
+@keyframes evp{0%,100%{box-shadow:0 0 30px rgba(255,184,0,.1)}50%{box-shadow:0 0 50px rgba(255,184,0,.25)}}
+.ev-card::before{content:'';position:absolute;top:-2px;left:30%;right:30%;height:3px;background:var(--gold)}
+.ev-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,184,0,.3);background:rgba(255,184,0,.08);margin-bottom:14px}
+.ev-badge .pulse{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:bk 1.5s infinite}
+.ev-title{font-family:'Orbitron';font-size:18px;font-weight:700;margin-bottom:6px}
+.ev-meta{font-size:13px;color:var(--muted);margin-bottom:18px}
+.ev-timer{font-family:'Orbitron';font-size:36px;font-weight:900;color:var(--gold)}
+.ev-ppl{font-size:13px;color:var(--muted);margin-top:12px}
+.ev-ppl b{color:var(--text)}
+
+/* ====== MANIFESTO ====== */
+.mani{padding:140px 0;text-align:center}
+.mani h2{font-family:'Orbitron';font-size:clamp(18px,3.2vw,34px);font-weight:700;line-height:1.65;max-width:780px;margin:0 auto}
+.mani .cy{color:var(--cyan)}.mani .vi{color:var(--violet)}.mani .gr{color:var(--green)}.mani .go{color:var(--gold)}
+
+/* ====== CTA ====== */
+.cta{padding:100px 0;text-align:center}
+.cta-box{max-width:640px;margin:0 auto;padding:56px 44px;border-radius:24px;background:var(--card);border:1px solid var(--card-border);position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.cta-box::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.cta-box h2{font-family:'Orbitron';font-size:clamp(22px,4vw,36px);font-weight:800;margin-bottom:14px}
+.cta-box p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px}
+.cta-box .btn-p{font-size:15px;padding:17px 40px}
+.cta-plat{margin-top:20px;font-size:12px;color:var(--dim)}
+
+/* ====== FOOTER ====== */
+footer{padding:40px 0 28px;border-top:1px solid var(--card-border)}
+.f-i{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.f-b{font-family:'Orbitron';font-size:13px;font-weight:700;color:var(--dim);letter-spacing:2px}
+.f-l{display:flex;gap:22px;flex-wrap:wrap}
+.f-l a{font-size:12px;color:var(--muted);transition:color .3s}.f-l a:hover{color:var(--cyan)}
+.f-c{width:100%;text-align:center;margin-top:18px;font-size:10px;color:var(--dim)}
 </style>
 </head>
-
 <body>
+<div id="G"></div>
+<canvas id="P"></canvas>
 
-<!-- Background layers -->
-<div class="bg-grid"></div>
-<div class="bg-glow"></div>
+<!-- NAV -->
+<nav class="nav" id="nav"><div class="nav-i">
+<a href="#" class="nav-l">MAPRAIDERS</a>
+<div class="nav-r">
+<a href="#feat">Features</a>
+<a href="#echo">Echos</a>
+<a href="#mani">Vision</a>
+<span id="thm" onclick="tog()">&#9788;</span>
+<a href="/MapRaiders.apk" class="nav-dl">Download</a>
+</div></div></nav>
 
-<!-- Floating particles -->
-<div class="particles">
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
-  <div class="particle"></div>
+<!-- HERO -->
+<section class="hero">
+<div class="hero-glow"></div>
+<div class="hero-c">
+<div class="badge"><span class="dot"></span>Beta Live</div>
+<h1>Social Media.<span class="gr">Neu definiert.</span></h1>
+<p class="hero-sub">Keine Feeds. Kein Scrollen. Keine Fake-Likes.<br><b>Die Karte ist dein soziales Netzwerk.</b></p>
+<div class="hero-btns">
+<a href="/MapRaiders.apk" class="btn-p">&#9658; Android APK</a>
+<a href="#feat" class="btn-g">Mehr erfahren</a>
 </div>
-
-<!-- ============================================================
-     NAVBAR
-     ============================================================ -->
-<nav class="navbar" id="navbar">
-  <a href="#" class="nav-logo">MAPRAIDERS</a>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#how">How It Works</a></li>
-    <li><a href="#stats">Stats</a></li>
-    <li><a href="#cta">Get Started</a></li>
-  </ul>
-  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-</nav>
-
-<!-- ============================================================
-     HERO
-     ============================================================ -->
-<section class="hero" id="hero">
-  <div class="hero-content">
-    <div class="hero-badge">Coming Soon</div>
-    <h1 class="hero-title">MAPRAIDERS</h1>
-    <p class="hero-tagline">The city is no longer just seen &mdash; it&rsquo;s played.</p>
-    <p class="hero-tagline-de">Die Stadt wird nicht mehr nur gesehen &mdash; sie wird gespielt.</p>
-    <div class="hero-cta">
-      <a href="#cta" class="btn-primary">
-        <svg class="store-icon" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-        App Store
-      </a>
-      <a href="#cta" class="btn-secondary">
-        <svg class="store-icon" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 1.33c.576.333.576 1.166 0 1.5l-2.302 1.33-2.535-2.535 2.535-2.625zM5.864 2.658L16.8 8.99l-2.302 2.302-8.635-8.635z" fill="currentColor"/></svg>
-        Google Play
-      </a>
-    </div>
-  </div>
+</div>
+<div class="hero-arrow"><span>Scroll</span><div class="arrow-l"></div></div>
 </section>
 
-<!-- ============================================================
-     FEATURES
-     ============================================================ -->
-<section class="features" id="features">
-  <div class="section-inner">
-    <div class="features-header reveal">
-      <div class="section-label">// Core Systems</div>
-      <h2 class="section-title">Built for the Streets</h2>
-      <p class="section-subtitle">Six core systems that transform every sidewalk into a battlefield and every neighborhood into an empire.</p>
-    </div>
-
-    <div class="features-grid reveal-stagger">
-
-      <div class="feature-card reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-        </div>
-        <h3 class="feature-title">Territory Claiming</h3>
-        <p class="feature-desc">Walk through real streets to claim hexagonal zones. Build resource structures, defend your borders, and expand your empire block by block.</p>
-      </div>
-
-      <div class="feature-card reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/><path d="M8 12l-2-2"/><path d="M16 12l2-2"/></svg>
-        </div>
-        <h3 class="feature-title">Quests &amp; Echos</h3>
-        <p class="feature-desc">Discover location-bound quests and ghostly echoes left by other players. Every corner holds a story, every alley hides a challenge.</p>
-      </div>
-
-      <div class="feature-card reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-        </div>
-        <h3 class="feature-title">Duels &amp; Races</h3>
-        <p class="feature-desc">Challenge nearby raiders to GPS-tracked races or tactical duels. Speed, strategy, and street knowledge determine the winner.</p>
-      </div>
-
-      <div class="feature-card reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <h3 class="feature-title">Clan Wars</h3>
-        <p class="feature-desc">Form alliances, build clan headquarters, and wage coordinated wars for district control. Strength in numbers, strategy in movement.</p>
-      </div>
-
-      <div class="feature-card reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </div>
-        <h3 class="feature-title">Night Layer</h3>
-        <p class="feature-desc">When the sun sets, the map transforms. New zones appear, shadow mechanics activate, and rare resources emerge only in darkness.</p>
-      </div>
-
-      <div class="feature-card reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-        </div>
-        <h3 class="feature-title">Weather Events</h3>
-        <p class="feature-desc">Real weather data triggers in-game events. Rain floods spawn water zones, storms unlock lightning mechanics, snow reveals hidden paths.</p>
-      </div>
-
-    </div>
-  </div>
+<!-- SCROLL FREEZE -->
+<section class="freeze">
+<div class="mx"><div class="freeze-grid">
+<div class="freeze-text reveal">
+<h2>Du <em>scrollst</em> noch?<br>Wir sind schon draußen.</h2>
+<p>Social Media war gestern Feeds und Algorithmen. <b>MapRaiders ist die Straße selbst.</b> Jeder Schritt zählt. Jede Straße erzählt eine Geschichte. Die Karte ist dein soziales Netzwerk.</p>
+</div>
+<div class="quotes">
+<div class="q r reveal d1">Hör auf zu swipen. Fang an zu laufen.<small>Das neue Kennenlernen</small></div>
+<div class="q c reveal d2">Deine Stadt. Dein Spielfeld. Deine Regeln.<small>Territorien erobern</small></div>
+<div class="q g reveal d3">Echte Events. Echte Menschen. Echte Abenteuer.<small>Spontan-Events auf der Karte</small></div>
+</div>
+</div></div>
 </section>
 
-<!-- ============================================================
-     HOW IT WORKS
-     ============================================================ -->
-<section class="how-it-works" id="how">
-  <div class="section-inner">
-    <div class="how-header reveal">
-      <div class="section-label">// The Loop</div>
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">Four steps. One game loop. Infinite territory.</p>
-    </div>
-
-    <div class="steps reveal-stagger">
-      <div class="step reveal">
-        <div class="step-number"><span class="step-icon">&#128694;</span></div>
-        <h3 class="step-title">Walk</h3>
-        <p class="step-desc">Move through the real world. Your GPS tracks every step, every route, every shortcut.</p>
-      </div>
-      <div class="step reveal">
-        <div class="step-number"><span class="step-icon">&#9873;</span></div>
-        <h3 class="step-title">Claim</h3>
-        <p class="step-desc">Step into unclaimed hexes to capture them. Build structures. Generate resources passively.</p>
-      </div>
-      <div class="step reveal">
-        <div class="step-number"><span class="step-icon">&#9881;</span></div>
-        <h3 class="step-title">Create</h3>
-        <p class="step-desc">Place quests, set traps, leave echoes. Shape the world for everyone who walks after you.</p>
-      </div>
-      <div class="step reveal">
-        <div class="step-number"><span class="step-icon">&#9876;</span></div>
-        <h3 class="step-title">Compete</h3>
-        <p class="step-desc">Duel raiders. Race rivals. Siege clan forts. Rise through the leaderboard by walking harder.</p>
-      </div>
-    </div>
-  </div>
+<!-- STATS -->
+<section class="stats">
+<div class="mx"><div class="stats-g">
+<div class="reveal"><div class="sn" data-c="73">0</div><div class="sl">Territorien</div></div>
+<div class="reveal d1"><div class="sn" data-c="11">0</div><div class="sl">Live Events</div></div>
+<div class="reveal d2"><div class="sn" data-c="26">0</div><div class="sl">Aktive Spieler</div></div>
+<div class="reveal d3"><div class="sn" data-c="7">0</div><div class="sl">Mini-Games</div></div>
+</div></div>
 </section>
 
-<!-- ============================================================
-     STATS
-     ============================================================ -->
-<section class="stats" id="stats">
-  <div class="section-inner">
-    <div class="stats-grid reveal-stagger">
-      <div class="stat-card reveal">
-        <div class="stat-value" data-target="45000" data-suffix="+">0</div>
-        <div class="stat-label">Lines of Code</div>
-      </div>
-      <div class="stat-card reveal">
-        <div class="stat-value" data-target="35" data-suffix="+">0</div>
-        <div class="stat-label">Game Systems</div>
-      </div>
-      <div class="stat-card reveal">
-        <div class="stat-value" data-target="6" data-suffix="">0</div>
-        <div class="stat-label">Movement Classes</div>
-      </div>
-    </div>
-  </div>
+<!-- FEATURES -->
+<section class="feat" id="feat">
+<div class="mx">
+<div class="feat-hd reveal"><h2>Was dich erwartet</h2><p>Kein Feature existiert ohne Grund. Jedes verbindet dich mit der echten Welt.</p></div>
+<div class="feat-g">
+<a href="/features/territorien.html" class="fc reveal" style="--ac:var(--cyan)"><div class="fc-i" style="background:rgba(0,212,255,.1);color:var(--cyan)">&#9873;</div><h3>Territorien</h3><p>Laufe, renne, fahre Rad — beanspruche das Land unter deinen Füßen. Deine Farbe auf der Karte.</p><span class="more" style="color:var(--cyan)">MEHR ERFAHREN &rarr;</span></a>
+<a href="/features/echos.html" class="fc reveal d1" style="--ac:var(--violet)"><div class="fc-i" style="background:rgba(123,97,255,.1);color:var(--violet)">&#9835;</div><h3>Echos</h3><p>Hinterlasse Nachrichten an Orten. Audio, Fotos, Videos — für Fremde zum Entdecken.</p><span class="more" style="color:var(--violet)">MEHR ERFAHREN &rarr;</span></a>
+<a href="/features/events.html" class="fc reveal d2" style="--ac:var(--green)"><div class="fc-i" style="background:rgba(0,255,136,.1);color:var(--green)">&#9889;</div><h3>Spontan-Events</h3><p>Hundespaziergang in 30min? Party heute Abend? Events pulsieren live auf der Karte.</p><span class="more" style="color:var(--green)">MEHR ERFAHREN &rarr;</span></a>
+<a href="/features/defense.html" class="fc reveal d3" style="--ac:var(--gold)"><div class="fc-i" style="background:rgba(255,184,0,.1);color:var(--gold)">&#9812;</div><h3>Defense Games</h3><p>Schütze dein Land mit Tic Tac Toe, Schnick Schnack Schnuck oder Mini-Schach.</p><span class="more" style="color:var(--gold)">MEHR ERFAHREN &rarr;</span></a>
+<a href="/features/social.html" class="fc reveal d4" style="--ac:var(--red)"><div class="fc-i" style="background:rgba(255,59,111,.1);color:var(--red)">&#9876;</div><h3>Clans &amp; Freunde</h3><p>Bilde Crews. Finde Gleichgesinnte. Fordere Fremde heraus. Echte Verbindungen.</p><span class="more" style="color:var(--red)">MEHR ERFAHREN &rarr;</span></a>
+<a href="/features/quests.html" class="fc reveal d5" style="--ac:var(--cyan)"><div class="fc-i" style="background:rgba(0,212,255,.1);color:var(--cyan)">&#9978;</div><h3>Quests &amp; Challenges</h3><p>Erstelle Abenteuer. Schritte-Challenges, Zeitläufe, Entdecker-Missionen.</p><span class="more" style="color:var(--cyan)">MEHR ERFAHREN &rarr;</span></a>
+</div>
+</div>
 </section>
 
-<!-- ============================================================
-     TECH BANNER — terminal
-     ============================================================ -->
-<section class="tech-banner">
-  <div class="section-inner">
-    <div class="terminal reveal">
-      <div class="terminal-header">
-        <div class="terminal-dot"></div>
-        <div class="terminal-dot"></div>
-        <div class="terminal-dot"></div>
-        <span class="terminal-title">mapraiders &mdash; system overview</span>
-      </div>
-      <div class="terminal-body">
-        <div class="terminal-line">
-          <span class="terminal-prompt">$</span>
-          <span class="terminal-cmd">mapraiders --status</span>
-        </div>
-        <div class="terminal-output">
-          Engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight">React Native + Node.js</span>
-        </div>
-        <div class="terminal-output">
-          Backend&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight">Express + PostgreSQL + Redis</span>
-        </div>
-        <div class="terminal-output">
-          Realtime&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight-accent">Socket.IO + GPS Streaming</span>
-        </div>
-        <div class="terminal-output">
-          Map&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight-accent">MapLibre GL + Custom Hex Grid</span>
-        </div>
-        <div class="terminal-output">
-          Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="highlight">35+ interconnected game systems</span>
-        </div>
-        <div class="terminal-output">
-          Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: var(--success);">&#9679; BUILDING</span>
-        </div>
-        <div class="terminal-line" style="margin-top: 0.5rem;">
-          <span class="terminal-prompt">$</span>
-          <span class="terminal-cmd"><span class="terminal-cursor"></span></span>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- SPLIT -->
+<section class="split">
+<div class="mx">
+<div class="split-row reveal">
+<div class="split-l">
+<div class="num">1.000</div>
+<div class="lbl">Likes</div>
+<div class="desc">Du sitzt allein. Dein Daumen scrollt. Ein Herz hier, ein Herz da. Keins davon ist echt. Niemand kennt dein Gesicht. Niemand teilt deinen Weg.</div>
+</div>
+<div class="split-r">
+<div class="num">1</div>
+<div class="lbl">Echte Begegnung</div>
+<div class="desc">Zwei Menschen treffen sich an einem Punkt auf der Karte. Ein Lachen. Ein Handschlag. Eine Geschichte die bleibt. Das ist mehr wert als jede Timeline.</div>
+</div>
+</div>
+<p class="split-quote reveal d1">Echte Begegnungen sind mehr wert als tausend Likes.</p>
+</div>
 </section>
 
-<!-- ============================================================
-     CTA
-     ============================================================ -->
-<section class="cta" id="cta">
-  <div class="section-inner">
-    <div class="cta-box reveal">
-      <div class="section-label">// Join the Raid</div>
-      <h2 class="cta-title">Claim Your First Territory</h2>
-      <p class="cta-sub">MapRaiders is coming soon. Be among the first to walk the grid.</p>
-      <div class="cta-buttons">
-        <a href="#" class="btn-primary">
-          <svg class="store-icon" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-          App Store
-        </a>
-        <a href="#" class="btn-secondary">
-          <svg class="store-icon" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 1.33c.576.333.576 1.166 0 1.5l-2.302 1.33-2.535-2.535 2.535-2.625zM5.864 2.658L16.8 8.99l-2.302 2.302-8.635-8.635z" fill="currentColor"/></svg>
-          Google Play
-        </a>
-      </div>
-    </div>
-  </div>
+<!-- ECHO -->
+<section class="echo" id="echo">
+<div class="mx"><div class="echo-g">
+<div class="echo-vis reveal">
+<div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring-c">&#127911;</div></div>
+</div>
+<div class="echo-txt">
+<h2 class="reveal">Hinterlasse ein <span>Echo</span></h2>
+<p class="reveal d1">Du gehst durch eine fremde Straße. Dein Handy vibriert leise. Eine Nachricht — von jemandem der vor dir hier war. Eine Stimme. Ein Foto. Ein Geheimnis.</p>
+<p class="reveal d2">Und jetzt stell dir vor: <b>Du</b> hinterlässt eines. An deinem Lieblingsort. Auf einer Bank. An einer Kreuzung. Jemand wird es finden. Und sich fragen...</p>
+<div class="terminal reveal d3"><span id="tw"></span><span class="cursor-blink"></span></div>
+</div>
+</div></div>
 </section>
 
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
-<footer class="footer">
-  <div class="footer-brand">MAPRAIDERS</div>
-  <div class="footer-tagline">Built with GPS. Played with feet.</div>
-  <div style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin:1rem 0 0.75rem;">
-    <a href="agb.html" style="color:var(--muted);text-decoration:none;font-size:0.8rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">AGB</a>
-    <a href="datenschutz.html" style="color:var(--muted);text-decoration:none;font-size:0.8rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">Datenschutz</a>
-    <a href="impressum.html" style="color:var(--muted);text-decoration:none;font-size:0.8rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">Impressum</a>
-    <a href="kontakt.html" style="color:var(--muted);text-decoration:none;font-size:0.8rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted)'">Kontakt</a>
-  </div>
-  <div class="footer-domain"><a href="https://mapraiders.com">mapraiders.com</a> &mdash; &copy; 2026 Ren&eacute; Scafarti</div>
-</footer>
+<!-- SPONTAN EVENT -->
+<section class="spontan">
+<div class="mx">
+<h2 class="spontan-hd reveal">Was wenn das Abenteuer zu dir kommt?</h2>
+<div class="ev-card reveal d1">
+<div class="ev-badge"><span class="pulse"></span>SPONTAN-EVENT</div>
+<div class="ev-title">&#128054; Hundespaziergang am Park</div>
+<div class="ev-meta">500m entfernt &bull; startet in</div>
+<div class="ev-timer" id="cd">28:00</div>
+<div class="ev-ppl"><b id="ppl">23</b> Teilnehmer sind dabei</div>
+</div>
+</div>
+</section>
 
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
+<!-- MANIFESTO -->
+<section class="mani" id="mani">
+<div class="mx">
+<h2 class="reveal">Wir glauben dass <span class="cy">echte Begegnungen</span> mehr wert sind als tausend Likes. Dass <span class="vi">die Straße</span> das bessere Social Network ist. Dass <span class="gr">Abenteuer</span> vor deiner Haustür warten. Und dass <span class="go">du bereit bist</span> dafür.</h2>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+<div class="mx"><div class="cta-box reveal">
+<h2>Bereit für draußen?</h2>
+<p>Kostenlos. Keine Werbung. Keine versteckten Kosten.<br>Nur du, die Karte und echte Menschen.</p>
+<a href="/MapRaiders.apk" class="btn-p">&#9658; Jetzt kostenlos laden</a>
+<p class="cta-plat">Android APK &bull; iOS kommt bald</p>
+</div></div>
+</section>
+
+<!-- FOOTER -->
+<footer><div class="mx"><div class="f-i">
+<div class="f-b">MAPRAIDERS</div>
+<div class="f-l"><a href="/agb.html">AGB</a><a href="/datenschutz.html">Datenschutz</a><a href="/impressum.html">Impressum</a><a href="/kontakt.html">Kontakt</a></div>
+</div><p class="f-c">&copy; 2026 MapRaiders — Social Media. Neu definiert.</p></div></footer>
+
 <script>
-(function() {
-  'use strict';
+/* Particles */
+!function(){const c=document.getElementById('P'),x=c.getContext('2d');let w,h,pts=[];function rs(){w=c.width=innerWidth;h=c.height=innerHeight}rs();addEventListener('resize',rs);for(let i=0;i<60;i++)pts.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*1.2+.3,dx:(Math.random()-.5)*.25,dy:(Math.random()-.5)*.25,o:Math.random()*.3+.05});!function d(){x.clearRect(0,0,w,h);const s=getComputedStyle(document.documentElement);const pc=s.getPropertyValue('--particle-color').trim()||'0,60,120';pts.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;x.beginPath();x.arc(p.x,p.y,p.r,0,6.28);x.fillStyle=`rgba(${pc},${p.o})`;x.fill()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(pts[i].x,pts[i].y);x.lineTo(pts[j].x,pts[j].y);x.strokeStyle=`rgba(${pc},${.04*(1-d/130)})`;x.stroke()}}requestAnimationFrame(d)}()}();
 
-  // ------- Mobile nav toggle -------
-  const hamburger = document.getElementById('navHamburger');
-  const navLinks  = document.getElementById('navLinks');
+/* Reveal */
+const io=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px'});
+document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
 
-  hamburger.addEventListener('click', function() {
-    navLinks.classList.toggle('open');
-  });
+/* Counters */
+const co=new IntersectionObserver(e=>{e.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,t=+el.dataset.c;let c=0;const s=Math.max(1,Math.ceil(t/35)),i=setInterval(()=>{c+=s;if(c>=t){c=t;clearInterval(i)}el.textContent=c.toLocaleString('de-DE')},45);co.unobserve(el)})},{threshold:.5});
+document.querySelectorAll('[data-c]').forEach(e=>co.observe(e));
 
-  // Close nav on link click
-  navLinks.querySelectorAll('a').forEach(function(link) {
-    link.addEventListener('click', function() {
-      navLinks.classList.remove('open');
-    });
-  });
+/* Nav scroll */
+addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('s',scrollY>60));
 
-  // ------- Scroll reveal -------
-  const reveals = document.querySelectorAll('.reveal');
+/* Cursor glow */
+document.addEventListener('mousemove',e=>{const g=document.getElementById('G');g.style.left=e.clientX+'px';g.style.top=e.clientY+'px'});
 
-  function checkReveal() {
-    const windowHeight = window.innerHeight;
-    reveals.forEach(function(el) {
-      const top = el.getBoundingClientRect().top;
-      if (top < windowHeight - 80) {
-        el.classList.add('visible');
-      }
-    });
-  }
+/* Theme toggle */
+function tog(){const h=document.documentElement,t=h.dataset.theme==='dark'?'light':'dark';h.dataset.theme=t;localStorage.setItem('mapraiders-theme',t);document.getElementById('thm').innerHTML=t==='dark'?'&#9790;':'&#9788;'}
+!function(){const t=localStorage.getItem('mapraiders-theme')||'light';document.documentElement.dataset.theme=t;document.getElementById('thm').innerHTML=t==='dark'?'&#9790;':'&#9788;'}();
 
-  window.addEventListener('scroll', checkReveal, { passive: true });
-  window.addEventListener('resize', checkReveal);
-  checkReveal(); // Initial check
+/* Typewriter */
+!function(){const txt='> Wer hat das Echo hinterlassen? ';const el=document.getElementById('tw');let i=0;const tio=new IntersectionObserver(e=>{e.forEach(e=>{if(!e.isIntersecting)return;tio.unobserve(e.target);const iv=setInterval(()=>{if(i>=txt.length){clearInterval(iv);return}el.textContent+=txt[i];i++},55)})},{threshold:.5});tio.observe(el.parentElement)}();
 
-  // ------- Counter animation -------
-  const counters = document.querySelectorAll('.stat-value[data-target]');
-  let countersAnimated = false;
+/* Fake countdown */
+!function(){let m=27,s=59;const el=document.getElementById('cd');setInterval(()=>{s--;if(s<0){s=59;m--}if(m<0){m=27;s=59}el.textContent=m+':'+(s<10?'0':'')+s},1000)}();
 
-  function animateCounters() {
-    if (countersAnimated) return;
-    const statsSection = document.getElementById('stats');
-    if (!statsSection) return;
-
-    const rect = statsSection.getBoundingClientRect();
-    if (rect.top > window.innerHeight - 100) return;
-
-    countersAnimated = true;
-
-    counters.forEach(function(el) {
-      const target = parseInt(el.getAttribute('data-target'), 10);
-      const suffix = el.getAttribute('data-suffix') || '';
-      const duration = 2000;
-      const start = performance.now();
-
-      function update(now) {
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        // Ease out cubic
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const current = Math.floor(eased * target);
-
-        if (target >= 1000) {
-          el.textContent = current.toLocaleString('en-US') + suffix;
-        } else {
-          el.textContent = current + suffix;
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        }
-      }
-
-      requestAnimationFrame(update);
-    });
-  }
-
-  window.addEventListener('scroll', animateCounters, { passive: true });
-  animateCounters(); // Initial check
-
-  // ------- Navbar background on scroll -------
-  const navbar = document.getElementById('navbar');
-
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 50) {
-      navbar.style.background = 'rgba(10,14,23,0.95)';
-    } else {
-      navbar.style.background = 'rgba(10,14,23,0.8)';
-    }
-  }, { passive: true });
-
-})();
+/* Fake participants */
+!function(){const el=document.getElementById('ppl');let n=23;setInterval(()=>{if(Math.random()>.6){n++;el.textContent=n}},4000)}();
 </script>
-
 </body>
 </html>

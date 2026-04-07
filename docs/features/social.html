@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social System — MapRaiders</title>
+<meta name="description" content="Echte Verbindungen mit echten Menschen. Freunde finden, Clans gruenden, gemeinsam die Stadt erobern.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+html[data-theme="dark"]{
+  --bg:#0A0E17;--card:#141B2D;--card-hover:#1A2340;--text:#E8ECF4;--muted:#6B7A99;--dim:#3A4560;
+  --glass:rgba(20,27,45,0.6);--glass-border:rgba(0,255,136,0.08);--shadow:rgba(0,0,0,0.3);
+  --nav-bg:rgba(10,14,23,0.85);--border-subtle:rgba(255,255,255,0.04);
+}
+html[data-theme="light"]{
+  --bg:#F5F7FA;--card:#FFFFFF;--card-hover:#F0FFF5;--text:#1A1F2E;--muted:#6B7A99;--dim:#B0B8C9;
+  --glass:rgba(255,255,255,0.7);--glass-border:rgba(0,255,136,0.12);--shadow:rgba(0,0,0,0.08);
+  --nav-bg:rgba(245,247,250,0.9);--border-subtle:rgba(0,0,0,0.06);
+}
+:root{
+  --accent:#00FF88;--accent-dim:rgba(0,255,136,0.15);--accent-glow:rgba(0,255,136,0.4);
+  --cyan:#00D4FF;--violet:#7B61FF;--green:#00FF88;--gold:#FFB800;--red:#FF3B6F;
+  --font-display:'Orbitron',monospace;--font-body:'Sora',sans-serif;
+}
+
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);transition:all .4s}
+.nav.scrolled{padding:10px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-logo{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.5px;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#050811;transition:all .3s;box-shadow:0 0 30px rgba(0,212,255,0.2)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,212,255,0.4)}.nav-cta::after{display:none}
+.theme-toggle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s;cursor:pointer}
+.theme-toggle:hover{border-color:var(--accent);transform:scale(1.1)}
+.dropdown{position:relative}
+.dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;background:var(--card);border:1px solid var(--border-subtle);border-radius:12px;padding:8px 0;min-width:200px;box-shadow:0 20px 60px var(--shadow);transition:all .3s;z-index:1001}
+.dropdown:hover .dropdown-menu{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.dropdown-menu a{display:block;padding:10px 20px;font-size:13px;color:var(--muted);transition:all .2s}
+.dropdown-menu a:hover{color:var(--accent);background:var(--accent-dim)}
+.dropdown-menu a::after{display:none}
+@media(max-width:768px){.nav-links a:not(.nav-cta):not(.theme-toggle){display:none}.nav-logo{font-size:15px}.dropdown-menu{display:none}}
+
+.hero{position:relative;min-height:70vh;display:flex;align-items:center;overflow:hidden;padding:140px 0 80px}
+.hero-glow{position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);animation:glowPulse 6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.15)}}
+.hero-content{position:relative;z-index:2;text-align:center;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);padding:8px 20px;border-radius:100px;border:1px solid rgba(0,255,136,0.2);background:var(--accent-dim);margin-bottom:32px}
+.hero h1{font-family:var(--font-display);font-size:clamp(32px,6vw,72px);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(15px,2.2vw,20px);color:var(--muted);max-width:650px;margin:0 auto 40px;line-height:1.7}
+.hero p strong{color:var(--text);font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--accent);transition:all .3s;margin-top:20px}
+.back-link:hover{gap:12px}
+
+section{padding:100px 0;position:relative}
+section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),transparent)}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header h2{font-family:var(--font-display);font-size:clamp(22px,4vw,40px);font-weight:800;margin-bottom:16px}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.section-header p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Feature blocks */
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:768px){.social-grid{grid-template-columns:1fr}}
+.social-block{padding:40px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);transition:all .4s}
+.social-block:hover{border-color:var(--glass-border);box-shadow:0 10px 40px var(--shadow)}
+.social-block h3{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:16px;color:var(--accent);display:flex;align-items:center;gap:10px}
+.social-block h3 .s-icon{font-size:24px}
+.social-block p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:14px}
+.social-block ul{list-style:none;padding:0}
+.social-block ul li{font-size:14px;color:var(--muted);line-height:1.8;padding:6px 0;padding-left:20px;position:relative}
+.social-block ul li::before{content:'\25B8';position:absolute;left:0;color:var(--accent)}
+
+/* Clan section */
+.clan-roles{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+@media(max-width:768px){.clan-roles{grid-template-columns:1fr}}
+.role-card{padding:36px 28px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);text-align:center;transition:all .4s}
+.role-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px var(--shadow);border-color:var(--glass-border)}
+.role-icon{font-size:48px;margin-bottom:16px;display:block}
+.role-card h3{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:12px}
+.role-card p{font-size:14px;color:var(--muted);line-height:1.7}
+.role-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:100px;margin-top:12px}
+.role-badge.leader{background:rgba(255,184,0,0.15);color:var(--gold)}
+.role-badge.officer{background:var(--accent-dim);color:var(--accent)}
+.role-badge.member{background:rgba(0,212,255,0.15);color:var(--cyan)}
+
+/* Profile section */
+.profile-demo{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.profile-demo{grid-template-columns:1fr;text-align:center}}
+.profile-card-visual{padding:40px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);text-align:center}
+.avatar-circle{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--cyan));margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 30px var(--accent-glow)}
+.profile-name{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:4px}
+.profile-level{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:16px}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.p-stat{padding:12px 8px;border-radius:10px;background:var(--bg);border:1px solid var(--border-subtle)}
+.p-stat-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--accent)}
+.p-stat-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);margin-right:6px;animation:onlinePulse 2s infinite}
+@keyframes onlinePulse{0%,100%{opacity:1}50%{opacity:.4}}
+.profile-text h3{font-family:var(--font-display);font-size:clamp(18px,3vw,28px);font-weight:800;margin-bottom:16px}
+.profile-text h3 span{color:var(--accent)}
+.profile-text p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+
+/* Nearby players */
+.nearby-section{padding:40px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle)}
+.nearby-section h3{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:1px;margin-bottom:24px;text-align:center;color:var(--accent)}
+.nearby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.nearby-player{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border-subtle);transition:all .3s}
+.nearby-player:hover{border-color:var(--accent);transform:translateX(4px)}
+.nearby-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--violet));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.nearby-info{flex:1}
+.nearby-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.nearby-dist{font-size:11px;color:var(--muted)}
+.nearby-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nearby-status.online{background:var(--accent);box-shadow:0 0 6px var(--accent-glow)}
+.nearby-status.away{background:var(--gold)}
+
+/* Dog walking */
+.dog-section{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.dog-section{grid-template-columns:1fr;text-align:center}}
+.dog-visual{display:flex;justify-content:center;font-size:80px;opacity:.8}
+.dog-text h3{font-family:var(--font-display);font-size:clamp(18px,3vw,28px);font-weight:800;margin-bottom:16px}
+.dog-text h3 span{color:var(--accent)}
+.dog-text p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:16px}
+.dog-features{display:flex;flex-wrap:wrap;gap:8px}
+.dog-feat{font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;background:var(--accent-dim);color:var(--accent)}
+
+footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:2px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);transition:color .3s}.footer-links a:hover{color:var(--accent)}
+.footer-copy{width:100%;text-align:center;margin-top:24px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav"><div class="nav-inner">
+  <a href="/" class="nav-logo">MAPRAIDERS</a>
+  <div class="nav-links">
+    <div class="dropdown">
+      <a href="/#features">Features</a>
+      <div class="dropdown-menu">
+        <a href="/features/territorien.html">Territorien</a>
+        <a href="/features/echos.html">Echos</a>
+        <a href="/features/events.html">Events</a>
+        <a href="/features/defense.html">Defense Games</a>
+        <a href="/features/social.html">Social</a>
+        <a href="/features/quests.html">Quests</a>
+      </div>
+    </div>
+    <a href="/features/echos.html">Echos</a>
+    <a href="/#manifesto">Vision</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">&#9790;</button>
+    <a href="/MapRaiders.apk" class="nav-cta">Download</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content container">
+    <div class="hero-badge">&#128101; Social System</div>
+    <h1>Echte Menschen.<br><span>Echte Verbindungen.</span></h1>
+    <p>MapRaiders ist mehr als ein Spiel. Es ist ein <strong>soziales Netzwerk, das draussen stattfindet</strong>. Finde Freunde, gruende Clans, entdecke wer sich in deiner Naehe bewegt. Kein Algorithmus — nur echte Begegnungen.</p>
+    <a href="/" class="back-link">&larr; Zurueck zur Startseite</a>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Freunde & <em>Verbindungen</em></h2>
+      <p>Finde Spieler, schicke Anfragen, baue echte Freundschaften auf — nicht durch Likes, sondern durch gemeinsame Abenteuer.</p>
+    </div>
+
+    <div class="social-grid">
+      <div class="social-block reveal">
+        <h3><span class="s-icon">&#128269;</span> Spieler finden</h3>
+        <p>Suche nach Spielern per Benutzername oder entdecke Spieler in deiner Naehe auf der Karte. Jeder Spieler hat ein oeffentliches Profil mit Statistiken und Erfolgen.</p>
+        <ul>
+          <li>Suche per Username oder Anzeigename</li>
+          <li>Spieler in der Naehe werden auf der Karte angezeigt</li>
+          <li>Oeffentliche Profile mit Stats einsehbar</li>
+          <li>Letzte Aktivitaet und Online-Status sichtbar</li>
+        </ul>
+      </div>
+      <div class="social-block reveal reveal-delay-1">
+        <h3><span class="s-icon">&#129309;</span> Freundschaftssystem</h3>
+        <p>Schicke Freundschaftsanfragen an Spieler, die du auf deinen Abenteuern triffst. Akzeptierte Freunde erscheinen in deiner Freundesliste mit Echtzeit-Status.</p>
+        <ul>
+          <li>Freundschaftsanfragen senden und empfangen</li>
+          <li>Freundesliste mit Online-Status</li>
+          <li>Schnellzugriff auf Freundes-Profile</li>
+          <li>Benachrichtigung bei Freundes-Aktivitaeten</li>
+        </ul>
+      </div>
+      <div class="social-block reveal reveal-delay-2">
+        <h3><span class="s-icon">&#128172;</span> Kommunikation</h3>
+        <p>Kommuniziere direkt mit Freunden und Clan-Mitgliedern. Der integrierte Messenger macht externe Apps ueberfluessig — alles passiert innerhalb von MapRaiders.</p>
+        <ul>
+          <li>Direktnachrichten an Freunde</li>
+          <li>Clan-Chat fuer alle Mitglieder</li>
+          <li>Event-bezogene Gruppengespraeche</li>
+          <li>Standort-Sharing mit Freunden</li>
+        </ul>
+      </div>
+      <div class="social-block reveal reveal-delay-3">
+        <h3><span class="s-icon">&#127760;</span> Online-Status</h3>
+        <p>Sieh auf einen Blick, wer gerade online ist und wo sich deine Freunde befinden. Der Online-Status wird automatisch aktualisiert, solange die App aktiv ist.</p>
+        <ul>
+          <li>Gruener Punkt: Online und aktiv</li>
+          <li>Gelber Punkt: Kuerzlich aktiv</li>
+          <li>Grauer Punkt: Offline</li>
+          <li>Optionale Standort-Freigabe fuer Freunde</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2><em>Clans</em> — Gemeinsam staerker</h2>
+      <p>Gruende einen Clan, rekrutiere Mitglieder und erobere gemeinsam ganze Stadtteile.</p>
+    </div>
+
+    <div class="social-grid" style="margin-bottom:40px">
+      <div class="social-block reveal">
+        <h3><span class="s-icon">&#127984;</span> Clan gruenden</h3>
+        <p>Erstelle deinen eigenen Clan mit einem einzigartigen Namen und einer Beschreibung. Als Gruender bist du automatisch Leader und kannst die Struktur deiner Gruppe bestimmen.</p>
+        <p>Jeder Clan hat ein oeffentliches Profil mit Statistiken: Gesamtgebiet aller Mitglieder, Anzahl der Verteidigungen, gewonnene Kaempfe und den Clan-Rang auf dem Leaderboard.</p>
+      </div>
+      <div class="social-block reveal reveal-delay-1">
+        <h3><span class="s-icon">&#128231;</span> Einladen & Verwalten</h3>
+        <p>Lade Spieler per Username oder ueber die Naehe-Funktion in deinen Clan ein. Verwalte Mitglieder, vergib Rollen und koordiniere gemeinsame Aktionen auf der Karte.</p>
+        <p>Officers koennen in deinem Namen Einladungen verschicken und neue Mitglieder aufnehmen. So waechst dein Clan auch wenn du gerade nicht aktiv bist.</p>
+      </div>
+    </div>
+
+    <div class="clan-roles">
+      <div class="role-card reveal">
+        <span class="role-icon">&#128081;</span>
+        <h3>Leader</h3>
+        <p>Der Gruender und Anfuehrer des Clans. Volle Kontrolle ueber alle Einstellungen, Mitglieder und strategische Entscheidungen. Es kann nur einen Leader pro Clan geben.</p>
+        <span class="role-badge leader">Volle Rechte</span>
+      </div>
+      <div class="role-card reveal reveal-delay-1">
+        <span class="role-icon">&#9733;</span>
+        <h3>Officer</h3>
+        <p>Vertrauenspersonen des Leaders. Koennen Einladungen verschicken, Mitglieder verwalten und im Namen des Clans handeln. Ideal fuer aktive Mitspieler.</p>
+        <span class="role-badge officer">Erweiterte Rechte</span>
+      </div>
+      <div class="role-card reveal reveal-delay-2">
+        <span class="role-icon">&#128100;</span>
+        <h3>Member</h3>
+        <p>Regulaere Clan-Mitglieder. Koennen am Clan-Chat teilnehmen, an gemeinsamen Aktionen mitwirken und das Clan-Banner auf ihrem Profil tragen.</p>
+        <span class="role-badge member">Standard Rechte</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="profile-demo">
+      <div class="profile-card-visual reveal">
+        <div class="avatar-circle">&#128100;</div>
+        <div class="profile-name"><span class="online-dot"></span>NightWalker_42</div>
+        <div class="profile-level">Level 23 &bull; Entdecker</div>
+        <div class="profile-stats">
+          <div class="p-stat">
+            <div class="p-stat-val">12.4k</div>
+            <div class="p-stat-label">m&sup2; Gebiet</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-val">47</div>
+            <div class="p-stat-label">Echos</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-val">89%</div>
+            <div class="p-stat-label">Win-Rate</div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-text">
+        <h3 class="reveal">Dein <span>Profil</span></h3>
+        <p class="reveal reveal-delay-1">Jeder Spieler hat ein detailliertes Profil, das seine Erfolge und Statistiken zeigt. Territorien, Echos, gewonnene Defense-Games, Clan-Zugehoerigkeit — alles auf einen Blick.</p>
+        <p class="reveal reveal-delay-2">Waehle einen Avatar, passe deinen Anzeigenamen an und zeige der Welt, wer du auf der Karte bist. Dein Profil ist deine Visitenkarte in der MapRaiders-Welt.</p>
+        <p class="reveal reveal-delay-3">Andere Spieler koennen dein Profil einsehen, dir Freundschaftsanfragen schicken oder dich zu ihrem Clan einladen — alles basierend auf deinen echten Leistungen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="nearby-section reveal">
+      <h3>&#128205; Spieler in der Naehe</h3>
+      <div class="nearby-grid">
+        <div class="nearby-player">
+          <div class="nearby-avatar">&#128054;</div>
+          <div class="nearby-info">
+            <div class="nearby-name">DogWalker_Berlin</div>
+            <div class="nearby-dist">120m entfernt</div>
+          </div>
+          <div class="nearby-status online"></div>
+        </div>
+        <div class="nearby-player">
+          <div class="nearby-avatar">&#127939;</div>
+          <div class="nearby-info">
+            <div class="nearby-name">SprintQueen</div>
+            <div class="nearby-dist">340m entfernt</div>
+          </div>
+          <div class="nearby-status online"></div>
+        </div>
+        <div class="nearby-player">
+          <div class="nearby-avatar">&#9819;</div>
+          <div class="nearby-info">
+            <div class="nearby-name">ChessMaster_99</div>
+            <div class="nearby-dist">580m entfernt</div>
+          </div>
+          <div class="nearby-status away"></div>
+        </div>
+        <div class="nearby-player">
+          <div class="nearby-avatar">&#127912;</div>
+          <div class="nearby-info">
+            <div class="nearby-name">StreetArtist</div>
+            <div class="nearby-dist">720m entfernt</div>
+          </div>
+          <div class="nearby-status online"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="dog-section">
+      <div class="dog-visual reveal">&#128054;</div>
+      <div class="dog-text">
+        <h3 class="reveal">Die <span>Hunde-Community</span></h3>
+        <p class="reveal reveal-delay-1">MapRaiders hat eine besondere Verbindung zur Hunde-Community. Hundebesitzer sind taeglich draussen, laufen Routen und treffen andere Gassi-Gaenger. Das macht sie zu perfekten MapRaiders.</p>
+        <p class="reveal reveal-delay-2">Spezielle Features fuer Hundebesitzer: Hundespaziergang-Events, Gassi-Routen teilen, andere Hundemenschen in der Naehe finden und gemeinsame Spaziergaenge planen.</p>
+        <div class="dog-features reveal reveal-delay-3">
+          <span class="dog-feat">Gassi-Events</span>
+          <span class="dog-feat">Hunde-Routen</span>
+          <span class="dog-feat">Hundepark-Finder</span>
+          <span class="dog-feat">Gassi-Gruppen</span>
+          <span class="dog-feat">Hunde-Profil</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div class="footer-inner">
+    <div class="footer-brand">MAPRAIDERS</div>
+    <div class="footer-links">
+      <a href="/agb.html">AGB</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/kontakt.html">Kontakt</a>
+    </div>
+  </div>
+  <p class="footer-copy">&copy; 2026 MapRaiders &mdash; Social Media. Neu definiert.</p>
+</div></footer>
+
+<script>
+!function(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggle');
+  const saved=localStorage.getItem('mapraiders-theme')||'dark';
+  html.setAttribute('data-theme',saved);
+  btn.innerHTML=saved==='dark'?'\u263E':'\u2600';
+  btn.addEventListener('click',()=>{
+    const current=html.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    html.setAttribute('data-theme',next);
+    localStorage.setItem('mapraiders-theme',next);
+    btn.innerHTML=next==='dark'?'\u263E':'\u2600';
+  });
+}();
+const ob=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));
+addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+</script>
+</body>
+</html>

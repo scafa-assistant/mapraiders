@@ -1,4 +1,5 @@
 import * as Location from 'expo-location';
+import { Alert, Platform } from 'react-native';
 import type { GpsPoint, MovementClass } from '../utils/types';
 import { SPEED_THRESHOLDS } from '../utils/constants';
 
@@ -13,6 +14,25 @@ export class GpsService {
    */
   async requestPermissions(): Promise<boolean> {
     try {
+      // Pre-permission dialog (Play Store requirement)
+      const userAccepted = await new Promise<boolean>((resolve) => {
+        Alert.alert(
+          'Standort-Berechtigung',
+          'MapRaiders benötigt deinen GPS-Standort, um:\n\n' +
+          '• Deine Position auf der Karte anzuzeigen\n' +
+          '• Territorien beim Gehen/Laufen zu beanspruchen\n' +
+          '• Quests und Echos in deiner Nähe zu finden\n\n' +
+          'Du kannst die Berechtigung jederzeit in den Geräteeinstellungen widerrufen.',
+          [
+            { text: 'Nicht jetzt', onPress: () => resolve(false), style: 'cancel' },
+            { text: 'Weiter', onPress: () => resolve(true) },
+          ],
+          { cancelable: false }
+        );
+      });
+
+      if (!userAccepted) return false;
+
       const { status: foregroundStatus } =
         await Location.requestForegroundPermissionsAsync();
 
@@ -20,11 +40,35 @@ export class GpsService {
         return false;
       }
 
-      // Attempt background permission (may not be granted, but that's okay)
-      try {
-        await Location.requestBackgroundPermissionsAsync();
-      } catch {
-        // Background permission is optional; foreground is sufficient for basic use.
+      // Background location pre-permission dialog
+      if (Platform.OS === 'android') {
+        const bgAccepted = await new Promise<boolean>((resolve) => {
+          Alert.alert(
+            'Hintergrund-Standort',
+            'Damit MapRaiders Territorien auch bei geschlossenem Bildschirm beanspruchen kann, ' +
+            'benötigen wir die Berechtigung "Immer erlauben".\n\n' +
+            'Ohne diese Berechtigung funktioniert die App nur im Vordergrund.',
+            [
+              { text: 'Nur im Vordergrund', onPress: () => resolve(false) },
+              { text: 'Immer erlauben', onPress: () => resolve(true) },
+            ],
+            { cancelable: false }
+          );
+        });
+
+        if (bgAccepted) {
+          try {
+            await Location.requestBackgroundPermissionsAsync();
+          } catch {
+            // Background permission is optional
+          }
+        }
+      } else {
+        try {
+          await Location.requestBackgroundPermissionsAsync();
+        } catch {
+          // Background permission is optional
+        }
       }
 
       return true;

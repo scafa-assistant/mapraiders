@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events & Meetups — MapRaiders</title>
+<meta name="description" content="Erstelle spontane Events, triff echte Menschen in deiner Naehe. Hundespaziergang, Sport, Party — alles live auf der Karte.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+html[data-theme="dark"]{
+  --bg:#0A0E17;--card:#141B2D;--card-hover:#1A2340;--text:#E8ECF4;--muted:#6B7A99;--dim:#3A4560;
+  --glass:rgba(20,27,45,0.6);--glass-border:rgba(255,184,0,0.08);--shadow:rgba(0,0,0,0.3);
+  --nav-bg:rgba(10,14,23,0.85);--border-subtle:rgba(255,255,255,0.04);
+}
+html[data-theme="light"]{
+  --bg:#F5F7FA;--card:#FFFFFF;--card-hover:#FFFBF0;--text:#1A1F2E;--muted:#6B7A99;--dim:#B0B8C9;
+  --glass:rgba(255,255,255,0.7);--glass-border:rgba(255,184,0,0.12);--shadow:rgba(0,0,0,0.08);
+  --nav-bg:rgba(245,247,250,0.9);--border-subtle:rgba(0,0,0,0.06);
+}
+:root{
+  --accent:#FFB800;--accent-dim:rgba(255,184,0,0.15);--accent-glow:rgba(255,184,0,0.4);
+  --cyan:#00D4FF;--violet:#7B61FF;--green:#00FF88;--gold:#FFB800;--red:#FF3B6F;
+  --font-display:'Orbitron',monospace;--font-body:'Sora',sans-serif;
+}
+
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);transition:all .4s}
+.nav.scrolled{padding:10px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-logo{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.5px;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#050811;transition:all .3s;box-shadow:0 0 30px rgba(0,212,255,0.2)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,212,255,0.4)}.nav-cta::after{display:none}
+.theme-toggle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s;cursor:pointer}
+.theme-toggle:hover{border-color:var(--accent);transform:scale(1.1)}
+.dropdown{position:relative}
+.dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;background:var(--card);border:1px solid var(--border-subtle);border-radius:12px;padding:8px 0;min-width:200px;box-shadow:0 20px 60px var(--shadow);transition:all .3s;z-index:1001}
+.dropdown:hover .dropdown-menu{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.dropdown-menu a{display:block;padding:10px 20px;font-size:13px;color:var(--muted);transition:all .2s}
+.dropdown-menu a:hover{color:var(--accent);background:var(--accent-dim)}
+.dropdown-menu a::after{display:none}
+@media(max-width:768px){.nav-links a:not(.nav-cta):not(.theme-toggle){display:none}.nav-logo{font-size:15px}.dropdown-menu{display:none}}
+
+.hero{position:relative;min-height:70vh;display:flex;align-items:center;overflow:hidden;padding:140px 0 80px}
+.hero-glow{position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);animation:glowPulse 6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.15)}}
+.hero-content{position:relative;z-index:2;text-align:center;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);padding:8px 20px;border-radius:100px;border:1px solid rgba(255,184,0,0.2);background:var(--accent-dim);margin-bottom:32px}
+.hero h1{font-family:var(--font-display);font-size:clamp(32px,6vw,72px);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(15px,2.2vw,20px);color:var(--muted);max-width:650px;margin:0 auto 40px;line-height:1.7}
+.hero p strong{color:var(--text);font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--accent);transition:all .3s;margin-top:20px}
+.back-link:hover{gap:12px}
+
+section{padding:100px 0;position:relative}
+section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),transparent)}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header h2{font-family:var(--font-display);font-size:clamp(22px,4vw,40px);font-weight:800;margin-bottom:16px}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.section-header p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Category cards */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:900px){.cat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.cat-grid{grid-template-columns:1fr}}
+.cat-card{position:relative;padding:36px 28px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);text-align:center;transition:all .4s;overflow:hidden}
+.cat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .3s}
+.cat-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px var(--shadow);border-color:var(--glass-border)}
+.cat-card:hover::before{opacity:1}
+.cat-card.dog::before{background:var(--green)}.cat-card.sport::before{background:var(--cyan)}.cat-card.party::before{background:var(--red)}
+.cat-card.gaming::before{background:var(--violet)}.cat-card.meetup::before{background:var(--accent)}.cat-card.festival::before{background:var(--red)}
+.cat-icon{font-size:48px;margin-bottom:16px;display:block}
+.cat-card h3{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:10px}
+.cat-card p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* Spontan badge */
+.spontan-section{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.spontan-section{grid-template-columns:1fr}}
+.pulse-demo{display:flex;justify-content:center;align-items:center}
+.pulse-circle{position:relative;width:160px;height:160px}
+.pulse-ring{position:absolute;inset:0;border:2px solid var(--accent);border-radius:50%;animation:pulseOut 2s ease-out infinite}
+.pulse-ring:nth-child(2){animation-delay:.6s}.pulse-ring:nth-child(3){animation-delay:1.2s}
+@keyframes pulseOut{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.4);opacity:0}}
+.pulse-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--red));display:flex;align-items:center;justify-content:center;font-size:14px;font-family:var(--font-display);font-weight:800;color:#050811;letter-spacing:1px;box-shadow:0 0 40px var(--accent-glow)}
+.spontan-text h3{font-family:var(--font-display);font-size:clamp(18px,3vw,28px);font-weight:800;margin-bottom:16px}
+.spontan-text h3 span{color:var(--accent)}
+.spontan-text p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:16px}
+.jetzt-badge{display:inline-block;font-family:var(--font-display);font-size:14px;font-weight:800;color:#050811;padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--accent),var(--red));box-shadow:0 0 20px var(--accent-glow);letter-spacing:2px;animation:jBlink 1.5s infinite}
+@keyframes jBlink{0%,100%{box-shadow:0 0 20px var(--accent-glow)}50%{box-shadow:0 0 40px var(--accent-glow),0 0 60px rgba(255,184,0,0.2)}}
+
+/* Creation flow */
+.flow-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:900px){.flow-cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.flow-cards{grid-template-columns:1fr}}
+.flow-card{padding:32px 24px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);text-align:center;transition:all .4s}
+.flow-card:hover{transform:translateY(-4px);box-shadow:0 10px 40px var(--shadow)}
+.flow-num{font-family:var(--font-display);font-size:36px;font-weight:900;color:var(--accent);opacity:.3;margin-bottom:8px}
+.flow-card h4{font-size:14px;font-weight:700;margin-bottom:8px}
+.flow-card p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* Features list */
+.event-features{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:768px){.event-features{grid-template-columns:1fr}}
+.ef-block{padding:36px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);transition:all .4s}
+.ef-block:hover{border-color:var(--glass-border);box-shadow:0 10px 40px var(--shadow)}
+.ef-block h3{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:16px;color:var(--accent)}
+.ef-block p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+.ef-block ul{list-style:none;padding:0}
+.ef-block ul li{font-size:14px;color:var(--muted);line-height:1.8;padding:6px 0;padding-left:20px;position:relative}
+.ef-block ul li::before{content:'\25B8';position:absolute;left:0;color:var(--accent)}
+
+/* Festival section */
+.festival-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:768px){.festival-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.festival-grid{grid-template-columns:1fr}}
+.fest-card{padding:24px;border-radius:16px;background:var(--card);border:1px solid var(--border-subtle);text-align:center;transition:all .3s}
+.fest-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 30px var(--shadow)}
+.fest-icon{font-size:36px;margin-bottom:12px}
+.fest-card h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.fest-card p{font-size:12px;color:var(--muted)}
+
+footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:2px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);transition:color .3s}.footer-links a:hover{color:var(--accent)}
+.footer-copy{width:100%;text-align:center;margin-top:24px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav"><div class="nav-inner">
+  <a href="/" class="nav-logo">MAPRAIDERS</a>
+  <div class="nav-links">
+    <div class="dropdown">
+      <a href="/#features">Features</a>
+      <div class="dropdown-menu">
+        <a href="/features/territorien.html">Territorien</a>
+        <a href="/features/echos.html">Echos</a>
+        <a href="/features/events.html">Events</a>
+        <a href="/features/defense.html">Defense Games</a>
+        <a href="/features/social.html">Social</a>
+        <a href="/features/quests.html">Quests</a>
+      </div>
+    </div>
+    <a href="/features/echos.html">Echos</a>
+    <a href="/#manifesto">Vision</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">&#9790;</button>
+    <a href="/MapRaiders.apk" class="nav-cta">Download</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content container">
+    <div class="hero-badge">&#9889; Events & Meetups</div>
+    <h1>Spontan. Echt.<br><span>Jetzt.</span></h1>
+    <p>Hundespaziergang in 30 Minuten? Spontanes Basketball-Game im Park? Party heute Abend? In MapRaiders erscheinen <strong>echte Events auf der echten Karte</strong> — und pulsieren, wenn sie bald starten.</p>
+    <a href="/" class="back-link">&larr; Zurueck zur Startseite</a>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Event-<em>Kategorien</em></h2>
+      <p>Von tierischen Abenteuern bis zu epischen Partys. Finde genau das Event, das zu dir passt.</p>
+    </div>
+
+    <div class="cat-grid">
+      <div class="cat-card dog reveal">
+        <span class="cat-icon">&#128054;</span>
+        <h3>Hundespaziergang</h3>
+        <p>Triff andere Hundebesitzer in deiner Naehe. Gemeinsame Gassi-Runden, spontane Treffen im Park oder organisierte Hundegruppen. Dein Vierbeiner findet neue Freunde.</p>
+      </div>
+      <div class="cat-card sport reveal reveal-delay-1">
+        <span class="cat-icon">&#9917;</span>
+        <h3>Sport & Fitness</h3>
+        <p>Basketball, Fussball, Laufgruppen, Yoga im Park. Finde spontane Mitspieler oder organisiere dein eigenes Training. Der Sportplatz auf der Karte zeigt, wo Action ist.</p>
+      </div>
+      <div class="cat-card party reveal reveal-delay-2">
+        <span class="cat-icon">&#127881;</span>
+        <h3>Party & Nachtleben</h3>
+        <p>Houseparty, Bar-Hopping, Techno-Night. Teile dein Event, lade Leute aus der Umgebung ein. Die besten Naechte beginnen spontan.</p>
+      </div>
+      <div class="cat-card gaming reveal reveal-delay-3">
+        <span class="cat-icon">&#127918;</span>
+        <h3>Gaming & Nerd</h3>
+        <p>LAN-Party, Board-Game-Abend, Pen-and-Paper-Session. Finde Gleichgesinnte fuer analoge und digitale Spieleabende in deiner Nachbarschaft.</p>
+      </div>
+      <div class="cat-card meetup reveal reveal-delay-4">
+        <span class="cat-icon">&#9749;</span>
+        <h3>Meetup & Kaffee</h3>
+        <p>Einfach mal reden. Neue Leute kennenlernen. Beim Kaffee, im Park, am Fluss. Casual Meetups fuer alle, die echte Gespraeche suchen.</p>
+      </div>
+      <div class="cat-card festival reveal reveal-delay-5">
+        <span class="cat-icon">&#127905;</span>
+        <h3>Kultur & Kunst</h3>
+        <p>Konzerte, Ausstellungen, Strassenkunst, Poetry Slams. Kulturelle Events in deiner Stadt, entdeckt ueber die Karte.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="spontan-section">
+      <div class="pulse-demo reveal">
+        <div class="pulse-circle">
+          <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
+          <div class="pulse-center">JETZT!</div>
+        </div>
+      </div>
+      <div class="spontan-text">
+        <h3 class="reveal">Spontan-Events <span>pulsieren</span></h3>
+        <p class="reveal reveal-delay-1">Wenn ein Event innerhalb der naechsten 24 Stunden startet, beginnt es auf der Karte zu pulsieren. Je naeher der Start, desto staerker der Puls. So siehst du sofort, wo gleich etwas passiert.</p>
+        <p class="reveal reveal-delay-2">Events die JETZT gerade laufen, erhalten ein spezielles Badge. Es leuchtet golden und signalisiert: Hier ist gerade etwas los. Komm vorbei, solange es laeuft.</p>
+        <div class="reveal reveal-delay-3"><span class="jetzt-badge">JETZT!</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Event <em>erstellen</em></h2>
+      <p>In vier einfachen Schritten von der Idee zum Live-Event auf der Karte.</p>
+    </div>
+
+    <div class="flow-cards">
+      <div class="flow-card reveal">
+        <div class="flow-num">01</div>
+        <h4>Kategorie waehlen</h4>
+        <p>Waehle die passende Kategorie fuer dein Event. Sport, Party, Meetup oder eine andere Aktivitaet.</p>
+      </div>
+      <div class="flow-card reveal reveal-delay-1">
+        <div class="flow-num">02</div>
+        <h4>Details eintragen</h4>
+        <p>Titel, Beschreibung, Datum, Uhrzeit und maximale Teilnehmerzahl. So wissen alle Bescheid.</p>
+      </div>
+      <div class="flow-card reveal reveal-delay-2">
+        <div class="flow-num">03</div>
+        <h4>Ort festlegen</h4>
+        <p>Waehle den Treffpunkt auf der Karte oder nutze deinen aktuellen Standort. GPS-genau und fuer alle sichtbar.</p>
+      </div>
+      <div class="flow-card reveal reveal-delay-3">
+        <div class="flow-num">04</div>
+        <h4>Veroeffentlichen</h4>
+        <p>Dein Event erscheint sofort auf der Karte. Spieler in der Naehe werden benachrichtigt und koennen teilnehmen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Event-<em>Features</em></h2>
+      <p>Jedes Event bietet interaktive Funktionen fuer Organisatoren und Teilnehmer.</p>
+    </div>
+
+    <div class="event-features">
+      <div class="ef-block reveal">
+        <h3>&#128172; Event-Chat</h3>
+        <p>Jedes Event hat einen integrierten Gruppenchat. Teilnehmer koennen sich absprechen, Fragen stellen und Updates teilen. Der Chat bleibt aktiv, solange das Event laeuft.</p>
+        <ul>
+          <li>Echtzeit-Gruppennachrichten</li>
+          <li>Standort-Sharing im Chat</li>
+          <li>Organisator kann Ankuendigungen pinnen</li>
+          <li>Chat-Verlauf fuer alle sichtbar</li>
+        </ul>
+      </div>
+      <div class="ef-block reveal reveal-delay-1">
+        <h3>&#128205; GPS-Praesenzcheck</h3>
+        <p>Wenn du am Event-Ort ankommst, kannst du dich per GPS einchecken. Das "Ich bin da!"-Feature bestaetigt deine physische Anwesenheit und zeigt anderen Teilnehmern, wer schon vor Ort ist.</p>
+        <ul>
+          <li>Automatische Standort-Verifizierung</li>
+          <li>"Ich bin da!" Button am Event-Ort</li>
+          <li>Anwesenheitsliste in Echtzeit</li>
+          <li>Teilnehmer-Positionen auf der Mini-Map</li>
+        </ul>
+      </div>
+      <div class="ef-block reveal reveal-delay-2">
+        <h3>&#128276; Benachrichtigungen</h3>
+        <p>Werde ueber nahende Events in deiner Umgebung informiert. Push-Benachrichtigungen, wenn ein Event bald startet oder wenn neue Events in deinem Gebiet erstellt werden.</p>
+        <ul>
+          <li>Push-Alerts fuer Events im Umkreis</li>
+          <li>Erinnerung 30min vor Start</li>
+          <li>Benachrichtigung bei neuen Teilnehmern</li>
+          <li>Absage-Notifications</li>
+        </ul>
+      </div>
+      <div class="ef-block reveal reveal-delay-3">
+        <h3>&#11088; Bewertungen</h3>
+        <p>Nach dem Event koennen Teilnehmer den Organisator bewerten. Zuverlaessige Event-Ersteller erhalten einen Vertrauens-Score, der auf ihrem Profil sichtbar ist.</p>
+        <ul>
+          <li>Sterne-Bewertung (1-5)</li>
+          <li>Vertrauens-Score auf dem Profil</li>
+          <li>Verifizierte Organisatoren-Badge</li>
+          <li>Event-Historie einsehbar</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2><em>Festival</em>-Events</h2>
+      <p>Grosse Events und Feste fuer die ganze Community. Saisonal und regional angepasst.</p>
+    </div>
+
+    <div class="festival-grid">
+      <div class="fest-card reveal">
+        <div class="fest-icon">&#127866;</div>
+        <h4>Oktoberfest</h4>
+        <p>Gemeinsame Wiesn-Besuche, Treffpunkte und Gruppen-Events</p>
+      </div>
+      <div class="fest-card reveal reveal-delay-1">
+        <div class="fest-icon">&#127914;</div>
+        <h4>Karneval</h4>
+        <p>Zuege verfolgen, Gruppen bilden, spontane Afterpartys</p>
+      </div>
+      <div class="fest-card reveal reveal-delay-2">
+        <div class="fest-icon">&#127878;</div>
+        <h4>Weihnachtsmaerkte</h4>
+        <p>Gemeinsame Besuche, Gluehwein-Treff, Geschenke-Touren</p>
+      </div>
+      <div class="fest-card reveal reveal-delay-3">
+        <div class="fest-icon">&#127926;</div>
+        <h4>Musikfestivals</h4>
+        <p>Treffpunkte, Camping-Gruppen, Shuttle-Koordination</p>
+      </div>
+      <div class="fest-card reveal reveal-delay-4">
+        <div class="fest-icon">&#127939;</div>
+        <h4>Stadtlaeufe</h4>
+        <p>Marathon, City-Run, Charity-Lauf — gemeinsam antreten</p>
+      </div>
+      <div class="fest-card reveal reveal-delay-5">
+        <div class="fest-icon">&#127774;</div>
+        <h4>Sommerfeste</h4>
+        <p>Open-Air, Strassenfeste, Stadtteil-Events im Sommer</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div class="footer-inner">
+    <div class="footer-brand">MAPRAIDERS</div>
+    <div class="footer-links">
+      <a href="/agb.html">AGB</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/kontakt.html">Kontakt</a>
+    </div>
+  </div>
+  <p class="footer-copy">&copy; 2026 MapRaiders &mdash; Social Media. Neu definiert.</p>
+</div></footer>
+
+<script>
+!function(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggle');
+  const saved=localStorage.getItem('mapraiders-theme')||'dark';
+  html.setAttribute('data-theme',saved);
+  btn.innerHTML=saved==='dark'?'\u263E':'\u2600';
+  btn.addEventListener('click',()=>{
+    const current=html.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    html.setAttribute('data-theme',next);
+    localStorage.setItem('mapraiders-theme',next);
+    btn.innerHTML=next==='dark'?'\u263E':'\u2600';
+  });
+}();
+const ob=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));
+addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+</script>
+</body>
+</html>

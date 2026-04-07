@@ -193,7 +193,7 @@
 
 <main>
     <h1>Datenschutzerkl&auml;rung</h1>
-    <p class="subtitle">Stand: M&auml;rz 2026 &mdash; Gem&auml;&szlig; DSGVO (Datenschutz-Grundverordnung)</p>
+    <p class="subtitle">Stand: April 2026 &mdash; Gem&auml;&szlig; DSGVO (Datenschutz-Grundverordnung)</p>
 
     <!-- 1. Verantwortlicher -->
     <div class="card">
@@ -202,10 +202,14 @@
         <p>
             <strong>Ren&eacute; Scafarti</strong><br>
             Einzelunternehmer<br>
+            <!-- TODO: Vollst&auml;ndige Postanschrift HIER EINTRAGEN -->
+            Musterstra&szlig;e 1<br>
+            12345 Musterstadt<br>
             Deutschland<br>
             E-Mail: <a href="mailto:contact@mapraiders.com">contact@mapraiders.com</a><br>
             Website: <a href="https://mapraiders.com" target="_blank" rel="noopener">mapraiders.com</a>
         </p>
+        <p>Die Bestellung eines Datenschutzbeauftragten ist nicht erforderlich, da weniger als 20 Personen st&auml;ndig mit der automatisierten Verarbeitung personenbezogener Daten besch&auml;ftigt sind (&sect; 38 Abs. 1 BDSG).</p>
     </div>
 
     <!-- 2. Übersicht erhobene Daten -->
@@ -268,7 +272,8 @@
         <p>GPS-Standortdaten sind besonders sensible Daten, da sie R&uuml;ckschl&uuml;sse auf Ihren Aufenthaltsort und Ihre Bewegungsmuster zulassen. Wir nehmen den Schutz dieser Daten besonders ernst:</p>
 
         <h3>4.1 Erhebung</h3>
-        <p>Standortdaten werden ausschlie&szlig;lich erhoben, w&auml;hrend Sie die App aktiv nutzen oder die Hintergrund-Ortung explizit aktiviert haben. Ohne aktive GPS-Freigabe auf Ihrem Ger&auml;t findet keine Standorterfassung statt.</p>
+        <p>Standortdaten werden erhoben, w&auml;hrend Sie die App aktiv nutzen (Vordergrund) oder die Hintergrund-Ortung explizit aktiviert haben. Ohne aktive GPS-Freigabe auf Ihrem Ger&auml;t findet keine Standorterfassung statt.</p>
+        <p><strong>Hintergrund-Standorterfassung:</strong> Wenn Sie die Hintergrund-Ortung aktivieren, erfasst die App Ihren Standort auch bei geschlossenem Bildschirm, um Territorien w&auml;hrend des Gehens, Laufens oder Radfahrens zu beanspruchen. Sie k&ouml;nnen die Hintergrund-Ortung jederzeit in den Ger&auml;teeinstellungen oder in der App deaktivieren. Ohne Hintergrund-Ortung funktioniert die App weiterhin &mdash; Territorien werden dann nur bei ge&ouml;ffneter App beansprucht.</p>
 
         <h3>4.2 Verwendung</h3>
         <p>Ihre GPS-Daten werden ausschlie&szlig;lich f&uuml;r folgende Zwecke verwendet:</p>
@@ -338,8 +343,32 @@
         <h3>6.3 Keine Weitergabe zu Werbezwecken</h3>
         <p>Wir verkaufen, vermieten oder &uuml;bermitteln Ihre personenbezogenen Daten <strong>nicht</strong> an Dritte zu Werbe-, Marketing- oder Analysezwecken. Es werden keine Werbe-SDKs oder Tracking-Tools von Drittanbietern in der App eingesetzt.</p>
 
-        <h3>6.4 Kartenmaterial</h3>
-        <p>F&uuml;r die Darstellung der Spielkarte nutzen wir Kartendienste (z.&nbsp;B. Mapbox oder OpenStreetMap). Dabei k&ouml;nnen technische Daten (IP-Adresse, Kartenausschnitt) an den jeweiligen Kartenanbieter &uuml;bermittelt werden. Es werden keine personenbezogenen Spielerdaten an Kartenanbieter weitergegeben.</p>
+        <h3>6.4 Google Maps</h3>
+        <p>F&uuml;r die Darstellung der Spielkarte nutzen wir die <strong>Google Maps Platform</strong> (Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA). Beim Laden der Karte werden technische Daten (IP-Adresse, Kartenausschnitt, Ger&auml;teinformationen) an Google-Server &uuml;bermittelt. Es werden keine personenbezogenen Spielerdaten (Name, E-Mail, Spielfortschritt) an Google weitergegeben. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserf&uuml;llung &mdash; die Kartenanzeige ist f&uuml;r den Spielbetrieb erforderlich). Es gelten die <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Datenschutzbestimmungen von Google</a>.</p>
+
+        <h3>6.5 Push-Benachrichtigungen (Expo)</h3>
+        <p>F&uuml;r den Versand von Push-Benachrichtigungen nutzen wir den Dienst <strong>Expo</strong> (650 Industries Inc., USA). Wenn Sie Push-Benachrichtigungen aktivieren, wird ein ger&auml;tespezifisches Push-Token an unseren Server und an Expo-Server &uuml;bermittelt. Expo leitet die Nachricht an die Google Firebase Cloud Messaging (FCM) bzw. Apple Push Notification Service (APNs) weiter. Sie k&ouml;nnen Push-Benachrichtigungen jederzeit in den App-Einstellungen oder den Ger&auml;teeinstellungen deaktivieren. Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO (Einwilligung).</p>
+
+        <h3>6.6 Kamera- und Mikrofon-Zugriff</h3>
+        <p>Die App greift auf Ihre <strong>Kamera</strong> zu, wenn Sie Fotos f&uuml;r Quest-Verifikationen oder Profilbilder aufnehmen. Der <strong>Mikrofon</strong>-Zugriff erfolgt, wenn Sie Audio-Echos (Sprachnachrichten an Orten) aufnehmen. Diese Aufnahmen werden auf unseren Servern gespeichert und k&ouml;nnen von anderen Spielern eingesehen/geh&ouml;rt werden. Sie k&ouml;nnen die Kamera- und Mikrofon-Berechtigung jederzeit in den Ger&auml;teeinstellungen widerrufen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO (Einwilligung).</p>
+    </div>
+
+    <!-- 6b. Drittlandtransfer -->
+    <div class="card">
+        <h2>6a. Daten&uuml;bermittlung in Drittl&auml;nder</h2>
+        <p>Im Rahmen der Nutzung von MapRaiders werden Daten an Dienstleister in den USA &uuml;bermittelt:</p>
+        <ul>
+            <li><strong>Google LLC</strong> (Google Maps, Google Sign-In): IP-Adresse, Kartenausschnitt, E-Mail-Adresse und Name (bei Social Login). Google LLC ist unter dem <a href="https://www.dataprivacyframework.gov/" target="_blank" rel="noopener">EU-U.S. Data Privacy Framework</a> zertifiziert (Angemessenheitsbeschluss der EU-Kommission vom 10. Juli 2023).</li>
+            <li><strong>Expo / 650 Industries Inc.</strong> (Push-Benachrichtigungen): Ger&auml;tespezifisches Push-Token. Die &Uuml;bermittlung erfolgt auf Grundlage von Standardvertragsklauseln gem. Art. 46 Abs. 2 lit. c DSGVO.</li>
+        </ul>
+        <p>Alle &uuml;brigen Daten (Kontodaten, GPS-Daten, Spielinhalte) werden ausschlie&szlig;lich auf Servern in Deutschland/EU (Hetzner) verarbeitet und gespeichert.</p>
+    </div>
+
+    <!-- 6c. Automatisierte Entscheidungsfindung -->
+    <div class="card">
+        <h2>6b. Automatisierte Entscheidungsfindung</h2>
+        <p>MapRaiders setzt ein <strong>automatisiertes Anti-Cheat-System</strong> ein, das GPS-Bewegungsmuster, Geschwindigkeit und Sensordaten analysiert, um GPS-Spoofing und Cheating zu erkennen. Bei Erkennung von Verst&ouml;&szlig;en kann das System automatisch Ma&szlig;nahmen ergreifen (z.&nbsp;B. Claim-Ablehnung, vor&uuml;bergehende Einschr&auml;nkungen, Kontosperrung).</p>
+        <p>Gem&auml;&szlig; Art. 22 Abs. 2 lit. a DSGVO ist diese automatisierte Entscheidungsfindung f&uuml;r die Erf&uuml;llung des Vertrags (fairer Spielbetrieb) erforderlich. Sie haben das Recht, eine &Uuml;berpr&uuml;fung durch eine nat&uuml;rliche Person zu verlangen, Ihren Standpunkt darzulegen und die Entscheidung anzufechten. Kontaktieren Sie dazu <a href="mailto:contact@mapraiders.com">contact@mapraiders.com</a>.</p>
     </div>
 
     <!-- 7. Keine Werbung -->

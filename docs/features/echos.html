@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echos — MapRaiders</title>
+<meta name="description" content="Hinterlasse Audio-, Foto- und Video-Nachrichten an echten Orten. Echos sind digitale Spuren in der realen Welt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+html[data-theme="dark"]{
+  --bg:#0A0E17;--card:#141B2D;--card-hover:#1A2340;--text:#E8ECF4;--muted:#6B7A99;--dim:#3A4560;
+  --glass:rgba(20,27,45,0.6);--glass-border:rgba(123,97,255,0.08);--shadow:rgba(0,0,0,0.3);
+  --nav-bg:rgba(10,14,23,0.85);--border-subtle:rgba(255,255,255,0.04);
+}
+html[data-theme="light"]{
+  --bg:#F5F7FA;--card:#FFFFFF;--card-hover:#F0F4FF;--text:#1A1F2E;--muted:#6B7A99;--dim:#B0B8C9;
+  --glass:rgba(255,255,255,0.7);--glass-border:rgba(123,97,255,0.12);--shadow:rgba(0,0,0,0.08);
+  --nav-bg:rgba(245,247,250,0.9);--border-subtle:rgba(0,0,0,0.06);
+}
+:root{
+  --accent:#7B61FF;--accent-dim:rgba(123,97,255,0.15);--accent-glow:rgba(123,97,255,0.4);
+  --cyan:#00D4FF;--violet:#7B61FF;--green:#00FF88;--gold:#FFB800;--red:#FF3B6F;
+  --font-display:'Orbitron',monospace;--font-body:'Sora',sans-serif;
+}
+
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}
+
+/* Navigation */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);transition:all .4s}
+.nav.scrolled{padding:10px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-logo{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.5px;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#050811;transition:all .3s;box-shadow:0 0 30px rgba(123,97,255,0.2)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 0 40px var(--accent-glow)}.nav-cta::after{display:none}
+.theme-toggle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s;cursor:pointer}
+.theme-toggle:hover{border-color:var(--accent);transform:scale(1.1)}
+.dropdown{position:relative}
+.dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;background:var(--card);border:1px solid var(--border-subtle);border-radius:12px;padding:8px 0;min-width:200px;box-shadow:0 20px 60px var(--shadow);transition:all .3s;z-index:1001}
+.dropdown:hover .dropdown-menu{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.dropdown-menu a{display:block;padding:10px 20px;font-size:13px;color:var(--muted);transition:all .2s}
+.dropdown-menu a:hover{color:var(--accent);background:var(--accent-dim)}
+.dropdown-menu a::after{display:none}
+@media(max-width:768px){.nav-links a:not(.nav-cta):not(.theme-toggle){display:none}.nav-logo{font-size:15px}.dropdown-menu{display:none}}
+
+/* Hero */
+.hero{position:relative;min-height:70vh;display:flex;align-items:center;overflow:hidden;padding:140px 0 80px}
+.hero-glow{position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);animation:glowPulse 6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.15)}}
+.hero-content{position:relative;z-index:2;text-align:center;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);padding:8px 20px;border-radius:100px;border:1px solid rgba(123,97,255,0.2);background:var(--accent-dim);margin-bottom:32px}
+.hero h1{font-family:var(--font-display);font-size:clamp(32px,6vw,72px);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(15px,2.2vw,20px);color:var(--muted);max-width:650px;margin:0 auto 40px;line-height:1.7}
+.hero p strong{color:var(--text);font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--accent);transition:all .3s;margin-top:20px}
+.back-link:hover{gap:12px}
+
+/* Echo rings animation */
+.echo-visual{display:flex;justify-content:center;margin-bottom:60px}
+.echo-rings{position:relative;width:240px;height:240px}
+.echo-ring{position:absolute;inset:0;border:1.5px solid rgba(123,97,255,0.3);border-radius:50%;animation:echoExpand 4s ease-out infinite}
+.echo-ring:nth-child(2){animation-delay:1s}.echo-ring:nth-child(3){animation-delay:2s}.echo-ring:nth-child(4){animation-delay:3s}
+@keyframes echoExpand{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.echo-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 50px var(--accent-glow)}
+
+/* Sections */
+section{padding:100px 0;position:relative}
+section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),transparent)}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header h2{font-family:var(--font-display);font-size:clamp(22px,4vw,40px);font-weight:800;margin-bottom:16px}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.section-header p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Echo type cards */
+.echo-types{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+@media(max-width:768px){.echo-types{grid-template-columns:1fr}}
+.echo-card{position:relative;padding:40px 32px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);text-align:center;transition:all .4s;overflow:hidden}
+.echo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity .3s}
+.echo-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px var(--shadow);border-color:var(--glass-border)}.echo-card:hover::before{opacity:1}
+.echo-card-icon{font-size:48px;margin-bottom:20px;display:block}
+.echo-card h3{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:12px}
+.echo-card p{font-size:14px;color:var(--muted);line-height:1.8}
+
+/* How echos work */
+.mechanic-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+@media(max-width:768px){.mechanic-grid{grid-template-columns:1fr;gap:32px}}
+.mechanic-block{padding:36px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);transition:all .4s}
+.mechanic-block:hover{border-color:var(--glass-border);box-shadow:0 10px 40px var(--shadow)}
+.mechanic-block h3{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:16px;color:var(--accent)}
+.mechanic-block p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+.mechanic-block ul{list-style:none;padding:0}
+.mechanic-block ul li{font-size:14px;color:var(--muted);line-height:1.8;padding:6px 0;padding-left:20px;position:relative}
+.mechanic-block ul li::before{content:'\25B8';position:absolute;left:0;color:var(--accent)}
+
+/* Use cases */
+.usecase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:768px){.usecase-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.usecase-grid{grid-template-columns:1fr}}
+.usecase{padding:24px;border-radius:16px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s}
+.usecase:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 30px var(--shadow)}
+.usecase-icon{font-size:32px;margin-bottom:12px}
+.usecase h4{font-size:14px;font-weight:700;margin-bottom:8px}
+.usecase p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* Proximity alert */
+.proximity-section{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.proximity-section{grid-template-columns:1fr;text-align:center}}
+.proximity-visual{display:flex;justify-content:center}
+.radar{width:200px;height:200px;border-radius:50%;border:2px solid var(--accent);position:relative;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%)}
+.radar::after{content:'';position:absolute;top:50%;left:50%;width:2px;height:50%;background:linear-gradient(to top,var(--accent),transparent);transform-origin:bottom center;animation:radarSweep 3s linear infinite}
+@keyframes radarSweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.radar-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-glow);animation:dotPulse 2s infinite}
+.radar-dot:nth-child(1){top:30%;left:60%}.radar-dot:nth-child(2){top:65%;left:35%;animation-delay:.5s}.radar-dot:nth-child(3){top:45%;left:70%;animation-delay:1s}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
+.proximity-text h3{font-family:var(--font-display);font-size:clamp(18px,3vw,28px);font-weight:800;margin-bottom:16px}
+.proximity-text h3 span{color:var(--accent)}
+.proximity-text p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+.radius-badge{display:inline-block;font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--accent);padding:8px 16px;border-radius:8px;border:1px solid rgba(123,97,255,0.3);background:var(--accent-dim)}
+
+/* Footer */
+footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:2px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);transition:color .3s}.footer-links a:hover{color:var(--accent)}
+.footer-copy{width:100%;text-align:center;margin-top:24px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav"><div class="nav-inner">
+  <a href="/" class="nav-logo">MAPRAIDERS</a>
+  <div class="nav-links">
+    <div class="dropdown">
+      <a href="/#features">Features</a>
+      <div class="dropdown-menu">
+        <a href="/features/territorien.html">Territorien</a>
+        <a href="/features/echos.html">Echos</a>
+        <a href="/features/events.html">Events</a>
+        <a href="/features/defense.html">Defense Games</a>
+        <a href="/features/social.html">Social</a>
+        <a href="/features/quests.html">Quests</a>
+      </div>
+    </div>
+    <a href="/features/echos.html">Echos</a>
+    <a href="/#manifesto">Vision</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">&#9790;</button>
+    <a href="/MapRaiders.apk" class="nav-cta">Download</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content container">
+    <div class="hero-badge">&#9835; Echo-System</div>
+    <h1>Hinterlasse<br><span>deine Spur.</span></h1>
+    <p>Stell dir vor: Du gehst durch eine fremde Strasse und entdeckst eine <strong>versteckte Nachricht</strong>. Eine Stimme. Ein Foto. Ein Geheimnis. Echos sind digitale Spuren an echten Orten — hinterlassen von Menschen, die vor dir dort waren.</p>
+    <a href="/" class="back-link">&larr; Zurueck zur Startseite</a>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="echo-visual reveal">
+      <div class="echo-rings">
+        <div class="echo-ring"></div><div class="echo-ring"></div><div class="echo-ring"></div><div class="echo-ring"></div>
+        <div class="echo-center">&#127911;</div>
+      </div>
+    </div>
+
+    <div class="section-header reveal">
+      <h2>Drei <em>Echo-Typen</em></h2>
+      <p>Waehle das Format, das zu deiner Nachricht passt. Jedes Echo wird an deinem GPS-Standort verankert.</p>
+    </div>
+
+    <div class="echo-types">
+      <div class="echo-card reveal">
+        <span class="echo-card-icon">&#127908;</span>
+        <h3>Audio-Echo</h3>
+        <p>Nimm eine Sprachnachricht auf und hinterlasse sie an deinem Standort. Andere Spieler hoeren deine Stimme, wenn sie vorbeigehen. Perfekt fuer persoenliche Botschaften, Geschichten oder Stadtgeheimnisse.</p>
+      </div>
+      <div class="echo-card reveal reveal-delay-1">
+        <span class="echo-card-icon">&#128247;</span>
+        <h3>Foto-Echo</h3>
+        <p>Mache ein Foto direkt mit der Kamera oder waehle eines aus deiner Galerie. Das Bild wird am Ort verankert und wartet darauf, von neugierigen Entdeckern gefunden zu werden.</p>
+      </div>
+      <div class="echo-card reveal reveal-delay-2">
+        <span class="echo-card-icon">&#127909;</span>
+        <h3>Video-Echo</h3>
+        <p>Kurze Videos fangen die Atmosphaere eines Ortes ein. Zeige anderen, was du siehst — den Sonnenuntergang am Fluss, das bunte Treiben auf dem Markt oder einen geheimen Ort.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Wie Echos <em>funktionieren</em></h2>
+      <p>Von der Erstellung bis zur Entdeckung — jedes Echo hat einen Lebenszyklus.</p>
+    </div>
+
+    <div class="mechanic-grid">
+      <div class="mechanic-block reveal">
+        <h3>&#128205; Platzierung</h3>
+        <p>Wenn du ein Echo erstellst, wird es exakt an deiner aktuellen GPS-Position verankert. Das Echo ist unsichtbar auf der Karte — andere Spieler muessen in die Naehe kommen, um es zu entdecken.</p>
+        <p>Du kannst Echos ueberall platzieren: auf Strassen, in Parks, vor Gebaeuden, an deinem Lieblingsort. Jeder Punkt auf der Weltkarte kann ein Echo tragen.</p>
+      </div>
+      <div class="mechanic-block reveal reveal-delay-1">
+        <h3>&#128269; Entdeckungsradius</h3>
+        <p>Der Standard-Entdeckungsradius betraegt 40 Meter. Sobald ein Spieler diesen Radius betritt, erhaelt er eine Proximity-Benachrichtigung. Das Echo taucht auf seinem Bildschirm auf und kann geoeffnet werden.</p>
+        <ul>
+          <li>Standard-Radius: 40 Meter</li>
+          <li>Echo-Symbol erscheint auf der Karte</li>
+          <li>Vibration und Sound bei Annaeherung</li>
+          <li>Einmal entdeckt, bleibt es sichtbar</li>
+        </ul>
+      </div>
+      <div class="mechanic-block reveal reveal-delay-2">
+        <h3>&#9203; Lebensdauer & Verfall</h3>
+        <p>Echos sind nicht fuer die Ewigkeit. Jedes Echo hat eine begrenzte Lebensdauer, die von der Community beeinflusst wird. Echos ohne Interaktion verblassen ueber die Zeit und verschwinden schliesslich.</p>
+        <ul>
+          <li>Standard-Lebensdauer: 7 Tage</li>
+          <li>Jedes Like verlaengert um 24 Stunden</li>
+          <li>Beliebte Echos koennen Wochen ueberleben</li>
+          <li>Verblassende Echos werden transparenter</li>
+        </ul>
+      </div>
+      <div class="mechanic-block reveal reveal-delay-3">
+        <h3>&#128276; Proximity-Alerts</h3>
+        <p>MapRaiders ueberwacht im Hintergrund deine Position und benachrichtigt dich, sobald du in die Naehe eines Echos kommst. Du musst die App nicht aktiv nutzen — der Service laeuft im Hintergrund.</p>
+        <ul>
+          <li>Hintergrund-GPS-Monitoring</li>
+          <li>Push-Benachrichtigung bei Annaeherung</li>
+          <li>Lautstaerke steigt mit der Naehe</li>
+          <li>Kompass-Richtungsanzeige zum Echo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="proximity-section">
+      <div class="proximity-visual reveal">
+        <div class="radar">
+          <div class="radar-dot"></div>
+          <div class="radar-dot"></div>
+          <div class="radar-dot"></div>
+        </div>
+      </div>
+      <div class="proximity-text">
+        <h3 class="reveal">Echo in der <span>Naehe</span></h3>
+        <p class="reveal reveal-delay-1">Dein Handy vibriert. Ein leiser Ton erklingt. Auf deinem Bildschirm erscheint ein pulsierendes Symbol. Jemand hat hier eine Nachricht hinterlassen — und du bist nah genug, um sie zu empfangen.</p>
+        <p class="reveal reveal-delay-2">Die Proximity-Engine von MapRaiders berechnet kontinuierlich deine Entfernung zu allen Echos in deiner Umgebung. Sobald du die 40-Meter-Grenze unterschreitest, wirst du benachrichtigt.</p>
+        <div class="radius-badge reveal reveal-delay-3">Entdeckungsradius: 40m</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2><em>Anwendungsbeispiele</em></h2>
+      <p>Echos koennen alles sein. Hier sind nur einige Ideen, wie Spieler sie nutzen.</p>
+    </div>
+
+    <div class="usecase-grid">
+      <div class="usecase reveal">
+        <div class="usecase-icon">&#128140;</div>
+        <h4>Liebesbotschaften</h4>
+        <p>Hinterlasse ein romantisches Audio-Echo am Ort eures ersten Dates. Dein Partner findet es beim naechsten Spaziergang.</p>
+      </div>
+      <div class="usecase reveal reveal-delay-1">
+        <div class="usecase-icon">&#128270;</div>
+        <h4>Stadt-Geheimnisse</h4>
+        <p>Kennst du die Geschichte hinter einem Gebaeude? Teile sie als Echo. Mache deine Stadt zum lebenden Museum.</p>
+      </div>
+      <div class="usecase reveal reveal-delay-2">
+        <div class="usecase-icon">&#128172;</div>
+        <h4>Freundes-Nachrichten</h4>
+        <p>Platziere ein Echo vor der Wohnung deines Freundes. Eine persoenliche Nachricht, die er beim Heimkommen entdeckt.</p>
+      </div>
+      <div class="usecase reveal reveal-delay-3">
+        <div class="usecase-icon">&#127881;</div>
+        <h4>Event-Erinnerungen</h4>
+        <p>War ein Konzert unvergesslich? Lass ein Echo am Veranstaltungsort. Andere Besucher finden es und teilen die Erinnerung.</p>
+      </div>
+      <div class="usecase reveal reveal-delay-4">
+        <div class="usecase-icon">&#127758;</div>
+        <h4>Reise-Tagebuch</h4>
+        <p>Hinterlasse Echos an jedem Ort, den du besuchst. Dein persoenliches GPS-Tagebuch, das andere Reisende entdecken koennen.</p>
+      </div>
+      <div class="usecase reveal reveal-delay-5">
+        <div class="usecase-icon">&#127915;</div>
+        <h4>Kreative Inhalte</h4>
+        <p>Singe ein Lied an einem schoenen Ort. Nimm ein Gedicht auf. Mache Strassenkunst digital sichtbar. Die Moeglichkeiten sind grenzenlos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div class="footer-inner">
+    <div class="footer-brand">MAPRAIDERS</div>
+    <div class="footer-links">
+      <a href="/agb.html">AGB</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/kontakt.html">Kontakt</a>
+    </div>
+  </div>
+  <p class="footer-copy">&copy; 2026 MapRaiders &mdash; Social Media. Neu definiert.</p>
+</div></footer>
+
+<script>
+!function(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggle');
+  const saved=localStorage.getItem('mapraiders-theme')||'dark';
+  html.setAttribute('data-theme',saved);
+  btn.innerHTML=saved==='dark'?'\u263E':'\u2600';
+  btn.addEventListener('click',()=>{
+    const current=html.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    html.setAttribute('data-theme',next);
+    localStorage.setItem('mapraiders-theme',next);
+    btn.innerHTML=next==='dark'?'\u263E':'\u2600';
+  });
+}();
+const ob=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));
+addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+</script>
+</body>
+</html>

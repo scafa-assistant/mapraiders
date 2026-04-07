@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import * as Location from 'expo-location';
+import { Alert, Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api, { routeApi } from '../services/api';
@@ -85,8 +86,44 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   lastClaimResult: null,
 
   requestPermissions: async () => {
+    // Pre-permission dialog (Play Store requirement)
+    const userAccepted = await new Promise<boolean>((resolve) => {
+      Alert.alert(
+        'Standort-Berechtigung',
+        'MapRaiders benötigt deinen GPS-Standort, um:\n\n' +
+        '• Deine Position auf der Karte anzuzeigen\n' +
+        '• Territorien beim Gehen/Laufen zu beanspruchen\n' +
+        '• Quests und Echos in deiner Nähe zu finden\n\n' +
+        'Du kannst die Berechtigung jederzeit in den Geräteeinstellungen widerrufen.',
+        [
+          { text: 'Nicht jetzt', onPress: () => resolve(false), style: 'cancel' },
+          { text: 'Weiter', onPress: () => resolve(true) },
+        ],
+        { cancelable: false }
+      );
+    });
+    if (!userAccepted) return false;
+
     const { status: foreground } = await Location.requestForegroundPermissionsAsync();
     if (foreground !== 'granted') return false;
+
+    // Background location pre-permission dialog
+    if (Platform.OS === 'android') {
+      const bgAccepted = await new Promise<boolean>((resolve) => {
+        Alert.alert(
+          'Hintergrund-Standort',
+          'Damit MapRaiders Territorien auch bei geschlossenem Bildschirm beanspruchen kann, ' +
+          'benötigen wir die Berechtigung "Immer erlauben".\n\n' +
+          'Ohne diese Berechtigung funktioniert die App nur im Vordergrund.',
+          [
+            { text: 'Nur im Vordergrund', onPress: () => resolve(false) },
+            { text: 'Immer erlauben', onPress: () => resolve(true) },
+          ],
+          { cancelable: false }
+        );
+      });
+      if (!bgAccepted) return true; // Foreground is enough
+    }
 
     const { status: background } = await Location.requestBackgroundPermissionsAsync();
     return background === 'granted';

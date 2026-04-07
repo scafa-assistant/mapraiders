@@ -189,6 +189,16 @@ router.get('/me/export', authenticate, async (req: Request, res: Response) => {
       routes,
       titles,
       notifications,
+      friendships,
+      clanMessages,
+      ratings,
+      travelRoutes,
+      duels,
+      raceAttempts,
+      bounties,
+      aliases,
+      meetupMessages,
+      feedEvents,
     ] = await Promise.all([
       queryOne(
         `SELECT id, username, email, level, xp, streak_days, last_active,
@@ -196,46 +206,26 @@ router.get('/me/export', authenticate, async (req: Request, res: Response) => {
          FROM users WHERE id = $1`,
         [userId],
       ),
-      queryMany(
-        'SELECT * FROM territories WHERE owner_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM quests WHERE creator_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM quest_progress WHERE user_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM echos WHERE creator_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM challenges WHERE creator_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM challenge_submissions WHERE user_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM pets WHERE owner_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM routes WHERE user_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM user_titles WHERE user_id = $1',
-        [userId],
-      ),
-      queryMany(
-        'SELECT * FROM notifications WHERE user_id = $1',
-        [userId],
-      ),
+      queryMany('SELECT * FROM territories WHERE owner_id = $1', [userId]),
+      queryMany('SELECT * FROM quests WHERE creator_id = $1', [userId]),
+      queryMany('SELECT * FROM quest_progress WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM echos WHERE creator_id = $1', [userId]),
+      queryMany('SELECT * FROM challenges WHERE creator_id = $1', [userId]),
+      queryMany('SELECT * FROM challenge_submissions WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM pets WHERE owner_id = $1', [userId]),
+      queryMany('SELECT * FROM routes WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM user_titles WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM notifications WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM friendships WHERE user_a = $1 OR user_b = $1', [userId]),
+      queryMany('SELECT id, clan_id, message, created_at FROM clan_messages WHERE sender_id = $1', [userId]),
+      queryMany('SELECT * FROM ratings WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM travel_routes WHERE founder_id = $1', [userId]),
+      queryMany('SELECT * FROM duels WHERE challenger_id = $1 OR defender_id = $1', [userId]),
+      queryMany('SELECT * FROM race_attempts WHERE user_id = $1', [userId]),
+      queryMany('SELECT * FROM bounties WHERE issuer_id = $1 OR target_id = $1', [userId]),
+      queryMany('SELECT * FROM aliases WHERE user_id = $1', [userId]),
+      queryMany('SELECT id, meetup_id, message, created_at FROM meetup_messages WHERE sender_id = $1', [userId]),
+      queryMany('SELECT * FROM feed_events WHERE user_id = $1', [userId]),
     ]);
 
     if (!user) {
@@ -256,6 +246,16 @@ router.get('/me/export', authenticate, async (req: Request, res: Response) => {
         routes,
         titles,
         notifications,
+        friendships,
+        clan_messages: clanMessages,
+        ratings,
+        travel_routes: travelRoutes,
+        duels,
+        race_attempts: raceAttempts,
+        bounties,
+        aliases,
+        meetup_messages: meetupMessages,
+        feed_events: feedEvents,
       },
     });
   } catch (err: any) {
@@ -271,6 +271,63 @@ router.delete('/me', authenticate, async (req: Request, res: Response) => {
 
     await transaction(async (client) => {
       // Delete all user-related data in dependency order
+      // Tables WITHOUT ON DELETE CASCADE must be explicitly cleaned
+
+      // -- Social / friends / clans --
+      await client.query('DELETE FROM friend_requests WHERE sender_id = $1 OR receiver_id = $1', [userId]);
+      await client.query('DELETE FROM friendships WHERE user_a = $1 OR user_b = $1', [userId]);
+      await client.query('DELETE FROM blocked_users WHERE blocker_id = $1 OR blocked_id = $1', [userId]);
+      await client.query('DELETE FROM clan_invitations WHERE inviter_id = $1 OR invitee_id = $1', [userId]);
+      await client.query('DELETE FROM clan_join_requests WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM clan_invite_codes WHERE created_by = $1', [userId]);
+      await client.query('DELETE FROM clan_messages WHERE sender_id = $1', [userId]);
+      await client.query('DELETE FROM clan_members WHERE user_id = $1', [userId]);
+      await client.query("UPDATE clans SET leader_id = NULL WHERE leader_id = $1", [userId]);
+
+      // -- Meetups --
+      await client.query('DELETE FROM meetup_messages WHERE sender_id = $1', [userId]);
+      await client.query('DELETE FROM meetup_attendees WHERE user_id = $1', [userId]);
+      await client.query("UPDATE meetup_events SET creator_id = NULL WHERE creator_id = $1", [userId]);
+
+      // -- Games / duels / races / bounties --
+      await client.query('DELETE FROM game_moves WHERE player_id = $1', [userId]);
+      await client.query("UPDATE territory_games SET defender_id = NULL WHERE defender_id = $1", [userId]);
+      await client.query("UPDATE territory_games SET challenger_id = NULL WHERE challenger_id = $1", [userId]);
+      await client.query("UPDATE territory_games SET current_turn = NULL WHERE current_turn = $1", [userId]);
+      await client.query("UPDATE territory_games SET winner_id = NULL WHERE winner_id = $1", [userId]);
+      await client.query('DELETE FROM defense_attempts WHERE challenger_id = $1', [userId]);
+      await client.query("UPDATE territory_defenses SET owner_id = NULL WHERE owner_id = $1", [userId]);
+      await client.query("UPDATE duels SET challenger_id = NULL WHERE challenger_id = $1", [userId]);
+      await client.query("UPDATE duels SET defender_id = NULL WHERE defender_id = $1", [userId]);
+      await client.query("UPDATE duels SET winner_id = NULL WHERE winner_id = $1", [userId]);
+      await client.query('DELETE FROM race_attempts WHERE user_id = $1', [userId]);
+      await client.query("UPDATE race_tracks SET creator_id = NULL WHERE creator_id = $1", [userId]);
+      await client.query("UPDATE race_tracks SET best_time_user_id = NULL WHERE best_time_user_id = $1", [userId]);
+      await client.query("UPDATE bounties SET issuer_id = NULL WHERE issuer_id = $1", [userId]);
+      await client.query("UPDATE bounties SET target_id = NULL WHERE target_id = $1", [userId]);
+      await client.query("UPDATE bounties SET claimed_by = NULL WHERE claimed_by = $1", [userId]);
+      await client.query("UPDATE game_events SET winner_id = NULL WHERE winner_id = $1", [userId]);
+
+      // -- Traps / aliases / loot --
+      await client.query('DELETE FROM traps WHERE owner_id = $1', [userId]);
+      await client.query("UPDATE traps SET triggered_by = NULL WHERE triggered_by = $1", [userId]);
+      await client.query('DELETE FROM aliases WHERE user_id = $1', [userId]);
+      await client.query("UPDATE aliases SET revealed_by = NULL WHERE revealed_by = $1", [userId]);
+      await client.query("UPDATE loot_drops SET collected_by = NULL WHERE collected_by = $1", [userId]);
+
+      // -- Travel / places / artifacts / zones --
+      await client.query('DELETE FROM ratings WHERE user_id = $1', [userId]);
+      await client.query("UPDATE travel_routes SET founder_id = NULL WHERE founder_id = $1", [userId]);
+      await client.query("UPDATE travel_spots SET created_by = NULL WHERE created_by = $1", [userId]);
+      await client.query("UPDATE artifacts SET creator_id = NULL WHERE creator_id = $1", [userId]);
+      await client.query('DELETE FROM place_history WHERE user_id = $1', [userId]);
+      await client.query("UPDATE silent_zones SET created_by = NULL WHERE created_by = $1", [userId]);
+      await client.query("UPDATE resonance_spots SET discovered_by = NULL WHERE discovered_by = $1", [userId]);
+      await client.query("UPDATE monuments SET user_id = NULL WHERE user_id = $1", [userId]);
+      await client.query("UPDATE invites SET inviter_id = NULL WHERE inviter_id = $1", [userId]);
+      await client.query("UPDATE invites SET invitee_id = NULL WHERE invitee_id = $1", [userId]);
+
+      // -- Core game data --
       await client.query('DELETE FROM territories WHERE owner_id = $1', [userId]);
       await client.query('DELETE FROM quest_progress WHERE user_id = $1', [userId]);
       await client.query('DELETE FROM quests WHERE creator_id = $1', [userId]);
@@ -285,7 +342,6 @@ router.delete('/me', authenticate, async (req: Request, res: Response) => {
       await client.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
       await client.query('DELETE FROM feed_events WHERE user_id = $1', [userId]);
       await client.query('DELETE FROM reports WHERE reporter_id = $1', [userId]);
-      await client.query('DELETE FROM clan_members WHERE user_id = $1', [userId]);
       await client.query('DELETE FROM refresh_tokens WHERE user_id = $1', [userId]);
 
       // Finally delete the user row itself

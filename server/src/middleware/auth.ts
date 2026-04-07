@@ -7,6 +7,18 @@ import jwt from 'jsonwebtoken';
 import { queryOne } from '../config/database';
 import { User } from '../utils/types';
 
+// In production, server MUST NOT start without proper secrets
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && !process.env.JWT_SECRET) {
+  console.error('[FATAL] JWT_SECRET environment variable is required in production');
+  process.exit(1);
+}
+if (isProduction && !process.env.JWT_REFRESH_SECRET) {
+  console.error('[FATAL] JWT_REFRESH_SECRET environment variable is required in production');
+  process.exit(1);
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'mapraiders-dev-secret';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'mapraiders-refresh-secret';
 

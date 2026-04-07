@@ -13,6 +13,7 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { meetupService } from '../services/meetupService';
+import { moderationService } from '../services/moderationService';
 
 const router = Router();
 
@@ -193,6 +194,12 @@ router.post('/:id/messages', authenticate, async (req: Request, res: Response) =
 
     if (message.length > 500) {
       return res.status(400).json({ success: false, message: 'Message must be 500 characters or less' });
+    }
+
+    // Content moderation check
+    const modResult = await moderationService.checkText(message.trim());
+    if (!modResult.safe) {
+      return res.status(400).json({ success: false, message: 'Message contains inappropriate content' });
     }
 
     const result = await meetupService.sendMessage(req.userId!, id, message);

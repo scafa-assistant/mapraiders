@@ -10,6 +10,7 @@ import {
   Switch,
   Vibration,
   TextInput,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -423,6 +424,32 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             handleDeleteAccount,
             theme.danger,
             isDeleting
+          )}
+        </View>
+
+        {/* Legal */}
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Rechtliches</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          {renderRow(
+            'document-text-outline',
+            'AGB',
+            'Allgemeine Geschäftsbedingungen',
+            () => Linking.openURL('https://mapraiders.com/agb.html'),
+            theme.accent
+          )}
+          {renderRow(
+            'shield-checkmark-outline',
+            'Datenschutz',
+            'Datenschutzerklärung (DSGVO)',
+            () => Linking.openURL('https://mapraiders.com/datenschutz.html'),
+            theme.accent
+          )}
+          {renderRow(
+            'information-circle-outline',
+            'Impressum',
+            'Angaben gemäß § 5 TMG',
+            () => Linking.openURL('https://mapraiders.com/impressum.html'),
+            theme.accent
           )}
         </View>
 

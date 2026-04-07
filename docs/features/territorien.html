@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Territorien — MapRaiders</title>
+<meta name="description" content="Erobere echte Gebiete in deiner Stadt. Laufe, renne, fahre Rad und beanspruche das Land unter deinen Fuessen mit MapRaiders.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* Theme variables */
+html[data-theme="dark"]{
+  --bg:#0A0E17;--card:#141B2D;--card-hover:#1A2340;--text:#E8ECF4;--muted:#6B7A99;--dim:#3A4560;
+  --glass:rgba(20,27,45,0.6);--glass-border:rgba(0,212,255,0.08);--shadow:rgba(0,0,0,0.3);
+  --nav-bg:rgba(10,14,23,0.85);--border-subtle:rgba(255,255,255,0.04);
+}
+html[data-theme="light"]{
+  --bg:#F5F7FA;--card:#FFFFFF;--card-hover:#F0F4FF;--text:#1A1F2E;--muted:#6B7A99;--dim:#B0B8C9;
+  --glass:rgba(255,255,255,0.7);--glass-border:rgba(0,212,255,0.12);--shadow:rgba(0,0,0,0.08);
+  --nav-bg:rgba(245,247,250,0.9);--border-subtle:rgba(0,0,0,0.06);
+}
+:root{
+  --accent:#00D4FF;--accent-dim:rgba(0,212,255,0.15);--accent-glow:rgba(0,212,255,0.4);
+  --cyan:#00D4FF;--violet:#7B61FF;--green:#00FF88;--gold:#FFB800;--red:#FF3B6F;
+  --font-display:'Orbitron',monospace;--font-body:'Sora',sans-serif;
+}
+
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}.reveal-delay-6{transition-delay:.6s}
+
+/* Navigation */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);transition:all .4s}
+.nav.scrolled{padding:10px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-logo{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.5px;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#050811;transition:all .3s;box-shadow:0 0 30px rgba(0,212,255,0.2)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 0 40px var(--accent-glow)}.nav-cta::after{display:none}
+.theme-toggle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s;cursor:pointer}
+.theme-toggle:hover{border-color:var(--accent);transform:scale(1.1)}
+/* Dropdown */
+.dropdown{position:relative}
+.dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;background:var(--card);border:1px solid var(--border-subtle);border-radius:12px;padding:8px 0;min-width:200px;box-shadow:0 20px 60px var(--shadow);transition:all .3s;z-index:1001}
+.dropdown:hover .dropdown-menu{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.dropdown-menu a{display:block;padding:10px 20px;font-size:13px;color:var(--muted);transition:all .2s}
+.dropdown-menu a:hover{color:var(--accent);background:var(--accent-dim)}
+.dropdown-menu a::after{display:none}
+@media(max-width:768px){.nav-links a:not(.nav-cta):not(.theme-toggle){display:none}.nav-logo{font-size:15px}.dropdown-menu{display:none}}
+
+/* Hero */
+.hero{position:relative;min-height:70vh;display:flex;align-items:center;overflow:hidden;padding:140px 0 80px}
+.hero-glow{position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);animation:glowPulse 6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.15)}}
+.hero-content{position:relative;z-index:2;text-align:center;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);padding:8px 20px;border-radius:100px;border:1px solid rgba(0,212,255,0.2);background:var(--accent-dim);margin-bottom:32px}
+.hero h1{font-family:var(--font-display);font-size:clamp(32px,6vw,72px);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(15px,2.2vw,20px);color:var(--muted);max-width:650px;margin:0 auto 40px;line-height:1.7}
+.hero p strong{color:var(--text);font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--accent);transition:all .3s;margin-top:20px}
+.back-link:hover{gap:12px}
+
+/* Section styling */
+section{padding:100px 0;position:relative}
+section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),transparent)}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header h2{font-family:var(--font-display);font-size:clamp(22px,4vw,40px);font-weight:800;margin-bottom:16px}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.section-header p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Step cards */
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:900px){.steps-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.steps-grid{grid-template-columns:1fr}}
+.step-card{position:relative;padding:36px 28px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);transition:all .4s;overflow:hidden}
+.step-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity .3s}
+.step-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px var(--shadow);border-color:var(--glass-border)}.step-card:hover::before{opacity:1}
+.step-num{font-family:var(--font-display);font-size:48px;font-weight:900;color:var(--accent);opacity:.2;margin-bottom:12px;line-height:1}
+.step-card h3{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:10px}
+.step-card p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+@media(max-width:768px){.info-grid{grid-template-columns:1fr;gap:32px}}
+.info-block{padding:36px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);transition:all .4s}
+.info-block:hover{border-color:var(--glass-border);box-shadow:0 10px 40px var(--shadow)}
+.info-block h3{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:16px;color:var(--accent)}
+.info-block p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+.info-block ul{list-style:none;padding:0}
+.info-block ul li{font-size:14px;color:var(--muted);line-height:1.8;padding:6px 0;padding-left:20px;position:relative}
+.info-block ul li::before{content:'\25B8';position:absolute;left:0;color:var(--accent)}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:768px){.stat-grid{grid-template-columns:1fr}}
+.stat-card{text-align:center;padding:40px 24px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);transition:all .4s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 10px 40px var(--shadow)}
+.stat-icon{font-size:36px;margin-bottom:16px}
+.stat-value{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--accent);margin-bottom:8px}
+.stat-label{font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+/* Multiplier table */
+.multiplier-section{padding:40px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle)}
+.multiplier-section h3{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:1px;margin-bottom:24px;text-align:center;color:var(--accent)}
+.multiplier-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:500px){.multiplier-grid{grid-template-columns:1fr}}
+.mult-item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:12px;background:var(--bg);border:1px solid var(--border-subtle);transition:all .3s}
+.mult-item:hover{border-color:var(--accent);transform:translateX(4px)}
+.mult-icon{font-size:24px;width:44px;height:44px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mult-info{flex:1}
+.mult-name{font-weight:600;font-size:14px;margin-bottom:2px}
+.mult-val{font-family:var(--font-display);font-size:13px;color:var(--accent);font-weight:700}
+
+/* How it works visual */
+.how-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:60px;padding:40px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle)}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:100px}
+.flow-icon{width:64px;height:64px;border-radius:50%;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:28px;border:2px solid var(--accent);transition:all .3s}
+.flow-step:hover .flow-icon{transform:scale(1.1);box-shadow:0 0 30px var(--accent-glow)}
+.flow-label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.flow-arrow{font-size:24px;color:var(--accent);opacity:.5}
+@media(max-width:600px){.flow-arrow{transform:rotate(90deg)}}
+
+/* Footer */
+footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:2px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);transition:color .3s}.footer-links a:hover{color:var(--accent)}
+.footer-copy{width:100%;text-align:center;margin-top:24px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav"><div class="nav-inner">
+  <a href="/" class="nav-logo">MAPRAIDERS</a>
+  <div class="nav-links">
+    <div class="dropdown">
+      <a href="/#features">Features</a>
+      <div class="dropdown-menu">
+        <a href="/features/territorien.html">Territorien</a>
+        <a href="/features/echos.html">Echos</a>
+        <a href="/features/events.html">Events</a>
+        <a href="/features/defense.html">Defense Games</a>
+        <a href="/features/social.html">Social</a>
+        <a href="/features/quests.html">Quests</a>
+      </div>
+    </div>
+    <a href="/features/echos.html">Echos</a>
+    <a href="/#manifesto">Vision</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">&#9790;</button>
+    <a href="/MapRaiders.apk" class="nav-cta">Download</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content container">
+    <div class="hero-badge">&#9873; Territorien-System</div>
+    <h1>Deine Stadt.<br><span>Dein Revier.</span></h1>
+    <p>Laufe durch deine Nachbarschaft und beanspruche <strong>echtes Land auf der Karte</strong>. Jeder Schritt wird zur GPS-Spur, jede geschlossene Route wird zu deinem Territorium. In deiner Farbe. Unter deiner Kontrolle.</p>
+    <a href="/" class="back-link">&larr; Zurueck zur Startseite</a>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>So <em>funktioniert</em> es</h2>
+      <p>Vom ersten Schritt bis zum beherrschten Stadtviertel. Das Territory-System ist das Herzsteueck von MapRaiders.</p>
+    </div>
+
+    <div class="how-flow reveal">
+      <div class="flow-step">
+        <div class="flow-icon">&#128694;</div>
+        <div class="flow-label">Laufen</div>
+      </div>
+      <div class="flow-arrow">&#10132;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#128225;</div>
+        <div class="flow-label">GPS trackt</div>
+      </div>
+      <div class="flow-arrow">&#10132;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#11044;</div>
+        <div class="flow-label">Route schliessen</div>
+      </div>
+      <div class="flow-arrow">&#10132;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#127937;</div>
+        <div class="flow-label">Land claimen</div>
+      </div>
+      <div class="flow-arrow">&#10132;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#128737;</div>
+        <div class="flow-label">Verteidigen</div>
+      </div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num">01</div>
+        <h3>Laufen</h3>
+        <p>Starte das Territory-Tracking in der App. Jeder Meter wird als GPS-Punkt aufgezeichnet. Gehe, renne oder fahre Rad durch dein Zielgebiet. Die Route wird in Echtzeit auf der Karte sichtbar.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-num">02</div>
+        <h3>Route schliessen</h3>
+        <p>Wenn du an deinen Startpunkt zurueckkehrst, schliesst sich das Polygon automatisch. Die eingeschlossene Flaeche wird berechnet und du siehst sofort, wie viel Land du gerade umkreist hast.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num">03</div>
+        <h3>Land beanspruchen</h3>
+        <p>Beanspruche das eingeschlossene Gebiet als dein Territorium. Es erscheint in deiner persoenlichen Farbe auf der Karte. Andere Spieler sehen sofort: Dieses Gebiet gehoert dir.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-num">04</div>
+        <h3>Verteidigen</h3>
+        <p>Platziere Defense-Games auf deinem Territorium. Angreifer muessen jedes einzelne Spiel gewinnen, um dein Land zu uebernehmen. Je groesser dein Gebiet, desto mehr Verteidigungsslots.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Dein <em>Territorium</em>, deine Regeln</h2>
+      <p>Jedes Territorium ist einzigartig. Waehle deine Farbe, verteidige dein Land und beobachte wie es waechst.</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-block reveal">
+        <h3>&#127912; Persoenliche Farben</h3>
+        <p>In MapRaiders waehlt jeder Spieler seine eigene Territory-Farbe. Oeffne die Einstellungen, nutze den Color-Picker und dein Gebiet erstrahlt in deiner Wunschfarbe.</p>
+        <p>Deine Farbe ist dein Markenzeichen auf der Karte. Andere Spieler erkennen sofort, wem ein Gebiet gehoert, allein an der Farbe. Wechsle sie jederzeit in den Einstellungen.</p>
+      </div>
+      <div class="info-block reveal reveal-delay-1">
+        <h3>&#9203; Decay-System</h3>
+        <p>Territorien sind nicht fuer die Ewigkeit. Ohne regelmaessige Pflege verlieren sie an Staerke und schrumpfen ueber die Zeit. Das Decay-System sorgt dafuer, dass die Karte lebendig bleibt.</p>
+        <ul>
+          <li>Territorien verlieren taeglich an Hitpoints</li>
+          <li>Regelmaessiges Durchlaufen verstaerkt das Gebiet</li>
+          <li>Defense-Games verlangsamen den Verfall</li>
+          <li>Voellig verfallene Gebiete werden frei</li>
+        </ul>
+      </div>
+      <div class="info-block reveal reveal-delay-2">
+        <h3>&#128200; Automatisches Merging</h3>
+        <p>Wenn du benachbarte Gebiete beanspruchst, verschmelzen sie automatisch zu einem groesseren Territorium. Je groesser die Gesamtflaeche, desto mehr Vorteile erhaeltst du.</p>
+        <ul>
+          <li>Angrenzende Polygone fusionieren automatisch</li>
+          <li>Groessere Gebiete erhalten mehr Defense-Slots</li>
+          <li>Die Gesamtflaeche bestimmt dein Ranking</li>
+          <li>Strategisch klug claimen lohnt sich</li>
+        </ul>
+      </div>
+      <div class="info-block reveal reveal-delay-3">
+        <h3>&#128737; Defense-Slots</h3>
+        <p>Jedes Territorium hat eine begrenzte Anzahl an Verteidigungsslots. Die Anzahl haengt direkt von der Groesse des Gebiets ab. Kleine Territorien haben 1 Slot, riesige Gebiete bis zu 5.</p>
+        <ul>
+          <li>0-500m&sup2;: 1 Defense-Slot</li>
+          <li>500-2.000m&sup2;: 2 Defense-Slots</li>
+          <li>2.000-10.000m&sup2;: 3 Defense-Slots</li>
+          <li>10.000m&sup2;+: bis zu 5 Defense-Slots</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Claim-<em>Multiplikatoren</em></h2>
+      <p>Bestimmte Bedingungen erhoehen den Wert deines Claims. Strategisches Timing wird belohnt.</p>
+    </div>
+
+    <div class="multiplier-section reveal">
+      <h3>Wert-Multiplikatoren</h3>
+      <div class="multiplier-grid">
+        <div class="mult-item reveal reveal-delay-1">
+          <div class="mult-icon">&#127783;</div>
+          <div class="mult-info">
+            <div class="mult-name">Regen-Bonus</div>
+            <div class="mult-val">+25% Claim-Wert</div>
+          </div>
+        </div>
+        <div class="mult-item reveal reveal-delay-2">
+          <div class="mult-icon">&#127769;</div>
+          <div class="mult-info">
+            <div class="mult-name">Nacht-Bonus</div>
+            <div class="mult-val">+20% Claim-Wert</div>
+          </div>
+        </div>
+        <div class="mult-item reveal reveal-delay-3">
+          <div class="mult-icon">&#128293;</div>
+          <div class="mult-info">
+            <div class="mult-name">Streak-Bonus</div>
+            <div class="mult-val">+5% pro Tag (max +50%)</div>
+          </div>
+        </div>
+        <div class="mult-item reveal reveal-delay-4">
+          <div class="mult-icon">&#9876;</div>
+          <div class="mult-info">
+            <div class="mult-name">Klassen-Bonus</div>
+            <div class="mult-val">Variiert nach Spielerklasse</div>
+          </div>
+        </div>
+        <div class="mult-item reveal reveal-delay-5">
+          <div class="mult-icon">&#127947;</div>
+          <div class="mult-info">
+            <div class="mult-name">Sprint-Bonus</div>
+            <div class="mult-val">+15% bei hoher Geschwindigkeit</div>
+          </div>
+        </div>
+        <div class="mult-item reveal reveal-delay-6">
+          <div class="mult-icon">&#127775;</div>
+          <div class="mult-info">
+            <div class="mult-name">Ersteroberung</div>
+            <div class="mult-val">+30% fuer unbekanntes Gebiet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Dein Revier in <em>Zahlen</em></h2>
+      <p>Jedes Territorium wird praezise vermessen und bewertet.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card reveal">
+        <div class="stat-icon">&#128208;</div>
+        <div class="stat-value">m&sup2;</div>
+        <div class="stat-label">Flaeche wird GPS-genau berechnet</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-1">
+        <div class="stat-icon">&#128736;</div>
+        <div class="stat-value">1-5</div>
+        <div class="stat-label">Defense-Slots pro Territorium</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-icon">&#9201;</div>
+        <div class="stat-value">24h</div>
+        <div class="stat-label">Decay-Zyklus ohne Verteidigung</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div class="footer-inner">
+    <div class="footer-brand">MAPRAIDERS</div>
+    <div class="footer-links">
+      <a href="/agb.html">AGB</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/kontakt.html">Kontakt</a>
+    </div>
+  </div>
+  <p class="footer-copy">&copy; 2026 MapRaiders &mdash; Social Media. Neu definiert.</p>
+</div></footer>
+
+<script>
+// Theme toggle
+!function(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggle');
+  const saved=localStorage.getItem('mapraiders-theme')||'dark';
+  html.setAttribute('data-theme',saved);
+  btn.innerHTML=saved==='dark'?'\u263E':'\u2600';
+  btn.addEventListener('click',()=>{
+    const current=html.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    html.setAttribute('data-theme',next);
+    localStorage.setItem('mapraiders-theme',next);
+    btn.innerHTML=next==='dark'?'\u263E':'\u2600';
+  });
+}();
+
+// Scroll reveal
+const ob=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));
+
+// Nav scroll
+addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+</script>
+</body>
+</html>

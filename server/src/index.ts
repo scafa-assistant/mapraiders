@@ -66,14 +66,22 @@ import { queryOne } from './config/database';
 // ---- Create Express app ----
 const app = express();
 
+// ---- Trust proxy (required for rate limiting behind reverse proxy) ----
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // ---- Security middleware ----
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
 // ---- CORS ----
+const corsOrigin = process.env.CORS_ORIGIN || (
+  process.env.NODE_ENV === 'production' ? 'https://mapraiders.com' : '*'
+);
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: corsOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -109,14 +117,17 @@ app.use('/api', apiLimiter);
 
 // ---- Health check (no auth required) ----
 app.get('/api/health', (_req: Request, res: Response) => {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.json({
     success: true,
     data: {
       status: 'ok',
       service: 'mapraiders-api',
-      version: process.env.npm_package_version || '1.0.0',
+      ...(isProduction ? {} : {
+        version: process.env.npm_package_version || '1.0.0',
+        uptime: process.uptime(),
+      }),
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
     },
   });
 });
@@ -220,7 +231,7 @@ wss.on('connection', (ws: WebSocket, req) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mapraiders-dev-secret') as { userId: string };
     wsService.addClient(decoded.userId, ws);
 
     // Look up the user's clan membership and attach it to the WS client
@@ -235,11 +246,26 @@ wss.on('connection', (ws: WebSocket, req) => {
       // Non-critical: user may not be in a clan
     });
 
+    // WebSocket rate limiting: max 2 messages per second per client
+    let wsMessageCount = 0;
+    let wsMessageResetTime = Date.now();
+
     ws.on('message', (raw) => {
       try {
+        const now = Date.now();
+        if (now - wsMessageResetTime > 1000) {
+          wsMessageCount = 0;
+          wsMessageResetTime = now;
+        }
+        wsMessageCount++;
+        if (wsMessageCount > 2) return; // Drop excessive messages
+
         const msg = JSON.parse(raw.toString());
         if (msg.event === 'location_update') {
-          wsService.updateLocation(decoded.userId, msg.data.lat, msg.data.lng);
+          const lat = parseFloat(msg.data?.lat);
+          const lng = parseFloat(msg.data?.lng);
+          if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return;
+          wsService.updateLocation(decoded.userId, lat, lng);
         }
       } catch {
         // Ignore malformed messages

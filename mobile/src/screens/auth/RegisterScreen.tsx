@@ -11,6 +11,7 @@ import {
   ScrollView,
   Alert,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,6 +34,8 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [confirmedAge, setConfirmedAge] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const { register, web3Login, isLoading, error, clearError } = useAuthStore();
@@ -76,6 +79,14 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
   const handleRegister = async () => {
     if (!validate()) return;
+    if (!acceptedTerms) {
+      Alert.alert('AGB akzeptieren', 'Bitte akzeptiere die AGB und Datenschutzerklärung.');
+      return;
+    }
+    if (!confirmedAge) {
+      Alert.alert('Altersbestätigung', 'Bitte bestätige, dass du mindestens 16 Jahre alt bist.');
+      return;
+    }
     try {
       await register(username.trim(), email.trim().toLowerCase(), password);
     } catch (_err) {
@@ -399,11 +410,46 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
             )}
           </View>
 
+          {/* Legal Checkboxes */}
+          <View style={styles.legalSection}>
+            <TouchableOpacity
+              style={styles.checkboxRow}
+              onPress={() => setAcceptedTerms(!acceptedTerms)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={acceptedTerms ? 'checkbox' : 'square-outline'}
+                size={22}
+                color={acceptedTerms ? '#00D4FF' : '#6B7A99'}
+              />
+              <Text style={styles.checkboxText}>
+                Ich akzeptiere die{' '}
+                <Text style={styles.legalLink} onPress={() => Linking.openURL('https://mapraiders.com/agb.html')}>AGB</Text>
+                {' '}und die{' '}
+                <Text style={styles.legalLink} onPress={() => Linking.openURL('https://mapraiders.com/datenschutz.html')}>Datenschutzerklärung</Text>
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.checkboxRow}
+              onPress={() => setConfirmedAge(!confirmedAge)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={confirmedAge ? 'checkbox' : 'square-outline'}
+                size={22}
+                color={confirmedAge ? '#00D4FF' : '#6B7A99'}
+              />
+              <Text style={styles.checkboxText}>
+                Ich bin mindestens 16 Jahre alt
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Register Button */}
           <TouchableOpacity
-            style={[styles.registerButton, isBusy && styles.registerButtonDisabled]}
+            style={[styles.registerButton, (isBusy || !acceptedTerms || !confirmedAge) && styles.registerButtonDisabled]}
             onPress={handleRegister}
-            disabled={isBusy}
+            disabled={isBusy || !acceptedTerms || !confirmedAge}
             activeOpacity={0.8}
           >
             {isLoading ? (
@@ -641,5 +687,25 @@ const styles = StyleSheet.create({
     color: '#00D4FF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  legalSection: {
+    marginTop: 20,
+    marginBottom: 8,
+    gap: 14,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  checkboxText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#8892B0',
+    lineHeight: 20,
+  },
+  legalLink: {
+    color: '#00D4FF',
+    textDecorationLine: 'underline',
   },
 });
