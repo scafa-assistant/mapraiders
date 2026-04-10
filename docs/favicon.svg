@@ -1,0 +1,39 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+  <defs>
+    <clipPath id="bg-clip">
+      <rect width="64" height="64" rx="14"/>
+    </clipPath>
+    <linearGradient id="pin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,1)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.92)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background: Electric Blue rounded square -->
+  <rect width="64" height="64" rx="14" fill="#1558F0"/>
+
+  <!-- Subtle top-edge highlight (liquid glass refraction) -->
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none"
+        stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+
+  <!-- Ambient territory grid in background (barely visible, bottom-right) -->
+  <g clip-path="url(#bg-clip)" opacity="0.08">
+    <rect x="32" y="32" width="14" height="14" fill="white"/>
+    <rect x="48" y="32" width="14" height="14" fill="white"/>
+    <rect x="32" y="48" width="14" height="14" fill="white"/>
+  </g>
+
+  <!-- Map pin body (white, teardown shape) -->
+  <path d="M32 8 C21.51 8 13 16.51 13 27 C13 40.5 32 56 32 56 C32 56 51 40.5 51 27 C51 16.51 42.49 8 32 8Z"
+        fill="url(#pin-grad)"/>
+
+  <!-- 2×2 territory grid inside pin circle — diagonal "claimed" pattern -->
+  <!-- Top-left: claimed (solid blue) -->
+  <rect x="22" y="17" width="9" height="9" rx="1.5" fill="#1558F0"/>
+  <!-- Top-right: unclaimed (ghost) -->
+  <rect x="33" y="17" width="9" height="9" rx="1.5" fill="#1558F0" opacity="0.22"/>
+  <!-- Bottom-left: unclaimed (ghost) -->
+  <rect x="22" y="28" width="9" height="9" rx="1.5" fill="#1558F0" opacity="0.22"/>
+  <!-- Bottom-right: claimed (solid blue) -->
+  <rect x="33" y="28" width="9" height="9" rx="1.5" fill="#1558F0"/>
+</svg>
