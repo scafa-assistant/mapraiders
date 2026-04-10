@@ -16,6 +16,14 @@ function buildSvg(lang) {
     fr: { title: 'MapRaiders', sub: 'Guerre de Territoire GPS en Temps Réel', tag1: 'Revendiquer des Zones', tag2: 'Accomplir des Quêtes', tag3: 'Créer des Clans', cta: 'mapraiders.com/fr' },
     es: { title: 'MapRaiders', sub: 'Guerra de Territorio GPS en Tiempo Real', tag1: 'Reclamar Territorios', tag2: 'Completar Misiones', tag3: 'Crear Clanes', cta: 'mapraiders.com/es' },
     it: { title: 'MapRaiders', sub: 'Guerra Territoriale GPS in Tempo Reale', tag1: 'Conquistare Territori', tag2: 'Completare Missioni', tag3: 'Fondare Clan', cta: 'mapraiders.com/it' },
+    pt: { title: 'MapRaiders', sub: 'Guerra de Território GPS em Tempo Real', tag1: 'Conquistar Territórios', tag2: 'Completar Missões', tag3: 'Criar Clãs', cta: 'mapraiders.com/pt' },
+    tr: { title: 'MapRaiders', sub: 'Gerçek Zamanlı GPS Toprak Savaşı', tag1: 'Toprak Fethet', tag2: 'Görevleri Tamamla', tag3: 'Klan Kur', cta: 'mapraiders.com/tr' },
+    ru: { title: 'MapRaiders', sub: 'Реальные GPS-битвы за территории', tag1: 'Завоевать территории', tag2: 'Выполнить задания', tag3: 'Создать клан', cta: 'mapraiders.com/ru' },
+    ja: { title: 'MapRaiders', sub: 'リアルタイムGPSテリトリーゲーム', tag1: 'テリトリー征服', tag2: 'クエスト達成', tag3: 'クラン結成', cta: 'mapraiders.com/ja' },
+    ko: { title: 'MapRaiders', sub: '실시간 GPS 영역 전쟁 게임', tag1: '영역 정복', tag2: '퀘스트 완료', tag3: '클랜 구성', cta: 'mapraiders.com/ko' },
+    zh: { title: 'MapRaiders', sub: '实时GPS领土战争游戏', tag1: '征服领土', tag2: '完成任务', tag3: '建立家族', cta: 'mapraiders.com/zh' },
+    ar: { title: 'MapRaiders', sub: 'حرب أراضٍ GPS في الوقت الفعلي', tag1: 'غزو الأراضي', tag2: 'إتمام المهام', tag3: 'بناء العشائر', cta: 'mapraiders.com/ar' },
+    hi: { title: 'MapRaiders', sub: 'रियल-टाइम GPS क्षेत्र युद्ध', tag1: 'क्षेत्र जीतें', tag2: 'मिशन पूरे करें', tag3: 'कबीले बनाएं', cta: 'mapraiders.com/hi' },
   };
 
   const c = content[lang];
@@ -133,6 +141,14 @@ async function generate() {
     { lang: 'fr', file: 'fr/og-image.png' },
     { lang: 'es', file: 'es/og-image.png' },
     { lang: 'it', file: 'it/og-image.png' },
+    { lang: 'pt', file: 'pt/og-image.png' },
+    { lang: 'tr', file: 'tr/og-image.png' },
+    { lang: 'ru', file: 'ru/og-image.png' },
+    { lang: 'ja', file: 'ja/og-image.png' },
+    { lang: 'ko', file: 'ko/og-image.png' },
+    { lang: 'zh', file: 'zh/og-image.png' },
+    { lang: 'ar', file: 'ar/og-image.png' },
+    { lang: 'hi', file: 'hi/og-image.png' },
   ];
 
   for (const { lang, file } of tasks) {

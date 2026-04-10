@@ -10,6 +10,14 @@
 <link rel="alternate" hreflang="es" href="https://mapraiders.com/es/features/eventos.html">
 <link rel="alternate" hreflang="it" href="https://mapraiders.com/it/features/eventi.html">
 <link rel="alternate" hreflang="x-default" href="https://mapraiders.com/features/events.html">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/features/events.html">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/features/events.html">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/features/events.html">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/features/events.html">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/features/events.html">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/features/events.html">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/features/events.html">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/features/events.html">
 <title>Spontan-Events & Meetups — MapRaiders | GPS Events in deiner Stadt</title>
 <meta name="description" content="Erstelle spontane Events, triff echte Menschen in deiner Naehe. Hundespaziergang, Sport, Party — alles live auf der Karte.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -144,7 +152,17 @@ section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;bac
 .fest-card h4{font-size:14px;font-weight:700;margin-bottom:6px}
 .fest-card p{font-size:12px;color:var(--muted)}
 
-.lang-sw{display:flex;gap:2px;align-items:center}.lsw{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:5px 8px;border-radius:4px;transition:all .2s}a.lsw:hover{color:var(--text)}.lsw.on{color:var(--accent)}@media(max-width:900px){.lang-sw{display:none}}
+.lang-sw{position:relative}
+.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
+.lsw-btn:hover{color:var(--text);background:var(--surface)}
+.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
+.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
+.lsw-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
+.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
+.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
+.lswi:hover{color:var(--text);background:var(--surface)}
+.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
+@media(max-width:900px){.lang-sw{display:none}}
 footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
 .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
 .footer-brand{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:2px}
@@ -172,7 +190,24 @@ footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
     <a href="/features/echos.html">Echos</a>
     <a href="/#manifesto">Vision</a>
     <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">&#9790;</button>
-    <div class="lang-sw"><span class="lsw on">DE</span><a href="/en/features/events.html" class="lsw">EN</a><a href="/fr/features/evenements.html" class="lsw">FR</a><a href="/es/features/eventos.html" class="lsw">ES</a><a href="/it/features/eventi.html" class="lsw">IT</a></div>
+    <div class="lang-sw">
+      <button class="lsw-btn">DE <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lsw-drop">
+      <span class="lswi on">Deutsch</span>
+      <a href="/en/features/events.html" class="lswi">English</a>
+      <a href="/fr/features/evenements.html" class="lswi">Français</a>
+      <a href="/es/features/eventos.html" class="lswi">Español</a>
+      <a href="/it/features/eventi.html" class="lswi">Italiano</a>
+      <a href="/pt/features/events.html" class="lswi">Português</a>
+      <a href="/tr/features/events.html" class="lswi">Türkçe</a>
+      <a href="/ru/features/events.html" class="lswi">Русский</a>
+      <a href="/ja/features/events.html" class="lswi">日本語</a>
+      <a href="/ko/features/events.html" class="lswi">한국어</a>
+      <a href="/zh/features/events.html" class="lswi">中文</a>
+      <a href="/ar/features/events.html" class="lswi">العربية</a>
+      <a href="/hi/features/events.html" class="lswi">हिन्दी</a>
+      </div>
+    </div>
     <a href="/MapRaiders.apk" class="nav-cta">Download</a>
   </div>
 </div></nav>

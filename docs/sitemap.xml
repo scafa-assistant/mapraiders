@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-  <!-- DE Startseite -->
   <url>
     <loc>https://mapraiders.com/</loc>
     <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/"/>
@@ -10,98 +8,119 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/"/>
-    <priority>1.0</priority>
+    <changefreq>weekly</changefreq><priority>1.0</priority>
   </url>
 
-  <!-- EN Startseite -->
-  <url>
-    <loc>https://mapraiders.com/en/</loc>
-    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/"/>
-    <priority>0.9</priority>
-  </url>
+  <url><loc>https://mapraiders.com/features/territorien.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/features/social.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- FR Startseite -->
-  <url>
-    <loc>https://mapraiders.com/fr/</loc>
-    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/"/>
-    <priority>0.9</priority>
-  </url>
+  <url><loc>https://mapraiders.com/en/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/en/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/features/defense-games.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- ES Startseite -->
-  <url>
-    <loc>https://mapraiders.com/es/</loc>
-    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/"/>
-    <priority>0.9</priority>
-  </url>
+  <url><loc>https://mapraiders.com/fr/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/fr/features/territoires.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/fr/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/fr/features/evenements.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/fr/features/jeux-defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/fr/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/fr/features/quetes.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- IT Startseite -->
-  <url>
-    <loc>https://mapraiders.com/it/</loc>
-    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/"/>
-    <priority>0.9</priority>
-  </url>
+  <url><loc>https://mapraiders.com/es/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/es/features/territorios.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/es/features/ecos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/es/features/eventos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/es/features/juegos-defensa.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/es/features/clanes.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/es/features/misiones.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- DE Feature-Seiten -->
-  <url><loc>https://mapraiders.com/features/territorien.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/features/echos.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/features/events.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/features/defense.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/features/social.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/features/quests.html</loc><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/it/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/it/features/territori.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/it/features/echi.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/it/features/eventi.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/it/features/giochi-difesa.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/it/features/clan.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/it/features/missioni.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- EN Feature-Seiten -->
-  <url><loc>https://mapraiders.com/en/features/territories.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/en/features/echos.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/en/features/events.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/en/features/defense-games.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/en/features/clans.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/en/features/quests.html</loc><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/pt/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/pt/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/pt/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/pt/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/pt/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/pt/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/pt/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- FR Feature-Seiten -->
-  <url><loc>https://mapraiders.com/fr/features/territoires.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/fr/features/echos.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/fr/features/evenements.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/fr/features/jeux-defense.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/fr/features/clans.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/fr/features/quetes.html</loc><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/tr/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/tr/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/tr/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/tr/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/tr/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/tr/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/tr/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- ES Feature-Seiten -->
-  <url><loc>https://mapraiders.com/es/features/territorios.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/es/features/ecos.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/es/features/eventos.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/es/features/juegos-defensa.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/es/features/clanes.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/es/features/misiones.html</loc><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ru/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/ru/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ru/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ru/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ru/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ru/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ru/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- IT Feature-Seiten -->
-  <url><loc>https://mapraiders.com/it/features/territori.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/it/features/echi.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/it/features/eventi.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/it/features/giochi-difesa.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/it/features/clan.html</loc><priority>0.8</priority></url>
-  <url><loc>https://mapraiders.com/it/features/missioni.html</loc><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ja/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/ja/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ja/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ja/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ja/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ja/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ja/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- Legal -->
-  <url><loc>https://mapraiders.com/agb.html</loc><priority>0.3</priority></url>
-  <url><loc>https://mapraiders.com/datenschutz.html</loc><priority>0.3</priority></url>
-  <url><loc>https://mapraiders.com/impressum.html</loc><priority>0.3</priority></url>
-  <url><loc>https://mapraiders.com/kontakt.html</loc><priority>0.4</priority></url>
+  <url><loc>https://mapraiders.com/ko/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/ko/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ko/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ko/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ko/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ko/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ko/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://mapraiders.com/zh/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/zh/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/zh/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/zh/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/zh/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/zh/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/zh/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://mapraiders.com/ar/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/ar/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ar/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ar/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ar/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ar/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/ar/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://mapraiders.com/hi/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mapraiders.com/hi/features/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/hi/features/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/hi/features/events.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/hi/features/defense.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/hi/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/hi/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
 </urlset>

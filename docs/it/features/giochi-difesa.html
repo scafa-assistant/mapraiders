@@ -12,6 +12,14 @@
 <link rel="alternate" hreflang="es" href="https://mapraiders.com/es/features/juegos-defensa.html">
 <link rel="alternate" hreflang="it" href="https://mapraiders.com/it/features/giochi-difesa.html">
 <link rel="alternate" hreflang="x-default" href="https://mapraiders.com/features/defense.html">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/features/defense.html">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/features/defense.html">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/features/defense.html">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/features/defense.html">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/features/defense.html">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/features/defense.html">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/features/defense.html">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/features/defense.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Come funzionano i giochi di difesa in MapRaiders?","acceptedAnswer":{"@type":"Answer","text":"Quando un altro giocatore entra nel tuo territorio, scatta una sfida. Entrambi i giocatori partecipano a un mini-gioco — come Tris o Carta Sasso Forbice — e chi vince ottiene il controllo della zona."}},{"@type":"Question","name":"Quali mini-giochi sono disponibili?","acceptedAnswer":{"@type":"Answer","text":"Al momento sono disponibili Tris (Tic-Tac-Toe), Carta Sasso Forbice e sfide di velocità. Nuovi mini-giochi vengono aggiunti regolarmente con gli aggiornamenti."}},{"@type":"Question","name":"Cosa succede se perdo una difesa?","acceptedAnswer":{"@type":"Answer","text":"Se perdi il mini-gioco, la zona contestata passa al controllo dell'avversario. Puoi tentare di riconquistarla tornando fisicamente nella zona e sfidando di nuovo."}},{"@type":"Question","name":"Posso rifiutare una sfida?","acceptedAnswer":{"@type":"Answer","text":"Puoi ignorare una sfida, ma il territorio verrà automaticamente ceduto all'attaccante dopo il tempo limite. La difesa attiva porta più punti esperienza."}},{"@type":"Question","name":"I giochi di difesa richiedono presenza fisica?","acceptedAnswer":{"@type":"Answer","text":"Sì. Sia l'attaccante che il difensore devono essere fisicamente nella zona contestata per partecipare al mini-gioco. Non puoi difendere da remoto."}},{"@type":"Question","name":"Come posso migliorare nelle difese?","acceptedAnswer":{"@type":"Answer","text":"Pratica i mini-giochi, impara le strategie degli avversari e crea zone difficili da raggiungere. I giocatori esperti costruiscono reti di territorio difficili da sfidare."}}]}</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +31,17 @@
 [data-theme="dark"]{--bg:#0D0C0A;--bg-alt:#161410;--surface:#1C1916;--border:rgba(255,255,255,.06);--border-s:rgba(255,255,255,.11);--text:#EAE7E2;--muted:#7A7470;--dim:#3E3B37;--accent:#4B7BFF;--accent-m:rgba(75,123,255,.1);--accent-b:rgba(75,123,255,.22);--sh-sm:0 1px 4px rgba(0,0,0,.2);--sh-md:0 4px 20px rgba(0,0,0,.3);--sh-lg:0 20px 60px rgba(0,0,0,.55);--nav-bg:rgba(13,12,10,.9)}
 body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}.mx{max-width:1180px;margin:0 auto;padding:0 28px}.rv{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}.rv.on{opacity:1;transform:none}.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
 .nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:20px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .4s}.nav.scroll{padding:13px 0}.nav-i{display:flex;align-items:center;justify-content:space-between}.nav-logo{font-size:14px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--text)}.nav-logo b{color:var(--accent)}.nav-r{display:flex;gap:24px;align-items:center}.nav-r a.lnk{font-size:13px;font-weight:500;color:var(--muted);transition:color .2s}.nav-r a.lnk:hover{color:var(--text)}.btn-dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 20px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 14px rgba(21,88,240,.25);transition:opacity .2s,transform .2s}.btn-dl:hover{opacity:.88;transform:translateY(-1px)}#thm{display:flex;align-items:center;color:var(--muted);transition:color .2s;cursor:pointer}#thm:hover{color:var(--text)}@media(max-width:740px){.nav-r a.lnk{display:none}.nav-logo{font-size:12px}}
-.lang-sw{display:flex;gap:2px;align-items:center}.lsw{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:5px 8px;border-radius:4px;transition:all .2s}a.lsw:hover{color:var(--text);background:var(--surface)}.lsw.on{color:var(--accent);background:var(--accent-m)}@media(max-width:900px){.lang-sw{display:none}}
+.lang-sw{position:relative}
+.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
+.lsw-btn:hover{color:var(--text);background:var(--surface)}
+.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
+.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
+.lsw-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
+.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
+.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
+.lswi:hover{color:var(--text);background:var(--surface)}
+.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
+@media(max-width:900px){.lang-sw{display:none}}
 .hero{padding:140px 0 80px;border-bottom:1px solid var(--border)}.h-badge{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);padding:6px 14px;border-radius:4px;background:var(--accent-m);border:1px solid var(--accent-b);margin-bottom:28px;width:fit-content}.hero h1{font-size:clamp(38px,6vw,72px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:20px}.hero h1 em{font-style:normal;color:var(--accent)}.hero-sub{font-size:17px;color:var(--muted);line-height:1.72;max-width:520px;margin-bottom:32px}.back-lnk{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--muted);transition:color .2s}.back-lnk:hover{color:var(--accent)}
 .sec{padding:80px 0;border-bottom:1px solid var(--border)}.sec-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}.sec-title{font-size:clamp(24px,3.5vw,38px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:40px}.sec-title em{font-style:normal;color:var(--accent)}
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}@media(max-width:540px){.steps{grid-template-columns:1fr}}.step{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh-sm)}.step-n{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}.step h3{font-size:16px;font-weight:700;margin-bottom:8px}.step p{font-size:14px;color:var(--muted);line-height:1.65}
@@ -41,11 +59,22 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}.f-i{display:flex;
     <a href="/it/#feat" class="lnk">Funzionalità</a>
     <a href="/it/#eco" class="lnk">Echi</a>
     <div class="lang-sw">
-      <a href="/features/defense.html" class="lsw">DE</a>
-      <a href="/en/features/defense-games.html" class="lsw">EN</a>
-      <a href="/fr/features/jeux-defense.html" class="lsw">FR</a>
-      <a href="/es/features/juegos-defensa.html" class="lsw">ES</a>
-      <span class="lsw on">IT</span>
+      <button class="lsw-btn">IT <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lsw-drop">
+      <a href="/features/defense.html" class="lswi">Deutsch</a>
+      <a href="/en/features/defense-games.html" class="lswi">English</a>
+      <a href="/fr/features/jeux-defense.html" class="lswi">Français</a>
+      <a href="/es/features/juegos-defensa.html" class="lswi">Español</a>
+      <span class="lswi on">Italiano</span>
+      <a href="/pt/features/defense.html" class="lswi">Português</a>
+      <a href="/tr/features/defense.html" class="lswi">Türkçe</a>
+      <a href="/ru/features/defense.html" class="lswi">Русский</a>
+      <a href="/ja/features/defense.html" class="lswi">日本語</a>
+      <a href="/ko/features/defense.html" class="lswi">한국어</a>
+      <a href="/zh/features/defense.html" class="lswi">中文</a>
+      <a href="/ar/features/defense.html" class="lswi">العربية</a>
+      <a href="/hi/features/defense.html" class="lswi">हिन्दी</a>
+      </div>
     </div>
     <button id="thm" aria-label="Cambia tema">
       <svg id="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>

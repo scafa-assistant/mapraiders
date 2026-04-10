@@ -23,6 +23,14 @@
 <link rel="alternate" hreflang="es" href="https://mapraiders.com/es/">
 <link rel="alternate" hreflang="it" href="https://mapraiders.com/it/">
 <link rel="alternate" hreflang="x-default" href="https://mapraiders.com/">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,10 +63,16 @@ body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
 #thm{display:flex;align-items:center;color:var(--muted);transition:color .2s;cursor:pointer}
 #thm:hover{color:var(--text)}
 @media(max-width:740px){.nav-r a.lnk{display:none}.nav-logo{font-size:12px}}
-.lang-sw{display:flex;gap:2px;align-items:center}
-.lsw{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:5px 8px;border-radius:4px;transition:all .2s}
-a.lsw:hover{color:var(--text);background:var(--surface)}
-.lsw.on{color:var(--accent);background:var(--accent-m)}
+.lang-sw{position:relative}
+.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
+.lsw-btn:hover{color:var(--text);background:var(--surface)}
+.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
+.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
+.lsw-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
+.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
+.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
+.lswi:hover{color:var(--text);background:var(--surface)}
+.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
 @media(max-width:900px){.lang-sw{display:none}}
 .hero{display:grid;grid-template-columns:5fr 7fr;min-height:100dvh;overflow:hidden;position:relative}
 @media(max-width:860px){.hero{grid-template-columns:1fr;min-height:auto}}
@@ -216,11 +230,22 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
     <a href="#echo" class="lnk">Échos</a>
     <a href="#mani" class="lnk">Vision</a>
     <div class="lang-sw">
-      <a href="/" class="lsw">DE</a>
-      <a href="/en/" class="lsw">EN</a>
-      <span class="lsw on">FR</span>
-      <a href="/es/" class="lsw">ES</a>
-      <a href="/it/" class="lsw">IT</a>
+      <button class="lsw-btn">FR <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lsw-drop">
+      <a href="/" class="lswi">Deutsch</a>
+      <a href="/en/" class="lswi">English</a>
+      <span class="lswi on">Français</span>
+      <a href="/es/" class="lswi">Español</a>
+      <a href="/it/" class="lswi">Italiano</a>
+      <a href="/pt/" class="lswi">Português</a>
+      <a href="/tr/" class="lswi">Türkçe</a>
+      <a href="/ru/" class="lswi">Русский</a>
+      <a href="/ja/" class="lswi">日本語</a>
+      <a href="/ko/" class="lswi">한국어</a>
+      <a href="/zh/" class="lswi">中文</a>
+      <a href="/ar/" class="lswi">العربية</a>
+      <a href="/hi/" class="lswi">हिन्दी</a>
+      </div>
     </div>
     <button id="thm" aria-label="Changer le thème">
       <svg id="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
