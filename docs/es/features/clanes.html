@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clanes y Amigos — MapRaiders | Juego Social GPS Android</title>
+<meta name="description" content="Forma tu clan en MapRaiders. Conquista territorios en grupo, organiza eventos y domina el mapa con tu equipo. Conexiones reales en la calle.">
+<link rel="canonical" href="https://mapraiders.com/es/features/clanes.html">
+<link rel="alternate" hreflang="de" href="https://mapraiders.com/features/social.html">
+<link rel="alternate" hreflang="en" href="https://mapraiders.com/en/features/clans.html">
+<link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/features/clans.html">
+<link rel="alternate" hreflang="es" href="https://mapraiders.com/es/features/clanes.html">
+<link rel="alternate" hreflang="it" href="https://mapraiders.com/it/features/clan.html">
+<link rel="alternate" hreflang="x-default" href="https://mapraiders.com/features/social.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo creo un clan en MapRaiders?","acceptedAnswer":{"@type":"Answer","text":"Desde el menú de perfil, entra en 'Clanes' y pulsa 'Crear Clan'. Elige un nombre, un color de clan y una descripción. Luego invita a jugadores cercanos o envía códigos de invitación."}},{"@type":"Question","name":"¿Cuántos miembros puede tener un clan?","acceptedAnswer":{"@type":"Answer","text":"Los clanes empiezan con un límite de 10 miembros. Al ganar territorios y eventos grupales, el límite aumenta. Los clanes más activos pueden tener hasta 50 miembros."}},{"@type":"Question","name":"¿Los territorios conquistados en clan se comparten?","acceptedAnswer":{"@type":"Answer","text":"Sí. Los territorios conquistados en modo clan se muestran con el color del clan. Todos los miembros reciben puntos cuando el clan defiende o expande zonas compartidas."}},{"@type":"Question","name":"¿Puedo estar en varios clanes a la vez?","acceptedAnswer":{"@type":"Answer","text":"No. Cada jugador pertenece a un solo clan activo. Sin embargo, puedes crear alianzas entre clanes para eventos y torneos territoriales conjuntos."}},{"@type":"Question","name":"¿Cómo funcionan las guerras de clanes?","acceptedAnswer":{"@type":"Answer","text":"Dos clanes pueden declararse en guerra. Durante el periodo de guerra, los duelos entre miembros de clanes rivales tienen mayor valor y los territorios conquistados suman puntos al marcador de guerra."}},{"@type":"Question","name":"¿Puedo abandonar un clan sin penalización?","acceptedAnswer":{"@type":"Answer","text":"Puedes abandonar un clan en cualquier momento, pero perderás los puntos y rangos obtenidos dentro de ese clan. Los territorios del clan no te pertenecen individualmente."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;-webkit-font-smoothing:antialiased;font-family:'Outfit',sans-serif}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+:root{--bg:#F6F4F1;--bg-alt:#EFEDE8;--surface:#FFFFFF;--border:rgba(20,18,16,.07);--border-s:rgba(20,18,16,.13);--text:#141210;--muted:#756F6A;--dim:#C0BAB4;--accent:#1558F0;--accent-m:rgba(21,88,240,.07);--accent-b:rgba(21,88,240,.18);--sh-sm:0 1px 4px rgba(20,18,16,.05);--sh-md:0 4px 20px rgba(20,18,16,.07);--sh-lg:0 20px 60px rgba(20,18,16,.1);--nav-bg:rgba(246,244,241,.9)}
+[data-theme="dark"]{--bg:#0D0C0A;--bg-alt:#161410;--surface:#1C1916;--border:rgba(255,255,255,.06);--border-s:rgba(255,255,255,.11);--text:#EAE7E2;--muted:#7A7470;--dim:#3E3B37;--accent:#4B7BFF;--accent-m:rgba(75,123,255,.1);--accent-b:rgba(75,123,255,.22);--sh-sm:0 1px 4px rgba(0,0,0,.2);--sh-md:0 4px 20px rgba(0,0,0,.3);--sh-lg:0 20px 60px rgba(0,0,0,.55);--nav-bg:rgba(13,12,10,.9)}
+body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
+.mx{max-width:1180px;margin:0 auto;padding:0 28px}
+.rv{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:20px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .4s}
+.nav.scroll{padding:13px 0}
+.nav-i{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:14px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--text)}
+.nav-logo b{color:var(--accent)}
+.nav-r{display:flex;gap:24px;align-items:center}
+.nav-r a.lnk{font-size:13px;font-weight:500;color:var(--muted);transition:color .2s}
+.nav-r a.lnk:hover{color:var(--text)}
+.btn-dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 20px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 14px rgba(21,88,240,.25);transition:opacity .2s,transform .2s}
+.btn-dl:hover{opacity:.88;transform:translateY(-1px)}
+#thm{display:flex;align-items:center;color:var(--muted);transition:color .2s;cursor:pointer}
+#thm:hover{color:var(--text)}
+@media(max-width:740px){.nav-r a.lnk{display:none}.nav-logo{font-size:12px}}
+.lang-sw{display:flex;gap:2px;align-items:center}
+.lsw{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:5px 8px;border-radius:4px;transition:all .2s}
+a.lsw:hover{color:var(--text);background:var(--surface)}
+.lsw.on{color:var(--accent);background:var(--accent-m)}
+@media(max-width:900px){.lang-sw{display:none}}
+.hero{padding:140px 0 80px;border-bottom:1px solid var(--border)}
+.h-badge{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);padding:6px 14px;border-radius:4px;background:var(--accent-m);border:1px solid var(--accent-b);margin-bottom:28px;width:fit-content}
+.hero h1{font-size:clamp(38px,6vw,72px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:20px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:17px;color:var(--muted);line-height:1.72;max-width:520px;margin-bottom:32px}
+.back-lnk{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--muted);transition:color .2s}
+.back-lnk:hover{color:var(--accent)}
+.sec{padding:80px 0;border-bottom:1px solid var(--border)}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.sec-title{font-size:clamp(24px,3.5vw,38px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:40px}
+.sec-title em{font-style:normal;color:var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.steps{grid-template-columns:1fr}}
+.step{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh-sm)}
+.step-n{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.step h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.step p{font-size:14px;color:var(--muted);line-height:1.65}
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+@media(max-width:760px){.benefits{grid-template-columns:1fr}}
+.benefit{padding:32px;background:var(--bg-alt);border-radius:12px;border:1px solid var(--border)}
+.b-icon{width:48px;height:48px;border-radius:10px;background:var(--accent-m);border:1px solid var(--accent-b);display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:18px}
+.benefit h3{font-size:17px;font-weight:700;margin-bottom:10px}
+.benefit p{font-size:14px;color:var(--muted);line-height:1.65}
+.faq-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.faq-item{border-bottom:1px solid var(--border);background:var(--surface)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{padding:22px 28px;font-size:15px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;transition:color .2s}
+.faq-q:hover{color:var(--accent)}
+.faq-icon{width:20px;height:20px;flex-shrink:0;color:var(--dim);transition:transform .3s}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--accent)}
+.faq-a{padding:0 28px;max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1),padding .3s}
+.faq-item.open .faq-a{max-height:200px;padding:0 28px 20px}
+.faq-a p{font-size:14px;color:var(--muted);line-height:1.7}
+.cta-sec{padding:80px 0;text-align:center;background:var(--bg-alt);border-top:1px solid var(--border)}
+.cta-sec h2{font-size:clamp(24px,4vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.cta-sec p{font-size:16px;color:var(--muted);margin-bottom:32px}
+.btn-p{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:14px 32px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 18px rgba(21,88,240,.28);transition:all .25s}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(21,88,240,.38)}
+footer{padding:40px 0 32px;border-top:1px solid var(--border)}
+.f-i{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.f-logo{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.f-links{display:flex;gap:22px;flex-wrap:wrap}
+.f-links a{font-size:12px;color:var(--muted);transition:color .2s}
+.f-links a:hover{color:var(--text)}
+.f-copy{width:100%;text-align:center;margin-top:20px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+<nav class="nav" id="nav">
+<div class="nav-i mx">
+  <a href="/es/" class="nav-logo">MAP<b>RAIDERS</b></a>
+  <div class="nav-r">
+    <a href="/es/#feat" class="lnk">Características</a>
+    <a href="/es/#echo" class="lnk">Ecos</a>
+    <div class="lang-sw">
+      <a href="/features/social.html" class="lsw">DE</a>
+      <a href="/en/features/clans.html" class="lsw">EN</a>
+      <a href="/fr/features/clans.html" class="lsw">FR</a>
+      <span class="lsw on">ES</span>
+      <a href="/it/features/clan.html" class="lsw">IT</a>
+    </div>
+    <button id="thm" aria-label="Cambiar tema">
+      <svg id="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg id="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="/MapRaiders.apk" class="btn-dl">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Descargar
+    </a>
+  </div>
+</div>
+</nav>
+
+<section class="hero">
+<div class="mx">
+  <a href="/es/" class="back-lnk rv">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Volver al inicio
+  </a>
+  <div style="height:24px"></div>
+  <div class="h-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Clanes
+  </div>
+  <h1 class="rv">Tu Equipo.<br>Tu <em>Ciudad</em>.</h1>
+  <p class="hero-sub rv d1">Los clanes en MapRaiders son equipos que conquistan el mapa juntos. Forma tu grupo, coordina ataques, organiza eventos y domina el barrio en equipo.</p>
+</div>
+</section>
+
+<section class="sec">
+<div class="mx">
+  <div class="sec-label rv">Cómo funciona</div>
+  <h2 class="sec-title rv d1">Únete o crea tu <em>clan</em></h2>
+  <div class="steps">
+    <div class="step rv d1">
+      <div class="step-n">01 Crea o únete</div>
+      <h3>Empieza el grupo</h3>
+      <p>Crea tu propio clan con nombre y color únicos, o únete a uno existente en tu zona. Busca clanes cercanos en el mapa y solicita unirte directamente.</p>
+    </div>
+    <div class="step rv d2">
+      <div class="step-n">02 Recluta miembros</div>
+      <h3>Crece juntos</h3>
+      <p>Invita a amigos con un código de clan o encuentra jugadores compatibles en los eventos espontáneos. La diversidad de habilidades hace a un clan más fuerte.</p>
+    </div>
+    <div class="step rv d3">
+      <div class="step-n">03 Coordina ataques</div>
+      <h3>Estrategia grupal</h3>
+      <p>Usa el chat de clan para organizar expansiones coordinadas. Varios miembros conquistando al mismo tiempo multiplica el ritmo de crecimiento territorial.</p>
+    </div>
+    <div class="step rv d4">
+      <div class="step-n">04 Domina el mapa</div>
+      <h3>Un barrio, un clan</h3>
+      <p>Los territorios del clan se muestran en el color del grupo. Un barrio pintado de tu color es el sueño de todo clan. La ciudad os pertenece si trabajáis juntos.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="sec">
+<div class="mx">
+  <div class="sec-label rv">Por qué los clanes importan</div>
+  <h2 class="sec-title rv d1">Más fuertes <em>juntos</em></h2>
+  <div class="benefits">
+    <div class="benefit rv d1">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Amistades Reales</h3>
+      <p>Los clanes crean amistades que van más allá del juego. Compartir una conquista física, coordinar en la calle y celebrar juntos crea vínculos que no olvidas.</p>
+    </div>
+    <div class="benefit rv d2">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <h3>Dominación Territorial</h3>
+      <p>Un clan coordinado puede conquistar barrios enteros. El mapa de una ciudad con clanes activos es un espectáculo de colores en constante cambio.</p>
+    </div>
+    <div class="benefit rv d3">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>Comunicación Táctica</h3>
+      <p>El chat de clan y el mapa compartido en tiempo real permiten coordinar movimientos con precisión. La comunicación es la ventaja competitiva más poderosa.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="sec">
+<div class="mx">
+  <div class="sec-label rv">FAQ</div>
+  <h2 class="sec-title rv d1">Preguntas <em>frecuentes</em></h2>
+  <div class="faq-list rv d2">
+    <div class="faq-item">
+      <div class="faq-q">¿Cómo creo un clan en MapRaiders?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a"><p>Desde el menú de perfil, entra en 'Clanes' y pulsa 'Crear Clan'. Elige un nombre, un color de clan y una descripción. Luego invita a jugadores cercanos o envía códigos de invitación.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Cuántos miembros puede tener un clan?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a"><p>Los clanes empiezan con un límite de 10 miembros. Al ganar territorios y eventos grupales, el límite aumenta. Los clanes más activos pueden tener hasta 50 miembros.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Los territorios conquistados en clan se comparten?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a"><p>Sí. Los territorios conquistados en modo clan se muestran con el color del clan. Todos los miembros reciben puntos cuando el clan defiende o expande zonas compartidas.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Puedo estar en varios clanes a la vez?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a"><p>No. Cada jugador pertenece a un solo clan activo. Sin embargo, puedes crear alianzas entre clanes para eventos y torneos territoriales conjuntos.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Cómo funcionan las guerras de clanes?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a"><p>Dos clanes pueden declararse en guerra. Durante el periodo de guerra, los duelos entre miembros de clanes rivales tienen mayor valor y los territorios conquistados suman puntos al marcador de guerra.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Puedo abandonar un clan sin penalización?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a"><p>Puedes abandonar un clan en cualquier momento, pero perderás los puntos y rangos obtenidos dentro de ese clan. Los territorios del clan no te pertenecen individualmente.</p></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="cta-sec">
+<div class="mx">
+  <h2 class="rv">Encuentra tu<br>equipo</h2>
+  <p class="rv d1">Descarga MapRaiders y conquista la ciudad junto a tus aliados.</p>
+  <a href="/MapRaiders.apk" class="btn-p rv d2">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    Descargar MapRaiders APK
+  </a>
+</div>
+</section>
+
+<footer>
+<div class="mx">
+  <div class="f-i">
+    <div class="f-logo">MapRaiders</div>
+    <div class="f-links">
+      <a href="/es/">Inicio</a>
+      <a href="/agb.html">Términos</a>
+      <a href="/datenschutz.html">Privacidad</a>
+      <a href="/kontakt.html">Contacto</a>
+    </div>
+  </div>
+  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Las Redes Sociales. Redefinidas.</p>
+</div>
+</footer>
+<script>
+(function(){const t=localStorage.getItem('mr-theme')||'light';document.documentElement.dataset.theme=t;document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';})();
+document.getElementById('thm').addEventListener('click',function(){const h=document.documentElement;const t=h.dataset.theme==='dark'?'light':'dark';h.dataset.theme=t;localStorage.setItem('mr-theme',t);document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';});
+window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scroll',scrollY>60);});
+const io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+document.querySelectorAll('.faq-q').forEach(function(btn){btn.addEventListener('click',function(){const item=btn.parentElement;const wasOpen=item.classList.contains('open');document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open');});if(!wasOpen)item.classList.add('open');});});
+</script>
+</body>
+</html>
