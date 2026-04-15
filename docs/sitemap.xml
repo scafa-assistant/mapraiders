@@ -123,4 +123,75 @@
   <url><loc>https://mapraiders.com/hi/features/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://mapraiders.com/hi/features/quests.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
+  <!-- /vs/ Comparison Pages (High-Intent BOFU) -->
+  <url>
+    <loc>https://mapraiders.com/vs/ingress.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/vs/ingress.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/vs/ingress.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/vs/ingress.html"/>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/vs/ingress.html</loc>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/vs/pokemon-go.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/vs/pokemon-go.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/vs/pokemon-go.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/vs/pokemon-go.html"/>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/vs/pokemon-go.html</loc>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+
+  <!-- /howto/ Pillar Hub Pages -->
+  <url>
+    <loc>https://mapraiders.com/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/howto/"/>
+    <changefreq>weekly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/howto/</loc>
+    <changefreq>weekly</changefreq><priority>0.9</priority>
+  </url>
+
+  <!-- /howto/ Cluster Pages (DE) -->
+  <url><loc>https://mapraiders.com/howto/territorien.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/howto/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/howto/verteidigungs-minispiele.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/howto/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- /howto/ Cluster Pages (EN) -->
+  <url><loc>https://mapraiders.com/en/howto/territories.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/howto/echos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/howto/defense-minigames.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mapraiders.com/en/howto/clans.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- Legal Pages (DE) -->
+  <url><loc>https://mapraiders.com/agb.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://mapraiders.com/datenschutz.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://mapraiders.com/impressum.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://mapraiders.com/kontakt.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <!-- Legal Pages (EN) -->
+  <url>
+    <loc>https://mapraiders.com/en/terms.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/agb.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/terms.html"/>
+    <changefreq>monthly</changefreq><priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/privacy.html"/>
+    <changefreq>monthly</changefreq><priority>0.5</priority>
+  </url>
+
 </urlset>

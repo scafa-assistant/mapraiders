@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://mapraiders.com/howto/echos.html">
+<link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html">
+<link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html">
+<link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html">
+<link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/echos.html">
+<link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echos.html">
+<link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/echos.html">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echos.html">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/echos.html">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html">
+<title>Echos-Guide: Standortgebundene Nachrichten in MapRaiders | GPS</title>
+<meta name="description" content="Erfahre alles ueber Echos in MapRaiders: 30 Sekunden Audio/Text/Foto an GPS-Koordinaten. Erstelle, entdecke und werde legendaer.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+html[data-theme="dark"]{
+  --bg:#0A0E17;--card:#141B2D;--card-hover:#1A2340;--text:#E8ECF4;--muted:#6B7A99;--dim:#3A4560;
+  --glass:rgba(20,27,45,0.6);--glass-border:rgba(255,59,111,0.08);--shadow:rgba(0,0,0,0.3);
+  --nav-bg:rgba(10,14,23,0.85);--border-subtle:rgba(255,255,255,0.04);
+}
+html[data-theme="light"]{
+  --bg:#F5F7FA;--card:#FFFFFF;--card-hover:#FFF5F7;--text:#1A1F2E;--muted:#6B7A99;--dim:#B0B8C9;
+  --glass:rgba(255,255,255,0.7);--glass-border:rgba(255,59,111,0.12);--shadow:rgba(0,0,0,0.08);
+  --nav-bg:rgba(245,247,250,0.9);--border-subtle:rgba(0,0,0,0.06);
+}
+:root{
+  --accent:#FF3B6F;--accent-dim:rgba(255,59,111,0.15);--accent-glow:rgba(255,59,111,0.4);
+  --cyan:#00D4FF;--violet:#7B61FF;--green:#00FF88;--gold:#FFB800;--red:#FF3B6F;
+  --font-display:'Orbitron',monospace;--font-body:'Sora',sans-serif;
+}
+
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}.reveal-delay-6{transition-delay:.6s}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);transition:all .4s}
+.nav.scrolled{padding:10px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-logo{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.5px;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#050811;transition:all .3s;box-shadow:0 0 30px rgba(0,212,255,0.2)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,212,255,0.4)}.nav-cta::after{display:none}
+.theme-toggle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s;cursor:pointer}
+.theme-toggle:hover{border-color:var(--accent);transform:scale(1.1)}
+.dropdown{position:relative}
+.dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;background:var(--card);border:1px solid var(--border-subtle);border-radius:12px;padding:8px 0;min-width:200px;box-shadow:0 20px 60px var(--shadow);transition:all .3s;z-index:1001}
+.dropdown:hover .dropdown-menu{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.dropdown-menu a{display:block;padding:10px 20px;font-size:13px;color:var(--muted);transition:all .2s}
+.dropdown-menu a:hover{color:var(--accent);background:var(--accent-dim)}
+.dropdown-menu a::after{display:none}
+@media(max-width:768px){.nav-links a:not(.nav-cta):not(.theme-toggle){display:none}.nav-logo{font-size:15px}.dropdown-menu{display:none}}
+
+.hero{position:relative;min-height:70vh;display:flex;align-items:center;overflow:hidden;padding:140px 0 80px}
+.hero-glow{position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);animation:glowPulse 6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.15)}}
+.hero-content{position:relative;z-index:2;text-align:center;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);padding:8px 20px;border-radius:100px;border:1px solid rgba(255,59,111,0.2);background:var(--accent-dim);margin-bottom:32px}
+.hero h1{font-family:var(--font-display);font-size:clamp(32px,6vw,72px);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(15px,2.2vw,20px);color:var(--muted);max-width:650px;margin:0 auto 40px;line-height:1.7}
+.hero p strong{color:var(--text);font-weight:600}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--accent);transition:all .3s;margin-top:20px}
+.back-link:hover{gap:12px}
+
+section{padding:100px 0;position:relative}
+section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),transparent)}
+.section-header{text-align:center;margin-bottom:64px}
+.section-header h2{font-family:var(--font-display);font-size:clamp(22px,4vw,40px);font-weight:800;margin-bottom:16px}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.section-header p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7}
+
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+@media(max-width:500px){.features-grid{grid-template-columns:1fr}}
+.feature-card{padding:32px 28px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle);overflow:hidden;transition:all .4s}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity .3s}
+.feature-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px var(--shadow);border-color:var(--glass-border)}.feature-card:hover::before{opacity:1}
+.feature-card h3{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:12px;color:var(--accent)}
+.feature-card p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+.feature-tag{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:100px;background:var(--accent-dim);color:var(--accent);display:inline-block;margin-top:8px}
+
+.faq-section{margin-top:80px}
+.faq-item{margin-bottom:24px;padding:24px;border-radius:16px;background:var(--card);border:1px solid var(--border-subtle);transition:all .3s}
+.faq-item:hover{border-color:var(--accent);box-shadow:0 10px 40px var(--shadow)}
+.faq-q{font-weight:700;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+.faq-q::after{content:'+';font-size:24px;transition:transform .3s;transform:rotate(0deg)}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{margin-top:16px;font-size:14px;color:var(--muted);line-height:1.8;display:none}
+.faq-item.open .faq-a{display:block}
+
+.tips-box{padding:32px;border-radius:16px;background:var(--accent-dim);border:1px solid rgba(255,59,111,0.3);margin-top:40px}
+.tips-box h3{color:var(--accent);margin-bottom:16px;font-size:18px;font-weight:700}
+.tips-box ul{list-style:none;padding:0}
+.tips-box ul li{font-size:14px;color:var(--muted);line-height:1.8;padding:8px 0;padding-left:24px;position:relative}
+.tips-box ul li::before{content:'★';position:absolute;left:0;color:var(--accent)}
+
+.lang-sw{position:relative}
+.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
+.lsw-btn:hover{color:var(--text);background:var(--surface)}
+.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
+.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
+.lsw-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
+.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
+.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
+.lswi:hover{color:var(--text);background:var(--surface)}
+.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
+@media(max-width:900px){.lang-sw{display:none}}
+footer{padding:48px 0 32px;border-top:1px solid var(--border-subtle)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:2px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);transition:color .3s}.footer-links a:hover{color:var(--accent)}
+.footer-copy{width:100%;text-align:center;margin-top:24px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav"><div class="nav-inner">
+  <a href="/" class="nav-logo">MAPRAIDERS</a>
+  <div class="nav-links">
+    <div class="dropdown">
+      <a href="/#features">Features</a>
+      <div class="dropdown-menu">
+        <a href="/features/territorien.html">Territorien</a>
+        <a href="/features/echos.html">Echos</a>
+        <a href="/features/events.html">Events</a>
+        <a href="/features/defense.html">Defense Games</a>
+        <a href="/features/social.html">Social</a>
+        <a href="/features/quests.html">Quests</a>
+      </div>
+    </div>
+    <a href="/howto/">How-To</a>
+    <a href="/#manifesto">Vision</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">&#9790;</button>
+    <div class="lang-sw">
+      <button class="lsw-btn">DE <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lsw-drop">
+      <span class="lswi on">Deutsch</span>
+      <a href="/en/howto/echos.html" class="lswi">English</a>
+      <a href="/fr/howto/echos.html" class="lswi">Français</a>
+      <a href="/es/howto/echos.html" class="lswi">Español</a>
+      <a href="/it/howto/echos.html" class="lswi">Italiano</a>
+      <a href="/pt/howto/echos.html" class="lswi">Português</a>
+      <a href="/tr/howto/echos.html" class="lswi">Türkçe</a>
+      <a href="/ru/howto/echos.html" class="lswi">Русский</a>
+      <a href="/ja/howto/echos.html" class="lswi">日本語</a>
+      <a href="/ko/howto/echos.html" class="lswi">한국어</a>
+      <a href="/zh/howto/echos.html" class="lswi">中文</a>
+      <a href="/ar/howto/echos.html" class="lswi">العربية</a>
+      <a href="/hi/howto/echos.html" class="lswi">हिन्दी</a>
+      </div>
+    </div>
+    <a href="https://play.google.com/store/apps/details?id=com.mapraiders" class="nav-cta">Download</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content container">
+    <div class="hero-badge">&#128374; Standortgebundene Inhalte</div>
+    <h1>Echos-Guide: Standortgebundene<br>Nachrichten in <span>MapRaiders</span></h1>
+    <p>Erfahre wie du <strong>Audio, Text und Fotos an GPS-Koordinaten ankerbst</strong> — und wie andere deine Echos entdecken, lieben und weitergeben.</p>
+    <a href="/howto/" class="back-link">&larr; Zurueck zum How-To Hub</a>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Was sind Echos <em>ueberhaupt?</em></h2>
+      <p>Kurze, standortgebundene Nachrichten, die nur anwesende Spieler hoeren.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <h3>30 Sekunden Audio</h3>
+        <p>Sprich eine Nachricht auf dein Handy. Speichere einen Audio-Schnipsel oder eine Warnung fuer andere Spieler an einem Ort.</p>
+        <span class="feature-tag">Audio-basiert</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <h3>Text oder Foto</h3>
+        <p>Nicht jeder moechte sprechen. Sende stattdessen Text-Echos oder Fotos mit einer kurzen Beschreibung.</p>
+        <span class="feature-tag">Multimedial</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <h3>GPS-fixiert</h3>
+        <p>Ein Echo ist an eine exakte GPS-Koordinate gebunden. Spieler entdecken es nur, wenn sie dort sind.</p>
+        <span class="feature-tag">Hyperlokal</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <h3>Soziales Echo-System</h3>
+        <p>Likes, Kommentare und Community-Abstimmungen geben beliebten Echos Legendaer-Status und verlaengern die Lebensdauer.</p>
+        <span class="feature-tag">Community-Driven</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Wie erstelle und platziere ich ein Echo?</h2>
+      <p>5 einfache Schritte zu deinem ersten Echo.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <h3>Schritt 1: Standort ankern</h3>
+        <p>Oeffne MapRaiders und navigiere zu dem Ort, an dem du ein Echo platzieren moechtest. Tippe auf "Echo erstellen".</p>
+        <span class="feature-tag">Aktuelle GPS-Position</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <h3>Schritt 2: Inhalt waehlen</h3>
+        <p>Entscheide dich: Moechtest du Audio aufnehmen, Text eingeben oder ein Foto hochladen?</p>
+        <span class="feature-tag">Drei Formate</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <h3>Schritt 3: Nachricht erzeugen</h3>
+        <p>Sprich deine Botschaft (max. 30 Sekunden), schreibe deine Notiz oder waehle ein Foto. Editieren ist moeglich.</p>
+        <span class="feature-tag">Frei kreativ</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <h3>Schritt 4: Tags und Sichtbarkeit</h3>
+        <p>Setze Tags (z.B. "Warnung", "Tipps", "Kunst") und waehle, wer dein Echo sehen kann — öffentlich oder Freunde.</p>
+        <span class="feature-tag">Privatsphäre kontrollieren</span>
+      </div>
+    </div>
+
+    <div class="feature-card reveal reveal-delay-4" style="margin-top:24px;padding:32px 28px;border-radius:20px;background:var(--card);border:1px solid var(--border-subtle)">
+      <h3>Schritt 5: Veröffentlichen</h3>
+      <p>Tippe "Veroeffentlichen". Dein Echo ist jetzt an diesem GPS-Punkt fuer alle Spieler sichtbar, die vorbeigehen.</p>
+      <span class="feature-tag">Live!</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Wie entdecke ich Echos?</h2>
+      <p>Nur Spieler an dem genauen Ort hoeren das Echo. Das ist das Alleinstellungsmerkmal.</p>
+    </div>
+
+    <div class="tips-box reveal">
+      <h3>Echo-Entdeckung in 3 Schritten:</h3>
+      <ul>
+        <li><strong>Gehe zur Position:</strong> Stelle sicher, dass du dich an der GPS-Koordinate des Echos befindest (innerhalb 50 Meter).</li>
+        <li><strong>Notification aktiviert?</strong> Wenn ja, erhaeltst du einen Ping: "Echos in deiner Naehe!" — tippe, um zu hoeren.</li>
+        <li><strong>Spiele ab, like und teile:</strong> Höre, bewerte und kommentiere. Beliebt = laenger, legendaer = fuer immer.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Wie lange lebt ein Echo?</h2>
+      <p>Echos sind nicht ewig. Ihr Lebenszyklus haengt von Community-Engagement ab.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <h3>Standard: 48 Stunden</h3>
+        <p>Jedes neue Echo wird nach 48 Stunden automatisch geloescht — wenn es nicht genug Likes oder Kommentare hat.</p>
+        <span class="feature-tag">Verfall-Standard</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <h3>Jede Like = +4 Stunden</h3>
+        <p>Wenn Spieler dein Echo liken, verlaengert sich die Lebensdauer. 10 Likes = +40 Stunden Existenz.</p>
+        <span class="feature-tag">Engagement = Leben</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <h3>Legendaer-Status</h3>
+        <p>Erhalte 100+ Likes? Dein Echo wird als "Legendaer" markiert und bleibt fuer 30 Tage stehen — eine Art Hall of Fame.</p>
+        <span class="feature-tag">Unsterblichkeit</span>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <h3>Veroeffentlichter Zugang</h3>
+        <p>Legendaere Echos erscheinen in einer globalen "Echo-Wall" — du koenntest viral gehen!</p>
+        <span class="feature-tag">Ruhm!</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Kreative Nutzung von Echos</h2>
+      <p>Lasse deine Fantasie walten. Echos sind ein Kunstmedium.</p>
+    </div>
+
+    <div class="tips-box reveal">
+      <h3>Ideen zum Starten:</h3>
+      <ul>
+        <li><strong>Audio-Kunstinstallationen:</strong> Platziere eine Serie von Echos entlang einer Route und schaffe eine Audio-Geschichte.</li>
+        <li><strong>Lokale Tipps:</strong> "Die beste Pizza ist 50m nördlich" — hilf Besuchern deines Territoriuns.</li>
+        <li><strong>Schatzsuche-Hinweise:</strong> Verstecke Rätsel in Echos an verschiedenen Orten — fuer Abenteurer!</li>
+        <li><strong>Historische Notizen:</strong> Teile Wissen ueber Orte, an denen du dich aufhaeltst ("Dieses Gebäude wurde 1897 gebaut").</li>
+        <li><strong>Musik und Sound-Design:</strong> Experimentiere mit Soundscapes — ambient, beats, alles ist moeglich.</li>
+        <li><strong>Community-Aufrufe:</strong> Organisiere Treffen, Challenges oder Events — nutze Echos als Megafon.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Haeufig gestellte Fragen</h2>
+      <p>Alles wichtige zu Echos auf einen Blick.</p>
+    </div>
+
+    <div class="faq-section reveal">
+      <div class="faq-item">
+        <div class="faq-q">Kann ich ein Echo nach Veroeffentlichung noch bearbeiten?</div>
+        <div class="faq-a">Nein, nach dem Veroeffentlichen ist dein Echo "in Stein gemeisselt". Du kannst es nur loeschen und ein neues erstellen.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Wer kann mein Echo hoeren?</div>
+        <div class="faq-a">Das haengt von der Privatsphäre-Einstellung ab. Public = alle Spieler vor Ort. Friends Only = nur deine Freunde. Private = nur du.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Bekomme ich eine Benachrichtigung, wenn jemand mein Echo likelt?</div>
+        <div class="faq-a">Ja! Du erhaeltst Echtzeit-Notifikationen fuer Likes, Kommentare und Shares. Bleibe in Verbindung mit deinen Folgern.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Kann ich Echos von anderen loeschen?</div>
+        <div class="faq-a">Nein, nur der Ersteller kann sein Echo loeschen. Moderatoren loeschen nur Spam/Hate-Speech.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--accent-dim);border-radius:20px;margin:80px 0">
+  <div class="container" style="padding:60px 0">
+    <div style="text-align:center;reveal">
+      <h2 style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-bottom:16px">Bereit fuer dein erstes Echo?</h2>
+      <p style="font-size:16px;color:var(--muted);margin-bottom:32px">Lade MapRaiders jetzt herunter und hinterlasse deine erste standortgebundene Nachricht.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.mapraiders" style="display:inline-block;padding:14px 32px;background:var(--accent);color:#050811;border-radius:100px;font-weight:700;transition:all .3s;text-decoration:none">Google Play herunterladen</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div style="text-align:center;margin-bottom:40px;reveal">
+      <h2 style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:16px">Verwandte How-To Seiten</h2>
+    </div>
+    <div class="features-grid">
+      <div style="padding:20px;border:1px solid var(--border-subtle);border-radius:16px;text-align:center;cursor:pointer;transition:all .3s">
+        <h4 style="font-weight:700;margin-bottom:8px">Territorien-System</h4>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Erfahre wie GPS-Territorien funktionieren.</p>
+        <a href="/howto/territorien.html" style="color:var(--accent);font-weight:600">Mehr erfahren →</a>
+      </div>
+      <div style="padding:20px;border:1px solid var(--border-subtle);border-radius:16px;text-align:center;cursor:pointer;transition:all .3s">
+        <h4 style="font-weight:700;margin-bottom:8px">Verteidigungs-Minispiele</h4>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Verteidiuge dein Territorium mit 7 Mini-Games.</p>
+        <a href="/howto/verteidigungs-minispiele.html" style="color:var(--accent);font-weight:600">Mehr erfahren →</a>
+      </div>
+      <div style="padding:20px;border:1px solid var(--border-subtle);border-radius:16px;text-align:center;cursor:pointer;transition:all .3s">
+        <h4 style="font-weight:700;margin-bottom:8px">Clans-Guide</h4>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Baue deine lokale Community auf.</p>
+        <a href="/howto/clans.html" style="color:var(--accent);font-weight:600">Mehr erfahren →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div class="footer-inner">
+    <div class="footer-brand">MAPRAIDERS</div>
+    <div class="footer-links">
+      <a href="/agb.html">AGB</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/kontakt.html">Kontakt</a>
+    </div>
+  </div>
+  <p class="footer-copy">&copy; 2026 MapRaiders &mdash; GPS Territory Game. Neu definiert.</p>
+</div></footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Kann ich ein Echo nach Veroeffentlichung noch bearbeiten?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein, nach dem Veroeffentlichen ist dein Echo in Stein gemeisselt. Du kannst es nur loeschen und ein neues erstellen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wer kann mein Echo hoeren?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Das haengt von der Privatsphäre-Einstellung ab. Public = alle Spieler vor Ort. Friends Only = nur Freunde. Private = nur du."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Bekomme ich eine Benachrichtigung, wenn jemand mein Echo likelt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja! Du erhaeltst Echtzeit-Notifikationen fuer Likes, Kommentare und Shares."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kann ich Echos von anderen loeschen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein, nur der Ersteller kann sein Echo loeschen. Moderatoren loeschen nur Spam und Hate-Speech."
+      }
+    }
+  ]
+}
+</script>
+
+<script>
+!function(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggle');
+  const saved=localStorage.getItem('mapraiders-theme')||'dark';
+  html.setAttribute('data-theme',saved);
+  btn.innerHTML=saved==='dark'?'\u263E':'\u2600';
+  btn.addEventListener('click',()=>{
+    const current=html.getAttribute('data-theme');
+    const next=current==='dark'?'light':'dark';
+    html.setAttribute('data-theme',next);
+    localStorage.setItem('mapraiders-theme',next);
+    btn.innerHTML=next==='dark'?'\u263E':'\u2600';
+  });
+}();
+const ob=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ob.observe(el));
+addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+document.querySelectorAll('.faq-item').forEach(item=>{item.addEventListener('click',()=>{item.classList.toggle('open')})});
+</script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MapRaiders Anleitung — So spielst du | GPS Territorienspiel Guide</title>
+<meta name="description" content="Kompletter MapRaiders Guide zu Territorien, Echos, Defense-Spielen, Clans und Quests. Lerne alle Spielmechaniken, beanspruche Territorium und baue dein Reich auf.">
+<link rel="canonical" href="https://mapraiders.com/howto/">
+<link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/">
+<link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/">
+<link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/">
+<link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/">
+<link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Ist MapRaiders kostenlos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. MapRaiders ist vollständig kostenlos zum Download und Spielen. Es gibt keine Werbung, keinen Battle Pass und keine versteckten Kosten. Wir glauben an faires Spiel für alle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie beanspruche ich Territorium?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gehe zu einem unbeanspruchten Gebiet auf der Karte und tippe den Button 'Territorium beanspruchen'. Dein beanspruchtes Land erscheint als farbiges Sechseck auf der Karte. Je mehr du läufst, desto mehr kannst du beanspruchen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Was sind Echos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Echos sind digitale Nachrichten, die du an realen Orten hinterlässt. Andere Spieler können deine Echos entdecken, kommentieren und hochvoten. Sie sind Short-Form-Sozialmedien, gebunden an die Geographie."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie funktionieren Defense-Spiele?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Du platzierst ein Mini-Spiel auf deinem Territorium als Verteidigung. Wenn ein anderer Spieler dein Land besucht und es herausfordert, konkurrieren beide im Spiel. Der Gewinner behält oder beansprucht das Territorium."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie trete ich einem Clan bei?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Clans entstehen organisch, wenn Spieler zusammenarbeiten und Teritorialziele teilen. Du kannst deinen eigenen Clan gründen oder in einen eingeladen werden. Clans arbeiten zusammen, um größere Regionen zu kontrollieren und gegen andere Clans zu konkurrieren."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Was sind Quests und Challenges?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Quests sind Aufgaben, die du für andere Spieler an bestimmten Orten erstellst. Challenges sind Wettbewerbsaufgaben in Clans. Beide belohnen XP und Währung und helfen dir, aufzusteigen und Belohnungen zu verdienen."
+      }
+    }
+  ]
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;-webkit-font-smoothing:antialiased;font-family:'Outfit',sans-serif}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+:root{
+  --bg:#F6F4F1;--bg-alt:#EFEDE8;--surface:#FFFFFF;
+  --border:rgba(20,18,16,.07);--border-s:rgba(20,18,16,.13);
+  --text:#141210;--muted:#756F6A;--dim:#C0BAB4;
+  --accent:#1558F0;--accent-m:rgba(21,88,240,.07);--accent-b:rgba(21,88,240,.18);
+  --sh-sm:0 1px 4px rgba(20,18,16,.05);--sh-md:0 4px 20px rgba(20,18,16,.07);--sh-lg:0 20px 60px rgba(20,18,16,.1);
+  --nav-bg:rgba(246,244,241,.9);
+}
+[data-theme="dark"]{
+  --bg:#0D0C0A;--bg-alt:#161410;--surface:#1C1916;
+  --border:rgba(255,255,255,.06);--border-s:rgba(255,255,255,.11);
+  --text:#EAE7E2;--muted:#7A7470;--dim:#3E3B37;
+  --accent:#4B7BFF;--accent-m:rgba(75,123,255,.1);--accent-b:rgba(75,123,255,.22);
+  --sh-sm:0 1px 4px rgba(0,0,0,.2);--sh-md:0 4px 20px rgba(0,0,0,.3);--sh-lg:0 20px 60px rgba(0,0,0,.55);
+  --nav-bg:rgba(13,12,10,.9);
+}
+body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
+.mx{max-width:1180px;margin:0 auto;padding:0 28px}
+.rv{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:20px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .4s}
+.nav.scroll{padding:13px 0}
+.nav-i{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:14px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--text)}
+.nav-logo b{color:var(--accent)}
+.nav-r{display:flex;gap:24px;align-items:center}
+.nav-r a.lnk{font-size:13px;font-weight:500;color:var(--muted);transition:color .2s}
+.nav-r a.lnk:hover{color:var(--text)}
+.btn-dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 20px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 14px rgba(21,88,240,.25);transition:opacity .2s,transform .2s}
+.btn-dl:hover{opacity:.88;transform:translateY(-1px)}
+#thm{display:flex;align-items:center;color:var(--muted);transition:color .2s;cursor:pointer}
+#thm:hover{color:var(--text)}
+.lang-sw{position:relative}
+.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
+.lsw-btn:hover{color:var(--text);background:var(--surface)}
+.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
+.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
+.lsw-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
+.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
+.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
+.lswi:hover{color:var(--text);background:var(--surface)}
+.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
+@media(max-width:900px){.lang-sw{display:none}}
+@media(max-width:740px){.nav-r a.lnk{display:none}.nav-logo{font-size:12px}}
+.feat-hero{padding:160px 0 100px;border-bottom:1px solid var(--border)}
+.h-badge{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);padding:6px 14px;border-radius:4px;background:var(--accent-m);border:1px solid var(--accent-b);margin-bottom:28px;width:fit-content}
+.feat-hero h1{font-size:clamp(42px,7vw,84px);font-weight:900;line-height:1.0;letter-spacing:-3px;margin-bottom:24px}
+.feat-hero h1 em{font-style:normal;color:var(--accent)}
+.feat-hero p{font-size:18px;color:var(--muted);line-height:1.75;max-width:560px;margin-bottom:32px}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted);transition:color .2s}
+.back-link:hover{color:var(--accent)}
+.hub-section{padding:100px 0;border-bottom:1px solid var(--border)}
+.hub-section h2{font-size:clamp(24px,3.5vw,36px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:24px;color:var(--text)}
+.hub-section p{font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:20px}
+.cluster-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:32px}
+@media(max-width:640px){.cluster-grid{grid-template-columns:1fr}}
+.cluster-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;transition:all .3s}
+.cluster-card:hover{border-color:var(--accent);box-shadow:var(--sh-md)}
+.cluster-card h3{font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.cluster-card-icon{width:24px;height:24px;flex-shrink:0;color:var(--accent)}
+.cluster-card p{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:16px}
+.cluster-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent);transition:gap .2s}
+.cluster-link:hover{gap:10px}
+.faq-sec{padding:100px 0;border-bottom:1px solid var(--border)}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.sec-title{font-size:clamp(26px,3.8vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:48px}
+.faq-list{margin-top:48px;display:flex;flex-direction:column;gap:2px}
+.faq-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;cursor:pointer;font-size:16px;font-weight:600;letter-spacing:-.2px;gap:16px}
+.faq-q svg{flex-shrink:0;color:var(--accent);transition:transform .3s}
+.faq-item.open .faq-q svg{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 28px 22px;font-size:15px;color:var(--muted);line-height:1.75}
+.faq-item.open .faq-a{display:block}
+.cta-sec{padding:100px 0;text-align:center}
+.cta-sec h2{font-size:clamp(30px,5vw,54px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:16px}
+.cta-sec p{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:40px}
+.btn-p{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding:16px 36px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 18px rgba(21,88,240,.28);transition:all .25s}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(21,88,240,.38)}
+.cta-note{font-size:12px;color:var(--dim);margin-top:12px}
+footer{padding:40px 0 32px;border-top:1px solid var(--border)}
+.f-i{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.f-logo{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.f-links{display:flex;gap:22px;flex-wrap:wrap}
+.f-links a{font-size:12px;color:var(--muted);transition:color .2s}
+.f-links a:hover{color:var(--text)}
+.f-copy{width:100%;text-align:center;margin-top:20px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+<div class="nav-i mx">
+  <a href="/" class="nav-logo">MAP<b>RAIDERS</b></a>
+  <div class="nav-r">
+    <a href="/#feat" class="lnk">Features</a>
+    <a href="/#echo" class="lnk">Echos</a>
+    <a href="/#mani" class="lnk">Vision</a>
+    <div class="lang-sw">
+      <button class="lsw-btn">DE <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lsw-drop">
+      <span class="lswi on">Deutsch</span>
+      <a href="/en/howto/" class="lswi">English</a>
+      <a href="/fr/howto/" class="lswi">Français</a>
+      <a href="/es/howto/" class="lswi">Español</a>
+      <a href="/it/howto/" class="lswi">Italiano</a>
+      <a href="/pt/howto/" class="lswi">Português</a>
+      <a href="/tr/howto/" class="lswi">Türkçe</a>
+      <a href="/ru/howto/" class="lswi">Русский</a>
+      <a href="/ja/howto/" class="lswi">日本語</a>
+      <a href="/ko/howto/" class="lswi">한국어</a>
+      <a href="/zh/howto/" class="lswi">中文</a>
+      <a href="/ar/howto/" class="lswi">العربية</a>
+      <a href="/hi/howto/" class="lswi">हिन्दी</a>
+      </div>
+    </div>
+    <button id="thm" aria-label="Toggle theme">
+      <svg id="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg id="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="/MapRaiders.apk" class="btn-dl">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download
+    </a>
+  </div>
+</div>
+</nav>
+
+<section class="feat-hero">
+<div class="mx">
+  <div class="h-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    Kompletter Guide
+  </div>
+  <h1 class="rv">So spielst du <em>MapRaiders</em></h1>
+  <p class="rv d1">MapRaiders ist ein GPS-basiertes Strategiespiel, bei dem du durch die reale Welt läufst oder rennst, um Territorium zu beanspruchen, Inhalte zu erstellen, dein Territorium zu verteidigen und Clans zu bilden. Dieser komplette Guide deckt alle Kernmechaniken ab.</p>
+  <a href="/" class="back-link rv d2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Zurück zu MapRaiders
+  </a>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Erste Schritte</div>
+  <h2 class="rv d1">Was ist MapRaiders und wie fange ich an?</h2>
+  <p class="rv d2">MapRaiders verwandelt die reale Welt in ein strategisches Territorialspiel. Du nutzt das GPS deines Handys, um dich in deiner Stadt oder deinem Kiez zu bewegen. Während du läufst, rennst oder radfahrst, kannst du unbeanspruchtes Land als dein eigenes Territorium beanspruchen. Sobald du Land besitzt, kannst du es mit Mini-Spielen verteidigen, es mit Echos bevölkern und mit anderen Spielern in Clans kooperieren.</p>
+  <p class="rv d3">Der Einstieg ist einfach: App herunterladen, Account erstellen, ersten Spaziergang machen und dein erstes Territorium beanspruchen. Je mehr du dich bewegst, desto mehr kannst du beanspruchen.</p>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Kernmechaniken</div>
+  <h2 class="rv d1">Was sind die Hauptspielsysteme?</h2>
+  <p class="rv d2">MapRaiders basiert auf fünf miteinander verbundenen Systemen, die sich zu einer lebendigen Welt verbinden:</p>
+  <div class="cluster-grid">
+    <div class="cluster-card rv d2">
+      <h3>
+        <svg class="cluster-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Territorien
+      </h3>
+      <p>Gehe zu unbeanspruchtem Land und beanspruche es als dein Eigentum. Deine Territorien erscheinen als farbige Sechsecke auf der Karte. Je mehr du läufst, desto mehr kannst du besitzen.</p>
+      <a href="./territories/" class="cluster-link">Territorien lernen →</a>
+    </div>
+    <div class="cluster-card rv d3">
+      <h3>
+        <svg class="cluster-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Echos
+      </h3>
+      <p>Hinterlasse kurze digitale Nachrichten an realen Orten. Andere Spieler können deine Echos entdecken, kommentieren und hochvoten. Es ist Social Media, gebunden an die Geographie.</p>
+      <a href="./echos/" class="cluster-link">Echos lernen →</a>
+    </div>
+    <div class="cluster-card rv d2">
+      <h3>
+        <svg class="cluster-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Defense Mini-Games
+      </h3>
+      <p>Platziere strategische Herausforderungen auf deinen Territorien. Wenn Angreifer dich herausfordern, konkurrieren beide im Mini-Spiel. Der Gewinner beansprucht oder behält das Land.</p>
+      <a href="./defense-minigames/" class="cluster-link">Defense lernen →</a>
+    </div>
+    <div class="cluster-card rv d3">
+      <h3>
+        <svg class="cluster-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clans
+      </h3>
+      <p>Arbeite mit anderen Spielern zusammen, um größere Regionen zu kontrollieren. Clans entstehen organisch und können kooperieren, um Territorium zu schützen und gegen Clan-Challenges anzutreten.</p>
+      <a href="./clans/" class="cluster-link">Clans lernen →</a>
+    </div>
+    <div class="cluster-card rv d4">
+      <h3>
+        <svg class="cluster-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+        Quests & Challenges
+      </h3>
+      <p>Erstelle Aufgaben für andere Spieler an bestimmten Orten. Absolviere Quests, um XP und Währung zu verdienen. Clan-Challenges testen deine Fähigkeiten.</p>
+      <a href="./quests/" class="cluster-link">Quests lernen →</a>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Territorium Basics</div>
+  <h2 class="rv d1">Wie funktioniert das Territorialsystem?</h2>
+  <p class="rv d2">Territorium ist die Grundlage von MapRaiders. Jedes Landfeld auf der Karte gehört jemandem oder wartet darauf, beansprucht zu werden. Beanspruchte Territorien zeigen die Farbe ihres Besitzers und können mit Verteidigungen befestigt werden. Unbeanspruchtes Land verfällt mit der Zeit, daher musst du deine Territorien regelmäßig besuchen, um sie aktiv zu halten. Wenn ein anderer Spieler dein Territorium besucht und es herausfordert, treten beide in ein Defense-Spiel ein — bei einem Sieg übernimmt der Angreifer dein Land.</p>
+  <p class="rv d3">Größere Territorien haben mehr Defense-Plätze, mit denen du mehrere Mini-Spiele stapeln kannst, um tiefere Verteidigung zu erreichen. Clan-Territorien werden geteilt und kollektiv von der Gruppe verteidigt.</p>
+  <p class="rv d4"><a href="./territories/" class="cluster-link">Lies den kompletten Territorium-Guide →</a></p>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Echos: Sozialmedien im Maßstab</div>
+  <h2 class="rv d1">Was sind Echos und wie erstelle ich sie?</h2>
+  <p class="rv d2">Echos sind kurze digitale Nachrichten, die an realen Orten auf der MapRaiders-Karte angeheftet sind. Du kannst Text-Echos erstellen, Bilder anhängen und sie mit benutzerdefinierten Hashtags kennzeichnen. Andere Spieler, die den gleichen Ort entdecken, sehen dein Echo, können kommentieren und hochvoten. Die beliebtesten Echos erhalten Vorrang auf der Karte und bauen eine gemeinsame Geographie der Community-Beiträge auf.</p>
+  <p class="rv d3">Echos werden vollständig vom Spieler erstellt — nutze sie, um Witze, Fakten, Warnungen, Geschichten oder alles, das an diesem Ort wichtig ist, zu teilen. Sie werden von der Community durch Meldungen und Abstimmungen moderiert.</p>
+  <p class="rv d4"><a href="./echos/" class="cluster-link">Lies den kompletten Echos-Guide →</a></p>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Defense-Strategie</div>
+  <h2 class="rv d1">Wie schützen Defense Mini-Games mein Territorium?</h2>
+  <p class="rv d2">Wenn du Territorium besitzt, kannst du Defense Mini-Games hinzufügen, um es zu schützen. MapRaiders bietet 7 verschiedene Spiele, darunter Stein-Papier-Schere, Tic Tac Toe, Mini-Schach und mehr. Jedes Spiel testet unterschiedliche Fähigkeiten — wähle Verteidigungen, die deine Stärken zeigen, oder kombiniere verschiedene, um unvorhersehbar zu bleiben.</p>
+  <p class="rv d3">Wenn ein anderer Spieler dein Territorium besucht und es herausfordert, konkurrieren beide im zugewiesenen Mini-Spiel in Echtzeit. Der Gewinner bestimmt die Landownerschaft. Größere Territorien verdienen mehr Defense-Plätze, mit denen du mehrere Spiele schichtest für ernsthafte Verteidigung.</p>
+  <p class="rv d4"><a href="./defense-minigames/" class="cluster-link">Lies den kompletten Defense-Guide →</a></p>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Clans & Kooperation</div>
+  <h2 class="rv d1">Wie funktionieren Clans und wie trete ich bei?</h2>
+  <p class="rv d2">Clans entstehen organisch, wenn Spieler zusammenarbeiten, um Territorium zu kontrollieren und an gemeinsamen Zielen zu arbeiten. Im Gegensatz zu starren Gilden wachsen MapRaiders-Clans natürlich aus gemeinsamen Territorialinteressen. Du kannst deinen eigenen Clan gründen oder in einen eingeladen werden. Clan-Mitglieder kooperieren, um größere Regionen zu verteidigen und gegen rivale Clans in organisierten Herausforderungen anzutreten.</p>
+  <p class="rv d3">Clan-Territorien werden kollektiv verteidigt, und Mitglieder teilen sich Verteidigungs- und XP-Belohnungen. Clans greifen auch auf Clan-exklusive Herausforderungen und Leaderboards zu, was interne Konkurrenz und Kooperation fördert.</p>
+  <p class="rv d4"><a href="./clans/" class="cluster-link">Lies den kompletten Clans-Guide →</a></p>
+</div>
+</section>
+
+<section class="hub-section">
+<div class="mx">
+  <div class="sec-label rv">Quests & Content-Erstellung</div>
+  <h2 class="rv d1">Wie erstelle ich Quests und verdiene Belohnungen?</h2>
+  <p class="rv d2">Quests sind Aufgaben, die du für andere Spieler an bestimmten Orten erstellst, um sie zu entdecken und zu absolvieren. Du setzt den Ort, definierst die Herausforderung (ein Rätsel, Trivia oder Aufgabe) und legst eine Belohnung in XP oder In-Game-Währung fest. Wenn ein Spieler deine Quest absolviert, verdienen beide Belohnungen und die Quest wird deinen Creator-Stats angerechnet.</p>
+  <p class="rv d3">Challenges funktionieren ähnlich, arbeiten aber auf Clan-Ebene — Clans erstellen Challenges, um Mitglieder zu testen und Clan-Belohnungen zu verdienen. Beide Systeme lassen dich das Gameplay prägen und andere Spieler für ihre Einbindung in deinen Content belohnen.</p>
+  <p class="rv d4"><a href="./quests/" class="cluster-link">Lies den kompletten Quests-Guide →</a></p>
+</div>
+</section>
+
+<section class="faq-sec">
+<div class="mx">
+  <div class="sec-label rv">FAQ</div>
+  <h2 class="sec-title rv d1">Häufig gestellte Fragen zu MapRaiders</h2>
+  <div class="faq-list">
+    <div class="faq-item rv">
+      <div class="faq-q">Ist MapRaiders kostenlos?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Ja. MapRaiders ist vollständig kostenlos zum Download und Spielen. Es gibt keine Werbung, keinen Battle Pass und keine versteckten Kosten. Wir glauben an faires Spiel für alle.</div>
+    </div>
+    <div class="faq-item rv d1">
+      <div class="faq-q">Wie beanspruche ich Territorium?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Gehe zu einem unbeanspruchten Gebiet auf der Karte und tippe den Button 'Territorium beanspruchen'. Dein beanspruchtes Land erscheint als farbiges Sechseck auf der Karte. Je mehr du läufst, desto mehr kannst du beanspruchen.</div>
+    </div>
+    <div class="faq-item rv d2">
+      <div class="faq-q">Was sind Echos?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Echos sind digitale Nachrichten, die du an realen Orten hinterlässt. Andere Spieler können deine Echos entdecken, kommentieren und hochvoten. Sie sind Short-Form-Sozialmedien, gebunden an die Geographie.</div>
+    </div>
+    <div class="faq-item rv d3">
+      <div class="faq-q">Wie funktionieren Defense-Spiele?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Du platzierst ein Mini-Spiel auf deinem Territorium als Verteidigung. Wenn ein anderer Spieler dein Land besucht und es herausfordert, konkurrieren beide im Spiel. Der Gewinner behält oder beansprucht das Territorium.</div>
+    </div>
+    <div class="faq-item rv d4">
+      <div class="faq-q">Wie trete ich einem Clan bei?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Clans entstehen organisch, wenn Spieler zusammenarbeiten und Territoriale Ziele teilen. Du kannst deinen eigenen Clan gründen oder in einen eingeladen werden. Clans arbeiten zusammen, um größere Regionen zu kontrollieren und gegen andere Clans zu konkurrieren.</div>
+    </div>
+    <div class="faq-item rv d4">
+      <div class="faq-q">Was sind Quests und Challenges?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Quests sind Aufgaben, die du für andere Spieler an bestimmten Orten erstellst. Challenges sind Wettbewerbsaufgaben in Clans. Beide belohnen XP und Währung und helfen dir, aufzusteigen und Belohnungen zu verdienen.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="cta-sec">
+<div class="mx">
+  <h2 class="rv">Bereit, dein Territorium zu beanspruchen?</h2>
+  <p class="rv d1">Lade MapRaiders kostenlos herunter und beginne dein Abenteuer heute. Lauf, beanspruche, verteidige und kooperiere.</p>
+  <div class="rv d2">
+    <a href="/MapRaiders.apk" class="btn-p">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Aus dem Google Play Store herunterladen
+    </a>
+    <p class="cta-note">Kostenlos • Keine Werbung • Keine versteckten Kosten</p>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="mx">
+  <div class="f-i">
+    <div class="f-logo">MapRaiders</div>
+    <div class="f-links">
+      <a href="/terms.html">Bedingungen</a>
+      <a href="/privacy.html">Datenschutz</a>
+      <a href="/imprint.html">Impressum</a>
+      <a href="/contact.html">Kontakt</a>
+    </div>
+  </div>
+  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Social Media. Neu definiert.</p>
+</div>
+</footer>
+
+<script>
+(function(){
+  const t=localStorage.getItem('mr-theme')||'light';
+  document.documentElement.dataset.theme=t;
+  document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';
+  document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';
+})();
+document.getElementById('thm').addEventListener('click',function(){
+  const h=document.documentElement;
+  const t=h.dataset.theme==='dark'?'light':'dark';
+  h.dataset.theme=t;
+  localStorage.setItem('mr-theme',t);
+  document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';
+  document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';
+});
+window.addEventListener('scroll',function(){
+  document.getElementById('nav').classList.toggle('scroll',scrollY>60);
+});
+const io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){q.parentElement.classList.toggle('open');});
+});
+</script>
+</body>
+</html>
