@@ -81,7 +81,8 @@ CREATE TABLE IF NOT EXISTS territories (
   claim_value   DOUBLE PRECISION NOT NULL DEFAULT 0,
   claimed_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   last_defended TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-  decay_level   DOUBLE PRECISION NOT NULL DEFAULT 0.0
+  decay_level   DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+  is_protected  BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 COMMENT ON TABLE territories IS 'GPS polygons claimed through walking/running/cycling routes.';
@@ -91,6 +92,12 @@ CREATE INDEX IF NOT EXISTS idx_territories_owner    ON territories (owner_id);
 CREATE INDEX IF NOT EXISTS idx_territories_decay    ON territories (decay_level);
 CREATE INDEX IF NOT EXISTS idx_territories_claimed  ON territories (claimed_at DESC);
 CREATE INDEX IF NOT EXISTS idx_territories_class    ON territories (class);
+CREATE INDEX IF NOT EXISTS idx_territories_protected ON territories (is_protected) WHERE is_protected = TRUE;
+
+-- Add attack status columns for defense locking
+ALTER TABLE territories ADD COLUMN IF NOT EXISTS attack_status VARCHAR(20) DEFAULT NULL;
+ALTER TABLE territories ADD COLUMN IF NOT EXISTS attack_started_at TIMESTAMPTZ DEFAULT NULL;
+ALTER TABLE territories ADD COLUMN IF NOT EXISTS attacker_id UUID DEFAULT NULL;
 
 -- ============================================================
 -- ROUTES

@@ -80,6 +80,7 @@ class DefenseGameEngine {
   /**
    * Add a defense to a territory slot.
    * Multiple defenses allowed up to max_slots.
+   * Prevents adding defenses during active attacks (territory locked).
    */
   async setDefense(
     userId: string,
@@ -95,14 +96,19 @@ class DefenseGameEngine {
     }
 
     // 2. Verify user owns the territory
-    const territory = await queryOne<{ id: string; owner_id: string; area_m2: number }>(
-      'SELECT id, owner_id, ST_Area(polygon::geography) as area_m2 FROM territories WHERE id = $1',
+    const territory = await queryOne<{ id: string; owner_id: string; area_m2: number; attack_status: string | null }>(
+      'SELECT id, owner_id, attack_status, ST_Area(polygon::geography) as area_m2 FROM territories WHERE id = $1',
       [territoryId]
     );
     if (!territory) throw new Error('Territory not found');
     if (territory.owner_id !== userId) throw new Error('You do not own this territory');
 
-    // 3. Check slot availability
+    // 3. Check if territory is under attack (locked)
+    if (territory.attack_status === 'under_attack') {
+      throw new Error('Cannot add defenses while territory is under attack');
+    }
+
+    // 4. Check slot availability
     const maxSlots = calculateMaxSlots(territory.area_m2 || 0);
     const activeDefenses = await queryMany<{ id: string; slot_index: number }>(
       "SELECT id, slot_index FROM territory_defenses WHERE territory_id = $1 AND status = 'active' ORDER BY slot_index",
@@ -113,12 +119,12 @@ class DefenseGameEngine {
       throw new Error(`Max ${maxSlots} defense slots for this territory (${Math.round(territory.area_m2)} m²). Remove one first.`);
     }
 
-    // 4. Find next available slot index
+    // 5. Find next available slot index
     const usedSlots = new Set(activeDefenses.map(d => d.slot_index));
     let slotIndex = 0;
     while (usedSlots.has(slotIndex)) slotIndex++;
 
-    // 5. Create new defense
+    // 6. Create new defense
     const result = await queryOne<{ id: string }>(
       `INSERT INTO territory_defenses (territory_id, owner_id, game_type, config, owner_secret, owner_benchmark, slot_index)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
@@ -164,6 +170,7 @@ class DefenseGameEngine {
    * Submit a challenge attempt against a specific defense layer.
    * Breaking one layer marks it as 'broken'. Territory only transfers
    * when ALL defenses are broken.
+   * Sets attack_status to lock territory during active attack.
    */
   async submitChallenge(
     userId: string,
@@ -180,7 +187,13 @@ class DefenseGameEngine {
     // 2. Check not challenging own territory
     if (defense.owner_id === userId) throw new Error('Cannot challenge your own defense');
 
-    // 3. Check cooldown (only after losses)
+    // 3. Lock territory during attack (set attack status and attacker)
+    await query(
+      "UPDATE territories SET attack_status = 'under_attack', attack_started_at = NOW(), attacker_id = $1 WHERE id = $2 AND attack_status IS NULL",
+      [userId, defense.territory_id]
+    );
+
+    // 4. Check cooldown (only after losses)
     const lastAttempt = await queryOne<{ created_at: string }>(
       `SELECT created_at FROM defense_attempts
        WHERE defense_id = $1 AND challenger_id = $2 AND result = 'lost'
@@ -195,12 +208,12 @@ class DefenseGameEngine {
       }
     }
 
-    // 4. Content-based defenses: special handling
+    // 5. Content-based defenses: special handling
     if (defense.game_type === 'challenge' || defense.game_type === 'quest' || defense.game_type === 'echo') {
       return this.handleContentDefense(defense, userId, challengerData);
     }
 
-    // 5. Turn-based games: create a game instance
+    // 6. Turn-based games: create a game instance
     if (defense.game_type === 'tic_tac_toe' || defense.game_type === 'mini_chess') {
       const game = await turnGameEngine.createGame(
         defense.territory_id,
@@ -218,17 +231,17 @@ class DefenseGameEngine {
       };
     }
 
-    // 6. Evaluate result (instant games)
+    // 7. Evaluate result (instant games)
     const result = this.evaluateGame(defense, challengerData);
 
-    // 7. Store attempt
+    // 8. Store attempt
     const attempt = await queryOne<{ id: string }>(
       `INSERT INTO defense_attempts (defense_id, challenger_id, challenger_data, result)
        VALUES ($1, $2, $3, $4) RETURNING id`,
       [defenseId, userId, JSON.stringify(challengerData), result]
     );
 
-    // 8. Handle outcome
+    // 9. Handle outcome
     if (result === 'won') {
       await this.handleLayerBroken(defense, userId, attempt!.id);
     } else if (result === 'lost') {
@@ -420,11 +433,12 @@ class DefenseGameEngine {
 
   /**
    * Handle full territory conquest (all defenses broken).
+   * Clears the attack lock and transfers ownership.
    */
   private async handleFullConquest(defense: any, challengerId: string): Promise<void> {
-    // Transfer territory ownership
+    // Transfer territory ownership and clear attack lock
     await query(
-      'UPDATE territories SET owner_id = $1, last_defended = NOW() WHERE id = $2',
+      'UPDATE territories SET owner_id = $1, last_defended = NOW(), attack_status = NULL, attack_started_at = NULL, attacker_id = NULL WHERE id = $2',
       [challengerId, defense.territory_id]
     );
 

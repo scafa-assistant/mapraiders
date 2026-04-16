@@ -77,7 +77,9 @@ export type NotificationType =
   | 'clan_formed'
   | 'quest_rated'
   | 'content_desert'
-  | 'invite_bonus';
+  | 'invite_bonus'
+  | 'quest_archival_warning'
+  | 'challenge_archival_warning';
 
 export type ReportTargetType = 'quest' | 'echo' | 'challenge' | 'user' | 'travel_route';
 

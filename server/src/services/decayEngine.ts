@@ -43,7 +43,8 @@ export class DecayEngine {
       }>(
         `SELECT id, owner_id, last_defended, decay_level
          FROM territories
-         WHERE owner_id IS NOT NULL`
+         WHERE owner_id IS NOT NULL
+           AND is_protected = FALSE`
       );
 
       for (const territory of territories) {

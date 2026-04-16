@@ -328,7 +328,8 @@ router.delete('/me', authenticate, async (req: Request, res: Response) => {
       await client.query("UPDATE invites SET invitee_id = NULL WHERE invitee_id = $1", [userId]);
 
       // -- Core game data --
-      await client.query('DELETE FROM territories WHERE owner_id = $1', [userId]);
+      // Soft-delete territories: preserve history for future analysis
+      await client.query('UPDATE territories SET owner_id = NULL, decay_level = 1.0 WHERE owner_id = $1', [userId]);
       await client.query('DELETE FROM quest_progress WHERE user_id = $1', [userId]);
       await client.query('DELETE FROM quests WHERE creator_id = $1', [userId]);
       await client.query('DELETE FROM echo_likes WHERE user_id = $1', [userId]);

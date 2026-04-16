@@ -55,6 +55,7 @@ import { turnGamesRouter } from './routes/turnGames';
 import { meetupsRouter } from './routes/meetups';
 import { playersRouter } from './routes/players';
 import { friendsRouter } from './routes/friends';
+import { healthRouter } from './routes/health';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -163,6 +164,7 @@ app.use('/api/games', turnGamesRouter);
 app.use('/api/meetups', meetupsRouter);
 app.use('/api/players', playersRouter);
 app.use('/api/friends', friendsRouter);
+app.use('/api/health', healthRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {

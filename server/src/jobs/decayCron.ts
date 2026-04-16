@@ -19,7 +19,7 @@ import {
   sendNotification,
 } from '../services/notificationService';
 import { query, queryMany } from '../config/database';
-import { TITLES, LEGENDARY } from '../config/constants';
+import { TITLES, LEGENDARY, DECAY } from '../config/constants';
 import { refreshAllLeaderboards as refreshLeaderboardsFull } from './leaderboardCron';
 import { runClanFormation as runClanFormationJob } from './clanFormation';
 import { checkTitles as checkTitlesJob } from './titleCheck';
@@ -29,6 +29,7 @@ import { eventEngine } from '../services/eventEngine';
 import { balanceService } from '../services/balanceService';
 import { checkAutoBounty } from '../services/bountyService';
 import { meetupService } from '../services/meetupService';
+import { recordCronRun, acquireCronLock, releaseCronLock } from '../services/cronMonitor';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -40,14 +41,35 @@ export function setupCronJobs(): void {
   // Daily at 04:00 UTC - Territory decay
   // ------------------------------------------------------------------
   cron.schedule('0 4 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('territory_decay', 3600);
+    if (!locked) return;
+
     console.log('[CRON] Running territory decay...');
     try {
       const result = await processAllTerritoryDecay();
       console.log(
         `[CRON] Territory decay: ${result.updated} updated, ${result.unclaimed} removed`,
       );
+      await recordCronRun({
+        job: 'territory_decay',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: result.updated + result.unclaimed,
+      });
     } catch (err) {
       console.error('[CRON] Territory decay failed:', err);
+      await recordCronRun({
+        job: 'territory_decay',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('territory_decay');
     }
   }, { timezone: 'UTC' });
 
@@ -648,6 +670,85 @@ export function setupCronJobs(): void {
       }
     } catch (err) {
       console.error('[CRON] Turn game timeout check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 04:50 UTC - Archival warning for at-risk quests & challenges
+  // Notifies creators 7 days before their content gets auto-archived.
+  // ------------------------------------------------------------------
+  cron.schedule('50 4 * * *', async () => {
+    console.log('[CRON] Checking archival warnings...');
+    try {
+      let warned = 0;
+
+      // Quests at risk: active, low rating, no activity in 23-30 days
+      const atRiskQuests = await queryMany<{ id: string; creator_id: string; title: string }>(
+        `SELECT q.id, q.creator_id, q.title
+         FROM quests q
+         WHERE q.status = 'active'
+           AND q.avg_rating < $1
+           AND q.id NOT IN (
+             SELECT DISTINCT quest_id FROM quest_progress
+             WHERE started_at > NOW() - INTERVAL '30 days'
+           )
+           AND q.created_at < NOW() - INTERVAL '23 days'
+           AND q.created_at > NOW() - INTERVAL '30 days'
+         LIMIT 200`,
+        [DECAY.QUEST.RATING_PROTECTION],
+      );
+
+      for (const quest of atRiskQuests) {
+        try {
+          await sendNotification({
+            userId: quest.creator_id,
+            type: 'quest_archival_warning',
+            title: 'Quest wird bald archiviert',
+            body: `Deine Quest "${quest.title}" wird in ~7 Tagen archiviert (niedrige Bewertung + Inaktivität). Aktualisiere sie, um die Archivierung zu verhindern!`,
+            data: { quest_id: quest.id },
+            priority: 'HIGH',
+          });
+          warned++;
+        } catch {
+          // Skip individual failures
+        }
+      }
+
+      // Challenges at risk: active, no submissions in 23-30 days
+      const atRiskChallenges = await queryMany<{ id: string; creator_id: string; template: string }>(
+        `SELECT c.id, c.creator_id, c.template
+         FROM challenges c
+         WHERE c.status = 'active'
+           AND c.id NOT IN (
+             SELECT DISTINCT challenge_id FROM challenge_submissions
+             WHERE submitted_at > NOW() - INTERVAL '30 days'
+           )
+           AND c.created_at < NOW() - INTERVAL '23 days'
+           AND c.created_at > NOW() - INTERVAL '30 days'
+         LIMIT 200`,
+      );
+
+      for (const challenge of atRiskChallenges) {
+        try {
+          await sendNotification({
+            userId: challenge.creator_id,
+            type: 'challenge_archival_warning',
+            title: 'Challenge wird bald archiviert',
+            body: `Deine Challenge "${challenge.template}" wird in ~7 Tagen archiviert (keine Teilnahmen). Teile sie, um die Archivierung zu verhindern!`,
+            data: { challenge_id: challenge.id },
+            priority: 'HIGH',
+          });
+          warned++;
+        } catch {
+          // Skip individual failures
+        }
+      }
+
+      if (warned > 0) {
+        console.log(`[CRON] Archival warnings: ${warned} notifications sent`);
+      }
+    } catch (err) {
+      console.error('[CRON] Archival warning check failed:', err);
     }
   }, { timezone: 'UTC' });
 

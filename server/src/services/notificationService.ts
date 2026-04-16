@@ -40,6 +40,8 @@ const TYPE_PRIORITY: Record<NotificationType, NotificationPriority> = {
   quest_rated: 'MEDIUM',
   content_desert: 'LOW',
   invite_bonus: 'MEDIUM',
+  quest_archival_warning: 'HIGH',
+  challenge_archival_warning: 'HIGH',
 };
 
 /**

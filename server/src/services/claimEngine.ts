@@ -29,6 +29,7 @@ import { notifyTerritoryAttack, notifyTerritoryLost } from './notificationServic
 import { awardWalkXp, checkRareFind } from './petEngine';
 import { wsService } from './wsService';
 import { recordEvent } from './placeMemoryService';
+import { resetDecayAtPoint } from './decayEngine';
 import { checkTraps } from './trapService';
 import { checkAndClaimBounties } from './bountyService';
 import { balanceService } from './balanceService';
@@ -271,6 +272,21 @@ export class ClaimEngine {
     }
 
     // 8c. Route visibility delay: already set via visible_after in INSERT (handleTerritoryCreation)
+
+    // 8d. Reset decay for nearby territories: activity (claiming) keeps territories alive
+    try {
+      const centroid = await queryOne<{ lat: number; lng: number }>(
+        `SELECT ST_Y(ST_Centroid(polygon)) AS lat, ST_X(ST_Centroid(polygon)) AS lng
+         FROM territories WHERE id = $1`,
+        [territoryResult.territory_id]
+      );
+      if (centroid) {
+        await resetDecayAtPoint(centroid.lat, centroid.lng);
+      }
+    } catch (_err) {
+      // Decay reset is non-critical, log but continue
+      console.error('[ClaimEngine] Decay reset error:', _err);
+    }
 
     // 9. Award XP (event multiplier applied to XP as well)
     const baseXp = calculateClaimXp(calculation.finalValue);

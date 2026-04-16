@@ -24,18 +24,18 @@ ON CONFLICT DO NOTHING;
 
 -- ============================================================
 -- TERRITORIES (Berlin / Alexanderplatz area)
--- Schema columns: id, owner_id, polygon, class, claim_value, claimed_at, last_defended, decay_level
+-- Schema columns: id, owner_id, polygon, class, claim_value, claimed_at, last_defended, decay_level, is_protected
 -- ============================================================
-INSERT INTO territories (id, owner_id, polygon, class, claim_value, claimed_at, last_defended, decay_level) VALUES
+INSERT INTO territories (id, owner_id, polygon, class, claim_value, claimed_at, last_defended, decay_level, is_protected) VALUES
   ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001',
    ST_GeomFromText('POLYGON((13.4050 52.5200, 13.4060 52.5200, 13.4060 52.5210, 13.4050 52.5210, 13.4050 52.5200))', 4326),
-   'walker', 120, NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day', 0.05),
+   'walker', 120, NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day', 0.05, TRUE),
   ('10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002',
    ST_GeomFromText('POLYGON((13.4070 52.5200, 13.4080 52.5200, 13.4080 52.5215, 13.4070 52.5215, 13.4070 52.5200))', 4326),
-   'dog_walker', 180, NOW() - INTERVAL '1 day', NOW() - INTERVAL '6 hours', 0.02),
+   'dog_walker', 180, NOW() - INTERVAL '1 day', NOW() - INTERVAL '6 hours', 0.02, TRUE),
   ('10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000003',
    ST_GeomFromText('POLYGON((13.4090 52.5190, 13.4110 52.5190, 13.4110 52.5205, 13.4090 52.5205, 13.4090 52.5190))', 4326),
-   'runner', 250, NOW(), NOW(), 0.0)
+   'runner', 250, NOW(), NOW(), 0.0, TRUE)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
