@@ -146,6 +146,28 @@
     <loc>https://mapraiders.com/en/vs/pokemon-go.html</loc>
     <changefreq>monthly</changefreq><priority>0.9</priority>
   </url>
+  <url>
+    <loc>https://mapraiders.com/vs/geocaching.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/vs/geocaching.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/vs/geocaching.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/vs/geocaching.html"/>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/vs/geocaching.html</loc>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/vs/zenly.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/vs/zenly.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/vs/zenly.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/vs/zenly.html"/>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/vs/zenly.html</loc>
+    <changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
 
   <!-- /howto/ Pillar Hub Pages -->
   <url>
@@ -227,4 +249,240 @@
   <url><loc>https://mapraiders.com/hi/vs/pokemon-go.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://mapraiders.com/hi/vs/ingress.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://mapraiders.com/hi/vs/geocaching.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- About Pages -->
+  <url>
+    <loc>https://mapraiders.com/ueber-uns.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/fr/a-propos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/es/sobre-nosotros.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/it/chi-siamo.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/pt/sobre.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/tr/hakkimizda.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ru/o-nas.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ja/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ko/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/zh/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ar/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/hi/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/ueber-uns.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/a-propos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/sobre-nosotros.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/chi-siamo.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/sobre.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/hakkimizda.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/o-nas.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/about.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/about.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/about.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+
 </urlset>
