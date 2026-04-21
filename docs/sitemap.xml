@@ -1424,4 +1424,119 @@
     <changefreq>monthly</changefreq><priority>0.7</priority>
   </url>
 
+
+  <!-- Niche Landing Pages (Phase I-1) -->
+  <url>
+    <loc>https://mapraiders.com/hundespaziergang/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/hundespaziergang/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/dog-walking/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/dog-walking/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/dog-walking/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/hundespaziergang/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/dog-walking/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/dog-walking/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/jogging/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/jogging/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/running-game/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/running-game/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/running-game/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/jogging/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/running-game/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/running-game/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/schnitzeljagd/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/schnitzeljagd/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/scavenger-hunt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/scavenger-hunt/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/scavenger-hunt/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/schnitzeljagd/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/scavenger-hunt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/scavenger-hunt/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/stadt-entdecken/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/stadt-entdecken/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/urban-explorer/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/urban-explorer/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/urban-explorer/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/stadt-entdecken/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/urban-explorer/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/urban-explorer/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/fitness-mmo/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/fitness-mmo/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/fitness-mmo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/fitness-mmo/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/fitness-mmo/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/fitness-mmo/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/fitness-mmo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/fitness-mmo/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/radfahren/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/radfahren/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/cycling-game/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/cycling-game/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/cycling-game/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/radfahren/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/cycling-game/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/cycling-game/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/nachbarschaft/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/nachbarschaft/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/neighborhood/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/neighborhood/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/neighborhood/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/nachbarschaft/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/neighborhood/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/neighborhood/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/audio-graffiti/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/audio-graffiti/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/audio-graffiti/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/audio-graffiti/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/en/audio-graffiti/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/audio-graffiti/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/audio-graffiti/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/audio-graffiti/"/>
+    <changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+
 </urlset>
