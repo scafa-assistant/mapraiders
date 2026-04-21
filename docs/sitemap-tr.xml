@@ -83,4 +83,34 @@
     <priority>0.7</priority>
   </url>
 
+  <url>
+    <loc>https://mapraiders.com/tr/howto/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mapraiders.com/tr/howto/bolgeler.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mapraiders.com/tr/howto/echolar.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mapraiders.com/tr/howto/klanlar.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mapraiders.com/tr/howto/savunma-oyunlari.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

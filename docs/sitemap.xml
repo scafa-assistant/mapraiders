@@ -1539,4 +1539,997 @@
     <changefreq>monthly</changefreq><priority>0.8</priority>
   </url>
 
+
+  <!-- Howto Guides (Phase F) -->
+  <url>
+    <loc>https://mapraiders.com/fr/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/es/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/it/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/pt/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/tr/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ru/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ja/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ko/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/zh/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ar/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/hi/howto/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/fr/howto/territoires.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/es/howto/territorios.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/it/howto/territori.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/pt/howto/territorios.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/tr/howto/bolgeler.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ru/howto/territorii.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ja/howto/territories.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ko/howto/territories.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/zh/howto/territories.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ar/howto/territories.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/hi/howto/territories.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/territorien.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/territoires.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/territori.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/territorios.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/bolgeler.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/territorii.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/territories.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/territories.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/fr/howto/echos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/es/howto/ecos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/it/howto/echi.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/pt/howto/ecos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/tr/howto/echolar.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ru/howto/ekho.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ja/howto/echos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ko/howto/echos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/zh/howto/echos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ar/howto/echos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/hi/howto/echos.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echi.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/ecos.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/fr/howto/clans.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/es/howto/clanes.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/it/howto/clan.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/pt/howto/cla.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/tr/howto/klanlar.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ru/howto/klany.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ja/howto/clans.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ko/howto/clans.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/zh/howto/clans.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ar/howto/clans.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/hi/howto/clans.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/clanes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/clan.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/cla.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/klanlar.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/klany.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/clans.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/clans.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/fr/howto/jeux-defense.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/es/howto/juegos-defensa.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/it/howto/minigiochi-difesa.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/pt/howto/minijogos-defesa.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/tr/howto/savunma-oyunlari.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ru/howto/zashchita-igry.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ja/howto/defense-minigames.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ko/howto/defense-minigames.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/zh/howto/defense-minigames.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/ar/howto/defense-minigames.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mapraiders.com/hi/howto/defense-minigames.html</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungs-minispiele.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/jeux-defense.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mapraiders.com/es/howto/juegos-defensa.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/minigiochi-difesa.html"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt/howto/minijogos-defesa.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/savunma-oyunlari.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/zashchita-igry.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/defense-minigames.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html"/>
+    <changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+
 </urlset>
