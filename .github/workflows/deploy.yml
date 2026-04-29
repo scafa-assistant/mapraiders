@@ -1,0 +1,48 @@
+name: Deploy to Hetzner
+
+# Triggert nur bei Push auf master, wenn docs/ oder dieser Workflow geändert wurde.
+# Verhindert unnötige Deploys bei reinen Code-/Doc-Updates außerhalb von docs/.
+on:
+  push:
+    branches: [master]
+    paths:
+      - "docs/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:  # erlaubt manuellen Trigger via GitHub-UI
+
+jobs:
+  deploy:
+    name: SSH Deploy zu Hetzner-VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Pull on Hetzner via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
+            cd ${{ secrets.HETZNER_DEPLOY_PATH }}
+            echo "→ git fetch + pull"
+            git fetch --all --prune
+            git reset --hard origin/master
+            echo "→ nginx reload (graceful, kein Downtime)"
+            sudo systemctl reload nginx || true
+            echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
+
+      - name: Verify deployment
+        run: |
+          sleep 5
+          STATUS=$(curl -sI https://mapraiders.com/ | head -1)
+          echo "Live-Site: $STATUS"
+          if echo "$STATUS" | grep -q "200"; then
+            echo "✓ Site live"
+          else
+            echo "✗ Site nicht erreichbar"
+            exit 1
+          fi
