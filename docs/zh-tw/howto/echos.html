@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!-- COMING-SOON-MODE -->
+<!-- PHASE-F-HOWTO -->
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>回聲創建指南 – MapRaiders 中文</title>
+<meta name="description" content="MapRaiders回声系统：GPS定位音频留言，在故宫、西湖、黄鹤楼留下专属声音记忆的完整指南。">
+<link rel="canonical" href="https://mapraiders.com/zh-tw/howto/echos.html">
+<link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/echos.html">
+<link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/echos.html">
+<link rel="alternate" hreflang="id" href="https://mapraiders.com/id/">
+<link rel="alternate" hreflang="en-IN" href="https://mapraiders.com/en-in/">
+<link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/echos.html">
+<link rel="alternate" hreflang="es" href="https://mapraiders.com/es-mx/howto/echos.html">
+<link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/echos.html">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt-br/howto/ecos.html">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/echolar.html">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/ekho.html">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/echos.html">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/echos.html">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh/howto/echos.html">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/echos.html">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/echos.html">
+<link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/echos.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="回声创建指南 – MapRaiders">
+<meta property="og:description" content="GPS声音涂鸦 — 在西湖断桥、故宫角楼、洪崖洞留下你的专属回声。">
+<meta property="og:url" content="https://mapraiders.com/zh/howto/echos.html">
+<meta property="og:image" content="https://mapraiders.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"MapRaiders回聲創建方法","description":"在GPS坐標留下音頻消息的分步指南","inLanguage": "zh-TW","step":[{"@type":"HowToStep","position":1,"name":"激活回聲模式","text":"點擊地圖底部的回聲圖標（🔊），切換至回聲模式。周圍200米內的其他玩家回聲以波紋形式可視化顯示。"},{"@type":"HowToStep","position":2,"name":"選擇回聲位置","text":"移動到想留下回聲的地點。具有歷史文化背景的地點（如故宮午門、西湖斷橋）產生的回聲往往獲得更多共鳴。"},{"@type":"HowToStep","position":3,"name":"錄製音頻","text":"長按錄音鍵錄製最長60秒的消息。現場的背景音（波浪聲、街頭喧囂）會成為回聲的一部分，增強臨場感。"},{"@type":"HowToStep","position":4,"name":"完成設置","text":"設置回聲標題、分類（歷史/音樂/生活/挑戰/秘密）、可見範圍和有效期。"挑戰"分類的回聲可邀請其他玩家錄製回應。"},{"@type":"HowToStep","position":5,"name":"發布回聲","text":"點擊發布按鈕，回聲被固定在該GPS坐標。其他玩家到達該位置附近即可收聽，系統生成分享連結供社交平臺傳播。"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MapRaiders","item":"https://mapraiders.com/zh/"},{"@type":"ListItem","position":2,"name":"遊戲指南","item":"https://mapraiders.com/zh/howto/"},{"@type":"ListItem","position":3,"name":"回聲","item":"https://mapraiders.com/zh/howto/echos.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"回聲能保存多久？","acceptedAnswer":{"@type":"Answer","text":"默認有效期為7天。獲得大量共鳴（點讚）的回聲會自動延期，超過特定閾值將升級為"傳奇回聲"永久保存，並在地圖上顯示特殊標記。"}},{"@type":"Question","name":"如何收聽他人的回聲？","acceptedAnswer":{"@type":"Answer","text":"當你進入回聲所在GPS坐標附近30~100米範圍時，系統自動推送播放通知。佩戴耳機可享受空間感3D音效。"}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F6F4F1;--surface:#FFFFFF;--border:rgba(20,18,16,.07);--text:#141210;--muted:#756F6A;--dim:#C0BAB4;--accent:#1558F0;--accent-m:rgba(21,88,240,.07);--accent-b:rgba(21,88,240,.18);--nav-bg:rgba(246,244,241,.9)}
+[data-theme="dark"]{--bg:#0D0C0A;--surface:#1C1916;--border:rgba(255,255,255,.06);--text:#EAE7E2;--muted:#7A7470;--dim:#3E3B37;--accent:#4B7BFF;--accent-m:rgba(75,123,255,.1);--accent-b:rgba(75,123,255,.22);--nav-bg:rgba(13,12,10,.9)}
+body{font-family:'Outfit','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s}
+a{color:var(--accent);text-decoration:none}
+nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-weight:900;font-size:1.1rem;color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.lang-sw{position:relative;cursor:pointer}
+.lsw-label{font-size:.85rem;color:var(--muted);padding:6px 10px;border:1px solid var(--border);border-radius:8px;user-select:none}
+.lsw-drop{display:none;position:absolute;right:0;top:110%;background:var(--surface);border:1px solid var(--border);border-radius:10px;min-width:130px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200}
+.lang-sw:hover .lsw-drop{display:block}
+.lswi{display:block;padding:8px 14px;font-size:.85rem;color:var(--text);transition:background .15s}
+.lswi:hover{background:var(--accent-m)}
+.lswi.on{color:var(--accent);font-weight:700;pointer-events:none}
+#themeBtn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:1rem;color:var(--text)}
+header{padding:80px 24px 60px;text-align:center;max-width:860px;margin:0 auto}
+.badge{display:inline-block;background:var(--accent-m);color:var(--accent);font-size:.8rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:16px;letter-spacing:.05em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.2;margin-bottom:20px}
+.lead{font-size:1.15rem;color:var(--muted);max-width:600px;margin:0 auto 32px}
+.cta-btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:14px 32px;border-radius:12px;font-size:1rem;transition:opacity .2s}
+.cta-btn:hover{opacity:.85}
+main{max-width:860px;margin:0 auto;padding:0 24px 80px}
+section{margin-bottom:60px}
+h2{font-size:1.6rem;font-weight:800;margin-bottom:20px}
+p{color:var(--muted);margin-bottom:16px}
+.steps{counter-reset:step;display:flex;flex-direction:column;gap:24px}
+.step{display:flex;gap:20px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px}
+.step::before{counter-increment:step;content:counter(step);min-width:36px;height:36px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0}
+.step-body h3{margin-bottom:8px;color:var(--text);font-size:1rem;font-weight:700}
+.step-body p{margin-bottom:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px}
+.card-icon{font-size:2rem;margin-bottom:10px}
+.card h3{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.card p{font-size:.88rem;margin:0}
+.faq{display:flex;flex-direction:column;gap:12px}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.faq-q{padding:18px 20px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q::after{content:"＋";color:var(--accent);font-size:1.2rem;transition:transform .3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.faq-item.open .faq-a{max-height:300px;padding:0 20px 18px}
+.faq-a p{margin:0}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .5s,transform .5s}
+.rv.on{opacity:1;transform:none}
+footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "MapRaiders",
+  "applicationCategory": "GameApplication",
+  "applicationSubCategory": "SocialNetworkingApplication",
+  "operatingSystem": "Android",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Scafa Investments LLC",
+    "url": "https://scafa-investments.com/"
+  }
+}
+</script>
+<!-- PHASE-0B-FONTS-PRELOAD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>body,h1,h2,h3,h4,h5,h6,p,a,span,div,blockquote{font-family:Outfit,"Noto Sans SC",system-ui,sans-serif}</style>
+</head>
+<body>
+<nav>
+  <a href="https://mapraiders.com/zh/" class="nav-logo">MapRaiders</a>
+  <div class="nav-right">
+    <div class="lang-sw">
+      <span class="lsw-label">🌐 中文 ▾</span>
+      <div class="lsw-drop">
+        <a href="https://mapraiders.com/howto/echos.html" class="lswi">Deutsch</a>
+        <a href="https://mapraiders.com/en/howto/echos.html" class="lswi">English</a>
+        <a href="https://mapraiders.com/fr/howto/echos.html" class="lswi">Français</a>
+        <a href="https://mapraiders.com/es-mx/howto/echos.html" class="lswi">Español</a>
+        <a href="https://mapraiders.com/it/howto/echos.html" class="lswi">Italiano</a>
+        <a href="https://mapraiders.com/pt-br/howto/ecos.html" class="lswi">Português</a>
+        <a href="https://mapraiders.com/tr/howto/echolar.html" class="lswi">Türkçe</a>
+        <a href="https://mapraiders.com/ru/howto/ekho.html" class="lswi">Русский</a>
+        <a href="https://mapraiders.com/ja/howto/echos.html" class="lswi">日本語</a>
+        <a href="https://mapraiders.com/ko/howto/echos.html" class="lswi">한국어</a>
+        <span class="lswi on">中文</span>
+        <a href="https://mapraiders.com/ar/howto/echos.html" class="lswi">العربية</a>
+        <a href="https://mapraiders.com/hi/howto/echos.html" class="lswi">हिन्दी</a>
+      </div>
+    </div>
+    <button id="themeBtn">🌙</button>
+  </div>
+</nav>
+
+<header>
+  <div class="badge">回聲指南</div>
+  <h1>為每個地方留下聲音<br>GPS回聲系統</h1>
+  <p class="lead">西湖的雨聲、故宮的鐘鳴、洪崖洞的霓虹夜 — 用你的聲音為這些地方留下永恆的印記。</p>
+  <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" class="cta-btn">獲取上線通知</a>
+</header>
+
+<main>
+  <section class="rv">
+    <h2>什麼是回聲？</h2>
+    <p>回聲（Echo）是固定在特定GPS坐標的音頻消息，猶如"聲音塗鴉"。你錄製的聲音會永久綁定在那個位置，其他玩家到達該地點附近時即可收聽。在故宮午門前講述明清歷史，在西湖斷橋朗誦《白蛇傳》，在洪崖洞樓頂錄下夜晚的燈光與人聲 — 每一個回聲都是獨一無二的空間體驗。</p>
+    <p>隨著越來越多玩家在同一地點留下回聲，該位置會成為一座"活的聲音檔案館"。上海外灘可能積累來自全球遊客的百種語言，北京胡同裡的回聲則保存了老北京最真實的日常。中國豐富的歷史文化資源，使每一塊領地都有說不完的故事。</p>
+  </section>
+
+  <section class="rv">
+    <h2>創建回聲分步指南</h2>
+    <div class="steps">
+      <div class="step"><div class="step-body"><h3>激活回聲模式</h3><p>點擊地圖底部的回聲圖標切換模式。周圍200米內的回聲以聲波圖形可視化，點擊可預覽標題與分類。</p></div></div>
+      <div class="step"><div class="step-body"><h3>選擇回聲位置</h3><p>移動到想留下記憶的地方。成都寬窄巷子的老茶館門口、杭州靈隱寺的古鐘旁，這些有故事的地方能讓你的回聲脫穎而出。</p></div></div>
+      <div class="step"><div class="step-body"><h3>錄製音頻</h3><p>長按錄音鍵錄製最長60秒消息。建議在安靜處錄製，或在嘈雜的市井刻意保留背景音，兩種風格各有魅力。</p></div></div>
+      <div class="step"><div class="step-body"><h3>完成設置</h3><p>設置標題、分類（歷史/音樂/生活/挑戰/秘密）、可見範圍和有效期。"挑戰"類回聲可設置問題，邀請他人錄音回應。</p></div></div>
+      <div class="step"><div class="step-body"><h3>發布與分享</h3><p>點擊發布，回聲即固定在該坐標。系統生成專屬分享連結，可發布至微博、小紅書，吸引好友來現場打卡。</p></div></div>
+    </div>
+  </section>
+
+  <section class="rv">
+    <h2>推薦回聲地點</h2>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🏯</div><h3>故宮角樓</h3><p>歷史回聲聖地。明清建築故事的最佳載體。</p></div>
+      <div class="card"><div class="card-icon">🌊</div><h3>西湖斷橋</h3><p>雨中斷橋的聲音極具詩意，浪漫回聲首選。</p></div>
+      <div class="card"><div class="card-icon">🌃</div><h3>重慶洪崖洞</h3><p>賽博朋克夜景，視覺與聲音的雙重震撼體驗。</p></div>
+      <div class="card"><div class="card-icon">🎵</div><h3>成都太古裡</h3><p>街頭音樂與現代都市的交融，音樂類回聲熱點。</p></div>
+      <div class="card"><div class="card-icon">🏔️</div><h3>黃山天都峰</h3><p>雲海之上的回聲，高海拔位置享有特殊加成。</p></div>
+      <div class="card"><div class="card-icon">🎭</div><h3>西安回民街</h3><p>叫賣聲、烤肉香、千年古城 — 五感回聲的極致。</p></div>
+    </div>
+  </section>
+
+  <section class="rv">
+    <h2>常見問題</h2>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q">回聲能保存多久？</div>
+        <div class="faq-a"><p>默認7天有效期。獲得大量共鳴後自動延期，超過閾值升級為"傳奇回聲"永久保存，在地圖上顯示專屬金色標記。</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">能收聽別人的回聲嗎？</div>
+        <div class="faq-a"><p>可以。進入回聲所在位置附近30~100米時，系統自動推送播放通知。佩戴耳機體驗更佳，支持空間感3D音效。</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>← <a href="https://mapraiders.com/zh/howto/">返回指南首頁</a></p>
+  <p style="margin-top:12px">© 2026 Scafa Investments LLC</p>
+</footer>
+
+<script>
+(function(){
+  var btn=document.getElementById('themeBtn');
+  function applyTheme(t){document.documentElement.dataset.theme=t;btn.textContent=t==='dark'?'☀️':'🌙';}
+  applyTheme(localStorage.getItem('mr-theme')||'light');
+  btn.addEventListener('click',function(){var nt=document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem('mr-theme',nt);applyTheme(nt);});
+  document.querySelectorAll('.faq-q').forEach(function(q){q.addEventListener('click',function(){q.parentElement.classList.toggle('open');});});
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('on');});},{threshold:.1});
+  document.querySelectorAll('.rv').forEach(function(el){obs.observe(el);});
+})();
+</script>
+</body>
+</html>
