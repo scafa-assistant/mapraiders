@@ -15,6 +15,8 @@ jobs:
     name: SSH Deploy zu Hetzner-VPS
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      DEPLOY_PATH: ${{ secrets.HETZNER_DEPLOY_PATH }}
 
     steps:
       - name: Pull on Hetzner via SSH
@@ -25,14 +27,15 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT || 22 }}
           script_stop: true
+          envs: DEPLOY_PATH
           script: |
             set -e
-            cd ${{ secrets.HETZNER_DEPLOY_PATH }}
+            cd "$DEPLOY_PATH"
             echo "→ git fetch + pull"
             git fetch --all --prune
             git reset --hard origin/master
             echo "→ nginx reload (graceful, kein Downtime)"
-            sudo systemctl reload nginx || true
+            systemctl reload nginx || true
             echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
 
       - name: Verify deployment
