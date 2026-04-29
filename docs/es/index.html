@@ -386,6 +386,11 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
 .f-links a:hover{color:var(--text)}
 .f-copy{width:100%;text-align:center;margin-top:20px;font-size:11px;color:var(--dim)}
 </style>
+<!-- PHASE-K-FOUNDER-JSONLD -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "René Scafarti", "jobTitle": "Fundador y Visionario, MapRaiders", "founder": {"@type": "Organization", "name": "Scafa Investments LLC", "url": "https://scafa-investments.com/"}, "description": "Construí MapRaiders porque los juegos GPS o te obligan a pagar o te dejan solo. Aquí cada paso moldea territorio real — y cada mapa se convierte en la red social de tu ciudad."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MobileApplication", "name": "MapRaiders", "url": "https://mapraiders.com/es/", "aggregateRating": {"@type": "AggregateRating", "ratingValue": "5", "bestRating": "5", "worstRating": "1", "ratingCount": "3", "reviewCount": "3"}, "review": [{"@type": "Review", "author": {"@type": "Person", "name": "Ron C.", "jobTitle": "Dueño de perro, Beta-tester"}, "reviewBody": "A mi perro le encanta su paseo — y a mí me encanta que cada paseo haga mi barrio más visible en el mapa. Ya conquisté toda mi calle.", "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1"}, "inLanguage": "es", "translationOfWork": {"@type": "Review", "inLanguage": "de"}}, {"@type": "Review", "author": {"@type": "Person", "name": "Vivian N.", "jobTitle": "Corredora, Beta-tester"}, "reviewBody": "Igual corro todas las mañanas. Con MapRaiders cada ruta tiene un objetivo: mantener territorio o reconquistarlo. Mi motivación cardio ha explotado.", "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1"}, "inLanguage": "es", "translationOfWork": {"@type": "Review", "inLanguage": "de"}}, {"@type": "Review", "author": {"@type": "Person", "name": "Aljoscha P.", "jobTitle": "Explorador urbano, Beta-tester"}, "reviewBody": "Dejar Echos y ver quién los encuentra es como una búsqueda del tesoro abierta por toda la ciudad. Descubro rincones que nunca había visto.", "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1"}, "inLanguage": "es", "translationOfWork": {"@type": "Review", "inLanguage": "de"}}]}</script>
+<!-- PHASE-0A-DEFINEDTERMSET -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "DefinedTermSet", "name": "MapRaiders Brand Vocabulary (ES)", "inLanguage": "es", "hasDefinedTerm": [{"@type": "DefinedTerm", "name": "Territorio", "description": "Un área del mapa conquistada, asignada de forma persistente a un jugador o clan", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Eco", "description": "Una señal de audio, foto o vídeo dejada por un jugador en una ubicación, para que otros descubran", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Mini-juego de defensa", "description": "Mini-juego (tres en raya, piedra-papel-tijera, mini-ajedrez) activado durante una disputa territorial", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Misión", "description": "Una mini-tarea creada por un jugador que otros pueden completar en el mundo real", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Artefacto", "description": "Un objeto coleccionable creado por un jugador y colocado en un territorio", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Clan", "description": "Un grupo orgánico de jugadores que mantienen y defienden territorios juntos", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Dejar un Eco", "description": "La acción de dejar un Eco en un lugar real", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Decaimiento del territorio", "description": "Mecánica por la cual los territorios abandonados se degradan con el tiempo", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}]}</script>
 </head>
 <body>
 
@@ -743,6 +748,57 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
     </div>
   </div>
 </div>
+</section>
+
+<!-- PHASE-K-FOUNDER-REVIEWS -->
+<style>
+.fr-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(0,0,0,0.04);border:1px solid var(--border);padding:4px 10px;border-radius:99px;margin-bottom:14px}
+.fr-sec{padding:80px 0;border-top:1px solid var(--border);background:var(--bg-alt)}
+.fr-sec .mx{max-width:1180px;margin:0 auto;padding:0 28px}
+.fr-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.fr-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px;margin-bottom:32px;box-shadow:0 2px 12px rgba(20,18,16,.04)}
+.fr-card.founder{border-left:4px solid var(--accent)}
+.fr-quote{font-size:18px;line-height:1.65;color:var(--text);font-weight:500;margin-bottom:20px;font-style:italic}
+.fr-author{font-size:14px;font-weight:700;color:var(--text)}
+.fr-role{font-size:13px;color:var(--muted);margin-top:2px}
+.fr-stars{color:#F5A623;font-size:14px;letter-spacing:2px;margin-bottom:14px}
+.fr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px}
+.fr-grid .fr-card{margin-bottom:0}
+@media(max-width:640px){.fr-sec{padding:60px 0}.fr-card{padding:28px}}
+</style>
+<section class="fr-sec">
+  <div class="mx">
+    <div class="fr-label">Del Fundador</div>
+    <div class="fr-card founder">
+      <div class="fr-quote">Construí MapRaiders porque los juegos GPS o te obligan a pagar o te dejan solo. Aquí cada paso moldea territorio real — y cada mapa se convierte en la red social de tu ciudad.</div>
+      <div class="fr-author">René Scafarti</div>
+      <div class="fr-role">Fundador y Visionario, MapRaiders</div>
+    </div>
+    <div class="fr-label" style="margin-top:48px">Lo que dicen los Beta-testers</div>
+    <div class="fr-grid">
+      <div class="fr-card">
+        <div class="fr-pill">De la beta cerrada</div>
+        <div class="fr-stars">★★★★★</div>
+        <div class="fr-quote">A mi perro le encanta su paseo — y a mí me encanta que cada paseo haga mi barrio más visible en el mapa. Ya conquisté toda mi calle.</div>
+        <div class="fr-author">Ron C.</div>
+        <div class="fr-role">Dueño de perro, Beta-tester</div>
+      </div>
+      <div class="fr-card">
+        <div class="fr-pill">De la beta cerrada</div>
+        <div class="fr-stars">★★★★★</div>
+        <div class="fr-quote">Igual corro todas las mañanas. Con MapRaiders cada ruta tiene un objetivo: mantener territorio o reconquistarlo. Mi motivación cardio ha explotado.</div>
+        <div class="fr-author">Vivian N.</div>
+        <div class="fr-role">Corredora, Beta-tester</div>
+      </div>
+      <div class="fr-card">
+        <div class="fr-pill">De la beta cerrada</div>
+        <div class="fr-stars">★★★★★</div>
+        <div class="fr-quote">Dejar Echos y ver quién los encuentra es como una búsqueda del tesoro abierta por toda la ciudad. Descubro rincones que nunca había visto.</div>
+        <div class="fr-author">Aljoscha P.</div>
+        <div class="fr-role">Explorador urbano, Beta-tester</div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <footer>

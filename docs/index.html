@@ -470,6 +470,11 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
 .f-links a:hover{color:var(--text)}
 .f-copy{width:100%;text-align:center;margin-top:20px;font-size:11px;color:var(--dim)}
 </style>
+<!-- PHASE-K-FOUNDER-JSONLD -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "René Scafarti", "jobTitle": "Gründer & Visionär, MapRaiders", "founder": {"@type": "Organization", "name": "Scafa Investments LLC", "url": "https://scafa-investments.com/"}, "description": "Ich habe MapRaiders gebaut, weil GPS-Spiele dich entweder zur Geldbörse zwingen oder dich allein lassen. Hier formt jeder Schritt echtes Territorium — und jede Karte wird zum sozialen Netzwerk deiner Stadt."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MobileApplication", "name": "MapRaiders", "url": "https://mapraiders.com/index.html", "aggregateRating": {"@type": "AggregateRating", "ratingValue": "5", "bestRating": "5", "worstRating": "1", "ratingCount": "3", "reviewCount": "3"}, "review": [{"@type": "Review", "author": {"@type": "Person", "name": "Ron C.", "jobTitle": "Hundebesitzer, Beta-Tester"}, "reviewBody": "Mein Hund liebt seine Runde — und ich liebe, dass jede Runde mein Viertel auf der Karte sichtbarer macht. Habe meine ganze Straße jetzt erobert.", "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1"}, "inLanguage": "de"}, {"@type": "Review", "author": {"@type": "Person", "name": "Vivian N.", "jobTitle": "Joggerin, Beta-Testerin"}, "reviewBody": "Ich jogge sowieso jeden Morgen. Mit MapRaiders hat jede Strecke ein Ziel: Gebiet halten oder zurückerobern. Mein Cardio-Antrieb ist explodiert.", "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1"}, "inLanguage": "de"}, {"@type": "Review", "author": {"@type": "Person", "name": "Aljoscha P.", "jobTitle": "Stadt-Erkunder, Beta-Tester"}, "reviewBody": "Echos zu legen und zu sehen wer sie findet, ist wie eine offene Schnitzeljagd durch die ganze Stadt. Ich entdecke Ecken, die ich noch nie gesehen habe.", "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5", "worstRating": "1"}, "inLanguage": "de"}]}</script>
+<!-- PHASE-0A-DEFINEDTERMSET -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "DefinedTermSet", "name": "MapRaiders Brand Vocabulary (DE)", "inLanguage": "de", "hasDefinedTerm": [{"@type": "DefinedTerm", "name": "Territorium", "description": "Eine eroberte Karten-Fläche im Spiel, die persistent dem Spieler oder Clan zugewiesen ist", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Echo", "description": "Ein vom Spieler an einem Standort hinterlassenes Audio-, Foto- oder Video-Signal, das andere Spieler dort entdecken können", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Verteidigungs-Minispiel", "description": "Mini-Spiel (Tic-Tac-Toe, Stein-Schere-Papier, Mini-Schach), das beim Verteidigen oder Erobern eines Territoriums ausgelöst wird", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Quest", "description": "Eine vom Spieler erstellte Mini-Aufgabe, die andere Spieler in der echten Welt erfüllen können", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Artefakt", "description": "Ein vom Spieler erschaffenes Sammler-Objekt, das in einem Territorium platziert werden kann", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Clan", "description": "Eine organisch geformte Gruppe von Spielern, die Territorien gemeinsam halten und verteidigen", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Echo-Drop", "description": "Die Aktion, ein Echo an einem realen Standort zu hinterlassen", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}, {"@type": "DefinedTerm", "name": "Territory Decay", "description": "Mechanik, durch die unbesuchte Territorien über Zeit verfallen und wieder eroberbar werden", "inDefinedTermSet": "https://mapraiders.com/#brand-vocab"}]}</script>
 </head>
 <body>
 
@@ -590,7 +595,7 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
       </div>
       <h3>Territorien</h3>
       <p>Laufe, renne, fahre Rad — beanspruche das Land unter deinen Füßen. Deine Farbe auf der Karte der echten Welt.</p>
-      <a href="/features/territorien.html" class="f-more">Mehr erfahren <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="/features/territorien.html" class="f-more">Echte GPS-Territorien <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
     <div class="fr-vis">
       <div class="fv-mini-map rv" id="minimap" style="grid-template-columns:repeat(8,1fr);display:grid;gap:3px;width:180px;height:130px"></div>
@@ -613,7 +618,7 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
       </div>
       <h3>Echos</h3>
       <p>Hinterlasse Nachrichten an Orten. Audio, Fotos, Videos — für Fremde zum Entdecken. Jeder Ort hat eine Geschichte.</p>
-      <a href="/features/echos.html" class="f-more">Mehr erfahren <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="/features/echos.html" class="f-more">Standort-Echos entdecken <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
 
@@ -625,7 +630,7 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
       </div>
       <h3>Spontan-Events</h3>
       <p>Hundespaziergang in 30 Minuten? Party heute Abend? Events pulsieren live auf der Karte. Sei dabei, bevor sie vergehen.</p>
-      <a href="/features/events.html" class="f-more">Mehr erfahren <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="/features/events.html" class="f-more">Live Karten-Events <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
     <div class="fr-vis">
       <svg class="fv-bolt rv" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -647,7 +652,7 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
       </div>
       <h3>Defense Games</h3>
       <p>Schütze dein Land mit Tic Tac Toe, Schere Stein Papier oder Mini-Schach. Wer gewinnt, hält das Territorium.</p>
-      <a href="/features/defense.html" class="f-more">Mehr erfahren <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="/features/defense.html" class="f-more">Verteidigungs-Minispiele <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
 
@@ -693,7 +698,7 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
       </div>
       <h3>Quests &amp; Challenges</h3>
       <p>Erstelle Abenteuer. Schritte-Challenges, Zeitläufe, Entdecker-Missionen. Die Stadt ist dein Dungeon.</p>
-      <a href="/features/quests.html" class="f-more">Mehr erfahren <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="/features/quests.html" class="f-more">Stadt-Quests starten <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
 
@@ -847,6 +852,57 @@ footer{padding:40px 0 32px;border-top:1px solid var(--border)}
 </section>
 
 <!-- FOOTER -->
+<!-- PHASE-K-FOUNDER-REVIEWS -->
+<style>
+.fr-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(0,0,0,0.04);border:1px solid var(--border);padding:4px 10px;border-radius:99px;margin-bottom:14px}
+.fr-sec{padding:80px 0;border-top:1px solid var(--border);background:var(--bg-alt)}
+.fr-sec .mx{max-width:1180px;margin:0 auto;padding:0 28px}
+.fr-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.fr-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px;margin-bottom:32px;box-shadow:0 2px 12px rgba(20,18,16,.04)}
+.fr-card.founder{border-left:4px solid var(--accent)}
+.fr-quote{font-size:18px;line-height:1.65;color:var(--text);font-weight:500;margin-bottom:20px;font-style:italic}
+.fr-author{font-size:14px;font-weight:700;color:var(--text)}
+.fr-role{font-size:13px;color:var(--muted);margin-top:2px}
+.fr-stars{color:#F5A623;font-size:14px;letter-spacing:2px;margin-bottom:14px}
+.fr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px}
+.fr-grid .fr-card{margin-bottom:0}
+@media(max-width:640px){.fr-sec{padding:60px 0}.fr-card{padding:28px}}
+</style>
+<section class="fr-sec">
+  <div class="mx">
+    <div class="fr-label">Vom Gründer</div>
+    <div class="fr-card founder">
+      <div class="fr-quote">Ich habe MapRaiders gebaut, weil GPS-Spiele dich entweder zur Geldbörse zwingen oder dich allein lassen. Hier formt jeder Schritt echtes Territorium — und jede Karte wird zum sozialen Netzwerk deiner Stadt.</div>
+      <div class="fr-author">René Scafarti</div>
+      <div class="fr-role">Gründer & Visionär, MapRaiders</div>
+    </div>
+    <div class="fr-label" style="margin-top:48px">Was Beta-Tester sagen</div>
+    <div class="fr-grid">
+      <div class="fr-card">
+        <div class="fr-pill">Aus der geschlossenen Beta</div>
+        <div class="fr-stars">★★★★★</div>
+        <div class="fr-quote">Mein Hund liebt seine Runde — und ich liebe, dass jede Runde mein Viertel auf der Karte sichtbarer macht. Habe meine ganze Straße jetzt erobert.</div>
+        <div class="fr-author">Ron C.</div>
+        <div class="fr-role">Hundebesitzer, Beta-Tester</div>
+      </div>
+      <div class="fr-card">
+        <div class="fr-pill">Aus der geschlossenen Beta</div>
+        <div class="fr-stars">★★★★★</div>
+        <div class="fr-quote">Ich jogge sowieso jeden Morgen. Mit MapRaiders hat jede Strecke ein Ziel: Gebiet halten oder zurückerobern. Mein Cardio-Antrieb ist explodiert.</div>
+        <div class="fr-author">Vivian N.</div>
+        <div class="fr-role">Joggerin, Beta-Testerin</div>
+      </div>
+      <div class="fr-card">
+        <div class="fr-pill">Aus der geschlossenen Beta</div>
+        <div class="fr-stars">★★★★★</div>
+        <div class="fr-quote">Echos zu legen und zu sehen wer sie findet, ist wie eine offene Schnitzeljagd durch die ganze Stadt. Ich entdecke Ecken, die ich noch nie gesehen habe.</div>
+        <div class="fr-author">Aljoscha P.</div>
+        <div class="fr-role">Stadt-Erkunder, Beta-Tester</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
 <div class="mx">
   <div class="f-i">
