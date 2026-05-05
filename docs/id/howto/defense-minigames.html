@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<!-- COMING-SOON-MODE -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Defense Mini-Games — MapRaiders | Protect Your Territory</title>
+<meta name="description" content="Master 7 unique defense mini-games in MapRaiders. Rock Paper Scissors, Tic Tac Toe, Chess, and more. Real-time strategy for territory control.">
+<link rel="canonical" href="https://mapraiders.com/id/howto/defense-minigames.html">
+<link rel="alternate" hreflang="de" href="https://mapraiders.com/howto/verteidigungsspiele.html">
+<link rel="alternate" hreflang="en" href="https://mapraiders.com/en/howto/defense-minigames.html">
+<link rel="alternate" hreflang="en-IN" href="https://mapraiders.com/en-in/">
+<link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/howto/mini-jeux-defense.html">
+<link rel="alternate" hreflang="es" href="https://mapraiders.com/es-mx/howto/minijuegos-defensa.html">
+<link rel="alternate" hreflang="it" href="https://mapraiders.com/it/howto/mini-giochi-difesa.html">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt-br/howto/mini-jogos-defesa.html">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/howto/mini-oyunlar-savunma.html">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/howto/mini-igry-zashchity.html">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/howto/minigeemu-bouei.html">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/howto/minigeeim-bangeo.html">
+<link rel="alternate" hreflang="zh" href="https://mapraiders.com/zh-cn/howto/xiao-youxi-fangyu.html">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/howto/mini-alaeab-difa.html">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/howto/chhote-khel-raksha.html">
+<link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/howto/defense-minigames.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are defense mini-games?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Defense mini-games are real-time games assigned to your territories to protect them from attackers. When someone challenges your territory, both players compete in the assigned game. The winner takes or keeps the land. MapRaiders offers 7 different games, each requiring different skills and strategies."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When do defense games trigger?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A defense game triggers when another player physically walks to your territory and initiates a challenge. Both players must be present (or synchronized in real-time) to compete. The game is active and immediate — not passive or turn-based."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the 7 defense mini-games?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MapRaiders features Rock Paper Scissors, Tic Tac Toe, Memory Challenge, Reaction Game, Word Puzzle, Mini Chess, and more. Each game rewards different skills: quick reflexes, pattern recognition, strategy, or vocabulary. Choose the game that matches your strengths."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is active defense unique?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Active defense sets MapRaiders apart from other GPS games like Ingress. Defense happens in real-time when attackers challenge you, not through passive mechanics. You must be engaged, strategize per-game, and compete directly with human opponents—no automation or bots."
+      }
+    }
+  ]
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;-webkit-font-smoothing:antialiased;font-family:'Outfit',sans-serif}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+:root{
+  --bg:#F6F4F1;--bg-alt:#EFEDE8;--surface:#FFFFFF;
+  --border:rgba(20,18,16,.07);--border-s:rgba(20,18,16,.13);
+  --text:#141210;--muted:#756F6A;--dim:#C0BAB4;
+  --accent:#1558F0;--accent-m:rgba(21,88,240,.07);--accent-b:rgba(21,88,240,.18);
+  --sh-sm:0 1px 4px rgba(20,18,16,.05);--sh-md:0 4px 20px rgba(20,18,16,.07);--sh-lg:0 20px 60px rgba(20,18,16,.1);
+  --nav-bg:rgba(246,244,241,.9);
+}
+[data-theme="dark"]{
+  --bg:#0D0C0A;--bg-alt:#161410;--surface:#1C1916;
+  --border:rgba(255,255,255,.06);--border-s:rgba(255,255,255,.11);
+  --text:#EAE7E2;--muted:#7A7470;--dim:#3E3B37;
+  --accent:#4B7BFF;--accent-m:rgba(75,123,255,.1);--accent-b:rgba(75,123,255,.22);
+  --sh-sm:0 1px 4px rgba(0,0,0,.2);--sh-md:0 4px 20px rgba(0,0,0,.3);--sh-lg:0 20px 60px rgba(0,0,0,.55);
+  --nav-bg:rgba(13,12,10,.9);
+}
+body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
+.mx{max-width:1180px;margin:0 auto;padding:0 28px}
+.rv{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:20px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .4s}
+.nav.scroll{padding:13px 0}
+.nav-i{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:14px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--text)}
+.nav-logo b{color:var(--accent)}
+.nav-r{display:flex;gap:24px;align-items:center}
+.nav-r a.lnk{font-size:13px;font-weight:500;color:var(--muted);transition:color .2s}
+.nav-r a.lnk:hover{color:var(--text)}
+.btn-dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 20px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 14px rgba(21,88,240,.25);transition:opacity .2s,transform .2s}
+.btn-dl:hover{opacity:.88;transform:translateY(-1px)}
+#thm{display:flex;align-items:center;color:var(--muted);transition:color .2s;cursor:pointer}
+#thm:hover{color:var(--text)}
+.lang-sw{position:relative}
+.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
+.lsw-btn:hover{color:var(--text);background:var(--surface)}
+.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
+.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
+.lsw-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
+.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
+.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
+.lswi:hover{color:var(--text);background:var(--surface)}
+.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
+@media(max-width:900px){.lang-sw{display:none}}
+@media(max-width:740px){.nav-r a.lnk{display:none}.nav-logo{font-size:12px}}
+.feat-hero{padding:160px 0 100px;border-bottom:1px solid var(--border)}
+.h-badge{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);padding:6px 14px;border-radius:4px;background:var(--accent-m);border:1px solid var(--accent-b);margin-bottom:28px;width:fit-content}
+.feat-hero h1{font-size:clamp(42px,7vw,84px);font-weight:900;line-height:1.0;letter-spacing:-3px;margin-bottom:24px}
+.feat-hero h1 em{font-style:normal;color:var(--accent)}
+.feat-hero p{font-size:18px;color:var(--muted);line-height:1.75;max-width:560px;margin-bottom:32px}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted);transition:color .2s}
+.back-link:hover{color:var(--accent)}
+.steps-sec{padding:100px 0;border-bottom:1px solid var(--border)}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.sec-title{font-size:clamp(26px,3.8vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:48px}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+@media(max-width:820px){.steps-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.steps-grid{grid-template-columns:1fr}}
+.step-card{padding:36px 32px;background:var(--surface);border-right:1px solid var(--border)}
+.step-card:last-child{border-right:none}
+@media(max-width:820px){.step-card:nth-child(2){border-right:none}}
+.step-num{font-size:42px;font-weight:900;line-height:1;letter-spacing:-2px;color:var(--accent);opacity:.25;margin-bottom:16px}
+.step-card h3{font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:10px}
+.step-card p{font-size:14px;color:var(--muted);line-height:1.65}
+.benefits-sec{padding:100px 0;background:var(--bg-alt);border-bottom:1px solid var(--border)}
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:48px}
+@media(max-width:760px){.benefits-grid{grid-template-columns:1fr}}
+.benefit-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 32px;box-shadow:var(--sh-sm)}
+.b-icon{width:48px;height:48px;border-radius:10px;background:var(--accent-m);border:1px solid var(--accent-b);display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:20px}
+.benefit-card h3{font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:10px}
+.benefit-card p{font-size:14px;color:var(--muted);line-height:1.7}
+.faq-sec{padding:100px 0;border-bottom:1px solid var(--border)}
+.faq-list{margin-top:48px;display:flex;flex-direction:column;gap:2px}
+.faq-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;cursor:pointer;font-size:16px;font-weight:600;letter-spacing:-.2px;gap:16px}
+.faq-q svg{flex-shrink:0;color:var(--accent);transition:transform .3s}
+.faq-item.open .faq-q svg{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 28px 22px;font-size:15px;color:var(--muted);line-height:1.75}
+.faq-item.open .faq-a{display:block}
+.cta-sec{padding:100px 0;text-align:center}
+.cta-sec h2{font-size:clamp(30px,5vw,54px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:16px}
+.cta-sec p{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:40px}
+.btn-p{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding:16px 36px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 18px rgba(21,88,240,.28);transition:all .25s}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(21,88,240,.38)}
+.cta-note{font-size:12px;color:var(--dim);margin-top:12px}
+footer{padding:40px 0 32px;border-top:1px solid var(--border)}
+.f-i{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.f-logo{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.f-links{display:flex;gap:22px;flex-wrap:wrap}
+.f-links a{font-size:12px;color:var(--muted);transition:color .2s}
+.f-links a:hover{color:var(--text)}
+.f-copy{width:100%;text-align:center;margin-top:20px;font-size:11px;color:var(--dim)}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Defend Territory with Mini-Games in MapRaiders",
+  "description": "Step-by-step guide to defending your territory through Tic Tac Toe, Rock Paper Scissors, and Mini Chess.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Receive attack notification",
+      "text": "When another player challenges your territory, you get a push notification with the attacker's name and territory at stake."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Choose a defense game",
+      "text": "Select from Tic Tac Toe, Rock Paper Scissors, or Mini Chess. Each game has different time limits and strategy depth."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Play the mini-game",
+      "text": "Compete in real-time against the attacker. Games are turn-based with a 30-second timer per move."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Win to keep your territory",
+      "text": "If you win, your territory is safe and gains a defense bonus multiplier. The attacker loses their challenge attempt."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 5,
+      "name": "Lose gracefully",
+      "text": "If you lose, the attacker claims a portion of your territory. You keep the rest and can reclaim it later."
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "MapRaiders",
+  "applicationCategory": "GameApplication",
+  "applicationSubCategory": "SocialNetworkingApplication",
+  "operatingSystem": "Android",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Scafa Investments LLC",
+    "url": "https://scafa-investments.com/"
+  }
+}
+</script>
+<!-- PHASE-G-BREADCRUMB -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://mapraiders.com/en/"}, {"@type": "ListItem", "position": 2, "name": "How to", "item": "https://mapraiders.com/en/howto/"}, {"@type": "ListItem", "position": 3, "name": "Defense Mini-Games — MapRaiders", "item": "https://mapraiders.com/en/howto/defense-minigames.html"}]}</script>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+<div class="nav-i mx">
+  <a href="/id/" class="nav-logo">MAP<b>RAIDERS</b></a>
+  <div class="nav-r">
+    <a href="/id/#feat" class="lnk">Features</a>
+    <a href="/id/#echo" class="lnk">Echos</a>
+    <a href="/id/#mani" class="lnk">Vision</a>
+    <div class="lang-sw">
+      <button class="lsw-btn">EN <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lsw-drop">
+      <a href="/howto/verteidigungsspiele.html" class="lswi">Deutsch</a>
+      <span class="lswi on">English</span>
+      <a href="/fr/howto/mini-jeux-defense.html" class="lswi">Français</a>
+      <a href="/es-mx/howto/minijuegos-defensa.html" class="lswi">Español</a>
+      <a href="/it/howto/mini-giochi-difesa.html" class="lswi">Italiano</a>
+      <a href="/pt-br/howto/mini-jogos-defesa.html" class="lswi">Português</a>
+      <a href="/tr/howto/mini-oyunlar-savunma.html" class="lswi">Türkçe</a>
+      <a href="/ru/howto/mini-igry-zashchity.html" class="lswi">Русский</a>
+      <a href="/ja/howto/minigeemu-bouei.html" class="lswi">日本語</a>
+      <a href="/ko/howto/minigeeim-bangeo.html" class="lswi">한국어</a>
+      <a href="/zh-cn/howto/xiao-youxi-fangyu.html" class="lswi">中文</a>
+      <a href="/ar/howto/mini-alaeab-difa.html" class="lswi">العربية</a>
+      <a href="/hi/howto/chhote-khel-raksha.html" class="lswi">हिन्दी</a>
+      </div>
+    </div>
+    <button id="thm" aria-label="Toggle theme">
+      <svg id="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg id="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" class="btn-dl">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Coming Soon
+    </a>
+  </div>
+</div>
+</nav>
+
+<section class="feat-hero">
+<div class="mx">
+  <div class="h-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    Active Defense
+  </div>
+  <h1 class="rv">Contest for <em>Land</em></h1>
+  <p class="rv d1">Defense mini-games put you in real-time competition with attackers. Rock Paper Scissors, Tic Tac Toe, Chess, and 4 more—each game unlocks different defensive strategies. Master them all to protect your empire.</p>
+  <a href="/id/howto/" class="back-link rv d2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to How-To Hub
+  </a>
+</div>
+</section>
+
+<section class="steps-sec">
+<div class="mx">
+  <div class="sec-label rv">Fundamentals</div>
+  <h2 class="sec-title rv d1">How does active defense work?</h2>
+  <div class="steps-grid">
+    <div class="step-card rv">
+      <div class="step-num">01</div>
+      <h3>Assign a game</h3>
+      <p>Select a mini-game from your available defenses. Assign it to your territory. This becomes the challenge attackers face.</p>
+    </div>
+    <div class="step-card rv d1">
+      <div class="step-num">02</div>
+      <h3>Attacker arrives</h3>
+      <p>Another player walks to your territory location. They see the defense and tap to challenge. Both players sync in real-time.</p>
+    </div>
+    <div class="step-card rv d2">
+      <div class="step-num">03</div>
+      <h3>Game plays</h3>
+      <p>The mini-game launches. Both humans compete simultaneously. Skill, strategy, and speed determine the winner.</p>
+    </div>
+    <div class="step-card rv d3">
+      <div class="step-num">04</div>
+      <h3>Territory changes hands</h3>
+      <p>Attacker wins: land is theirs. Defender wins: you keep it. Either way, the game ends and players can challenge again later.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="benefits-sec">
+<div class="mx">
+  <div class="sec-label rv">Game Selection</div>
+  <h2 class="sec-title rv d1">What are the 7 mini-games?</h2>
+  <div class="benefits-grid">
+    <div class="benefit-card rv">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      </div>
+      <h3>Rock Paper Scissors</h3>
+      <p>The classic. Three choices, instant results. Choose your weapon faster than your opponent. Psychological warfare and quick reflexes win.</p>
+    </div>
+    <div class="benefit-card rv d1">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12h18M12 3v18M6 3h12v18H6z"/></svg>
+      </div>
+      <h3>Tic Tac Toe</h3>
+      <p>Strategic placement on a 3x3 grid. Plan ahead, block your opponent, create winning patterns. Spatial reasoning is key.</p>
+    </div>
+    <div class="benefit-card rv d2">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>
+      </div>
+      <h3>Memory Challenge</h3>
+      <p>Flip tiles and match pairs. Memorize patterns faster than your opponent. Concentration and visual memory dominate.</p>
+    </div>
+  </div>
+  <div class="benefits-grid" style="margin-top:32px">
+    <div class="benefit-card rv">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-2m0-4V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4m0 0h8"/></svg>
+      </div>
+      <h3>Reaction Game</h3>
+      <p>Tap when the signal appears. Fastest reflexes win. No strategy—just raw speed and focus. Adrenaline decides.</p>
+    </div>
+    <div class="benefit-card rv d1">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V4H2v14zm6-10h8M7 14h10"/></svg>
+      </div>
+      <h3>Word Puzzle</h3>
+      <p>Spell words from scrambled letters. Vocabulary and letter recognition matter. First to solve wins the territory.</p>
+    </div>
+    <div class="benefit-card rv d2">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0c0 4.97-3.72 9.05-8.47 9.82-.35.05-.71.05-1.06 0C6.72 21.05 3 16.97 3 12z"/></svg>
+      </div>
+      <h3>Mini Chess</h3>
+      <p>Lightweight chess on a smaller board. Strategic depth, tactical thinking. Master piece movement and checkmate patterns.</p>
+    </div>
+  </div>
+  <div class="benefits-grid" style="margin-top:32px">
+    <div class="benefit-card rv">
+      <div class="b-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20m0-20c-4.97 0-9 3.49-9 7.82 0 2.75 1.73 5.13 4.28 6.4M12 2c4.97 0 9 3.49 9 7.82 0 2.75-1.73 5.13-4.28 6.4"/></svg>
+      </div>
+      <h3>Plus more...</h3>
+      <p>More games rolling out regularly. Each one adds a new dimension to your defensive strategy and forces attackers to adapt.</p>
+    </div>
+  </div>
+</section>
+
+<section class="faq-sec">
+<div class="mx">
+  <div class="sec-label rv">Questions</div>
+  <h2 class="sec-title rv d1">Defense gameplay</h2>
+  <div class="faq-list">
+    <div class="faq-item rv">
+      <div class="faq-q">What are defense mini-games?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Defense mini-games are real-time games assigned to your territories to protect them from attackers. When someone challenges your territory, both players compete in the assigned game. The winner takes or keeps the land. MapRaiders offers 7 different games, each requiring different skills and strategies.</div>
+    </div>
+    <div class="faq-item rv d1">
+      <div class="faq-q">When do defense games trigger?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">A defense game triggers when another player physically walks to your territory and initiates a challenge. Both players must be present (or synchronized in real-time) to compete. The game is active and immediate — not passive or turn-based.</div>
+    </div>
+    <div class="faq-item rv d2">
+      <div class="faq-q">Can I switch defense games?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Yes. Change your defense game anytime from the territory management screen. Swapping games is a smart tactic to surprise attackers who may have prepared for a specific game type. Keep them guessing.</div>
+    </div>
+    <div class="faq-item rv d3">
+      <div class="faq-q">Why is active defense unique?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="faq-a">Active defense sets MapRaiders apart from other GPS games like Ingress. Defense happens in real-time when attackers challenge you, not through passive mechanics. You must be engaged, strategize per-game, and compete directly with human opponents—no automation or bots.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="cta-sec">
+<div class="mx">
+  <h2 class="rv">Ready to master defense?</h2>
+  <p class="rv d1">Download MapRaiders free and build your defensive arsenal. Master all 7 games and become unstoppable.</p>
+  <div class="rv d2">
+    <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" class="btn-p">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Coming Soon Android APK
+    </a>
+    <p class="cta-note">Free • No ads • No hidden costs</p>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="mx">
+  <div class="f-i">
+    <div class="f-logo">MapRaiders</div>
+    <div class="f-links">
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/imprint.html">Imprint</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/id/howto/">How-To Hub</a>
+    </div>
+  </div>
+  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Social Media. Redefined.</p>
+</div>
+</footer>
+
+<script>
+(function(){
+  const t=localStorage.getItem('mr-theme')||'light';
+  document.documentElement.dataset.theme=t;
+  document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';
+  document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';
+})();
+document.getElementById('thm').addEventListener('click',function(){
+  const h=document.documentElement;
+  const t=h.dataset.theme==='dark'?'light':'dark';
+  h.dataset.theme=t;
+  localStorage.setItem('mr-theme',t);
+  document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';
+  document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';
+});
+window.addEventListener('scroll',function(){
+  document.getElementById('nav').classList.toggle('scroll',scrollY>60);
+});
+const io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){q.parentElement.classList.toggle('open');});
+});
+</script>
+</body>
+</html>
