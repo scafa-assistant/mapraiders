@@ -1,207 +1,140 @@
-# SEO-Marathon — Session-Status & Wieder-Anfangs-Anleitung
+# SEO-Marathon — Session-Status (Phase 1 ABGESCHLOSSEN)
 
-**Letzte Session:** 2026-04-29
-**Aktueller Branch:** `phase-marathon` (NICHT zu master gemergt — wartet auf Phase 1)
-**Live-Site-Stand:** master (Phase 0a + 0b + PT-Split-Pilot)
-
----
-
-## ✅ ABGESCHLOSSEN
-
-### Phase 1-3 (Recherche + Strategie)
-- 16 Phase-2-Keyword-Recherche-Berichte (~470 KB)
-- 16 Phase-4-Final-Master-Plans (~7.580 Zeilen, alle 16 Sprachen)
-- `01_URL_MASTER_LIST.md` mit allen 240 Killer-URLs
-
-### Phase 0a — Schema-Erweiterungen (LIVE auf master)
-- `_apply_review_translations.py` — `inLanguage` + `translationOfWork` (288 Pages)
-- `_apply_pill_label.py` — Pill-Label "From the closed beta" / lokalisiert (288 Pages)
-- `_apply_definedtermset.py` — Brand-Vokabular pro Sprache (288 Pages)
-
-### Phase 0b — Tech-Erweiterungen (LIVE auf master)
-- `_apply_fonts_preload.py` — Noto Sans pro Sprache (204 Pages)
-- `_apply_sharing_buttons.py` — WhatsApp/LINE/KakaoTalk/Snapchat/VK lokalisiert (288 Pages)
-- `_apply_hreflang_v2.py` — hreflang-Audit (115 Pages ergänzt)
-- `_apply_remove_review.py` — Notfall-Tester-Widerruf (CLI-Tool, nicht ausgeführt)
-
-### CI/CD — Auto-Deploy (LIVE)
-- `.github/workflows/deploy.yml` — Auto-Deploy nach push auf master mit `docs/`-Änderung
-- Hetzner-VPS zoro (159.69.157.42), Repo `/opt/mapraiders`
-- 5 Secrets im GitHub-Repo: HETZNER_HOST/USER/PORT/SSH_KEY/DEPLOY_PATH
-- Deploy-Key in `~/.ssh/mapraiders-deploy/deploy_key` (lokal) + `/root/.ssh/authorized_keys` (Server)
-
-### Phase 0c — Sprach-Migrations (auf Branch `phase-marathon`, NICHT live!)
-- **PT-Split** (LIVE seit Commit 290559c): `/pt/` → `/pt-br/`, 28 Pages + 28 Stubs
-- **ES-Split** (Branch only): `/es/` → `/es-mx/`, 28 Pages + 28 Stubs
-- **ZH-Split** (Branch only): `/zh/` → `/zh-cn/` (40 Pages) + `/zh-tw/` NEU (40 Pages mit Traditional via zhconv) + 40 Stubs
-- **EN-IN-Create** (Branch only): `/en-in/` parallel zu `/en/`, 31 Pages mit UK-Spelling, 450 hreflang-Updates
-- **ID-Create** (Branch only): `/id/` Skelett aus `/en/`, 31 Pages, **echte Bahasa-Content kommt in Phase 1**
-
-**Inventar aktuell:**
-- Total HTML: 608 Files (vorher 410)
-- Branch online: https://github.com/scafa-assistant/mapraiders/tree/phase-marathon
+**Letzte Session:** 2026-05-05
+**Status:** ✅ Phase 1 komplett, **alles LIVE auf https://mapraiders.com**
+**Aktiver Branch:** `master` (phase-marathon merged + gepusht)
 
 ---
 
-## 🚧 OFFEN — Phase 1: 240 Killer-URLs mit Content
+## ✅ ABGESCHLOSSEN — Phase 1 (240 Killer-URLs)
 
-**Was es ist:** Pro Sprache 15 echte Pages mit lokalisiertem Content gemäß den Final-Master-Plans. Total 16 × 15 = 240 Pages.
+### Sessions
 
-**Pro Killer-Page (1 von 7):**
-- Title (60 chars / CJK 30-35), Meta (155 chars), H1, Trigger-Satz
-- 8 Sektionen Body (Hero, Definition, Vergleich-Tabelle, Persona, Tester, Founder, FAQ, CTA)
-- 5 lokalisierte FAQ-Antworten (FAQPage Schema)
-- 5 Internal Links mit Killer-Anchor-Text
-- Vollständiger Schema-Stack (MobileApplication + Review × 3 + AggregateRating + Person + Organization + DefinedTermSet + BreadcrumbList)
-
-**Pro Twin-Page (1 von 7):** Kürzere Page, AggregateRating + 3 Tester-Cards fokussiert.
-
-**Hub-Page (1):** Sammelseite mit allen 14 Killer + Twins.
-
-### Realistischer Phase-1-Plan (5 Sessions)
-
-| Session | Sprachen | Markt-Tier | Aufwand |
+| Session | Sprachen | Pages | Commit |
 |---|---|---|---|
-| **1** | DE, EN | 1+1 (Heimat + Volumen-King) | ~4h |
-| **2** | JA, KO, PT-BR, TR | 1×4 (Tier-1 Rest) | ~5h |
-| **3** | ES-MX, EN-IN, ID, AR | 2×4 (Tier-2 Rest) | ~4h |
-| **4** | FR, IT, ZH-TW, HI | 2×4 (Tier-2 EU+ASIA) | ~4h |
-| **5** | RU, ZH-CN | 3×2 (Diaspora) | ~2h |
+| **1** | DE, EN | 30 | `ad3623f` |
+| **2** | JA, KO, PT-BR, TR | 60 | `d597510` |
+| **3** | ES-MX, EN-IN, ID, AR | 60 | `0f2e098` |
+| **4** | FR, IT, ZH-TW, HI | 60 | `c5c49bf` |
+| **5** | RU, ZH-CN | 30 | `3ff9032` |
+| **Final-Merge** | → master | — | `b83d66f` |
+| **Sitemap-Phase1** | + GSC-Submission-Liste | — | `f9f149c` |
 
-**Total ~19h Content-Engineering.** Spec-Material liegt vor in den 16 `02_*_FINAL_MASTER_PLAN.md`-Dateien.
+### Inventar Live
+
+- **240 Killer-URLs** = 7 Killer + 7 Twins + 1 Hub × 16 Sprachen
+- **Schema-Stack komplett** pro Page: WebPage + BreadcrumbList + MobileApplication+Offers+AggregateRating + Organization + Person + Review × 3 + FAQPage + DefinedTermSet + ItemList (Hub)
+- **Translation-Chain:** alle 240 → DE-Original via `translationOfWork`
+- **hreflang:** 16 Sprachen + x-default auf jeder Page
+- **Founder-Block + 3 Tester-Cards** (Ron C. / Vivian N. / Aljoscha P., Pill-Label lokalisiert)
+- **Lang-Switcher** in Nav mit 13+ Sprachen
+- **Lokale Sharing-Buttons** pro Markt: WhatsApp (DE/PT-BR/ES-MX/IT/FR/ID/AR/HI), Telegram (RU primär), VK (RU), KakaoStory (KO), LINE (ZH-TW), 微信/微博/QQ (ZH-CN), Mastodon (FR), ShareChat (HI)
+
+### Generator-Skripte
+
+```
+docs/_build_phase1_de.py     docs/_build_phase1_en.py
+docs/_build_phase1_ja.py     docs/_build_phase1_ko.py
+docs/_build_phase1_ptbr.py   docs/_build_phase1_tr.py
+docs/_build_phase1_esmx.py   docs/_build_phase1_enin.py
+docs/_build_phase1_id.py     docs/_build_phase1_ar.py
+docs/_build_phase1_fr.py     docs/_build_phase1_it.py
+docs/_build_phase1_zhtw.py   docs/_build_phase1_hi.py
+docs/_build_phase1_ru.py     docs/_build_phase1_zhcn.py
+docs/_gen_sitemap_phase1.py
+```
+
+Alle idempotent — re-runnable. Pro Sprache eine Daten-Struktur (URLs/Trigger/FAQ/Tester/Founder), zentrale Template-/Schema-/Renderer-Funktionen.
+
+### Markt-Hooks Highlights
+
+- **DE:** Saudi-PIF-Frame stark (DSGVO-Bewusstsein), Schnitzeljagd-Cultural-Anchor (Actionbound-Hijack)
+- **EN:** Niantic-Refugee-Frame, Zenly-Vakuum-Hijack, Listicle-Position auf "games like pokemon go"
+- **JA:** DQW-Komplement, kein Saudi-Bashing (JP-Polite-Tone)
+- **KO:** KakaoStory-Sharing, 무과금-Frame
+- **PT-BR:** Anti-Fake-GPS K4 (BR-EXKLUSIV), MX-Vokabular-Trennung
+- **TR:** Anti-Fake-GPS K4 (TR-EXKLUSIV), KVKK-Frame, WhatsApp-Native
+- **ES-MX:** K7 colonia (MX-EXKLUSIV, NICHT vecindario), Día-de-Muertos respektvoll
+- **EN-IN:** UK-Spelling, K4 low-end-android + K7 cricket-fan-map (IN-EXKLUSIV), Hindi-Code-Switching
+- **ID:** K4 Koin-Jagat-Alternative + K7 Ramadan (ID-EXKLUSIV), Mecca/Medina-Filter, echte Bahasa-Content
+- **AR:** RTL-Layout, K3 Mukamil-Frame statt Saudi-Bashing (PIF-Acquisition!), K4 Ramadan + K7 Vision-2030 (AR-EXKLUSIV)
+- **FR:** K4 Saudi-Frame + K7 Woog-Hijack (Woog fermé 2018, FR-EXKLUSIV), CNIL/RGPD, Mastodon-Sharing
+- **IT:** K4 Saudi + K6 Caccia-Volume-King (6-10K) + K7 GaiaSmart-Komplement, Familien-Frame
+- **ZH-TW:** Traditional-Body via dedizierter Build (kein zhconv-Skelett), K4 沙特問題 (Demokratie-Differenzierung), K5 夜市 + K7 香港行山 (HK-EXKLUSIV mit HK-Code-Switching), LINE
+- **HI:** Devanagari + Hinglish, K4 Mohalla-Cultural-Hook + K7 Cricket-IPL (HI-EXKLUSIV), Noto Sans Devanagari, ShareChat
+- **RU:** Sanktions-aware, K3 Refugee-Frame + K4 Draconius-Komplement (RU-EXKLUSIV), Telegram dominant
+- **ZH-CN:** Mainland-sensitive (KEIN Saudi/Hong-Kong/Anti-Authoritarian), K4 Anti-VPN technisch + K7 Tencent-Komplement (CN-EXKLUSIV), 微信 + 微博 + QQ
 
 ---
 
-## 🔄 So startest du nächste Session
+## 🚧 OFFENE Folge-Aufgaben (nicht-blockierend)
 
-### 1) Branch wieder aufnehmen
+### 1. Founder-Foto upload (kritisch für UX)
+
+`/assets/founder-rene-scafarti.jpg` wird auf 240 Pages referenziert — Datei existiert noch nicht. Upload via SSH:
+
 ```bash
-cd C:\Users\r.scafarti\Desktop\MapRaiders
-git checkout phase-marathon
-git pull
+scp founder.jpg root@159.69.157.42:/opt/mapraiders/docs/assets/founder-rene-scafarti.jpg
 ```
 
-### 2) Status verifizieren
-```bash
-git log --oneline -5  # letzte 5 Commits
-ls docs/pt-br docs/es-mx docs/zh-cn docs/zh-tw docs/en-in docs/id  # alle 6 Migrationen sollten existieren
+Format: 256×256 oder 512×512 quadratisch, JPG, < 100 KB.
+
+### 2. GSC + Bing Webmaster Tools
+
+Submission-Liste: `seo-strategy/GSC_SUBMISSION_LIST.md`
+
+```
+https://mapraiders.com/sitemap-index.xml   ← einreichen in beiden
 ```
 
-### 3) Phase 1 starten — Erste Sprache: DE
+Tag-1-Priority: 10 Volume-Kings (Tag 1), 10 Tier-2 (Tag 2), Rest organisch.
 
-**Spec:** `seo-strategy/implementation/02_DE_FINAL_MASTER_PLAN.md` (56 KB, alle Strings lokalisiert)
+### 3. Stale-Sitemap-Cleanup (low priority)
 
-**Pages zu bauen (15):**
-- 7 Killer-URLs:
-  - `/spiele-wie-pokemon-go.html` (4-6K Volumen)
-  - `/pokemon-go-alternative-kostenlos.html` (800-1.3K)
-  - `/territorium-spiel.html` (existiert — erweitern)
-  - `/standort-spiel.html` (existiert — erweitern)
-  - `/gps-spiel-deutschland.html` (NEU)
-  - `/schnitzeljagd-app.html` (NEU)
-  - `/handyspiel-zum-laufen.html` (NEU)
-- 7 Erfahrungs-Twins (`-erfahrungen.html`)
-- 1 Hub: `/mapraiders-erfahrungen.html`
+`sitemap-de.xml`/`sitemap-pt.xml`/`sitemap-zh.xml`/`sitemap-es.xml` zeigen noch auf Pre-Marathon-Pfade. Nicht blockierend (Phase-1-Sitemap deckt alle 240 neue Pages ab), aber Wartungs-Task.
 
-### 4) Reihenfolge nach Master Overview
+### 4. Decision-Points (Marketing-Brief, nicht Engineering)
 
-DE → EN → JA → KO → PT-BR → TR → ES-MX → EN-IN → ID → AR → FR → IT → ZH-TW → HI → RU → ZH-CN
-
-### 5) Live-Push
-
-**NICHT mergen vor Phase 1 fertig!** Erst wenn alle 240 Pages stehen:
-```bash
-git checkout master
-git merge phase-marathon
-git push
-# Auto-Deploy triggert → ~30 Sekunden bis Live
-```
+- Pricing-Modell final pro Markt
+- iOS-Launch-Datum (aktuell "Q3 2026" in FAQ-Antworten)
+- RU-Sanktions-Anwalt-Review vor RU-Marketing
+- Reddit-Founder-Outreach pro Sprache
+- Discord-Pokémon-GO-Refugees-Outreach pro Sprache
 
 ---
 
-## 🔧 Verfügbare Skripte
+## 📊 Erfolgs-Metriken (6-Monats-Ziele)
 
-```
-docs/_apply_review_translations.py   # Phase 0a (idempotent)
-docs/_apply_pill_label.py             # Phase 0a (idempotent)
-docs/_apply_definedtermset.py         # Phase 0a (idempotent)
-docs/_apply_fonts_preload.py          # Phase 0b (idempotent)
-docs/_apply_sharing_buttons.py        # Phase 0b (idempotent)
-docs/_apply_hreflang_v2.py            # Phase 0b (idempotent)
-docs/_apply_remove_review.py ron|vivian|aljoscha   # Notfall-Tool
-
-docs/_apply_pt_split.py               # Phase 0c (LIVE)
-docs/_apply_es_split.py               # Phase 0c (Branch)
-docs/_apply_zh_split.py               # Phase 0c (Branch, braucht zhconv)
-docs/_apply_en_in_create.py           # Phase 0c (Branch)
-docs/_apply_id_create.py              # Phase 0c (Branch)
-```
-
-Alle Skripte sind idempotent (safe to re-run, wird übersprungen wenn schon ausgeführt).
-
----
-
-## 📦 Deploy-Tools-Snapshot
-
-- **GitHub Repo:** https://github.com/scafa-assistant/mapraiders
-- **Live-Domain:** https://mapraiders.com (Hetzner-VPS zoro)
-- **Auto-Deploy:** GitHub Action triggert auf push to master mit docs/-Änderung
-- **Deploy-Key:** `~/.ssh/mapraiders-deploy/deploy_key` (lokal) + `/root/.ssh/authorized_keys` (zoro)
-- **Deploy-Path auf Server:** `/opt/mapraiders/` (Web-Root: `/opt/mapraiders/docs/`)
-- **nginx-Config:** `/etc/nginx/sites-enabled/mapraiders`
-
----
-
-## ⚠️ Offene Decision-Points (User)
-
-Aus den Final-Master-Plans noch zu entscheiden:
-
-1. **Pricing-Modell** (Cosmetic-IAP $1.99-9.99 + Sub $4.99/mo + Lifetime $99) — pro Markt anpassbar
-2. **iOS-Launch-Datum** für FAQ-Antworten (aktuell "Q3 2026")
-3. **RU-Sanktions-Anwalt-Review** vor RU-Marketing
-4. **Saudi-Hook-Aggressivität** (auf 4 von 7 Pages aktuell)
-5. **Founder-Foto-Asset** (`/assets/founder-rene-scafarti.jpg` muss existieren)
-6. **Google Search Console Re-Submit** nach Migrations + Phase 1
-7. **Pokémon-GO-Refugees-Discord-Outreach** in jeder Sprache
-
----
-
-## 🎯 Erfolgs-Metriken (6-Monats-Ziele)
-
-| Metrik | Tier 1 | Tier 2 | Tier 3 |
+| Metrik | Tier 1 (DE/EN/JA/KO/PT-BR/TR) | Tier 2 (ES-MX/EN-IN/ID/AR/FR/IT/ZH-TW/HI) | Tier 3 (RU/ZH-CN) |
 |---|---|---|---|
 | Top-3 Rankings | 3+ Killer-Keywords | 1+ | 0 (passiv) |
 | Top-10 Rankings | 5-7 Killer | 3-5 | 1-2 |
 | Organischer Traffic | +800-1500% | +500-800% | +100-300% |
 | App-Downloads | +300% | +200% | +50% |
-| Schema.org-Sterne in SERPs | alle Killer | 5+ Killer | Hub |
+| Schema-Sterne in SERPs | alle Killer | 5+ Killer | Hub |
 
 ---
 
-## 📋 Tasks-Status für nächste Session
+## 🚀 Deploy-Infrastruktur
 
-| Task | Status |
+- **GitHub Repo:** https://github.com/scafa-assistant/mapraiders
+- **Live-Domain:** https://mapraiders.com (Hetzner-VPS zoro 159.69.157.42)
+- **Auto-Deploy:** GitHub Action `deploy.yml` triggert auf push to master mit `docs/`-Änderung
+- **SSH-Deploy-Path:** `/opt/mapraiders/` (Web-Root: `/opt/mapraiders/docs/`)
+- **Deploy-Time:** ~13s
+
+---
+
+## 💬 Trigger für nächste Session
+
+| Trigger | Was passiert |
 |---|---|
-| Phase 0a (3 Schema-Skripte) | ✅ |
-| Phase 0b (4 Tech-Skripte) | ✅ |
-| Phase 0c PT-Split (Pilot live) | ✅ |
-| Phase 0c ES-Split | ✅ Branch |
-| Phase 0c ZH-Split | ✅ Branch |
-| Phase 0c EN-IN-Create | ✅ Branch |
-| Phase 0c ID-Create | ✅ Branch |
-| Auto-Deploy Hetzner | ✅ |
-| **Phase 1 — DE Killer-URLs** | ⏳ Session 1 |
-| Phase 1 — EN Killer-URLs | ⏳ Session 1 |
-| Phase 1 — JA/KO/PT-BR/TR | ⏳ Session 2 |
-| Phase 1 — ES-MX/EN-IN/ID/AR | ⏳ Session 3 |
-| Phase 1 — FR/IT/ZH-TW/HI | ⏳ Session 4 |
-| Phase 1 — RU/ZH-CN | ⏳ Session 5 |
-| Final-Merge phase-marathon → master | ⏳ nach Session 5 |
+| "Mach Founder-Foto" | Foto upload via SSH zu Hetzner + verify |
+| "Sitemap-Cleanup" | stale Sprach-Sitemaps regenerieren |
+| "Stand checken" | Rankings-Pull aus Search Console (manuell, dann analysieren) |
+| "Phase 2" | Sub-Pages: City-Pages (Berlin/Mumbai/Tokyo), Niche-Pages, Cluster-Expansion |
+| "Pricing finalisieren" | Decision-Point durchgehen, Pricing-Pages bauen |
 
 ---
 
-## 💬 Bei Wiederaufnahme einfach sagen
-
-> "Mach mit Phase 1 weiter — DE Killer-URLs"
-
-Ich lese diese Datei + den DE Final Master Plan und fang an.
+**Wichtig:** Branch `phase-marathon` ist nach Final-Merge **nicht mehr aktiv**. Alle Folge-Arbeiten direkt auf master oder neue Feature-Branches.
