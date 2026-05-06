@@ -71,7 +71,7 @@ TESTER_RON = {
     "name_de": "Ron C.",
     "role": "Dueño de perro · región de Stuttgart",
     "role_long": "Dueño de perro de la región de Stuttgart (beta cerrada)",
-    "quote": "A mi perro le encanta su paseo — y a mí me encanta que cada paseo haga mi colonia más visible en el mapa. Ya conquisté toda mi calle.",
+    "quote": "A mi perro lo tengo que sacar dos veces al día de todos modos, ahora me llevo el celular y reviso de noche si mi cuadra sigue azul. Suena tonto, pero ya me agarré la costumbre.",
     "date": "2026-03-15",
     "id": "review-ron-c",
 }
@@ -80,7 +80,7 @@ TESTER_VIVIAN = {
     "name_de": "Vivian N.",
     "role": "Corredora · región de Hamburgo",
     "role_long": "Corredora de la región de Hamburgo (beta cerrada)",
-    "quote": "Igual corro todas las mañanas. Con MapRaiders cada ruta tiene un objetivo: mantener territorio o reconquistarlo. Mi motivación cardio explotó.",
+    "quote": "Salgo a correr todas las mañanas, eso ya lo hacía. Pero ahora también defiendo algo. Mi vuelta por el Alster es mía y quiero que siga así. Es raro cuánta disciplina aparece de repente.",
     "date": "2026-03-22",
     "id": "review-vivian-n",
 }
@@ -89,7 +89,7 @@ TESTER_ALJOSCHA = {
     "name_de": "Aljoscha P.",
     "role": "Explorador urbano · región de Berlín",
     "role_long": "Explorador urbano de la región de Berlín (beta cerrada)",
-    "quote": "Dejar Echos y ver quién los encuentra es como una búsqueda del tesoro abierta por toda la ciudad.",
+    "quote": "Dejas un Echo de audio en la entrada de un edificio y tres días después lo encontró alguien que no conoces. Para ser un juego, se siente raramente íntimo.",
     "date": "2026-04-01",
     "id": "review-aljoscha-p",
 }
@@ -97,10 +97,12 @@ ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 # Founder Quote ES-MX (Master-Plan §1.4)
 FOUNDER_QUOTE = (
-    "Era uno de los jugadores frustrados de Pokémon GO. Quería territorio real, no captura "
-    "pasajera de gimnasio. No quería que mis pasos se vendieran a fondos sauditas, sin modelo "
-    "de publicidad, sin suscripción premium obligatoria. Por eso construí MapRaiders. Esta es "
-    "mi cancha de casa — y pronto será la tuya."
+    "Jugué Pokémon GO tres años y en algún punto lo dejé. Lo que me faltaba nunca llegó: "
+    "tierra de verdad, en lugar de gimnasios pasajeros. Cuando en 2025 Pokémon GO pasó a una "
+    "subsidiaria del fondo soberano saudita, supe que el camino de Niantic ya no iba para donde "
+    "a mí me interesaba. Así que construyo MapRaiders por mi cuenta. Sin publicidad, sin presión "
+    "de inversionistas, sin suscripción obligatoria. Mi colonia es mi cancha de casa. La tuya, "
+    "la agarras tú."
 )
 
 # Pricing offers (MXN — Master-Plan §1.1)
@@ -195,7 +197,7 @@ def testers_section_html(testers):
 {cards}
     </div>
     <p style="margin-top:24px;font-size:12px;color:var(--dim);max-width:680px;line-height:1.6">
-      Aviso: Los probadores son participantes internos de la beta cerrada (Alemania). Solo se usa el primer nombre + inicial a petición de los probadores, por motivos de privacidad. Las opiniones se tradujeron del alemán original al español mexicano.
+      Aviso: Los probadores son participantes internos de la beta cerrada (Alemania). Por petición de ellos y por privacidad, usamos solo el primer nombre y la inicial. Los textos se tradujeron del alemán al español mexicano.
     </p>
   </div>
 </section>"""
@@ -220,7 +222,7 @@ def footer_html():
       <a href="/agb.html">Términos</a><a href="/datenschutz.html">Privacidad</a><a href="/impressum.html">Aviso legal</a><a href="/kontakt.html">Contacto</a>
     </div>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Conquista tu colonia de verdad. Un producto de Scafa Investments LLC.</p>
+  <p class="f-copy">&copy; 2026 MapRaiders. Conquista tu colonia de verdad. Scafa Investments LLC.</p>
 </div>
 </footer>
 <script>
@@ -519,7 +521,7 @@ def build_schema_hub(page, all_killers, all_twins):
     item_list = {
         "@type": "ItemList",
         "@id": f"{SITE}{page['slug']}#itemlist",
-        "name": "MapRaiders ES-MX — todas las páginas Killer y de opiniones",
+        "name": "MapRaiders ES-MX: todas las páginas Killer y de opiniones",
         "itemListElement": []
     }
     pos = 1
@@ -581,7 +583,7 @@ def render_internal_links_html(links):
     return f"""<section class="cta-sec">
 <div class="mx">
   <h2 class="rv">Más sobre tu <em>cancha de casa</em></h2>
-  <p class="rv d1">Temas relacionados de MapRaiders:</p>
+  <p class="rv d1">Otros temas alrededor de MapRaiders:</p>
   <div class="links-row rv d2">
 {items}
   </div>
@@ -606,7 +608,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>„{page['trigger']['quote']}"</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
 
     pricing_pill = ""
@@ -685,9 +687,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">Opiniones</div>
-  <h2 class="sec-title rv d1">5,0 de 5 — <em>3 opiniones verificadas de la beta</em></h2>
+  <h2 class="sec-title rv d1">5,0 de 5 con <em>tres opiniones verificadas de la beta</em></h2>
   <div class="prose rv d2">
-    <p>Tres probadores de la beta cerrada — un dueño de perro, una corredora y un explorador urbano — usaron MapRaiders durante varias semanas. Los testimonios siguientes representan personas reales de la beta cerrada (Alemania). Las opiniones se tradujeron del alemán original al español mexicano. Por motivos de privacidad, usamos solo el primer nombre + inicial.</p>
+    <p>Ron pasea a su perro todos los días, Vivian sale a correr en las mañanas, Aljoscha recorre Berlín a pie. Los tres usaron MapRaiders varias semanas dentro de su rutina normal y mandaron retroalimentación en alemán. Por privacidad usamos solo el primer nombre y la inicial. Los textos se tradujeron al español mexicano.</p>
   </div>
 </div>
 </section>"""
@@ -765,7 +767,7 @@ def render_hub_page(page, all_killers, all_twins):
   <div class="sec-label rv">Hub Temático</div>
   <h2 class="sec-title rv d1">Todos los <em>temas de MapRaiders</em> en un solo lugar</h2>
   <div class="prose rv d2">
-    <p>Aquí encuentras las 7 páginas Killer más 7 opiniones detalladas que iluminan a MapRaiders desde diferentes ángulos — desde la comparación con Pokémon GO hasta la app de búsqueda del tesoro, desde el juego de territorio hasta el compañero de carrera. Cada página es independiente; juntas forman el cuadro completo.</p>
+    <p>Aquí están las siete páginas Killer y sus siete relatos de opinión. Cada página mira a MapRaiders desde un ángulo distinto: una vez como alternativa a Pokémon GO, otra como app de búsqueda del tesoro, otra como compañero de carrera. Puedes leer cada página por separado, o irte de tema en tema.</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -776,7 +778,7 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Opiniones en detalle</div>
-  <h2 class="sec-title rv d1">Lo que dicen los probadores en <em>diferentes perspectivas</em></h2>
+  <h2 class="sec-title rv d1">Lo que cuentan los probadores desde <em>perspectivas distintas</em></h2>
   <div class="features-grid">
 {twin_cards}
   </div>
@@ -786,9 +788,9 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Calificación Agregada</div>
-  <h2 class="sec-title rv d1">5,0 de 5 — <em>3 opiniones verificadas de la beta</em></h2>
+  <h2 class="sec-title rv d1">5,0 de 5 con <em>tres opiniones verificadas de la beta</em></h2>
   <div class="prose rv d2">
-    <p>Todas las opiniones provienen de la fase de beta cerrada (febrero–abril de 2026). Tres probadores — un dueño de perro, una corredora y un explorador urbano — pusieron a prueba MapRaiders en sus propias rutas en Stuttgart, Hamburgo y Berlín. Las opiniones aquí mostradas se tradujeron del alemán original y representan personas reales.</p>
+    <p>Las opiniones vienen de la beta cerrada entre febrero y abril de 2026. Ron probó en Stuttgart, Vivian en Hamburgo, Aljoscha en Berlín. Los tres usaron el juego en sus propias rutas, no en un set-up artificial de prueba. Los textos están traducidos del alemán original y corresponden a personas reales.</p>
   </div>
 </div>
 </section>"""
@@ -849,14 +851,14 @@ def render_hub_page(page, all_killers, all_twins):
 K1 = {
     "slug": "/es-mx/alternativa-pokemon-go-gratis.html",
     "breadcrumb": "Alternativa Pokémon GO gratis",
-    "title": "Alternativa Pokémon GO gratis — sin Saudi, sin publicidad",
-    "og_title": "Alternativa Pokémon GO gratis — 100% gratuita, sin Battle Pass",
+    "title": "Alternativa Pokémon GO gratis: sin publicidad, sin fondo saudita",
+    "og_title": "Alternativa Pokémon GO gratis, 100% gratuita y sin Battle Pass",
     "meta": "Alternativa Pokémon GO gratis: MapRaiders es 100% gratuita, sin publicidad, sin Battle Pass. Territorio real para tu colonia, pago con OXXO y MercadoPago.",
     "keywords": "alternativa pokemon go gratis, alternativa pokemon go gratuita, juego gps gratis mexico, sin publicidad, sin battle pass",
     "badge": "Alternativa Pokémon GO",
-    "pricing_pill": "$0 MXN gameplay · Cosmético opcional desde $39 MXN",
-    "h1_html": 'Alternativa Pokémon GO gratis — sin publicidad, <em>sin fake GPS</em>, sin fondo saudita',
-    "lead": "Quien busca una alternativa a Pokémon GO sin Battle Pass, sin la locura del Remote Raid Pass y sin publicidad, normalmente cae en la siguiente trampa premium. MapRaiders lo invierte: el gameplay completo es y sigue siendo gratuito. Sin niveles, sin suscripción obligatoria, sin venta de datos — pago con OXXO, MercadoPago o PayPal para los cosméticos opcionales.",
+    "pricing_pill": "$0 MXN gameplay. Cosmético opcional desde $39 MXN.",
+    "h1_html": 'Alternativa Pokémon GO gratis: sin publicidad, <em>sin fake GPS</em>, sin fondo saudita',
+    "lead": "Quien busca una alternativa a Pokémon GO sin Battle Pass, sin la locura del Remote Raid Pass y sin publicidad, suele caer en la siguiente trampa premium. MapRaiders le da la vuelta: el gameplay completo es y sigue siendo gratuito. Sin niveles, sin suscripción obligatoria, sin venta de datos. Para los cosméticos opcionales pagas con OXXO, MercadoPago o PayPal.",
     "trigger": {
         "quote": "Tu calle, tu territorio. Sin mensualidad.",
         "author": "MapRaiders, principio del juego"
@@ -870,15 +872,15 @@ K1 = {
     <p>Tres puntos de dolor maduraron el mercado mexicano entre 2024 y 2026:</p>
     <ul>
       <li><strong>Frustración con el Battle Pass.</strong> Pases de temporada con beneficios bloqueados sin pagar. Quien se pierde una temporada, pierde recompensas para siempre.</li>
-      <li><strong>Polémica del Remote Raid Pass.</strong> Niantic subió precios y redujo disponibilidad — una ola de jugadores mexicanos se fue en 2023.</li>
-      <li><strong>Adquisición saudita en marzo de 2025.</strong> Niantic vendió Pokémon GO a Scopely (subsidiaria del Public Investment Fund saudita). Los datos de localización de millones de jugadores ahora llegan indirectamente a un fondo soberano extranjero.</li>
+      <li><strong>Polémica del Remote Raid Pass.</strong> Niantic subió precios y redujo disponibilidad. Una ola de jugadores mexicanos se fue en 2023.</li>
+      <li><strong>Adquisición saudita en marzo de 2025.</strong> Niantic vendió Pokémon GO a Scopely, que es una subsidiaria del Public Investment Fund de Arabia Saudita. Desde entonces los datos de localización de millones de jugadores fluyen por la infraestructura de un fondo soberano extranjero.</li>
     </ul>
             """,
         },
         {
             "label": "¿Qué significa gratis?",
             "title": "Qué <em>&ldquo;gratis&rdquo;</em> significa realmente en MapRaiders",
-            "body": "<p>Niveles transparentes — sin paywall escondido, sin bloqueo de tutorial después de 10 minutos:</p>",
+            "body": "<p>Niveles transparentes, sin paywall escondido y sin bloqueo de tutorial después de diez minutos:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Nivel</th><th>Qué incluye</th><th>Precio (MX)</th></tr></thead>
     <tbody>
@@ -892,33 +894,33 @@ K1 = {
         },
         {
             "label": "OXXO + MercadoPago",
-            "title": "Pago <em>con OXXO o MercadoPago</em> — sin tarjeta internacional",
+            "title": "Pago <em>con OXXO o MercadoPago</em>, sin tarjeta internacional",
             "body": """
-    <p>Los cosméticos opcionales y la suscripción Apoyador se pueden pagar con OXXO, MercadoPago, PayPal o tarjeta mexicana — sin necesidad de tarjeta de crédito internacional. OXXO es la forma más sencilla: el sistema te genera un código, lo llevas a la tienda OXXO más cercana, pagas en efectivo y el cosmético se desbloquea en minutos.</p>
+    <p>Los cosméticos opcionales y la suscripción Apoyador se pueden pagar con OXXO, MercadoPago, PayPal o tarjeta mexicana, sin necesidad de tarjeta de crédito internacional. OXXO es la forma más sencilla: el sistema te genera un código, lo llevas a la tienda OXXO más cercana, pagas en efectivo y el cosmético se desbloquea en minutos.</p>
     <p>Proveedores integrados: Stripe MX, MercadoPago, PayPal, dLocal. Sin recargo extra para el jugador, sin obligación de tarjeta gringa.</p>
             """,
         },
         {
             "label": "La cuestión saudita",
-            "title": "La <em>cuestión Saudi-Niantic</em> — ¿qué pasa con tus pasos?",
+            "title": "La <em>cuestión Saudi-Niantic</em>: ¿qué pasa con tus pasos?",
             "body": """
-    <p>En marzo de 2025, Niantic vendió su división de juegos (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) por 3,500 millones de dólares a Scopely. Scopely es una subsidiaria del Public Investment Fund (PIF) de Arabia Saudita — formalmente una entidad controlada por el estado saudita.</p>
-    <p>Concretamente significa: los <strong>datos de localización de aproximadamente 30 millones de jugadores mensuales de Pokémon GO</strong> — dónde corren, cuándo pasean al perro, qué rutas recorren todos los días — ahora son procesados por la infraestructura de Scopely. Los detalles de las transferencias de datos no son públicamente divulgados. Lo que está claro: no hay protección equivalente a la LFPDPPP contra actores ligados a fondos soberanos fuera de México.</p>
+    <p>En marzo de 2025, Niantic vendió su división de juegos (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) por 3,500 millones de dólares a Scopely. Scopely es una subsidiaria del Public Investment Fund (PIF) de Arabia Saudita, es decir, formalmente una entidad controlada por el estado saudita.</p>
+    <p>En concreto significa lo siguiente. Los <strong>datos de localización de unos 30 millones de jugadores mensuales de Pokémon GO</strong> (dónde corren, cuándo pasean al perro, qué rutas recorren cada día) ahora pasan por la infraestructura de Scopely. Los detalles de las transferencias de datos no se han hecho públicos. Lo que sí queda claro: fuera de México no aplica una protección equivalente a la LFPDPPP frente a actores ligados a fondos soberanos.</p>
     <p>MapRaiders es una LLC de EE.UU. de <strong>propiedad privada</strong> (Scafa Investments LLC, Florida), desarrollada por un equipo independiente. Operamos servidores compatibles con LFPDPPP, no vendemos datos, no tenemos red publicitaria conectada y no estamos controlados por ningún estado.</p>
             """,
         },
     ],
     "faq": [
         {"q": "¿MapRaiders es realmente gratis para siempre?",
-         "a": "Sí. Todo el gameplay principal — conquistar territorios, dejar Echos, crear misiones, formar clanes — sigue siendo gratuito para siempre. No hay sistema de niveles, Battle Pass ni suscripción obligatoria."},
+         "a": "Sí. Todo el gameplay principal (conquistar territorios, dejar Echos, crear misiones, formar clanes) sigue siendo gratuito para siempre. No hay sistema de niveles, Battle Pass ni suscripción obligatoria."},
         {"q": "¿Cuánto cuesta el Cosmético-IAP?",
          "a": "Los items cosméticos como diseños de marcador, colores de territorio o emblemas de clan cuestan entre $39 y $189 MXN. No dan ninguna ventaja en el juego, solo estética. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
         {"q": "¿Puedo pagar con OXXO o MercadoPago?",
          "a": "Sí. OXXO y MercadoPago son las formas estándar de pago en México para cosméticos y la suscripción Apoyador. Eliges OXXO, recibes un código, pagas en efectivo en la tienda y el item se desbloquea en minutos. Sin tarjeta internacional, sin PayPal obligatorio."},
         {"q": "¿Hay publicidad en la app?",
-         "a": "No. MapRaiders es 100% sin publicidad. No vendemos tus datos ni espacio publicitario."},
+         "a": "No. MapRaiders no tiene publicidad. No vendemos tus datos ni espacio publicitario."},
         {"q": "¿Qué significa &ldquo;sin fondo saudita&rdquo;?",
-         "a": "En marzo de 2025, Niantic vendió su división de juegos (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) por 3,500 millones de dólares a Scopely — subsidiaria del Public Investment Fund saudita. Los datos de localización de más de 30 millones de jugadores mensuales ahora llegan indirectamente a un fondo soberano extranjero. MapRaiders es una LLC privada de EE.UU., no controlada por ningún estado."},
+         "a": "En marzo de 2025, Niantic vendió su división de juegos (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) por 3,500 millones de dólares a Scopely, que es una subsidiaria del Public Investment Fund de Arabia Saudita. Los datos de localización de más de 30 millones de jugadores mensuales pasan ahora por la infraestructura de un fondo soberano extranjero. MapRaiders es una LLC privada de EE.UU. y no está controlada por ningún estado."},
     ],
     "internal_links": [
         ("/es-mx/juego-de-gps.html", "Mejor juego de GPS 2026"),
@@ -934,14 +936,14 @@ K1 = {
 K2 = {
     "slug": "/es-mx/juego-de-gps.html",
     "breadcrumb": "Juego de GPS",
-    "title": "Juego de GPS 2026 — territorio real, sin fake GPS",
-    "og_title": "Juego de GPS 2026 — el GPS MMO honesto, gratuito",
+    "title": "Juego de GPS 2026: territorio real, sin fake GPS",
+    "og_title": "Juego de GPS 2026: el GPS MMO honesto y gratuito",
     "meta": "Mejor juego de GPS 2026: MapRaiders es el GPS MMO con territorio real, sin Niantic, sin Saudi, sin trampa. Conquista tu colonia de verdad.",
     "keywords": "juego de gps, juego de gps 2026, mejor juego de gps mexico, gps mmo, juego gps android, location based game",
     "badge": "GPS MMO",
-    "pricing_pill": "Free Forever · LFPDPPP compatible · OXXO integrado",
-    "h1_html": 'Juego de GPS — <em>conquista tu colonia</em> de verdad',
-    "lead": "Los juegos de GPS deberían ser más que puntos efímeros en un mapa. MapRaiders combina GPS, captura persistente de territorio y un sistema de defensa que hace posible la conquista real. Pasas por una calle — es tuya. Mientras la defiendas. Sin fake GPS, sin AR drenando batería, sin publicidad.",
+    "pricing_pill": "Free Forever. LFPDPPP compatible. OXXO integrado.",
+    "h1_html": 'Juego de GPS: <em>conquista tu colonia</em> de verdad',
+    "lead": "Un juego de GPS debería ser más que puntos efímeros en un mapa. MapRaiders combina GPS, captura persistente de territorio y un sistema de defensa que permite la conquista real. Pasas por una calle y es tuya, mientras la defiendas. Sin fake GPS, sin AR drenando batería, sin publicidad.",
     "trigger": {
         "quote": "Conquista tu colonia.",
         "author": "MapRaiders, principio de marca"
@@ -952,14 +954,14 @@ K2 = {
             "label": "¿Qué es?",
             "title": "Qué es un <em>juego de GPS</em>",
             "body": """
-    <p>Un <strong>juego de GPS (Location-Based Game)</strong> usa la posición geográfica del dispositivo como mecánica central. A diferencia de los juegos AR, que necesitan adicionalmente la cámara, un juego puro de GPS funciona solo con el mapa — ahorrando batería del celular y protegiendo la privacidad.</p>
-    <p>MapRaiders es un <strong>GPS MMO</strong>: miles de jugadores se mueven simultáneamente en el mismo mapa, compiten en tiempo real y comparten un sistema unificado de territorios. Sin AR, sin cámara, sin lentes VR.</p>
+    <p>Un <strong>juego de GPS (Location-Based Game)</strong> usa la posición geográfica del dispositivo como mecánica central. A diferencia de los juegos AR, que además necesitan la cámara, un juego puro de GPS funciona solo con el mapa. Eso ahorra batería del celular y protege la privacidad.</p>
+    <p>MapRaiders es un <strong>GPS MMO</strong>: miles de jugadores se mueven al mismo tiempo en el mismo mapa, compiten en tiempo real y comparten un sistema unificado de territorios. Sin AR, sin cámara, sin lentes VR.</p>
             """,
         },
         {
             "label": "Los 7 mejores",
-            "title": "Los 7 mejores juegos de GPS comparados — y por qué <em>MapRaiders</em> es el único con territorio real",
-            "body": "<p>La mayoría de listas mete junto apps que solo comparten una característica con Pokémon GO. Aquí va honesto:</p>",
+            "title": "Los 7 mejores juegos de GPS comparados, y por qué <em>MapRaiders</em> es el único con territorio real",
+            "body": "<p>La mayoría de listas mete junto apps que solo comparten una característica con Pokémon GO. Una versión más honesta:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead>
       <tr><th>App</th><th>Operadora</th><th>Sin publicidad</th><th>Territorio real</th><th>Confianza LFPDPPP</th></tr>
@@ -977,14 +979,14 @@ K2 = {
         },
         {
             "label": "Diferencial",
-            "title": "Lo que hace a MapRaiders <em>único</em>",
+            "title": "Lo que hace a MapRaiders <em>distinto</em>",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Territorios persistentes</h3><p>Al conquistar una calle, es tuya — hasta que alguien la recapture o el decay actúe. Sin gimnasios pasajeros.</p></div>
+    <div class="feat-card rv"><h3>Territorios persistentes</h3><p>Al conquistar una calle, es tuya, hasta que alguien la recapture o el decay actúe. Sin gimnasios pasajeros.</p></div>
     <div class="feat-card rv d1"><h3>Echos en lugar de AR</h3><p>Deja Echos de audio, foto o video en lugares reales. Otros jugadores los descubren. Sin AR drenando batería.</p></div>
-    <div class="feat-card rv d2"><h3>7 mini-juegos de defensa</h3><p>En ataques: gato, piedra-papel-tijera o mini-ajedrez. Estrategia en lugar de solo tiempo.</p></div>
-    <div class="feat-card rv d3"><h3>Clanes orgánicos</h3><p>Los clanes surgen de la colonia, no de servidores Discord. Quien corre en la misma calle se vuelve aliado.</p></div>
-    <div class="feat-card rv d4"><h3>Batería ahorrada</h3><p>Solo GPS, sin cámara, sin AR. 4× más autonomía de batería que Pokémon GO en rutas largas.</p></div>
+    <div class="feat-card rv d2"><h3>Siete mini-juegos de defensa</h3><p>En ataques: gato, piedra-papel-tijera o mini-ajedrez. Cuenta más la estrategia que el tiempo invertido.</p></div>
+    <div class="feat-card rv d3"><h3>Clanes orgánicos</h3><p>Los clanes salen de la colonia, no de servidores Discord. Quien corre la misma calle se vuelve aliado.</p></div>
+    <div class="feat-card rv d4"><h3>Batería ahorrada</h3><p>Solo GPS, sin cámara, sin AR. En rutas largas el celular dura unas cuatro veces más que con Pokémon GO.</p></div>
   </div>""",
         },
         {
@@ -992,24 +994,24 @@ K2 = {
             "title": "Casos de uso <em>mexicanos</em>",
             "body": "<p>MapRaiders se adapta a cuatro perfiles principales en México:</p>",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Pasear el perro</h3><p>Más de 20 millones de perros en México — la vuelta diaria se vuelve mantenimiento de territorio.</p></div>
-    <div class="feat-card rv d1"><h3>Carrera matutina</h3><p>Cardio con objetivo: defender territorio o reconquistarlo. Strava + juego.</p></div>
-    <div class="feat-card rv d2"><h3>Marcar Día de Muertos</h3><p>Marca las ofrendas más bonitas de tu colonia. Eventos de temporada MX-exclusivos (muy respetuoso).</p></div>
-    <div class="feat-card rv d3"><h3>Actividad familiar</h3><p>Búsqueda del tesoro con Echos, sin AR, sin publicidad — para niños y adultos.</p></div>
+    <div class="feat-card rv"><h3>Pasear al perro</h3><p>En México hay más de 20 millones de perros. La vuelta diaria se vuelve mantenimiento de territorio.</p></div>
+    <div class="feat-card rv d1"><h3>Carrera matutina</h3><p>Cardio con un objetivo concreto: defender territorio o reconquistarlo. Strava más juego.</p></div>
+    <div class="feat-card rv d2"><h3>Día de Muertos</h3><p>Marca las ofrendas comunitarias de tu colonia. Eventos de temporada MX, tratados con el respeto que la tradición merece.</p></div>
+    <div class="feat-card rv d3"><h3>Actividad familiar</h3><p>Búsqueda del tesoro con Echos, sin AR ni publicidad. Para niños y adultos.</p></div>
   </div>""",
         },
     ],
     "faq": [
         {"q": "¿Qué es un juego de GPS?",
-         "a": "Un juego de GPS (Location-Based Game) usa tu posición GPS para activar mecánicas de juego. MapRaiders usa GPS para vincular territorios, Echos y misiones a lugares reales — tu ciudad se vuelve el campo de juego."},
+         "a": "Un juego de GPS (Location-Based Game) usa tu posición GPS para activar mecánicas de juego. MapRaiders ata territorios, Echos y misiones a lugares reales: tu ciudad se vuelve el campo de juego."},
         {"q": "¿Necesito Realidad Aumentada?",
-         "a": "No. MapRaiders es deliberadamente AR-free. Usa solo GPS y el mapa. Esto ahorra batería y privacidad — sin cámara, sin captura facial."},
+         "a": "No. MapRaiders está construido a propósito sin AR. Usa solo GPS y el mapa. Eso ahorra batería y cuida tu privacidad: sin cámara, sin captura facial."},
         {"q": "¿Funciona en cualquier ciudad de México?",
-         "a": "Sí. En cualquier lugar con datos OpenStreetMap. En centros urbanos como CDMX, Guadalajara y Monterrey la densidad de jugadores es alta; en provincia, menos competencia pero territorios más grandes."},
+         "a": "Sí, en cualquier lugar con datos OpenStreetMap. En centros urbanos como CDMX, Guadalajara y Monterrey la densidad de jugadores es alta. En provincia hay menos competencia pero territorios más grandes."},
         {"q": "¿Mis datos de localización se venden?",
-         "a": "No. Somos compatibles con la LFPDPPP, sin SDK de publicidad, sin venta de datos, sin dueño estatal. A diferencia de Pokémon GO, que desde marzo de 2025 pertenece al grupo Scopely (PIF saudita)."},
+         "a": "No. Somos compatibles con la LFPDPPP, sin SDK de publicidad, sin venta de datos, sin dueño estatal. A diferencia de Pokémon GO, que desde marzo de 2025 pertenece al grupo Scopely, una subsidiaria del fondo soberano saudita."},
         {"q": "¿Cuánto cuesta?",
-         "a": "El gameplay es gratuito. Cosméticos ($39 – $189 MXN) no dan ventajas en el juego, solo estética. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
+         "a": "El gameplay es gratuito. Los cosméticos cuestan entre $39 y $189 MXN y no dan ventajas en el juego, solo estética. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
     ],
     "internal_links": [
         ("/es-mx/alternativa-pokemon-go-gratis.html", "Alternativa Pokémon GO gratis"),
@@ -1027,14 +1029,14 @@ K2 = {
 K3 = {
     "slug": "/es-mx/juego-de-territorio.html",
     "breadcrumb": "Juego de territorio",
-    "title": "Juego de territorio — la única app donde la tierra es tuya",
-    "og_title": "Juego de territorio — donde la tierra es realmente tuya",
+    "title": "Juego de territorio: la app donde la tierra es de verdad tuya",
+    "og_title": "Juego de territorio: donde la tierra es realmente tuya",
     "meta": "¿Qué es juego de territorio? MapRaiders es el único GPS MMO con posesión real y persistente de mapas. Sin fake GPS, sin suscripción, AR-free.",
     "keywords": "juego de territorio, juego de territorios, conquistar territorio app, territory game mexico, juego gps territorio",
     "badge": "Juego de Territorio",
-    "pricing_pill": "Gratuito · Cosmético opcional",
-    "h1_html": 'Juego de territorio — el único donde la <em>tierra es realmente tuya</em>',
-    "lead": "Un juego de territorio debería ser más que un punto en un mapa que se desvanece en 5 minutos. MapRaiders combina GPS, captura persistente de área y un sistema de defensa que hace posible la conquista real. Caminas por una calle — es tuya. Mientras la defiendas.",
+    "pricing_pill": "Gratuito. Cosmético opcional.",
+    "h1_html": 'Juego de territorio: la app donde la <em>tierra es realmente tuya</em>',
+    "lead": "Un juego de territorio debería ser más que un punto en un mapa que desaparece en cinco minutos. MapRaiders combina GPS, captura persistente de área y un sistema de defensa que permite una conquista real. Caminas por una calle y es tuya, mientras la defiendas.",
     "trigger": {
         "quote": "Tu calle, tu territorio. Sin mensualidad.",
         "author": "MapRaiders, principio de marca"
@@ -1045,13 +1047,13 @@ K3 = {
             "label": "Definición",
             "title": "Qué hace un <em>juego de territorio de verdad</em>",
             "body": """
-    <p><strong>Un juego de territorio</strong> es un juego donde los jugadores poseen áreas reclamadas en el mapa de forma persistente, defienden y expanden esas áreas. A diferencia de los juegos de captura (gimnasio, portal), la posesión permanece <strong>persistente</strong> — incluso cuando el jugador está offline.</p>
+    <p><strong>Un juego de territorio</strong> es un juego donde los jugadores poseen áreas reclamadas en el mapa de forma persistente, las defienden y las expanden. A diferencia de los juegos de captura (gimnasio, portal), la posesión sigue siendo <strong>persistente</strong> incluso cuando el jugador está offline.</p>
     <p>Las cuatro mecánicas que definen un juego de territorio real:</p>
     <ul>
       <li><strong>Persistencia.</strong> Las áreas conquistadas quedan asignadas al jugador o clan hasta ser tomadas activamente.</li>
-      <li><strong>Decay.</strong> Los territorios inactivos se encogen con el tiempo — nadie bloquea permanentemente sin jugar activamente.</li>
-      <li><strong>Defensa.</strong> En el ataque, un mini-juego entre los dos jugadores decide — no comparación automática de stats.</li>
-      <li><strong>Transferencias de clan.</strong> Los territorios pueden pasarse a aliados o al clan — profundidad económica.</li>
+      <li><strong>Decay.</strong> Los territorios inactivos se encogen con el tiempo. Nadie bloquea permanentemente sin jugar activamente.</li>
+      <li><strong>Defensa.</strong> En el ataque decide un mini-juego entre los dos jugadores, no una comparación automática de stats.</li>
+      <li><strong>Transferencias de clan.</strong> Los territorios pueden pasarse a aliados o al clan, lo que abre profundidad económica.</li>
     </ul>
             """,
         },
@@ -1060,33 +1062,33 @@ K3 = {
             "title": "El <em>sistema de territorios</em> de MapRaiders en detalle",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Reclamar</h3><p>Camina, pasea al perro o pedalea por una calle. La huella GPS genera el territorio a tu nombre — como polígono visible en el mapa.</p></div>
-    <div class="feat-card rv d1"><h3>Decay Engine</h3><p>Quien no recorre regularmente un territorio lo ve encogerse algunos puntos por día. Actividad mantiene la tierra — no dinero.</p></div>
-    <div class="feat-card rv d2"><h3>Mini-juegos de defensa</h3><p>7 mini-juegos diferentes deciden los ataques: gato, piedra-papel-tijera, mini-ajedrez. La estrategia cuenta más que el tiempo de juego.</p></div>
-    <div class="feat-card rv d3"><h3>Territorios de clan</h3><p>Varios jugadores pueden mantener un territorio juntos. Las áreas de clan son más robustas — un solo atacante no basta para romper.</p></div>
+    <div class="feat-card rv"><h3>Reclamar</h3><p>Camina, pasea al perro o agarra la bici por una calle. La huella GPS genera el territorio a tu nombre, visible como polígono en el mapa.</p></div>
+    <div class="feat-card rv d1"><h3>Decay Engine</h3><p>Quien no recorre seguido un territorio lo ve encogerse unos puntos por día. La actividad mantiene la tierra, no el dinero.</p></div>
+    <div class="feat-card rv d2"><h3>Mini-juegos de defensa</h3><p>Siete mini-juegos distintos deciden los ataques: gato, piedra-papel-tijera, mini-ajedrez. La estrategia cuenta más que el tiempo de juego.</p></div>
+    <div class="feat-card rv d3"><h3>Territorios de clan</h3><p>Varios jugadores pueden mantener un territorio juntos. Las áreas de clan son más robustas: un solo atacante no basta para romperlas.</p></div>
   </div>""",
         },
         {
             "label": "Por qué otros no lo son",
             "title": "Por qué Pokémon GO e Ingress <em>no son</em> juegos de territorio de verdad",
             "body": """
-    <p><strong>Las capturas de gimnasio de Pokémon GO</strong> son pasajeras: quien mantiene un récord por algunas horas gana monedas — pero el territorio en sí no puede entenderse como posesión de tierra. El gimnasio es un punto, no un área.</p>
-    <p><strong>Los portales de Ingress</strong> son similares: puntos que se conectan por enlaces en triángulos. El juego conoce campos entre portales, pero no posesión persistente de tierra. Quien pasa una semana sin abrir la app no pierde &ldquo;su colonia&rdquo; — nunca le fue asignada de verdad.</p>
-    <p>MapRaiders ataca exactamente ese punto: el <strong>territorio es el recurso del juego</strong>, no el punto sobre él. Ganas tierra, pierdes tierra, transfieres tierra — como en un juego espacial real.</p>
+    <p><strong>Las capturas de gimnasio de Pokémon GO</strong> son pasajeras. Quien mantiene un récord por algunas horas gana monedas, pero el territorio mismo no se puede entender como posesión de tierra. El gimnasio es un punto, no un área.</p>
+    <p><strong>Los portales de Ingress</strong> funcionan parecido: puntos que se conectan por enlaces formando triángulos. El juego conoce campos entre portales, pero no una posesión persistente de tierra. Quien pasa una semana sin abrir la app no pierde &ldquo;su colonia&rdquo;, porque nunca le fue asignada de verdad.</p>
+    <p>MapRaiders ataca justo ese punto. El <strong>territorio es el recurso del juego</strong>, no el punto sobre él. Ganas tierra, pierdes tierra, transfieres tierra. Como en un juego espacial real.</p>
             """,
         },
     ],
     "faq": [
         {"q": "¿Cómo funciona el sistema de territorios en MapRaiders?",
-         "a": "Caminas físicamente por calles y reclamas áreas GPS. Esos territorios aparecen en el mapa en vivo y son tuyos — mientras ningún otro jugador pase por ahí y te desafíe. Si defiendes con éxito, el área permanece tuya."},
+         "a": "Caminas físicamente por calles y reclamas áreas GPS. Esos territorios aparecen en el mapa en vivo y son tuyos mientras ningún otro jugador pase por ahí y te desafíe. Si defiendes con éxito, el área sigue siendo tuya."},
         {"q": "¿Puedo perder mi territorio?",
-         "a": "Sí. El sistema de Decay hace que las áreas inactivas se encojan por día. Quien permanece activo y recorre regularmente su área la mantiene. Quien para, pierde. Esto mantiene el mapa vivo."},
+         "a": "Sí. El sistema de Decay hace que las áreas inactivas se encojan día con día. Quien sigue activo y recorre regularmente su área la mantiene. Quien para, pierde. Así el mapa se queda vivo."},
         {"q": "¿Qué pasa en un ataque territorial?",
-         "a": "El atacante necesita llegar físicamente a tu territorio. Entonces empieza un mini-juego interactivo — defensor y atacante juegan uno contra el otro. Quien gane el mini-juego decide el destino del área."},
+         "a": "El atacante necesita llegar físicamente a tu territorio. Ahí empieza un mini-juego interactivo entre defensor y atacante. Quien gane el mini-juego decide el destino del área."},
         {"q": "¿Existe sistema de territorios de clan?",
-         "a": "Sí. Los clanes en MapRaiders surgen orgánicamente y pueden reclamar territorios juntos. Las áreas de clan son más fuertes y necesitan varios atacantes para romperse. Trabajo en equipo vale la pena."},
+         "a": "Sí. Los clanes en MapRaiders surgen orgánicamente y pueden reclamar territorios juntos. Las áreas de clan son más fuertes y hacen falta varios atacantes para romperlas. El trabajo en equipo vale la pena."},
         {"q": "¿El juego de territorio cobra algo?",
-         "a": "No. Todo el gameplay de territorio es gratuito. Opcionalmente hay items cosméticos ($39 – $189 MXN) para diseños de marcador y colores de territorio — sin ventajas en el juego. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
+         "a": "No. Todo el gameplay de territorio es gratuito. Hay items cosméticos opcionales (entre $39 y $189 MXN) para diseños de marcador y colores de territorio, sin ventajas en el juego. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
     ],
     "internal_links": [
         ("/es-mx/juego-de-gps.html", "Mejor juego de GPS 2026"),
@@ -1101,14 +1103,14 @@ K3 = {
 K4 = {
     "slug": "/es-mx/pokemon-go-sin-fake-gps.html",
     "breadcrumb": "Pokémon GO sin fake GPS",
-    "title": "Pokémon GO sin fake GPS — alternativa honesta MX",
-    "og_title": "Pokémon GO sin fake GPS — donde caminar es el juego",
-    "meta": "¿Pokémon GO sin fake GPS? MapRaiders es la alternativa honesta — sin cheat, sin PGSharp, sin MocPOGO. Aquí caminar es el juego, no hacer trampa.",
+    "title": "Pokémon GO sin fake GPS: alternativa honesta para MX",
+    "og_title": "Pokémon GO sin fake GPS: donde caminar es el juego",
+    "meta": "¿Pokémon GO sin fake GPS? MapRaiders es la alternativa honesta: sin cheat, sin PGSharp, sin MocPOGO. Aquí caminar es el juego, no hacer trampa.",
     "keywords": "pokemon go sin fake gps, alternativa pokemon go sin cheat, sin pgsharp, sin mocpogo, sin imyfone, juego gps honesto",
     "badge": "Anti-Cheat · MX",
-    "pricing_pill": "Sin fake GPS · Sin PGSharp · Sin MocPOGO",
-    "h1_html": 'Pokémon GO sin fake GPS — donde <em>caminar es el juego</em>',
-    "lead": "Quien juega Pokémon GO en México conoce el problema: PokéParadas concentradas solo en centros, falta de spawns en la colonia, raids sin nadie. La solución de muchos se volvió fake GPS — PGSharp, MocPOGO, iMyFone. Pero hacer trampa es cansado, riesgoso (baneo) y mata el sentido del juego. MapRaiders elimina la necesidad de fake GPS porque el territorio está en cualquier lugar con señal GPS. Aquí caminar es el juego.",
+    "pricing_pill": "Sin fake GPS, sin PGSharp, sin MocPOGO.",
+    "h1_html": 'Pokémon GO sin fake GPS: donde <em>caminar es el juego</em>',
+    "lead": "Quien juega Pokémon GO en México conoce el problema. PokéParadas concentradas solo en los centros, pocos spawns en la colonia, raids sin nadie. La salida de muchos terminó siendo el fake GPS: PGSharp, MocPOGO, iMyFone. Pero hacer trampa cansa, te arriesgas a un baneo y le quita el sentido al juego. MapRaiders elimina la necesidad de fake GPS porque el territorio está donde haya señal GPS. Aquí caminar es el juego.",
     "trigger": {
         "quote": "Sin fake GPS. Aquí caminar es el juego.",
         "author": "MapRaiders, principio anti-cheat"
@@ -1119,12 +1121,12 @@ K4 = {
             "label": "El problema",
             "title": "Por qué jugadores de Pokémon GO en México <em>buscan fake GPS</em>",
             "body": """
-    <p>El mercado negro mexicano de cheats para Pokémon GO es grande y activo — no por flojera de los jugadores, sino por problemas estructurales del juego en México:</p>
+    <p>El mercado negro mexicano de cheats para Pokémon GO es grande y activo, no por flojera de los jugadores sino por problemas estructurales del juego en México:</p>
     <ul>
-      <li><strong>Densidad desigual de PokéStops.</strong> CDMX tiene más de 100,000 puntos marcados; en colonias periféricas, ciudades pequeñas y zonas rurales, faltan puntos para jugar.</li>
-      <li><strong>Raids sin participantes.</strong> En horario laboral, las raids quedan vacías — sin equipo, sin captura. El fake GPS lleva al jugador virtualmente al centro donde hay gente.</li>
-      <li><strong>Eventos centralizados.</strong> Tour Pokémon GO 2026, LATAM Championships en CDMX. Quien vive lejos, queda fuera — o usa fake GPS.</li>
-      <li><strong>Costos acumulados.</strong> Battle Pass, Remote Raid Pass, incubadoras. Hacer trampa se vuelve atajo financiero tentador.</li>
+      <li><strong>Densidad desigual de PokéStops.</strong> CDMX tiene más de 100,000 puntos marcados; en colonias periféricas, ciudades pequeñas y zonas rurales faltan puntos para jugar.</li>
+      <li><strong>Raids sin participantes.</strong> En horario laboral las raids quedan vacías, sin equipo y sin captura. El fake GPS lleva al jugador virtualmente al centro donde hay gente.</li>
+      <li><strong>Eventos centralizados.</strong> Tour Pokémon GO 2026, LATAM Championships en CDMX. Quien vive lejos queda fuera, o se va al fake GPS.</li>
+      <li><strong>Costos acumulados.</strong> Battle Pass, Remote Raid Pass, incubadoras. Hacer trampa se vuelve un atajo financiero tentador.</li>
     </ul>
             """,
         },
@@ -1134,16 +1136,16 @@ K4 = {
             "body": """
     <p>Cuatro cambios estructurales hacen inútil al fake GPS en MapRaiders:</p>
     <ul>
-      <li><strong>El territorio está en cualquier lugar.</strong> Sin dependencia de puntos pre-definidos. Cada calle, cada cuadra, cada parque es territorio potencial.</li>
-      <li><strong>Persistencia supera presencia.</strong> No necesitas estar &ldquo;donde están los demás&rdquo;. Quien corre todas las mañanas en la misma calle, posee esa calle. Defensa activa &gt; spawn farming.</li>
-      <li><strong>Los Echos abren cualquier rincón.</strong> Dejas Echos donde quieras; otros jugadores los descubren. Tus calles se vuelven destino — no periferia.</li>
-      <li><strong>Mini-juegos de defensa &gt; presencia horaria.</strong> No necesitas &ldquo;estar ahí ahora&rdquo; — cuando alguien ataca tu territorio, juegas el mini-juego defensivo donde estés.</li>
+      <li><strong>El territorio está en cualquier lugar.</strong> No depende de puntos predefinidos. Cada calle, cada cuadra y cada parque puede ser territorio.</li>
+      <li><strong>La persistencia supera a la presencia.</strong> No necesitas estar &ldquo;donde está la bola&rdquo;. Quien corre todas las mañanas la misma calle, esa calle es suya. La defensa activa pesa más que el spawn farming.</li>
+      <li><strong>Los Echos abren cualquier rincón.</strong> Dejas Echos donde quieras y otros jugadores los descubren. Tus calles se vuelven destino, no periferia.</li>
+      <li><strong>Los mini-juegos de defensa ganan a la presencia horaria.</strong> No necesitas &ldquo;estar ahí ahora&rdquo;: cuando alguien ataca tu territorio, juegas el mini-juego defensivo desde donde estés.</li>
     </ul>
             """,
         },
         {
             "label": "Lista de cheats",
-            "title": "Lista de cheats — y por qué son <em>innecesarios</em>",
+            "title": "Lista de cheats y por qué son <em>innecesarios</em>",
             "body": "",
             "extra": """  <table class="comp-table rv d2">
     <thead>
@@ -1162,15 +1164,15 @@ K4 = {
     ],
     "faq": [
         {"q": "¿MapRaiders detecta fake GPS?",
-         "a": "Sí. Detectamos fake GPS, joystick simulado y velocidades imposibles. La trampa es detectada y lleva a baneo. Pero la mayor detección es el propio diseño: no hay razón para usar fake GPS porque el juego respeta tu localización real."},
+         "a": "Sí. Detectamos fake GPS, joystick simulado y velocidades imposibles. La trampa se detecta y lleva a baneo. Pero la primera defensa es el propio diseño: no hay razón para usar fake GPS porque el juego respeta tu localización real."},
         {"q": "¿Por qué no necesito PGSharp ni MocPOGO?",
-         "a": "Porque MapRaiders no depende de PokéStops centralizados o raids agendadas. Cada calle es territorio potencial, cada cuadra se vuelve terreno tuyo si pasas por ahí regularmente. La periferia no es desventaja — es ventaja (menos competencia)."},
+         "a": "Porque MapRaiders no depende de PokéStops centralizados ni de raids agendadas. Cada calle puede ser territorio, cada cuadra se vuelve tuya si pasas por ahí seguido. La periferia deja de ser desventaja y se vuelve ventaja (menos competencia)."},
         {"q": "¿Y si vivo en una ciudad pequeña?",
-         "a": "La ciudad pequeña se vuelve tu ventaja en MapRaiders. Menos jugadores, territorios más grandes, defensa más fácil. En Pokémon GO la provincia es desierto; aquí es fortaleza."},
+         "a": "La ciudad pequeña se vuelve tu ventaja en MapRaiders. Menos jugadores, territorios más grandes, defensa más fácil. En Pokémon GO la provincia se siente desierta; aquí se siente fortaleza."},
         {"q": "¿Puedo jugar desde casa, sin salir?",
-         "a": "No. MapRaiders exige movimiento real. Aquí caminar es el juego. Pero no necesitas caminar km — empiezas con la cuadra de casa, expandes al ritmo natural del día (pasear el perro, ir al trabajo a pie, correr)."},
+         "a": "No. MapRaiders exige movimiento real. Aquí caminar es el juego. Pero no necesitas caminar kilómetros: empiezas con la cuadra de casa y expandes al ritmo natural del día (pasear al perro, ir al trabajo a pie, correr)."},
         {"q": "¿Es 100% gratuito?",
-         "a": "Sí. Gameplay completo gratis. Cosméticos opcionales con OXXO ($39 – $189 MXN) sin ventaja competitiva."},
+         "a": "Sí. Gameplay completo gratis. Los cosméticos opcionales (entre $39 y $189 MXN, también con OXXO) no dan ventaja competitiva."},
     ],
     "internal_links": [
         ("/es-mx/alternativa-pokemon-go-gratis.html", "Alternativa Pokémon GO gratis"),
@@ -1185,16 +1187,16 @@ K4 = {
 K5 = {
     "slug": "/es-mx/app-caminata-con-juego.html",
     "breadcrumb": "App de caminata con juego",
-    "title": "App de caminata con juego — Strava + territorio",
-    "og_title": "App de caminata con juego — cardio + juego + salud",
-    "meta": "¿App de caminata con juego? MapRaiders convierte cada caminata en conquista de territorio. Cardio + juego + salud para la familia entera, gratis con OXXO.",
+    "title": "App de caminata con juego: Strava más territorio",
+    "og_title": "App de caminata con juego: cardio, juego y salud",
+    "meta": "¿App de caminata con juego? MapRaiders convierte cada caminata en conquista de territorio. Cardio, juego y salud para toda la familia, gratis con OXXO.",
     "keywords": "app de caminata, app caminata con juego, caminar con juego, juego para caminar, app cardio gps, strava territorio",
     "badge": "Cardio + Juego",
-    "pricing_pill": "Free Forever · 4× menos batería que Pokémon GO",
-    "h1_html": 'App de caminata con juego — cuando <em>cada paso</em> conquista territorio',
-    "lead": "Las apps de caminata dan estadísticas. Los juegos de caminata como Pokémon GO dan colección. Pero ninguna app convierte tu camino real en tierra real. MapRaiders sí: cada paso forma territorio, cada vuelta lo defiende. Cardio con consecuencia. Familia junta. Salud de verdad.",
+    "pricing_pill": "Free Forever. Hasta 4× menos batería que Pokémon GO.",
+    "h1_html": 'App de caminata con juego: cuando <em>cada paso</em> conquista territorio',
+    "lead": "Las apps de caminata dan estadísticas. Los juegos de caminata estilo Pokémon GO dan colección. Lo que casi nadie hace es convertir tu camino real en tierra real. MapRaiders sí: cada paso forma territorio, cada vuelta lo defiende. Cardio con consecuencia, familia junta, salud de verdad.",
     "trigger": {
-        "quote": "Igual corro todas las mañanas. Con MapRaiders cada ruta tiene un objetivo: mantener territorio o reconquistarlo. Mi motivación cardio explotó.",
+        "quote": "Salgo a correr todas las mañanas, eso ya lo hacía. Pero ahora también defiendo algo. Mi vuelta por el Alster es mía y quiero que siga así.",
         "author": "Vivian N., corredora de la región de Hamburgo (beta cerrada)"
     },
     "testers": [TESTER_VIVIAN, TESTER_RON],
@@ -1203,11 +1205,11 @@ K5 = {
             "label": "El problema",
             "title": "Por qué las <em>apps de caminata</em> tradicionales no bastan",
             "body": """
-    <p>Strava, Nike Run Club, Adidas Running — miden tiempo, distancia, ritmo. Pero a muchos mexicanos les faltan tres puntos:</p>
+    <p>Strava, Nike Run Club y Adidas Running miden tiempo, distancia y ritmo. A muchos mexicanos les faltan tres cosas:</p>
     <ul>
-      <li><strong>Sin elemento de juego.</strong> Quien no persigue récords personales pierde motivación en 4 semanas.</li>
+      <li><strong>Sin elemento de juego.</strong> Quien no persigue récords personales pierde motivación en cuatro semanas.</li>
       <li><strong>Presión de performance.</strong> Las leaderboards públicas desmotivan más de lo que ayudan.</li>
-      <li><strong>Forzar suscripción.</strong> Strava Premium $109 MXN/mes para mapas de calor y comparaciones de rutas que quedan inútiles en el plan gratuito.</li>
+      <li><strong>Suscripción a la fuerza.</strong> Strava Premium cuesta $109 MXN al mes por mapas de calor y comparaciones de rutas que quedan inútiles en el plan gratuito.</li>
     </ul>
             """,
         },
@@ -1216,45 +1218,45 @@ K5 = {
             "title": "Cómo MapRaiders <em>cambia tu rutina</em> de caminata",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Mantener territorio</h3><p>Cada ruta defiende tierra. Quien para 3 días ve actuar al decay — incentivo natural al regreso.</p></div>
-    <div class="feat-card rv d1"><h3>Contador de Decay</h3><p>El valor de Decay muestra: &ldquo;Si no corres hoy, tu colonia se encoge X%&rdquo;. Sin culpa — solo realidad física.</p></div>
-    <div class="feat-card rv d2"><h3>Defensa de clan mientras corres</h3><p>Durante la corrida, las push notifications avisan cuando el territorio del clan es atacado. No corres solo — corres en grupo.</p></div>
-    <div class="feat-card rv d3"><h3>Recompensa vía Echo</h3><p>Echos de audio cuando pasas. Otros jugadores cuentan historias de la calle — sin publicidad, sin influencer.</p></div>
+    <div class="feat-card rv"><h3>Mantener territorio</h3><p>Cada ruta defiende tierra. Quien para tres días ve actuar al decay. Es un incentivo natural para volver a salir.</p></div>
+    <div class="feat-card rv d1"><h3>Contador de Decay</h3><p>El valor de Decay muestra: &ldquo;Si no sales hoy, tu colonia se encoge X%&rdquo;. Sin culpa, solo realidad física.</p></div>
+    <div class="feat-card rv d2"><h3>Defensa de clan mientras corres</h3><p>Durante la corrida, las push notifications avisan cuando atacan el territorio del clan. No corres solo, corres en grupo.</p></div>
+    <div class="feat-card rv d3"><h3>Recompensa vía Echo</h3><p>Te encuentras Echos de audio al pasar. Otros jugadores cuentan historias de la calle, sin publicidad ni influencers.</p></div>
   </div>""",
         },
         {
             "label": "Strava complemento",
-            "title": "MapRaiders <em>complementa</em> Strava — no reemplaza",
+            "title": "MapRaiders <em>complementa</em> a Strava, no la reemplaza",
             "body": """
-    <p>MapRaiders no compite con Strava en métricas de performance. Puedes correr ambas apps al mismo tiempo, usan el mismo sensor GPS sin conflicto. Lo que Strava no da: territorio real y defensa social. Lo que MapRaiders no da: análisis detallado de pace splits y zonas cardíacas.</p>
-    <p>Combinación ideal: <strong>Strava para análisis técnico, MapRaiders para motivación diaria y territorio.</strong> Corre las dos, sin dolor.</p>
+    <p>MapRaiders no compite con Strava en métricas de performance. Puedes correr ambas apps al mismo tiempo: usan el mismo sensor GPS sin conflicto. Lo que Strava no da: territorio real y defensa social. Lo que MapRaiders no da: análisis detallado de pace splits y zonas cardíacas.</p>
+    <p>La combinación ideal es <strong>Strava para análisis técnico y MapRaiders para motivación diaria y territorio</strong>. Corre las dos, sin dolor de cabeza.</p>
             """,
         },
         {
             "label": "50+ longevidad",
-            "title": "Caminata para <em>50+ años</em> — longevidad MX",
+            "title": "Caminata para <em>50+ años</em>: longevidad MX",
             "body": """
-    <p>México tiene más de 17 millones de personas con 60+. La caminata es la actividad física más recomendada por geriatras — pero falta motivación. MapRaiders resuelve esto sin AR (que confunde) y sin competencia agresiva (que aleja):</p>
+    <p>México tiene más de 17 millones de personas con 60 o más años. La caminata es la actividad física que más recomiendan los geriatras, pero suele faltar motivación. MapRaiders ayuda sin AR (que confunde) y sin competencia agresiva (que aleja):</p>
     <ul>
-      <li><strong>Ritmo propio.</strong> Sin mínimo de velocidad. Walking, caminar con bastón, con amigo — todo cuenta para territorio.</li>
-      <li><strong>La misma calle todos los días funciona.</strong> Persistencia supera distancia. Quien repite, mantiene.</li>
-      <li><strong>Comunidad de colonia.</strong> Clanes orgánicos con vecinos. Sin Discord, sin chat tóxico.</li>
-      <li><strong>LFPDPPP-compatible.</strong> Para adultos mayores preocupados con la privacidad — sin publicidad direccionada, sin venta de localización.</li>
+      <li><strong>Ritmo propio.</strong> Sin mínimo de velocidad. Caminar tranquilo, ir con bastón o con un amigo: todo cuenta para territorio.</li>
+      <li><strong>La misma calle todos los días funciona.</strong> La persistencia supera a la distancia. Quien repite, mantiene.</li>
+      <li><strong>Comunidad de colonia.</strong> Clanes orgánicos con vecinos. Sin Discord ni chat tóxico.</li>
+      <li><strong>Compatible con LFPDPPP.</strong> Pensado para adultos mayores preocupados por la privacidad: sin publicidad dirigida, sin venta de localización.</li>
     </ul>
             """,
         },
     ],
     "faq": [
-        {"q": "¿Cuánta batería del celular dura?",
-         "a": "En una caminata de 1 hora, típicamente 15-25% de batería (vs ~50% en Pokémon GO con AR). Los valores varían según el celular y el brillo de la pantalla."},
+        {"q": "¿Cuánta batería gasta el celular?",
+         "a": "En una caminata de una hora, normalmente entre 15% y 25% de batería (frente a ~50% en Pokémon GO con AR). Los valores varían según el celular y el brillo de la pantalla."},
         {"q": "¿Funciona con Strava o Nike Run Club?",
-         "a": "Actualmente sin integración directa. Puedes correr ambas apps al mismo tiempo — usan el mismo sensor GPS sin conflicto. Integración con Strava planeada para Q4 2026."},
+         "a": "Por ahora no hay integración directa. Puedes correr ambas apps al mismo tiempo: usan el mismo sensor GPS sin conflicto. La integración con Strava está planeada para Q4 2026."},
         {"q": "¿La caminata lenta también cuenta?",
-         "a": "Sí. No hay velocidad mínima. Walking, caminata lenta, paseo — todo forma territorio, siempre que haya movimiento físico real (sin auto-cheating)."},
-        {"q": "¿Puede usarla un adulto mayor?",
-         "a": "Sí, fue pensada para todas las edades. Sin AR, sin ruido, sin presión de pace. Letras grandes, contraste alto, controles simples."},
+         "a": "Sí. No hay velocidad mínima. Caminar tranquilo, paseo, walking, todo forma territorio mientras haya movimiento físico real (sin auto-cheating)."},
+        {"q": "¿La puede usar un adulto mayor?",
+         "a": "Sí, está pensada para todas las edades. Sin AR, sin ruido, sin presión de pace. Letras grandes, contraste alto, controles simples."},
         {"q": "¿Cuántos datos móviles consume?",
-         "a": "Moderado. Sin live-video, sin API pesada. Una caminata de 1 hora usa típicamente 5-15 MB."},
+         "a": "Moderado. Sin live-video y sin API pesada. Una caminata de una hora usa típicamente entre 5 y 15 MB."},
     ],
     "internal_links": [
         ("/es-mx/juego-de-gps.html", "Mejor juego de GPS 2026"),
@@ -1269,16 +1271,16 @@ K5 = {
 K6 = {
     "slug": "/es-mx/busqueda-del-tesoro-app.html",
     "breadcrumb": "Búsqueda del tesoro app",
-    "title": "Búsqueda del tesoro app 2026 — ciudad entera en vivo, gratis",
-    "og_title": "Búsqueda del tesoro app — ciudad entera de Echos escondidos",
+    "title": "Búsqueda del tesoro app 2026: ciudad entera en vivo, gratis",
+    "og_title": "Búsqueda del tesoro app: ciudad entera de Echos escondidos",
     "meta": "Búsqueda del tesoro app 2026: en vivo, ciudad entera, sin comprar tour, sin publicidad. MapRaiders convierte tu ciudad en búsqueda del tesoro abierta. Familia, amigos.",
     "keywords": "busqueda del tesoro app, busqueda tesoro celular, app busqueda tesoro, busqueda tesoro mexico, geocaching alternativa, busqueda tesoro familia",
     "badge": "Búsqueda del Tesoro",
-    "pricing_pill": "Free Forever · Sin comprar tour · Ciudad entera",
-    "h1_html": 'Búsqueda del tesoro app — una <em>ciudad entera de Echos</em> escondidos',
-    "lead": "Las apps tradicionales de búsqueda del tesoro como Geocaching exigen suscripción premium y tours pre-definidos. MapRaiders lo invierte: los Echos ya están esparcidos por la ciudad entera. Sigues rastros de otros jugadores o dejas los tuyos. En vivo, gratuito, sin comprar tour, sin preparación. Mexicano de verdad.",
+    "pricing_pill": "Free Forever. Sin comprar tour. Ciudad entera.",
+    "h1_html": 'Búsqueda del tesoro app: una <em>ciudad entera de Echos</em> escondidos',
+    "lead": "Las apps tradicionales de búsqueda del tesoro como Geocaching exigen suscripción premium y tours pre-definidos. MapRaiders le da la vuelta: los Echos ya están esparcidos por la ciudad entera. Sigues rastros de otros jugadores o dejas los tuyos. En vivo, gratuito, sin comprar tour, sin preparación.",
     "trigger": {
-        "quote": "Dejar Echos y ver quién los encuentra es como una búsqueda del tesoro abierta por toda la ciudad.",
+        "quote": "Dejas un Echo de audio en la entrada de un edificio y tres días después lo encontró alguien que no conoces. Para ser un juego, se siente raramente íntimo.",
         "author": "Aljoscha P., explorador urbano de la región de Berlín (beta cerrada)"
     },
     "testers": [TESTER_ALJOSCHA, TESTER_RON],
@@ -1287,11 +1289,11 @@ K6 = {
             "label": "Criterios",
             "title": "Qué debería tener una <em>app de búsqueda del tesoro moderna</em>",
             "body": """
-    <p>Tres criterios separan a las apps de búsqueda del tesoro de los años 2020 de las soluciones de papel impreso:</p>
+    <p>Tres criterios separan a las apps de búsqueda del tesoro modernas de las soluciones de papel impreso:</p>
     <ul>
-      <li><strong>En vivo.</strong> Las pistas surgen en tiempo real, no solo en tours pre-fabricados.</li>
-      <li><strong>Social.</strong> Los jugadores dejan pistas unos para otros, en lugar de solo seguir.</li>
-      <li><strong>Sin barrera premium.</strong> Padres e hijos entran al instante, sin tener que comprar tour de $300 MXN.</li>
+      <li><strong>En vivo.</strong> Las pistas aparecen en tiempo real, no solo en tours pre-fabricados.</li>
+      <li><strong>Social.</strong> Los jugadores dejan pistas unos para otros, en lugar de solo seguirlas.</li>
+      <li><strong>Sin barrera premium.</strong> Padres e hijos entran al instante, sin pagar tour de $300 MXN.</li>
     </ul>
             """,
         },
@@ -1302,8 +1304,8 @@ K6 = {
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>App</th><th>Precio</th><th>Preparación</th><th>¿En vivo?</th><th>Loop de juego</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">Geocaching</td><td>Sub Premium ~$150 MXN/mes</td><td>Baja — encontrar caches</td><td class="cross">Asíncrono</td><td>Coleccionar</td></tr>
-      <tr><td class="feat-name">Actionbound</td><td>Tours / Sub</td><td>Alta — montar tour</td><td class="cross">✗</td><td>Por-tour</td></tr>
+      <tr><td class="feat-name">Geocaching</td><td>Sub Premium ~$150 MXN/mes</td><td>Baja: encontrar caches</td><td class="cross">Asíncrono</td><td>Coleccionar</td></tr>
+      <tr><td class="feat-name">Actionbound</td><td>Tours / Sub</td><td>Alta: montar tour</td><td class="cross">✗</td><td>Por-tour</td></tr>
       <tr><td class="feat-name">Munzee</td><td>Premium-Sub</td><td>Media</td><td class="cross">Asíncrono</td><td>Escanear códigos</td></tr>
       <tr><td class="feat-name">MapRaiders</td><td class="check">$0 MXN</td><td class="check">Cero</td><td class="check">En vivo</td><td>Echos + Misiones + Territorio</td></tr>
     </tbody>
@@ -1313,12 +1315,12 @@ K6 = {
             "label": "Echos",
             "title": "Cómo MapRaiders <em>repiensa</em> la búsqueda del tesoro",
             "body": """
-    <p>En lugar de un tour lineal de la estación 1 a la 10, MapRaiders crea una <strong>búsqueda del tesoro espacial abierta</strong> — la ciudad entera es el playground:</p>
+    <p>En lugar de un tour lineal de la estación 1 a la 10, MapRaiders crea una <strong>búsqueda del tesoro espacial abierta</strong>: la ciudad entera es el playground.</p>
     <ul>
       <li><strong>Dejar Echos.</strong> Deja un Echo de audio, foto o video en un lugar. Otros jugadores lo descubren al pasar.</li>
       <li><strong>Encontrar Echos.</strong> Mira en el mapa dónde están los Echos. Sigue los rastros, encuentra secretos, escucha historias.</li>
-      <li><strong>Crear misiones.</strong> Crea una pequeña tarea en un lugar (&ldquo;Toma foto de la puerta roja allá&rdquo;). Otros jugadores cumplen.</li>
-      <li><strong>Capa de territorio.</strong> Quien recorre una ruta de búsqueda del tesoro frecuentemente, la conquista como territorio — los rastros se vuelven tierra.</li>
+      <li><strong>Crear misiones.</strong> Pones una pequeña tarea en un lugar (&ldquo;Toma foto de la puerta roja de allá&rdquo;) y otros jugadores la cumplen.</li>
+      <li><strong>Capa de territorio.</strong> Quien recorre seguido una ruta de búsqueda del tesoro la conquista como territorio. Los rastros se vuelven tierra.</li>
     </ul>
             """,
         },
@@ -1326,27 +1328,27 @@ K6 = {
             "label": "Niños",
             "title": "Búsqueda del tesoro app para <em>niños y familia</em>",
             "body": """
-    <p>La búsqueda del tesoro es cultura mexicana de infancia — pistas con gis, rastro de hojas, escondite final con dulce. MapRaiders trae eso a la era del smartphone, sin dejar a los niños solos en la pantalla:</p>
+    <p>La búsqueda del tesoro es cultura mexicana de infancia: pistas con gis, rastro de hojas, escondite final con dulce. MapRaiders lo trae a la era del smartphone, sin dejar a los niños solos en la pantalla:</p>
     <ul>
-      <li><strong>Actividad padres-hijos.</strong> Los padres dejan Echos de audio en una ruta planeada, los niños siguen los rastros — movimiento analógico, pistas digitales.</li>
-      <li><strong>Pantalla mínima, mundo máximo.</strong> La app guía en el mapa; la vivencia ocurre en el mundo real.</li>
-      <li><strong>LFPDPPP-compatible para niños.</strong> Sin tracker de publicidad personalizada, sin venta de datos, sin chat in-app sin aprobación de los padres.</li>
-      <li><strong>Modo familia.</strong> Eventos privados de Día de Muertos, posadas, Reyes — solo para el grupo familiar (muy respetuoso de las tradiciones).</li>
+      <li><strong>Actividad padres-hijos.</strong> Los papás dejan Echos de audio en una ruta planeada y los niños siguen los rastros: movimiento analógico, pistas digitales.</li>
+      <li><strong>Pantalla mínima, mundo máximo.</strong> La app guía en el mapa; la vivencia ocurre en la calle.</li>
+      <li><strong>Compatible con LFPDPPP para niños.</strong> Sin tracker de publicidad personalizada, sin venta de datos, sin chat in-app sin aprobación de los padres.</li>
+      <li><strong>Modo familia.</strong> Eventos privados de Día de Muertos, posadas o Reyes solo para el grupo familiar, tratados con respeto a la tradición.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "¿MapRaiders es apropiado para niños?",
-         "a": "Sí, a partir de 9 años con acompañamiento de los padres. La app es compatible con LFPDPPP, sin publicidad y no recolecta datos personales de niños. Los padres pueden activar un modo familia."},
+         "a": "Sí, a partir de nueve años con acompañamiento de los padres. La app es compatible con LFPDPPP, no tiene publicidad y no recolecta datos personales de niños. Los padres pueden activar un modo familia."},
         {"q": "¿Cuánta preparación necesito para una búsqueda con niños?",
-         "a": "Cero. A diferencia de Actionbound o Munzee, no necesitas comprar tour ni preparar estaciones. Los Echos ya están esparcidos por la ciudad — basta con seguir los rastros de otros jugadores o dejar los tuyos."},
+         "a": "Cero. A diferencia de Actionbound o Munzee, no necesitas comprar tour ni preparar estaciones. Los Echos ya están esparcidos por la ciudad: basta con seguir los rastros de otros jugadores o dejar los tuyos."},
         {"q": "¿La app de búsqueda del tesoro cobra algo?",
-         "a": "No. Las funciones de búsqueda del tesoro (dejar Echos, encontrar Echos, crear misiones) son totalmente gratuitas. Opcionalmente, hay cosméticos desde $39 MXN — sin ventaja en el juego. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
+         "a": "No. Las funciones de búsqueda del tesoro (dejar Echos, encontrar Echos, crear misiones) son totalmente gratuitas. Hay cosméticos opcionales desde $39 MXN, sin ventaja en el juego. Pago con OXXO, MercadoPago, PayPal o tarjeta."},
         {"q": "¿Funciona en ciudades pequeñas?",
-         "a": "Sí. Incluso en ciudades pequeñas o colonias, puedes dejar Echos y crear misiones. En centros mayores encuentras más rastros de otros jugadores; en provincia, tu tour tiene más espacio propio."},
+         "a": "Sí. Incluso en ciudades pequeñas o colonias puedes dejar Echos y crear misiones. En centros grandes vas a encontrar más rastros de otros jugadores; en provincia tu tour tiene más espacio propio."},
         {"q": "¿La app está en español?",
-         "a": "Sí. MapRaiders está totalmente localizada en español mexicano — menús, sistema de Echos, pistas, soporte. Sin traducciones de Spain-Spanish."},
+         "a": "Sí. MapRaiders está totalmente localizada en español mexicano: menús, sistema de Echos, pistas y soporte. Sin traducciones de español de España."},
     ],
     "internal_links": [
         ("/es-mx/alternativa-pokemon-go-gratis.html", "Alternativa Pokémon GO gratis"),
@@ -1361,14 +1363,14 @@ K6 = {
 K7 = {
     "slug": "/es-mx/juego-de-colonia.html",
     "breadcrumb": "Juego de colonia",
-    "title": "Juego de colonia — conoce a tus vecinos jugando",
-    "og_title": "Juego de colonia — tu colonia, tu mapa social",
+    "title": "Juego de colonia: conoce a tus vecinos jugando",
+    "og_title": "Juego de colonia: tu colonia, tu mapa social",
     "meta": "Juego de colonia: MapRaiders convierte tu colonia en mapa social. Conoce vecinos, marca ofrendas, conquista calles. Sin Facebook, sin algoritmo. MX-exclusivo.",
     "keywords": "juego de colonia, juego colonia mexico, app colonia mexicana, comunidad colonia app, juego vecinos colonia, mapa social colonia",
     "badge": "Juego de Colonia · MX-Exclusivo",
-    "pricing_pill": "Free Forever · MX-exclusivo · WhatsApp nativo",
-    "h1_html": 'Juego de colonia — <em>conoce a tus vecinos</em> jugando',
-    "lead": "&ldquo;Colonia&rdquo; es México. No es vecindario, no es barrio, no es neighborhood — es la unidad cultural-geográfica donde la gente vive, camina, pasea al perro, va a la tortillería. MapRaiders convierte tu colonia en mapa social vivo: cada calle conquistada, cada Echo dejado, cada misión creada. Sin Facebook, sin algoritmo, sin publicidad. Tu colonia, tu cancha de casa.",
+    "pricing_pill": "Free Forever. MX-exclusivo. WhatsApp nativo.",
+    "h1_html": 'Juego de colonia: <em>conoce a tus vecinos</em> jugando',
+    "lead": "Colonia es palabra de México. No es vecindario, no es barrio, no es neighborhood. Es la unidad cultural y geográfica donde la gente vive, camina, pasea al perro, va a la tortillería. MapRaiders convierte tu colonia en mapa social vivo: cada calle conquistada, cada Echo dejado, cada misión creada. Sin Facebook, sin algoritmo, sin publicidad. Tu colonia, tu cancha de casa.",
     "trigger": {
         "quote": "Conquista tu colonia.",
         "author": "MapRaiders, principio de marca MX"
@@ -1379,19 +1381,19 @@ K7 = {
             "label": "&ldquo;Colonia&rdquo; es México",
             "title": "Por qué <em>&ldquo;colonia&rdquo;</em> es la palabra clave de México",
             "body": """
-    <p>En España dicen &ldquo;barrio&rdquo;. En Argentina &ldquo;barrio&rdquo;. En Estados Unidos &ldquo;neighborhood&rdquo;. Pero en México la palabra que define al territorio cotidiano del mexicano es <strong>colonia</strong> — y solo colonia. La Colonia Roma, la Colonia Condesa, la Colonia Doctores, la Colonia del Valle, la Colonia Polanco. Tu domicilio en el INE empieza con tu colonia.</p>
-    <p>Una colonia mexicana es más que una calle: es identidad, es comida (la fonda de la esquina), es perros conocidos, es tortillería favorita, es la Sra. Lupita que abre el changarro a las 7. Y es justamente esto lo que MapRaiders convierte en mecánica de juego: el territorio cotidiano se vuelve mapa social vivo.</p>
+    <p>En España dicen &ldquo;barrio&rdquo;. En Argentina, &ldquo;barrio&rdquo;. En Estados Unidos, &ldquo;neighborhood&rdquo;. En México la palabra que define el territorio cotidiano es <strong>colonia</strong>, y solo colonia. La Colonia Roma, la Condesa, los Doctores, Del Valle, Polanco. Tu domicilio en el INE empieza con tu colonia.</p>
+    <p>Una colonia mexicana es más que una calle. Es identidad, es la fonda de la esquina, son los perros conocidos, es la tortillería favorita, es la Sra. Lupita que abre el changarro a las 7. Y eso es justamente lo que MapRaiders convierte en mecánica de juego: el territorio cotidiano se vuelve mapa social vivo.</p>
             """,
         },
         {
             "label": "Comunidad de colonia",
             "title": "Comunidad de colonia <em>sin Facebook</em>",
             "body": """
-    <p>Los grupos de Facebook de colonia son tóxicos: algoritmo opaco, posts de marketing disfrazados, peleas políticas, anuncios de bienes raíces. WhatsApp grupos de colonia ayudan, pero falta una capa visual del territorio. MapRaiders soluciona ambos:</p>
+    <p>Los grupos de Facebook de colonia suelen ser tóxicos: algoritmo opaco, posts de marketing disfrazados, peleas políticas, anuncios de bienes raíces. Los grupos de WhatsApp de la colonia ayudan, pero les falta una capa visual del territorio. MapRaiders junta las dos cosas:</p>
     <ul>
-      <li><strong>Reconocimiento espacial.</strong> Ves en el mapa quién pasea por las mismas calles que tú. Sin algoritmo, sin sponsored content.</li>
-      <li><strong>Echos de colonia.</strong> Tu vecino del 2do piso deja un Echo de audio: &ldquo;Aquí pasa el camión de la basura los martes 7am&rdquo;. Tú lo escuchas al pasar. Sabiduría vecinal sin chat infinito.</li>
-      <li><strong>Clanes orgánicos.</strong> Quien recorre las mismas calles que tú, es candidato natural a clan. Sin invitaciones, sin políticas — solo geografía compartida.</li>
+      <li><strong>Reconocimiento espacial.</strong> Ves en el mapa quién pasea por las mismas calles que tú. Sin algoritmo y sin sponsored content.</li>
+      <li><strong>Echos de colonia.</strong> Tu vecino del segundo piso deja un Echo de audio: &ldquo;Aquí pasa el camión de la basura los martes a las 7&rdquo;. Tú lo escuchas al pasar. Sabiduría vecinal sin chat infinito.</li>
+      <li><strong>Clanes orgánicos.</strong> Quien recorre las mismas calles que tú es candidato natural a clan. Sin invitaciones, sin políticas, solo geografía compartida.</li>
       <li><strong>Defensa colectiva.</strong> Cuando alguien de fuera intenta tomar tu calle, todos los vecinos del mismo clan reciben aviso. Solidaridad de colonia, gamificada.</li>
     </ul>
             """,
@@ -1400,40 +1402,40 @@ K7 = {
             "label": "WhatsApp nativo",
             "title": "<em>WhatsApp-Sharing</em> en cada acción",
             "body": """
-    <p>WhatsApp tiene más del 95% de penetración en México — más que Instagram, más que Facebook, más que cualquier red social. MapRaiders se construyó pensando en eso:</p>
+    <p>WhatsApp tiene más del 95% de penetración en México, más que Instagram, más que Facebook, más que cualquier otra red social. MapRaiders se construyó pensando en eso:</p>
     <ul>
-      <li><strong>Compartir territorio.</strong> Conquistaste tu calle? Comparte el polígono al chat de la familia con 1 tap.</li>
-      <li><strong>Compartir Echo.</strong> Dejaste un Echo en el parque? El link va a tu grupo de WhatsApp.</li>
-      <li><strong>Invitar vecinos.</strong> Click en &ldquo;invitar vecinos&rdquo; → mensaje pre-armado para enviar al grupo de WhatsApp de la colonia.</li>
-      <li><strong>Sin red social paralela.</strong> Toda comunicación de juego puede pasar por WhatsApp existente — sin descargar otra app de mensajería.</li>
+      <li><strong>Compartir territorio.</strong> ¿Conquistaste tu calle? Mandas el polígono al chat de la familia con un tap.</li>
+      <li><strong>Compartir Echo.</strong> ¿Dejaste un Echo en el parque? El link va directo a tu grupo de WhatsApp.</li>
+      <li><strong>Invitar vecinos.</strong> Click en &ldquo;invitar vecinos&rdquo; y te arma un mensaje listo para enviar al grupo de WhatsApp de la colonia.</li>
+      <li><strong>Sin red social paralela.</strong> Toda la comunicación del juego puede pasar por el WhatsApp que ya usas, sin descargar otra app de mensajería.</li>
     </ul>
             """,
         },
         {
             "label": "Día de Muertos",
-            "title": "Día de Muertos — <em>marca las ofrendas</em> de tu colonia",
+            "title": "Día de Muertos: <em>marca las ofrendas</em> de tu colonia",
             "body": """
-    <p>Día de Muertos no es Halloween. Es una de las tradiciones más profundas y respetadas de México — UNESCO Patrimonio Cultural Inmaterial. MapRaiders trata el evento con todo el respeto que merece (no es solo &ldquo;skin temporal&rdquo;):</p>
+    <p>Día de Muertos no es Halloween. Es una de las tradiciones más profundas y respetadas de México, reconocida por la UNESCO como Patrimonio Cultural Inmaterial. MapRaiders trata el evento con el respeto que merece, no como &ldquo;skin temporal&rdquo;:</p>
     <ul>
-      <li><strong>Mapa de ofrendas.</strong> Los usuarios marcan ofrendas comunitarias visibles en su colonia. Otros vecinos las visitan, dejan Echos respetuosos.</li>
-      <li><strong>Sin gamificación irrespetuosa.</strong> No hay &ldquo;coleccionar calaveras&rdquo;, no hay &ldquo;atrapar a la Catrina&rdquo;. Solo visibilidad y reconocimiento de la tradición.</li>
-      <li><strong>Eventos familiares privados.</strong> El Modo Familia permite eventos de altar privado, solo visible al grupo familiar.</li>
-      <li><strong>Patrocinio cultural.</strong> En noviembre, parte de los ingresos cosméticos se dona a iniciativas culturales mexicanas (con transparencia pública).</li>
+      <li><strong>Mapa de ofrendas.</strong> Los usuarios marcan ofrendas comunitarias visibles en su colonia. Otros vecinos las visitan y dejan Echos respetuosos.</li>
+      <li><strong>Sin gamificación irrespetuosa.</strong> Aquí nadie &ldquo;colecciona calaveras&rdquo; ni &ldquo;atrapa a la Catrina&rdquo;. Solo visibilidad y reconocimiento de la tradición.</li>
+      <li><strong>Eventos familiares privados.</strong> El Modo Familia permite eventos de altar privado, visibles solo para el grupo familiar.</li>
+      <li><strong>Patrocinio cultural.</strong> En noviembre, parte de los ingresos por cosméticos se dona a iniciativas culturales mexicanas, con transparencia pública.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "¿Por qué &ldquo;colonia&rdquo; y no &ldquo;barrio&rdquo;?",
-         "a": "Porque colonia es la palabra mexicana correcta. En España dicen barrio, en Argentina barrio, pero en México la unidad geográfica básica es la colonia. Tu INE, tu domicilio fiscal, tu acta de nacimiento — todo dice &ldquo;Col.&rdquo; antes del nombre de tu zona. MapRaiders respeta eso."},
+         "a": "Porque colonia es la palabra mexicana correcta. En España dicen barrio, en Argentina barrio, pero en México la unidad geográfica básica es la colonia. Tu INE, tu domicilio fiscal y tu acta de nacimiento dicen &ldquo;Col.&rdquo; antes del nombre de tu zona. MapRaiders respeta eso."},
         {"q": "¿Qué pasa si no conozco a mis vecinos?",
-         "a": "Justamente por eso existe el juego de colonia. Empiezas conquistando solo, ves qué calles ya tienen otros jugadores, dejas Echos que hablan de la colonia. Con el tiempo, el mapa te muestra a quién cruzas en horarios similares — y se forma reconocimiento natural."},
-        {"q": "¿Puedo crear evento privado de mi colonia?",
-         "a": "Sí. Puedes crear eventos privados (familia, calle específica, edificio) o eventos abiertos (toda la colonia). Los privados solo son visibles a invitados; los abiertos aparecen en el mapa de toda la colonia."},
-        {"q": "¿Hay categoría de colonia (zona segura, zona popular, zona rica)?",
-         "a": "No. MapRaiders trata todas las colonias igual — Polanco como Iztapalapa, Roma como Ecatepec. Sin filtros de NSE, sin rankings de &ldquo;colonias top&rdquo;. Cada colonia es cancha de casa de quienes ahí viven."},
+         "a": "Justamente por eso existe el juego de colonia. Empiezas conquistando solo, ves qué calles ya tienen otros jugadores y dejas Echos que hablan de la colonia. Con el tiempo, el mapa te muestra con quién te cruzas en horarios similares y se forma un reconocimiento natural."},
+        {"q": "¿Puedo crear un evento privado de mi colonia?",
+         "a": "Sí. Puedes crear eventos privados (familia, calle específica, edificio) o eventos abiertos (toda la colonia). Los privados solo son visibles para los invitados; los abiertos aparecen en el mapa de toda la colonia."},
+        {"q": "¿Hay categorías de colonia (zona segura, popular, rica)?",
+         "a": "No. MapRaiders trata todas las colonias igual: Polanco como Iztapalapa, Roma como Ecatepec. Sin filtros de NSE, sin rankings de &ldquo;colonias top&rdquo;. Cada colonia es cancha de casa de quienes ahí viven."},
         {"q": "¿Cómo funciona el Día de Muertos en MapRaiders?",
-         "a": "Con todo el respeto. Los usuarios marcan ofrendas comunitarias en el mapa, otros vecinos las visitan y dejan Echos respetuosos. No hay gamificación irrespetuosa (no &ldquo;atrapar Catrinas&rdquo;, no &ldquo;coleccionar calaveras&rdquo;). En noviembre, parte de los ingresos se dona a iniciativas culturales mexicanas con transparencia pública."},
+         "a": "Con todo el respeto. Los usuarios marcan ofrendas comunitarias en el mapa, otros vecinos las visitan y dejan Echos respetuosos. Aquí nadie atrapa Catrinas ni colecciona calaveras. En noviembre, parte de los ingresos por cosméticos se dona a iniciativas culturales mexicanas con transparencia pública."},
     ],
     "internal_links": [
         ("/es-mx/juego-de-gps.html", "Mejor juego de GPS 2026"),
@@ -1455,22 +1457,22 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/alternativa-pokemon-go-vale-la-pena.html",
         "breadcrumb": "¿Alternativa Pokémon GO vale la pena?",
-        "title": "¿Alternativa Pokémon GO vale la pena? — beta MX",
+        "title": "¿Alternativa Pokémon GO vale la pena? Beta MX",
         "og_title": "¿Alternativa Pokémon GO vale la pena? Beta-test honesto",
-        "meta": "¿Alternativa Pokémon GO vale la pena? Tres probadores beta de Stuttgart, Hamburgo y Berlín responden honestamente sobre cardio, paseo de perro y exploración urbana.",
+        "meta": "¿Alternativa Pokémon GO vale la pena? Tres probadores beta de Stuttgart, Hamburgo y Berlín responden honestamente sobre cardio, paseo del perro y exploración urbana.",
         "keywords": "alternativa pokemon go vale la pena, alternativa pokemon go opiniones, mapraiders opiniones, beta tester relato",
-        "h1_html": 'Alternativa Pokémon GO — <em>¿realmente vale la pena?</em>',
-        "lead": "Tres probadores beta de tres regiones metropolitanas alemanas usaron MapRaiders durante varias semanas. Aquí los relatos sin filtro — sin marketing-talk, sin código de influencer.",
+        "h1_html": 'Alternativa Pokémon GO: <em>¿realmente vale la pena?</em>',
+        "lead": "Tres probadores beta de tres regiones metropolitanas alemanas usaron MapRaiders durante varias semanas. Aquí los relatos sin filtro: sin marketing-talk, sin código de influencer.",
         "intro_label": "¿Quién probó?",
         "intro_title": "Tres personas, tres <em>casos de uso</em>",
         "intro_body": """
-    <p>Los tres probadores beta cubren tres personas muy diferentes — y eso es lo que hace honesta la comparación con Pokémon GO:</p>
+    <p>Los tres probadores beta cubren perfiles muy distintos. Eso es justamente lo que hace honesta la comparación con Pokémon GO:</p>
     <ul>
       <li><strong>Ron C.</strong> de la región de Stuttgart: dueño de perro, paseo diario, sin background gamer.</li>
-      <li><strong>Vivian N.</strong> de la región de Hamburgo: corredora, jugó Pokémon GO en 2018 y paró tras 3 meses.</li>
+      <li><strong>Vivian N.</strong> de la región de Hamburgo: corredora, jugó Pokémon GO en 2018 y paró tras tres meses.</li>
       <li><strong>Aljoscha P.</strong> de la región de Berlín: explorador urbano, veterano de Ingress, conoce el ecosistema Niantic en primera mano.</li>
     </ul>
-    <p>Los tres probaron MapRaiders independientemente — sin promoción pagada, sin script. Las citas se tradujeron del alemán original.</p>
+    <p>Los tres probaron MapRaiders por su cuenta, sin promoción pagada y sin script. Las citas están traducidas del alemán original.</p>
         """,
         "internal_links": [
             ("/es-mx/alternativa-pokemon-go-gratis.html", "Alternativa Pokémon GO gratis"),
@@ -1482,19 +1484,19 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/juego-de-gps-opiniones.html",
         "breadcrumb": "Juego de GPS opiniones",
-        "title": "Juego de GPS opiniones — MapRaiders en prueba real",
-        "og_title": "Juego de GPS — opiniones de probadores beta",
+        "title": "Juego de GPS opiniones: MapRaiders en prueba real",
+        "og_title": "Juego de GPS: opiniones de probadores beta",
         "meta": "Opiniones de juego de GPS: tres probadores beta relatan sobre batería, precisión GPS, privacidad y diversión real en el día a día urbano.",
         "keywords": "juego de gps opiniones, juego de gps prueba, gps mmo prueba, mapraiders opiniones",
-        "h1_html": 'Juego de GPS — <em>opiniones</em> de probadores beta',
-        "lead": "¿Qué tan preciso es GPS en centros urbanos? ¿Cuánta batería del celular consume la app en rutas largas? ¿Cómo se siente la compatibilidad LFPDPPP en piel de jugador? Tres probadores responden honestamente.",
+        "h1_html": 'Juego de GPS: <em>opiniones</em> de probadores beta',
+        "lead": "¿Qué tan preciso es el GPS en centros urbanos? ¿Cuánta batería del celular consume la app en rutas largas? ¿Cómo se siente la compatibilidad con LFPDPPP en piel de jugador? Tres probadores responden honestamente.",
         "intro_label": "Ejes de la prueba",
         "intro_title": "Lo que probamos en un <em>juego de GPS</em>",
         "intro_body": """
     <p>La prueba del juego de GPS giró en torno a cuatro ejes concretos:</p>
     <ul>
       <li><strong>Precisión GPS</strong> en barrancas urbanas y bajo puentes.</li>
-      <li><strong>Consumo de batería del celular</strong> en trayectos de 1 a 2 horas (comparado con Pokémon GO).</li>
+      <li><strong>Consumo de batería del celular</strong> en trayectos de una a dos horas (comparado con Pokémon GO).</li>
       <li><strong>Sensación de privacidad</strong>: ¿cuánta incomodidad de tracking aparece?</li>
       <li><strong>Mecánica de juego</strong>: ¿territorio, Echos y misiones funcionan en el día real?</li>
     </ul>
@@ -1509,22 +1511,22 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/juego-de-territorio-opiniones.html",
         "breadcrumb": "Juego de territorio opiniones",
-        "title": "Juego de territorio opiniones — probadores beta MX",
-        "og_title": "Juego de territorio — opiniones reales de la beta",
+        "title": "Juego de territorio opiniones: probadores beta MX",
+        "og_title": "Juego de territorio: opiniones reales de la beta",
         "meta": "Opiniones de juego de territorio en el día a día: tres probadores beta relatan cómo conquistar tierra, decay y mini-juegos de defensa funcionan en el espacio urbano real.",
         "keywords": "juego de territorio opiniones, juego de territorio prueba, conquistar territorio app opiniones",
-        "h1_html": 'Juego de territorio — cuando <em>tu calle</em> es tuya',
-        "lead": "¿Cómo es conquistar una calle de verdad? Tres probadores beta relatan el primer territorio, el primer choque de Decay y el primer mini-juego de defensa.",
+        "h1_html": 'Juego de territorio: cuando <em>tu calle</em> es tuya',
+        "lead": "¿Cómo se siente conquistar una calle de verdad? Tres probadores beta relatan el primer territorio, el primer choque de Decay y el primer mini-juego de defensa.",
         "intro_label": "¿Qué importa en la prueba?",
         "intro_title": "Lo que hace tangible un <em>juego de territorio</em>",
         "intro_body": """
-    <p>En la prueba de territorio, importan tres ejes de experiencia:</p>
+    <p>En la prueba de territorio importan tres ejes de experiencia:</p>
     <ul>
       <li><strong>Conquista.</strong> ¿Cuándo se siente la primera calle como &ldquo;mi tierra&rdquo;?</li>
-      <li><strong>Pérdida.</strong> ¿Cómo reaccionar al primer Decay o a la primera derrota frente a un atacante?</li>
-      <li><strong>Defensa.</strong> ¿Cómo se sienten los mini-juegos de defensa — tácticos, justos, frustrantes?</li>
+      <li><strong>Pérdida.</strong> ¿Cómo reaccionas al primer Decay o a la primera derrota frente a un atacante?</li>
+      <li><strong>Defensa.</strong> ¿Cómo se sienten los mini-juegos de defensa: tácticos, justos, frustrantes?</li>
     </ul>
-    <p>Las citas de los tres probadores cubren todos los tres ejes desde perspectivas muy diferentes.</p>
+    <p>Las citas de los tres probadores cubren los tres ejes desde perspectivas muy distintas.</p>
         """,
         "internal_links": [
             ("/es-mx/juego-de-territorio.html", "Juego de territorio real"),
@@ -1536,21 +1538,21 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/pokemon-go-sin-fake-gps-opiniones.html",
         "breadcrumb": "Pokémon GO sin fake GPS opiniones",
-        "title": "Pokémon GO sin fake GPS opiniones — prueba honesta",
-        "og_title": "Pokémon GO sin fake GPS — opiniones de la beta",
+        "title": "Pokémon GO sin fake GPS opiniones: prueba honesta",
+        "og_title": "Pokémon GO sin fake GPS: opiniones de la beta",
         "meta": "Opiniones de alternativa Pokémon GO sin fake GPS: probadores beta relatan por qué el juego elimina la necesidad de PGSharp, MocPOGO o iMyFone.",
         "keywords": "pokemon go sin fake gps opiniones, alternativa sin cheat opiniones, mapraiders prueba anti-cheat",
-        "h1_html": 'Pokémon GO sin fake GPS — <em>opiniones honestas</em>',
-        "lead": "Pokémon GO en México tiene un problema: muchos jugadores recurren a fake GPS. ¿Cómo se siente jugar un GPS MMO que elimina esa necesidad de raíz? Tres probadores beta responden.",
+        "h1_html": 'Pokémon GO sin fake GPS: <em>opiniones honestas</em>',
+        "lead": "Pokémon GO en México tiene un problema: muchos jugadores recurren al fake GPS. ¿Cómo se siente jugar un GPS MMO que elimina esa necesidad de raíz? Tres probadores beta responden.",
         "intro_label": "Anti-cheat por diseño",
-        "intro_title": "Por qué <em>fake GPS deja de tener sentido</em>",
+        "intro_title": "Por qué <em>el fake GPS deja de tener sentido</em>",
         "intro_body": """
-    <p>Los tres probadores beta evaluaron el argumento anti-fake-GPS bajo ángulos prácticos:</p>
+    <p>Los tres probadores beta evaluaron el argumento anti-fake-GPS desde ángulos prácticos:</p>
     <ul>
-      <li><strong>Densidad de spawn.</strong> ¿El juego funciona en colonia periférica o provincia?</li>
+      <li><strong>Densidad de spawn.</strong> ¿El juego funciona en colonia periférica o en provincia?</li>
       <li><strong>Justicia.</strong> ¿Quien está en CDMX tiene ventaja sobre quien está en Mérida?</li>
-      <li><strong>Atractividad ética.</strong> ¿Por qué parar con PGSharp / MocPOGO / iMyFone?</li>
-      <li><strong>Riesgo de baneo.</strong> ¿Cómo MapRaiders detecta y trata la trampa?</li>
+      <li><strong>Atractivo ético.</strong> ¿Por qué dejar PGSharp, MocPOGO o iMyFone?</li>
+      <li><strong>Riesgo de baneo.</strong> ¿Cómo detecta y trata MapRaiders la trampa?</li>
     </ul>
         """,
         "internal_links": [
@@ -1563,20 +1565,20 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/app-caminata-vale-la-pena.html",
         "breadcrumb": "¿App de caminata vale la pena?",
-        "title": "¿App de caminata con juego vale la pena? — prueba real",
-        "og_title": "App de caminata con juego — ¿vale la pena en el día a día?",
+        "title": "¿App de caminata con juego vale la pena? Prueba real",
+        "og_title": "App de caminata con juego: ¿vale la pena en el día a día?",
         "meta": "¿App de caminata con juego vale la pena? Probadores beta relatan motivación cardio, batería en rutas largas y pérdida de territorio tras pausa por enfermedad.",
         "keywords": "app de caminata vale la pena, app caminata con juego opiniones, cardio app prueba",
-        "h1_html": 'App de caminata con juego — <em>¿vale la pena</em>?',
-        "lead": "¿Qué pasa con la motivación de caminar cuando cada ruta defiende tierra real? ¿Cómo se siente el primer Decay tras una pausa por gripe? Tres probadores beta — una corredora, un walker, un explorador urbano — responden.",
+        "h1_html": 'App de caminata con juego: <em>¿vale la pena</em>?',
+        "lead": "¿Qué pasa con la motivación de caminar cuando cada ruta defiende tierra real? ¿Cómo se siente el primer Decay tras una pausa por gripe? Una corredora, un walker y un explorador urbano responden.",
         "intro_label": "Ejes de la prueba",
-        "intro_title": "Lo que un <em>app de caminata</em> debe entregar",
+        "intro_title": "Lo que una <em>app de caminata</em> debe entregar",
         "intro_body": """
     <p>Probamos la vivencia de caminata en tres ejes:</p>
     <ul>
       <li><strong>Ancla de motivación.</strong> ¿Cuándo alguien regresa tras una pausa?</li>
-      <li><strong>Batería del celular en ruta larga.</strong> Trayectos de 60-90 minutos sin agotar el celular.</li>
-      <li><strong>Cross-modalidad.</strong> ¿Funciona igual para corrida, walking y paseo del perro?</li>
+      <li><strong>Batería del celular en ruta larga.</strong> Trayectos de 60 a 90 minutos sin agotar el celular.</li>
+      <li><strong>Cross-modalidad.</strong> ¿Funciona igual para correr, caminar y pasear al perro?</li>
     </ul>
         """,
         "internal_links": [
@@ -1589,20 +1591,20 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/busqueda-del-tesoro-app-opiniones.html",
         "breadcrumb": "Búsqueda del tesoro app opiniones",
-        "title": "Búsqueda del tesoro app opiniones — probadores beta",
-        "og_title": "Búsqueda del tesoro app — opiniones reales de la beta",
+        "title": "Búsqueda del tesoro app opiniones: probadores beta",
+        "og_title": "Búsqueda del tesoro app: opiniones reales de la beta",
         "meta": "Opiniones de app de búsqueda del tesoro sin comprar tour ni preparación: probadores beta relatan cómo MapRaiders convierte la ciudad entera en búsqueda del tesoro en vivo.",
         "keywords": "busqueda del tesoro app opiniones, busqueda tesoro app prueba, live busqueda tesoro opiniones, familia busqueda tesoro",
-        "h1_html": 'Búsqueda del tesoro app — <em>opiniones</em> sin comprar tour',
+        "h1_html": 'Búsqueda del tesoro app: <em>opiniones</em> sin comprar tour',
         "lead": "La mayoría de apps de búsqueda del tesoro exigen preparación: comprar tour, planear ruta, montar estaciones. ¿Cómo se siente cuando la ciudad entera ya viene llena de pistas? Tres probadores beta responden.",
         "intro_label": "Pregunta de la prueba",
         "intro_title": "¿Funciona una <em>búsqueda del tesoro en vivo</em> sin preparación?",
         "intro_body": """
     <p>Probamos las funciones de búsqueda del tesoro en tres escenarios:</p>
     <ul>
-      <li><strong>Solo</strong> como explorador urbano (Aljoscha P.) — dejar Echos, encontrar Echos.</li>
-      <li><strong>Con perro</strong> en paseo normal (Ron C.) — pistas como subproducto del paseo.</li>
-      <li><strong>Escenario familiar</strong> simulado — ¿qué tan rápido adultos + niños entienden la mecánica?</li>
+      <li><strong>Solo</strong> como explorador urbano (Aljoscha P.): dejar Echos, encontrar Echos.</li>
+      <li><strong>Con perro</strong> en paseo normal (Ron C.): pistas como subproducto del paseo.</li>
+      <li><strong>Escenario familiar</strong> simulado: ¿qué tan rápido entienden adultos y niños la mecánica?</li>
     </ul>
         """,
         "internal_links": [
@@ -1615,20 +1617,20 @@ TWINS_DATA = [
     {
         "slug": "/es-mx/juego-de-colonia-opiniones.html",
         "breadcrumb": "Juego de colonia opiniones",
-        "title": "Juego de colonia opiniones — probadores beta hablan",
-        "og_title": "Juego de colonia — opiniones reales de vecinos beta",
+        "title": "Juego de colonia opiniones: probadores beta hablan",
+        "og_title": "Juego de colonia: opiniones reales de vecinos beta",
         "meta": "Opiniones de juego de colonia: probadores beta relatan cómo MapRaiders convierte la colonia en mapa social vivo, sin Facebook ni algoritmo.",
         "keywords": "juego de colonia opiniones, juego colonia prueba, mapa social colonia opiniones, comunidad colonia mexicana app",
-        "h1_html": 'Juego de colonia — <em>opiniones</em> de vecinos beta',
+        "h1_html": 'Juego de colonia: <em>opiniones</em> de vecinos beta',
         "lead": "¿Cómo es convertir la colonia en mapa social vivo, sin Facebook? ¿Cómo se forma reconocimiento entre vecinos sin chat infinito? Tres probadores beta responden.",
         "intro_label": "Ejes de la prueba",
         "intro_title": "Lo que un <em>juego de colonia</em> debe respetar",
         "intro_body": """
     <p>Probamos el uso de colonia en tres ejes:</p>
     <ul>
-      <li><strong>Reconocimiento espacial.</strong> ¿Es posible reconocer a vecinos sin invadir privacidad?</li>
-      <li><strong>WhatsApp-Sharing.</strong> ¿Funciona la integración con grupos de WhatsApp existentes?</li>
-      <li><strong>Identidad cultural.</strong> ¿La colonia se siente como colonia, no como vecindario / barrio genérico?</li>
+      <li><strong>Reconocimiento espacial.</strong> ¿Es posible reconocer a vecinos sin invadir su privacidad?</li>
+      <li><strong>WhatsApp-Sharing.</strong> ¿Funciona la integración con grupos de WhatsApp ya existentes?</li>
+      <li><strong>Identidad cultural.</strong> ¿La colonia se siente como colonia y no como vecindario o barrio genérico?</li>
     </ul>
         """,
         "internal_links": [
@@ -1648,28 +1650,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/es-mx/mapraiders-opiniones.html",
     "breadcrumb": "MapRaiders opiniones",
-    "title": "MapRaiders opiniones — beta-tests, fundador, hub MX",
-    "og_title": "MapRaiders opiniones — todo en un solo lugar",
+    "title": "MapRaiders opiniones: beta-tests, fundador, hub MX",
+    "og_title": "MapRaiders opiniones, todo en un solo lugar",
     "meta": "MapRaiders opiniones: 5,0 de 5 estrellas en tres beta-tests verificados, statement del fundador, todas las páginas Killer y relatos centralmente enlazados.",
     "keywords": "mapraiders opiniones, mapraiders opinion, mapraiders prueba, gps mmo opiniones mexico",
     "badge": "Hub & Resumen",
-    "pricing_pill": "5,0 / 5 — 3 opiniones verificadas de la beta",
-    "h1_html": '<em>MapRaiders opiniones</em> — todo lo que necesitas saber sobre el GPS MMO',
-    "lead": "Tres probadores beta de Stuttgart, Hamburgo y Berlín. Siete temas Killer desde la comparación con Pokémon GO hasta la app de búsqueda del tesoro. Siete opiniones detalladas. Un hub.",
+    "pricing_pill": "5,0 / 5 con tres opiniones verificadas de la beta",
+    "h1_html": '<em>MapRaiders opiniones</em>: todo lo que necesitas saber sobre el GPS MMO',
+    "lead": "Tres probadores beta de Stuttgart, Hamburgo y Berlín. Siete temas Killer, desde la comparación con Pokémon GO hasta la app de búsqueda del tesoro. Siete opiniones detalladas. Un hub.",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
         {"q": "¿Qué es MapRaiders, en realidad?",
-         "a": "MapRaiders es un GPS MMO para Android. Los jugadores conquistan territorios reales por movimiento, dejan Echos, crean misiones y defienden su tierra con mini-juegos. Sin publicidad, LFPDPPP-compatible, gratuito. Pago con OXXO, MercadoPago, PayPal o tarjeta para cosméticos."},
+         "a": "MapRaiders es un GPS MMO para Android. Los jugadores conquistan territorios reales por movimiento, dejan Echos, crean misiones y defienden su tierra con mini-juegos. Sin publicidad, compatible con LFPDPPP, gratuito. Pago con OXXO, MercadoPago, PayPal o tarjeta para cosméticos."},
         {"q": "¿Cuántos probadores beta son?",
-         "a": "Actualmente tres personas que hicimos públicas — con su consentimiento y bajo primer nombre + inicial por motivos de privacidad. La beta cerrada en su totalidad es mayor; los tres citados representan las personas principales."},
+         "a": "Por ahora hicimos públicos a tres con su consentimiento, bajo primer nombre y la inicial por motivos de privacidad. La beta cerrada en su conjunto es mayor; los tres citados representan los perfiles principales."},
         {"q": "¿Las opiniones son reales?",
-         "a": "Sí. Los tres probadores son personas reales de la beta cerrada en Alemania. No fueron pagados; sus citas fueron originalmente escritas en alemán y traducidas al español mexicano. En el markup Schema.org están marcadas con fecha, idioma y referencia al original alemán (translationOfWork)."},
+         "a": "Sí. Los tres probadores son personas reales de la beta cerrada en Alemania. No fueron pagados. Sus citas se escribieron originalmente en alemán y se tradujeron al español mexicano. En el markup Schema.org están marcadas con fecha, idioma y referencia al original alemán (translationOfWork)."},
         {"q": "¿Dónde puedo ser probador beta en México?",
-         "a": "Regístrate en la página inicial mexicana con tu correo. Plazas de beta mexicanas serán liberadas en olas tras el lanzamiento principal — prioridad para dueños de perro, corredores y exploradores urbanos de ciudades con baja densidad Pokémon GO."},
+         "a": "Regístrate en la página inicial mexicana con tu correo. Las plazas de beta mexicanas se liberan en olas tras el lanzamiento principal, con prioridad para dueños de perro, corredores y exploradores urbanos de ciudades con baja densidad de Pokémon GO."},
         {"q": "¿Cuándo sale oficialmente la app en México?",
-         "a": "MapRaiders está en beta cerrada en Google Play (Alemania). Lanzamiento MX oficial planeado para verano de 2026 (julio-agosto). iOS en Q3 2026."},
+         "a": "MapRaiders está en beta cerrada en Google Play (Alemania). El lanzamiento oficial en MX está planeado para verano de 2026 (julio o agosto). iOS llega en Q3 2026."},
     ],
     "internal_links": [],
 }

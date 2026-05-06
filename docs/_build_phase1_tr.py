@@ -67,7 +67,7 @@ TESTER_RON = {
     "name": "Ron C.",
     "role": "Köpek sahibi · Stuttgart bölgesi, Almanya",
     "role_long": "Stuttgart bölgesinden köpek sahibi, Almanya (kapalı beta)",
-    "quote": "Köpeğim yürüyüşünü seviyor — ben de her yürüyüşün mahallemi haritada daha görünür yapmasını seviyorum. Tüm sokağımı zaten fethettim.",
+    "quote": "Köpeğim zaten günde iki kez dışarı çıkmak zorunda, ben de yanıma blokumu alıyorum artık. Saçma geliyor biliyorum, ama her akşam kısa bir bakıyorum hâlâ her yer mavi mi diye.",
     "date": "2026-03-15",
     "id_tr": "review-ron-c-tr",
     "id_de": "review-ron-c",
@@ -76,7 +76,7 @@ TESTER_VIVIAN = {
     "name": "Vivian N.",
     "role": "Koşucu · Hamburg bölgesi, Almanya",
     "role_long": "Hamburg bölgesinden koşucu, Almanya (kapalı beta)",
-    "quote": "Zaten her sabah koşuyorum. MapRaiders ile her rotanın bir amacı var: bölgeyi tutmak ya da geri almak. Kardiyo motivasyonum patladı.",
+    "quote": "Zaten her sabah koşuyorum, ama artık bir şeyi de savunuyorum. Alster turum benim, öyle de kalsın. Tuhaf, bir anda ne kadar disiplin geliyor.",
     "date": "2026-03-22",
     "id_tr": "review-vivian-n-tr",
     "id_de": "review-vivian-n",
@@ -85,7 +85,7 @@ TESTER_ALJOSCHA = {
     "name": "Aljoscha P.",
     "role": "Şehir kâşifi · Berlin bölgesi, Almanya",
     "role_long": "Berlin bölgesinden şehir kâşifi, Almanya (kapalı beta)",
-    "quote": "Eko bırakmak ve kimin bulduğunu izlemek, tüm şehirde açık bir hazine avı gibi.",
+    "quote": "Bir kapı önüne kısa bir ses kaydı bırakıyorsun, üç gün sonra hiç tanımadığın biri onu bulmuş oluyor. Bir oyun için tuhaf biçimde samimi geliyor.",
     "date": "2026-04-01",
     "id_tr": "review-aljoscha-p-tr",
     "id_de": "review-aljoscha-p",
@@ -93,10 +93,12 @@ TESTER_ALJOSCHA = {
 ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 FOUNDER_QUOTE = (
-    "Pokémon GO'da hayal kırıklığına uğrayan oyunculardan biriydim. Geçici bir gym yakalaması "
-    "değil, gerçek bir bölge istiyordum. Adımlarımın Suudi egemen fonlarına satılmasını "
-    "istemiyordum, reklam modeli değil, zorunlu premium abonelik değil. Bu yüzden MapRaiders'ı "
-    "yaptım. Burası benim ev sahası — ve yakında sizinki olacak."
+    "Pokémon GO'yu üç yıl oynadım, sonra bir noktada bıraktım. "
+    "Bana eksik gelen şey hiç gelmedi: geçici gym'ler değil, gerçek toprak. "
+    "2025'te Suudi devralması haberi geldiğinde Niantic modelinin benim ilgilendiğim yöne "
+    "gitmediğini gördüm. O yüzden MapRaiders'ı kendim yapıyorum. "
+    "Reklamsız, yatırımcı baskısı yok, zorunlu abonelik yok. Benim mahallem benim sahamdır; "
+    "seninkini sen alabilirsin."
 )
 
 # Pricing TRY (Master-Plan §1.1)
@@ -214,7 +216,7 @@ def footer_html():
       <a href="/tr/gizlilik.html">Gizlilik</a><a href="/tr/kosullar.html">Koşullar</a><a href="/tr/kunye.html">Künye</a><a href="/tr/iletisim.html">İletişim</a>
     </div>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Senin sokağın, senin bölgen. Scafa Investments LLC ürünüdür.</p>
+  <p class="f-copy">&copy; 2026 MapRaiders. Senin sokağın, senin bölgen. Scafa Investments LLC ürünüdür.</p>
 </div>
 </footer>
 <script>
@@ -585,7 +587,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>"{page['trigger']['quote']}"</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
 
     pricing_pill = ""
@@ -664,9 +666,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">Puanlama</div>
-  <h2 class="sec-title rv d1">5,0 / 5 — <em>3 doğrulanmış beta yorumu</em></h2>
+  <h2 class="sec-title rv d1">5,0 / 5 yıldız: <em>3 doğrulanmış beta yorumu</em></h2>
   <div class="prose rv d2">
-    <p>Almanya'dan üç beta test kullanıcısı — bir köpek sahibi, bir koşucu ve bir şehir kâşifi — MapRaiders'ı haftalarca kullandı. Aşağıdaki yorumlar Almanca orijinallerinden çevrilmiştir ve kapalı betadaki gerçek kişileri temsil eder. Schema.org bunu şeffaflık için <code>translationOfWork</code> ile işaretler.</p>
+    <p>Almanya'dan üç beta test kullanıcısı, bir köpek sahibi, bir koşucu ve bir şehir kâşifi, MapRaiders'ı haftalarca kullandı. Aşağıdaki yorumlar Almanca orijinallerinden çevrilmiştir ve kapalı betadaki gerçek kişileri temsil eder. Schema.org bunu şeffaflık için <code>translationOfWork</code> ile işaretler.</p>
   </div>
 </div>
 </section>"""
@@ -744,7 +746,7 @@ def render_hub_page(page, all_killers, all_twins):
   <div class="sec-label rv">Konu Merkezi</div>
   <h2 class="sec-title rv d1">Tüm <em>MapRaiders konuları</em> bir arada</h2>
   <div class="prose rv d2">
-    <p>Burada 7 killer sayfa ve 7 yorum sayfası bulacaksın — Pokémon GO karşılaştırmasından hazine avı uygulamasına, bölge oyunundan mahalle oyununa kadar. Her sayfa bağımsız okunabilir; birlikte tüm tabloyu çizerler.</p>
+    <p>Burada 7 killer sayfa ve buna eşlik eden 7 yorum sayfası bulacaksın. Her biri MapRaiders'a farklı bir açıdan bakıyor: bir kez Pokémon GO alternatifi olarak, bir kez hazine avı uygulaması, bir kez koşu arkadaşı. İstediğin sayfayı tek başına okuyabilir veya konudan konuya geçebilirsin.</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -765,9 +767,9 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Toplu Puan</div>
-  <h2 class="sec-title rv d1">5,0 / 5 — <em>3 doğrulanmış beta yorumu</em></h2>
+  <h2 class="sec-title rv d1">5,0 / 5 yıldız: <em>3 doğrulanmış beta yorumu</em></h2>
   <div class="prose rv d2">
-    <p>Tüm yorumlar Şubat-Nisan 2026 kapalı beta aşamasından gelir. Üç test kullanıcısı — bir köpek sahibi, bir koşucu, bir şehir kâşifi — MapRaiders'ı Stuttgart, Hamburg ve Berlin'deki kendi rotalarında test etti. Yorumlar Almanca orijinallerinden çevrilmiştir; Schema.org şeffaflık için <code>translationOfWork</code> ile işaretler.</p>
+    <p>Tüm yorumlar Şubat ile Nisan 2026 arasındaki kapalı beta aşamasından gelir. Üç test kullanıcısı (bir köpek sahibi, bir koşucu, bir şehir kâşifi) MapRaiders'ı Stuttgart, Hamburg ve Berlin'deki kendi rotalarında test etti. Yorumlar Almanca orijinallerinden çevrilmiştir; Schema.org şeffaflık için <code>translationOfWork</code> ile işaretler.</p>
   </div>
 </div>
 </section>"""
@@ -828,17 +830,17 @@ def render_hub_page(page, all_killers, all_twins):
 K1 = {
     "slug": "/tr/bolge-oyunu.html",
     "breadcrumb": "Bölge Oyunu",
-    "title": "Bölge oyunu — gerçek toprağı fethet (Türkçe GPS MMO)",
-    "og_title": "Bölge oyunu — gerçek toprağı fethet",
-    "meta": "Bölge oyunu mobile uygulama. MapRaiders, gerçek toprağı sürekli fetheden tek GPS MMO. Reklam yok, ücretsiz, AR yok.",
+    "title": "Bölge oyunu: gerçek toprağı fethet (Türkçe GPS MMO)",
+    "og_title": "Bölge oyunu: gerçek toprağı fethet",
+    "meta": "Bölge oyunu mobile uygulama. MapRaiders, gerçek toprağı kalıcı olarak fethettiren bir GPS MMO. Reklam yok, ücretsiz, AR yok.",
     "keywords": "bölge oyunu, bolge oyunu, mahalle oyunu, gps mmo türkçe, konum tabanlı oyun",
     "badge": "Bölge Oyunu",
-    "pricing_pill": "Sonsuza kadar ücretsiz · Kozmetik 49 TL'den",
+    "pricing_pill": "Sonsuza kadar ücretsiz. Kozmetik 49 TL'den.",
     "h1_html": 'Senin sokağın. <em>Senin bölgen.</em>',
-    "lead": "MapRaiders, gerçek GPS alanını gerçek bölgeye dönüştüren tek bölge oyunudur. Yürüyerek talep et, mini oyunlarla savun, klanınla birlikte tut. Reklam yok, P2W yok, KVKK uyumlu.",
+    "lead": "MapRaiders, gerçek GPS alanını kalıcı bölgeye dönüştüren bir oyun. Yürüyerek talep et, mini oyunlarla savun, klanınla birlikte tut. Reklam yok, pay-to-win mantığı yok, KVKK uyumlu olarak hazırlandı.",
     "trigger": {
-        "quote": "Senin sokağın senin bölgen.",
-        "author": "MapRaiders Marka Vizyonu"
+        "quote": "Zaten her sabah koşuyorum, ama artık bir şeyi de savunuyorum. Alster turum benim, öyle de kalsın.",
+        "author": "Vivian N., Hamburg bölgesinden koşucu (kapalı beta)"
     },
     "testers": [TESTER_RON, TESTER_VIVIAN],
     "sections": [
@@ -846,13 +848,13 @@ K1 = {
             "label": "Bölge oyunu nedir?",
             "title": "Gerçek bir <em>bölge oyununun</em> 4 mekaniği",
             "body": """
-    <p><strong>Bölge oyunu</strong>, oyuncuların harita üzerinde kalıcı olarak alan sahiplendiği, savunduğu ve genişlettiği oyun türüdür. Pokémon GO'daki gym yakalamalarından farklı olarak <strong>kalıcılık</strong> esastır — oyuncu çevrimdışı olduğunda da bölge sahipliği devam eder.</p>
+    <p><strong>Bölge oyunu</strong>, oyuncuların harita üzerinde kalıcı olarak alan sahiplendiği, savunduğu ve genişlettiği oyun türüdür. Pokémon GO'daki gym yakalamalarından farklı olarak <strong>kalıcılık</strong> esastır: oyuncu çevrimdışı olduğunda da bölge sahipliği devam eder.</p>
     <p>Gerçek bir bölge oyununu tanımlayan dört temel mekanik:</p>
     <ul>
       <li><strong>Kalıcılık.</strong> Fethedilmiş alanlar, aktif olarak ele geçirilmedikçe oyuncuya veya klana atanmış kalır.</li>
-      <li><strong>Bölge çürümesi.</strong> Aktif olmayan bölgeler zamanla küçülür — kimse oynayarak hak kazanmadan kalıcı olarak alan tutamaz.</li>
-      <li><strong>Savunma.</strong> Bir saldırı sırasında iki oyuncu arasında bir mini oyun karar verir — otomatik istatistik karşılaştırması değil.</li>
-      <li><strong>Klan devirleri.</strong> Bölgeler oyunculara veya bir klana devredilebilir — ekonomik derinlik.</li>
+      <li><strong>Bölge çürümesi.</strong> Aktif olmayan bölgeler zamanla küçülür. Aktif oynamadan kimse alan tutamaz.</li>
+      <li><strong>Savunma.</strong> Bir saldırı sırasında iki oyuncu arasında bir mini oyun karar verir, otomatik istatistik karşılaştırması değil.</li>
+      <li><strong>Klan devirleri.</strong> Bölgeler oyunculara veya bir klana devredilebilir. Bu da ekonomik derinlik açar.</li>
     </ul>
             """,
         },
@@ -861,32 +863,32 @@ K1 = {
             "title": "MapRaiders'ın <em>bölge sistemi</em>",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Talep et</h3><p>Yürüyerek, koşarak veya bisikletle bir sokaktan geç. GPS izi adına bölgeyi oluşturur — haritada görünür çokgen olarak.</p></div>
-    <div class="feat-card rv d1"><h3>Çürüme motoru</h3><p>Düzenli geçilmeyen bölge günlük yüzde olarak küçülür. Aktivite araziyi tutar — ödeme değil.</p></div>
-    <div class="feat-card rv d2"><h3>Savunma mini oyunları</h3><p>7 farklı mini oyun saldırılara karar verir: XOX, taş-kâğıt-makas, mini satranç. Strateji, sürüden daha önemli.</p></div>
-    <div class="feat-card rv d3"><h3>Klan bölgeleri</h3><p>Birden fazla oyuncu bir bölgeyi birlikte tutabilir. Klan alanları daha sağlamdır — tek bir saldırgan kırmaz.</p></div>
+    <div class="feat-card rv"><h3>Talep et</h3><p>Yürüyerek, koşarak veya bisikletle bir sokaktan geç. GPS izi adına bölgeyi oluşturur, haritada görünür bir çokgen olarak.</p></div>
+    <div class="feat-card rv d1"><h3>Çürüme motoru</h3><p>Düzenli geçilmeyen bölge günlük olarak yüzdelik biçimde küçülür. Araziyi aktivite tutar, ödeme değil.</p></div>
+    <div class="feat-card rv d2"><h3>Savunma mini oyunları</h3><p>7 farklı mini oyun saldırılara karar verir: XOX, taş-kâğıt-makas, mini satranç. Oynama süresinden çok strateji önemli.</p></div>
+    <div class="feat-card rv d3"><h3>Klan bölgeleri</h3><p>Birden fazla oyuncu bir bölgeyi birlikte tutabilir. Klan alanları daha sağlamdır, tek bir saldırgan kırmaya yetmez.</p></div>
   </div>""",
         },
         {
             "label": "Pokémon GO'dan farkı",
             "title": "Pokémon GO neden <em>gerçek bir bölge oyunu değildir</em>",
             "body": """
-    <p><strong>Pokémon GO gym yakalamaları</strong> geçicidir: Birkaç saat boyunca en yüksek skoru tutan kişi koin kazanır — ancak bölge gerçek anlamda bir arazi değildir. Gym bir noktadır, alan değil.</p>
-    <p>MapRaiders tam bu noktada başlar: <strong>Bölge, oyun kaynağıdır</strong>, üzerindeki nokta değil. Toprak kazanırsın, toprak kaybedersin, toprak devredersin — gerçek bir mekânsal oyun gibi.</p>
+    <p><strong>Pokémon GO gym yakalamaları</strong> geçicidir: birkaç saat boyunca en yüksek skoru tutan kişi koin kazanır, ancak bölge gerçek anlamda bir arazi değildir. Gym bir noktadır, alan değil.</p>
+    <p>MapRaiders tam bu noktada başlar. <strong>Bölge, oyun kaynağıdır</strong>, üzerindeki nokta değil. Toprak kazanırsın, toprak kaybedersin, toprak devredersin. Mekânsal bir oyunda olması gerektiği gibi.</p>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders'da bölge sistemi nasıl çalışır?",
-         "a": "Fiziksel olarak sokaklardan geçer ve GPS alanlarını talep edersin. Bu bölgeler canlı haritada görünür ve sana aittir — başka bir oyuncu gelip seni meydan okumadığı sürece. Başarılı savunma yaparsan alan senin kalır."},
+         "a": "Fiziksel olarak sokaklardan geçer ve GPS alanlarını talep edersin. Bu bölgeler canlı haritada görünür ve başka bir oyuncu gelip seni meydan okumadığı sürece sana aittir. Başarılı savunma yaparsan alan senin kalır."},
         {"q": "Bölgemi kaybedebilir miyim?",
-         "a": "Evet. Bölge çürüme sistemi, aktif olmayan alanların günlük olarak küçülmesini sağlar. Aktif kalıp alanını düzenli olarak gezenler tutar; bırakanlar kaybeder. Bu haritayı canlı tutar."},
+         "a": "Evet. Bölge çürüme sistemi, aktif olmayan alanların günlük olarak küçülmesini sağlar. Düzenli olarak alanını gezenler bölgesini tutar, bırakanlar kaybeder. Böylece harita canlı kalır."},
         {"q": "Bölgesel saldırıda ne olur?",
-         "a": "Saldırgan fiziksel olarak bölgene gelmek zorundadır. Sonra interaktif bir mini oyun başlar — savunan ve saldıran karşılıklı oynar. Mini oyunu kazanan, alanın kaderine karar verir."},
+         "a": "Saldırgan fiziksel olarak bölgene gelmek zorundadır. Sonra savunan ile saldıranın karşılıklı oynadığı bir mini oyun başlar. Mini oyunu kazanan, alanın kaderine karar verir."},
         {"q": "Klan bölgeleri sistemi var mı?",
-         "a": "Evet. MapRaiders'daki klanlar organik olarak oluşur ve bölgeleri birlikte talep edebilir. Klan alanları daha güçlüdür ve birden fazla saldırgan gerektirir. Takım çalışması karşılığını verir."},
+         "a": "Evet. MapRaiders'daki klanlar organik olarak oluşur ve bölgeleri birlikte talep edebilir. Klan alanları daha güçlüdür, birden fazla saldırganın koordineli hareket etmesini gerektirir. Takım çalışması karşılığını verir."},
         {"q": "Bölge oyunu ücretsiz mi?",
-         "a": "Evet. Tüm bölge oynanışı ücretsizdir. İsteğe bağlı olarak işaretçi tasarımları ve bölge renkleri için kozmetik ürünler vardır (49-249 TL) — oyun avantajı vermezler."},
+         "a": "Evet. Tüm bölge oynanışı ücretsizdir. İsteğe bağlı olarak işaretçi tasarımları ve bölge renkleri için kozmetik ürünler vardır (49 ile 249 TL arası). Bunlar oyun avantajı vermez, sadece görseldir."},
     ],
     "internal_links": [
         ("/tr/konum-tabanli-oyun.html", "Konum tabanlı oyun karşılaştırması"),
@@ -901,34 +903,34 @@ K1 = {
 K2 = {
     "slug": "/tr/konum-tabanli-oyun.html",
     "breadcrumb": "Konum Tabanlı Oyun",
-    "title": "Konum tabanlı oyun 2026 — 7 en iyi GPS oyun karşılaştırma",
-    "og_title": "Konum tabanlı oyun 2026 — 7 GPS oyun karşılaştırma",
-    "meta": "Konum tabanlı oyun 2026: gerçek bölge, reklam yok, P2W yok. MapRaiders + 6 alternatif karşılaştırma. Türkçe tam destek.",
+    "title": "Konum tabanlı oyun 2026: 7 GPS oyun karşılaştırması",
+    "og_title": "Konum tabanlı oyun 2026: 7 GPS oyun karşılaştırması",
+    "meta": "Konum tabanlı oyun 2026: gerçek bölge, reklam yok, pay-to-win yok. MapRaiders ve 6 alternatifin karşılaştırması. Türkçe tam destek.",
     "keywords": "konum tabanlı oyun, konum bazlı oyun, gps oyun, location based game türkçe, harita oyunu",
     "badge": "Konum Tabanlı Oyun",
-    "pricing_pill": "Ücretsiz · KVKK uyumlu · Reklam yok",
-    "h1_html": 'Konum tabanlı oyun — <em>gerçek harita</em> oyun alanın',
-    "lead": "Konum tabanlı oyun, GPS ile dünyayı oyun alanına çevirir. Ama çoğu uygulama yalnızca konum verisini reklam için topluyor. MapRaiders gerçek bir mekânsal oyun kuruyor — bölgeler, ekolar, görevler ve savunma mini oyunları ile.",
+    "pricing_pill": "Ücretsiz. KVKK uyumlu. Reklam yok.",
+    "h1_html": 'Konum tabanlı oyun: <em>gerçek harita</em> senin oyun alanın',
+    "lead": "Konum tabanlı bir oyun, GPS ile şehri oyun alanına çevirir. Çoğu uygulama bunu sadece konum verisini reklam için toplama bahanesi olarak kullanıyor. MapRaiders bölgeleri, ekoları, görevleri ve savunma mini oyunlarını birleştirerek gerçekten mekânsal bir oyun kuruyor.",
     "trigger": {
-        "quote": "Senin sokağın senin bölgen.",
-        "author": "MapRaiders Marka Vizyonu"
+        "quote": "Bir kapı önüne kısa bir ses kaydı bırakıyorsun, üç gün sonra hiç tanımadığın biri onu bulmuş oluyor.",
+        "author": "Aljoscha P., Berlin bölgesinden şehir kâşifi (kapalı beta)"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
             "label": "7 oyun karşılaştırma",
-            "title": "2026'nın <em>7 en iyi</em> konum tabanlı oyunu",
-            "body": "<p>Çoğu liste rastgele uygulamalar topluyor. Biz dürüst karşılaştırıyoruz — kim ne için iyi:</p>",
+            "title": "2026'nın <em>7 dikkate değer</em> konum tabanlı oyunu",
+            "body": "<p>Çoğu liste rastgele uygulamaları yan yana koyuyor. Aşağıda kim ne için iyi, daha dürüst bir bakış:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead>
       <tr><th>#</th><th>Oyun</th><th>Yapımcı</th><th>Reklamsız</th><th>Gerçek bölge</th><th>KVKK</th></tr>
     </thead>
     <tbody>
       <tr><td>1</td><td class="feat-name">MapRaiders</td><td>Scafa Investments LLC</td><td class="check">✓</td><td class="check">✓ kalıcı</td><td class="check">✓</td></tr>
-      <tr><td>2</td><td class="feat-name">Pokémon GO</td><td>Niantic / Scopely (Suudi-PIF)</td><td class="cross">✗</td><td class="cross">Geçici gym</td><td class="cross">Suudi-PIF</td></tr>
+      <tr><td>2</td><td class="feat-name">Pokémon GO</td><td>Niantic / Scopely (Suudi PIF iştiraki)</td><td class="cross">✗</td><td class="cross">Geçici gym</td><td class="cross">Suudi PIF</td></tr>
       <tr><td>3</td><td class="feat-name">Turf Wars</td><td>Cazoodle</td><td class="cross">✗</td><td>Sınırlı</td><td>Bilinmiyor</td></tr>
-      <tr><td>4</td><td class="feat-name">Ingress Prime</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">Portal noktaları</td><td class="cross">Suudi-PIF</td></tr>
-      <tr><td>5</td><td class="feat-name">Pikmin Bloom</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">Suudi-PIF</td></tr>
+      <tr><td>4</td><td class="feat-name">Ingress Prime</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">Portal noktaları</td><td class="cross">Suudi PIF</td></tr>
+      <tr><td>5</td><td class="feat-name">Pikmin Bloom</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">Suudi PIF</td></tr>
       <tr><td>6</td><td class="feat-name">Geocaching</td><td>Groundspeak</td><td class="check">✓</td><td class="cross">Cache, alan değil</td><td>Premium ödüllü</td></tr>
       <tr><td>7</td><td class="feat-name">Wokamon</td><td>SilkroadGames</td><td class="cross">✗</td><td class="cross">✗</td><td>Bilinmiyor</td></tr>
     </tbody>
@@ -936,34 +938,34 @@ K2 = {
         },
         {
             "label": "MapRaiders farkı",
-            "title": "MapRaiders'ı <em>diğerlerinden</em> ayıran 4 nokta",
+            "title": "MapRaiders'ı <em>diğerlerinden</em> ayıran noktalar",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Kalıcı bölge</h3><p>Bir sokağı fethettiğinde sana ait olur — biri geri almadan veya çürüme başlamadan. Geçici gym yakalama yok.</p></div>
-    <div class="feat-card rv d1"><h3>AR yerine eko</h3><p>Gerçek konumlara ses, fotoğraf veya video ekoları bırak. Diğer oyuncular keşfeder. Pil tüketen AR yok.</p></div>
-    <div class="feat-card rv d2"><h3>7 savunma mini oyunu</h3><p>Saldırıda XOX, taş-kâğıt-makas veya mini satranç karar verir. Oyun süresi yerine strateji.</p></div>
-    <div class="feat-card rv d3"><h3>Organik klanlar</h3><p>Klanlar Discord sunucularından değil, mahalleden doğar. Aynı sokakta yürüyenler müttefik olur.</p></div>
+    <div class="feat-card rv"><h3>Kalıcı bölge</h3><p>Bir sokağı fethettiğinde, biri seni alana kadar veya çürüme başlayana kadar sana aittir. Birkaç saatte uçup giden gym yok.</p></div>
+    <div class="feat-card rv d1"><h3>AR yerine eko</h3><p>Gerçek konumlara ses, fotoğraf veya video ekosu bırak. Diğer oyuncular oradan geçince keşfeder. Kameraya gerek yok, pil de yorulmuyor.</p></div>
+    <div class="feat-card rv d2"><h3>7 savunma mini oyunu</h3><p>Saldırı geldiğinde XOX, taş-kâğıt-makas veya mini satranç karar verir. Saatlerce oynayan değil, kafa kullanan kazanır.</p></div>
+    <div class="feat-card rv d3"><h3>Organik klanlar</h3><p>Klanlar aynı Discord sunucusundan değil, aynı sokakta yürüyen insanlardan doğar. Yani algoritma yerine mekânsal yakınlık.</p></div>
   </div>""",
         },
         {
             "label": "Suudi-Niantic sorunu",
-            "title": "Mart 2025'te <em>Pokémon GO Suudi'ye satıldı</em>",
+            "title": "Mart 2025'te <em>Pokémon GO el değiştirdi</em>",
             "body": """
-    <p>Mart 2025'te Niantic, oyun bölümünü (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) 3,5 milyar dolara Scopely'ye sattı. Scopely, Suudi Arabistan Public Investment Fund'ın (PIF) bir iştirakidir — yani resmi olarak Suudi devletinin kontrolündeki bir varlık.</p>
-    <p>Somut olarak bu, <strong>30 milyondan fazla aylık Pokémon GO oyuncusunun konum verilerinin</strong> — nerede koşuyor, ne zaman köpeğini gezdiriyor, hangi rotaları her gün yürüyor — Scopely'nin altyapısı üzerinden işlendiği anlamına gelir. KVKK kapsamında AB dışındaki devlet fonu yakın aktörlerine karşı koruma yoktur.</p>
-    <p>MapRaiders, <strong>özel mülkiyetteki</strong> bir ABD LLC'sidir (Scafa Investments LLC, Florida) ve bağımsız bir ekip tarafından geliştirilmiştir. Sunucular AB uyumlu, veri satışı yok, reklam ağı bağlı değil, devlet kontrolünde değil.</p>
+    <p>Mart 2025'te Niantic, oyun bölümünü (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) 3,5 milyar dolara Scopely'ye sattı. Scopely, Suudi Arabistan Public Investment Fund'ın (PIF) bir iştiraki, yani resmi olarak devlet kontrolündeki bir holdingin parçası.</p>
+    <p>Somut olarak bu, <strong>aylık 30 milyondan fazla Pokémon GO oyuncusunun konum verisinin</strong> (kim nerede koşuyor, köpeğini ne zaman gezdiriyor, hangi rotaları her gün yürüyor) Scopely'nin altyapısı üzerinden işlendiği anlamına geliyor. AB dışındaki devlet fonu yakın aktörlere karşı KVKK doğrudan koruma sağlamıyor.</p>
+    <p>MapRaiders, <strong>özel mülkiyetteki</strong> bir ABD LLC'sidir (Scafa Investments LLC, Florida) ve bağımsız bir ekip tarafından geliştirilir. Sunucular AB uyumlu, veri satışı yok, reklam ağı bağlı değil, devlet kontrolünde de değil.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Konum tabanlı oyun nedir?",
-         "a": "Konum tabanlı oyun, cihazın GPS konumunu oyun mekaniği için kullanan oyundur. MapRaiders bölgeleri, ekoları ve görevleri gerçek yerlere bağlamak için GPS kullanır — gerçek şehir oyun alanına dönüşür."},
+         "a": "Konum tabanlı oyun, cihazın GPS konumunu oyun mekaniği için kullanan oyun türüdür. MapRaiders bölgeleri, ekoları ve görevleri gerçek yerlere bağlamak için GPS kullanır. Yani gerçek şehir senin oyun alanına dönüşür."},
         {"q": "Türkçe tam destek var mı?",
-         "a": "Evet. MapRaiders tamamen Türkçe yerelleştirilmiştir — menüler, ekolar sistemi, ipuçları, destek. Tüm fontlar TR karakterlerini (ç ş ğ ı ö ü) destekler."},
+         "a": "Evet. MapRaiders tamamen Türkçe yerelleştirilmiştir: menüler, eko sistemi, ipuçları, destek. Tüm fontlar Türkçe karakterleri (ç ş ğ ı ö ü) düzgün gösterir."},
         {"q": "AR (artırılmış gerçeklik) gerekli mi?",
-         "a": "Hayır. MapRaiders bilinçli olarak AR'sizdir. Sadece GPS ve haritayı kullanır. Bu pil ömrünü ve mahremiyeti korur — kamera yok, yüz görüntüleri yok."},
+         "a": "Hayır. MapRaiders bilinçli olarak AR kullanmadan kuruldu. Sadece GPS ve harita kullanılır. Bu hem pil ömrünü hem de mahremiyeti korur: kamera yok, yüz görüntüsü yok."},
         {"q": "Türkiye'nin her şehrinde çalışır mı?",
-         "a": "Evet. OpenStreetMap verilerinin olduğu her yerde çalışır (yani Türkiye'nin her yerinde). İstanbul, Ankara, İzmir gibi büyük şehirlerde oyuncu yoğunluğu daha yüksek; kırsal bölgelerde rekabet az ama bölgeler büyük."},
+         "a": "Evet. OpenStreetMap verilerinin olduğu her yerde çalışır, yani fiilen Türkiye'nin her yerinde. İstanbul, Ankara, İzmir gibi büyük şehirlerde oyuncu yoğunluğu daha yüksek. Kırsal bölgelerde rekabet daha az, bölgeler ise daha geniş."},
         {"q": "KVKK uyumlu mu?",
          "a": "Evet. Veri satışı yok, reklam SDK'sı yok, üçüncü ülkelere onaysız veri aktarımı yok. KVKK kapsamındaki haklarını (bilgi alma, silme) info@scafa-investments.com adresinden 30 gün içinde kullanabilirsin."},
     ],
@@ -983,17 +985,17 @@ K2 = {
 K3 = {
     "slug": "/tr/pokemon-go-alternatif-ucretsiz.html",
     "breadcrumb": "Pokémon GO Alternatif Ücretsiz",
-    "title": "Pokémon GO alternatif ücretsiz — reklam yok, fake GPS yok",
-    "og_title": "Pokémon GO alternatif ücretsiz — bağımsız + KVKK",
-    "meta": "Pokémon GO alternatifi ücretsiz arıyorsanız: MapRaiders %100 ücretsiz, reklam yok, gerçek bölge. Suudi sahipliğinden bağımsız.",
+    "title": "Pokémon GO alternatifi ücretsiz: reklam yok, fake GPS yok",
+    "og_title": "Pokémon GO alternatifi ücretsiz: bağımsız ve KVKK uyumlu",
+    "meta": "Pokémon GO alternatifi ücretsiz arıyorsanız: MapRaiders tamamen ücretsiz, reklamsız, gerçek bölge sistemiyle çalışır. Suudi sahipliğinden bağımsız bir alternatif.",
     "keywords": "pokemon go alternatif, pokemon go alternatifi ücretsiz, pokemon go yerine, gps oyun ücretsiz",
     "badge": "Ücretsiz Alternatif",
-    "pricing_pill": "0 TL oynanış · Kozmetik isteğe bağlı",
-    "h1_html": 'Pokémon GO alternatif <em>ücretsiz</em> — reklam, abonelik ve Suudi-yatırımcı yok',
-    "lead": "Pokémon GO Battle Pass'siz, Remote Raid Pass çılgınlığısız ve reklamsız bir alternatif arayanlar genellikle bir sonraki premium tuzağa düşer. MapRaiders bunu tersine çevirir: Tüm temel oynanış ücretsizdir ve öyle kalır. Tier sistemi yok, zorunlu abonelik yok, veri satışı yok.",
+    "pricing_pill": "0 TL oynanış. Kozmetik isteğe bağlı.",
+    "h1_html": 'Pokémon GO alternatifi <em>ücretsiz</em>: reklam, zorunlu abonelik ve Suudi yatırımcı olmadan',
+    "lead": "Battle Pass baskısı ve Remote Raid Pass tartışması olmayan bir Pokémon GO alternatifi arayanlar genellikle başka bir premium tuzağa düşüyor. MapRaiders bunu tersine çevirir: temel oynanışın tamamı ücretsizdir ve öyle kalır. Tier sistemi yok, zorunlu abonelik yok, veri satışı yok.",
     "trigger": {
-        "quote": "Reklam yok, veri yok, P2W yok.",
-        "author": "MapRaiders gizlilik USP"
+        "quote": "Köpeğim zaten günde iki kez dışarı çıkmak zorunda, ben de yanıma blokumu alıyorum artık. Saçma geliyor biliyorum, ama her akşam kısa bir bakıyorum hâlâ her yer mavi mi diye.",
+        "author": "Ron C., Stuttgart bölgesinden köpek sahibi (kapalı beta)"
     },
     "testers": [TESTER_VIVIAN, TESTER_ALJOSCHA],
     "sections": [
@@ -1001,49 +1003,49 @@ K3 = {
             "label": "Neden alternatif?",
             "title": "Türk oyuncuların 2026'da neden <em>alternatif aradığı</em>",
             "body": """
-    <p>Üç ana acı noktası 2024-2026'da pazarı olgunlaştırdı:</p>
+    <p>2024 ile 2026 arasında üç acı nokta pazarı olgunlaştırdı:</p>
     <ul>
-      <li><strong>Battle Pass hayal kırıklığı.</strong> Ödemeden sınırlı kullanılabilen sezonluk pass'ler. Atlayan ödüllerini sonsuza dek kaybeder.</li>
-      <li><strong>Remote Raid Pass tartışması.</strong> Niantic 2023'te fiyatları artırıp kullanılabilirliği azalttı — bir oyuncu dalgası ayrıldı.</li>
-      <li><strong>Mart 2025 Suudi-acquisition.</strong> Niantic Pokémon GO'yu Scopely'ye (Suudi-PIF) sattı. Milyonlarca oyuncunun konum verisi artık dolaylı olarak yabancı bir devlet fonuna gidiyor.</li>
+      <li><strong>Battle Pass hayal kırıklığı.</strong> Ödemesiz işlemeyen sezonluk pass'ler. Bir sezonu atlayanın ödülleri kalıcı olarak kaybediliyor.</li>
+      <li><strong>Remote Raid Pass tartışması.</strong> Niantic 2023'te fiyatları artırıp kullanılabilirliği azalttı, bunun üzerine bir oyuncu dalgası oyunu bıraktı.</li>
+      <li><strong>Mart 2025 devri.</strong> Niantic, oyun bölümünü Suudi PIF iştiraki Scopely'ye sattı. Milyonlarca oyuncunun konum verisi o günden beri dolaylı olarak yabancı bir devlet fonu üzerinden işleniyor.</li>
     </ul>
             """,
         },
         {
             "label": "Ücretsiz ne demek?",
             "title": "MapRaiders'da <em>&bdquo;ücretsiz&rdquo;</em> gerçekten ne demek",
-            "body": "<p>Tier'leri şeffafça adlandırırız — gizli ödeme duvarı yok, 10 dakika sonra eğitim kilidi yok:</p>",
+            "body": "<p>Tier'leri şeffafça açıklıyoruz: gizli ödeme duvarı yok, 10 dakika sonra eğitim kilidi yok:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Tier</th><th>Ne</th><th>Fiyat (TL, KDV dâhil)</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">Sonsuza Kadar Ücretsiz</td><td>%100 oynanış (bölgeler, ekolar, görevler, klanlar, savunma, etkinlikler)</td><td>0 TL</td></tr>
-      <tr><td class="feat-name">Kozmetik IAP</td><td>İşaretçi tasarımları, bölge renkleri, klan amblemleri, kostümler</td><td>49 - 249 TL</td></tr>
-      <tr><td class="feat-name">MapRaiders Destekçi (Abonelik)</td><td>Onur rozeti, beta erişim, kurucu mektubu, aylık kozmetik paket</td><td>119 TL/ay</td></tr>
-      <tr><td class="feat-name">Ömürlük Destekçi</td><td>Koleksiyoner kozmetik + jenerikte adın</td><td>2.990 TL tek seferlik</td></tr>
+      <tr><td class="feat-name">Sonsuza Kadar Ücretsiz</td><td>Tüm oynanış (bölgeler, ekolar, görevler, klanlar, savunma, etkinlikler)</td><td>0 TL</td></tr>
+      <tr><td class="feat-name">Kozmetik IAP</td><td>İşaretçi tasarımları, bölge renkleri, klan amblemleri, kostümler</td><td>49 ile 249 TL arası</td></tr>
+      <tr><td class="feat-name">MapRaiders Destekçi (Abonelik)</td><td>Onur rozeti, beta erişim, kurucu mektubu, aylık kozmetik paket</td><td>119 TL / ay</td></tr>
+      <tr><td class="feat-name">Ömürlük Destekçi</td><td>Koleksiyoner kozmetik ve jenerikte adın</td><td>Tek seferlik 2.990 TL</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Önemli:</strong> Kozmetik ürünler hiçbir oyun avantajı vermez. Hiç satın almayan, Ömürlük Destekçi ile aynı mekanikleri oynar.</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Önemli:</strong> Kozmetik ürünler hiçbir oyun avantajı vermez. Hiç satın almayan biri, Ömürlük Destekçi ile aynı mekanikleri oynar.</p>""",
         },
         {
             "label": "Suudi-Niantic sorusu",
-            "title": "<em>Suudi-Niantic</em> sorusu — verilerinle ne oluyor?",
+            "title": "<em>Suudi-Niantic</em> sorusu: verilerinle ne oluyor?",
             "body": """
-    <p>Niantic Mart 2025'te oyun bölümünü 3,5 milyar dolara Scopely'ye sattı. Scopely, Suudi Public Investment Fund (PIF) iştirakidir — yani Suudi Arabistan'ın devlet kontrollü varlığıdır.</p>
-    <p>MapRaiders <strong>özel mülkiyetteki</strong> bir ABD LLC'sidir (Scafa Investments LLC, Florida). AB-uyumlu sunucular, veri satışı yok, reklam ağı yok, devlet kontrolünde değil.</p>
+    <p>Niantic Mart 2025'te oyun bölümünü 3,5 milyar dolara Scopely'ye sattı. Scopely, Suudi Public Investment Fund'ın (PIF) bir iştiraki, yani Suudi Arabistan'ın devlet kontrolündeki bir holdingin parçası.</p>
+    <p>MapRaiders ise <strong>özel mülkiyetteki</strong> bir ABD LLC'sidir (Scafa Investments LLC, Florida). AB uyumlu sunucular, veri satışı yok, reklam ağı yok, devlet kontrolünde de değil.</p>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders gerçekten sonsuza dek ücretsiz mi?",
-         "a": "Evet. Tüm temel oynanış — bölge fethi, eko bırakma, görev oluşturma, klan kurma — sonsuza dek ücretsiz kalır. Tier sistemi yok, Battle Pass yok, abonelik zorunluluğu yok."},
+         "a": "Evet. Temel oynanış (bölge fethi, eko bırakma, görev oluşturma, klan kurma) sonsuza dek ücretsiz kalır. Tier sistemi yok, Battle Pass yok, abonelik zorunluluğu yok."},
         {"q": "Kozmetik IAP ne kadar?",
-         "a": "İşaretçi tasarımları, bölge renkleri veya klan amblemleri gibi kozmetik ürünler 49 ile 249 TL arasındadır (KDV dâhil). Hiçbir oyun avantajı vermezler, sadece görsel."},
+         "a": "İşaretçi tasarımları, bölge renkleri veya klan amblemleri gibi kozmetik ürünler 49 ile 249 TL arasındadır (KDV dâhil). Hiçbir oyun avantajı vermezler, sadece görsel değişiklik sağlarlar."},
         {"q": "Uygulamada reklam var mı?",
-         "a": "Hayır. MapRaiders %100 reklamsızdır. Veri ya da reklam alanı satmıyoruz."},
-        {"q": "&bdquo;Suudi-yatırımcısız&rdquo; ne demek?",
-         "a": "Mart 2025'te Niantic, oyun bölümünü 3,5 milyar dolara Scopely'ye (Suudi PIF iştiraki) sattı. 30+ milyon aylık Pokémon GO oyuncusunun konum verileri o zamandan beri dolaylı olarak yabancı bir devlet fonuna gidiyor. MapRaiders özel mülkiyette bir ABD LLC'sidir ve devlet kontrolünde değildir."},
+         "a": "Hayır. MapRaiders tamamen reklamsızdır. Ne veri ne de reklam alanı satıyoruz."},
+        {"q": "&bdquo;Suudi yatırımcısız&rdquo; ne demek?",
+         "a": "Mart 2025'te Niantic, oyun bölümünü 3,5 milyar dolara Scopely'ye sattı. Scopely, Suudi PIF iştirakidir. Aylık 30 milyondan fazla Pokémon GO oyuncusunun konum verisi o zamandan beri dolaylı olarak yabancı bir devlet fonu üzerinden işleniyor. MapRaiders ise özel mülkiyetteki bir ABD LLC'sidir ve devlet kontrolünde değildir."},
         {"q": "MapRaiders'ın arkasında kim var?",
-         "a": "René Scafarti (Kurucu, Scafa Investments LLC) ve küçük bağımsız bir ekip. Yatırımcı yok, devlet yok, reklam ağı yok."},
+         "a": "René Scafarti (Kurucu, Scafa Investments LLC) ve küçük bağımsız bir ekip. Dış yatırımcı, devlet katılımı veya reklam ağı yok."},
     ],
     "internal_links": [
         ("/tr/bolge-oyunu.html", "Bölge oyunu nedir"),
@@ -1058,14 +1060,14 @@ K3 = {
 K4 = {
     "slug": "/tr/fake-gps-olmadan-oyun.html",
     "breadcrumb": "Fake GPS Olmadan Oyun",
-    "title": "Fake GPS olmadan oyun — adil GPS MMO (anti-cheat)",
-    "og_title": "Fake GPS olmadan oyun — adil GPS MMO",
-    "meta": "Fake GPS olmadan oyun: MapRaiders dürüst alternatif. PGSharp, MocPOGO yok. Burada yürümek oyun.",
+    "title": "Fake GPS olmadan oyun: adil GPS MMO (anti-cheat)",
+    "og_title": "Fake GPS olmadan oyun: adil GPS MMO",
+    "meta": "Fake GPS olmadan oyun: MapRaiders dürüst bir alternatif. PGSharp veya MocPOGO ile koşacağına gerçekten yürürsün, oyun da bu temele dayanıyor.",
     "keywords": "fake gps olmadan oyun, hile yapmadan gps oyun, anti cheat gps oyun, dürüst gps mmo, pgsharp alternatifi",
-    "badge": "Anti-Cheat · TR Özel",
-    "pricing_pill": "Adil oyun · Hile yok · Yürümek = oyun",
-    "h1_html": 'Fake GPS olmadan oyun — burada <em>herkes adil oynar</em>',
-    "lead": "Türkiye'de PGSharp, MocPOGO ve diğer fake-GPS araçları bir karaborsadan ibaret. Pokémon GO oyuncuları evlerinden çıkmadan gym'leri yakalıyor — gerçek yürüyenlere haksızlık. MapRaiders bu sorunu kökten çözer: Sadece gerçek hareket bölge verir. Hile motivasyonu yok.",
+    "badge": "Anti-Cheat (TR'ye özel)",
+    "pricing_pill": "Adil oyun. Hile anlamsız. Yürümek = oynamak.",
+    "h1_html": 'Fake GPS olmadan oyun: burada <em>herkes adil oynar</em>',
+    "lead": "Türkiye'de PGSharp, MocPOGO ve diğer fake-GPS araçları neredeyse bir karaborsa haline geldi. Pokémon GO oyuncuları evden çıkmadan gym yakalıyor, bu da gerçekten yürüyenlere haksızlık. MapRaiders bu sorunu kökten çözer: bölge yalnızca gerçek hareketle gelir, hile yapmanın anlamı kalmaz.",
     "trigger": {
         "quote": "Fake GPS gerek yok. Burada herkes adil oynar.",
         "author": "MapRaiders Adil Oyun İlkesi"
@@ -1076,23 +1078,23 @@ K4 = {
             "label": "TR fake-GPS gerçeği",
             "title": "Türkiye'de <em>fake-GPS karaborsası</em>",
             "body": """
-    <p>Türk oyuncu topluluklarında — Discord, Telegram, Ekşi Sözlük — fake-GPS araçları açıkça konuşulur. PGSharp aboneliği, MocPOGO yıllık paketleri, root edilmiş Android cihazları için iSpoofer klonları. Bunların hepsi <strong>Pokémon GO'da</strong> yıllardır var olan bir sorun.</p>
-    <p>Niantic'in tepkisi: Banlama dalgaları, ileri tespit, üç-strike sistemi. Ama temel sorun çözülmedi — <strong>fake-GPS oyunun temel mekaniğine bir hile sunduğu sürece</strong>, yenisi her zaman gelir.</p>
-    <p>Sonuç: Adil oyuncular sürekli hile yapanlarla karşılaşır. Gerçek yürümek için zaman ayıran biri, fake-GPS kullanan birinden geri kalır. Bu, oyun deneyimini bozar.</p>
+    <p>Türk oyuncu topluluklarında (Discord, Telegram, Ekşi Sözlük) fake-GPS araçları açıkça konuşulur: PGSharp aboneliği, MocPOGO yıllık paketleri, root'lu Android cihazlar için iSpoofer klonları. Bunların hepsi yıllardır <strong>Pokémon GO</strong> tarafında çözülememiş bir sorundur.</p>
+    <p>Niantic'in tepkisi banlama dalgaları, ileri tespit ve üç-strike sistemi oldu. Ama temel sorun çözülmedi: <strong>fake-GPS oyunun temel mekaniğine bir kısa yol sunduğu sürece</strong> bir yenisi mutlaka geliyor.</p>
+    <p>Sonuç olarak adil oyuncular sürekli hile yapanlarla karşılaşıyor. Gerçekten yürümek için zaman ayıran biri, fake-GPS kullanan birinden geride kalıyor. Bu, oyun deneyimini bozar.</p>
             """,
         },
         {
             "label": "Fake-GPS listesi",
             "title": "TR'de yaygın <em>fake-GPS araçları</em>",
-            "body": "<p>MapRaiders bu araçları gereksiz kıldığı için ne yaptıklarını bilmek önemli — ve neden bizim modelimizde işe yaramadığını anlamak için:</p>",
+            "body": "<p>MapRaiders bu araçları gereksiz kıldığı için ne yaptıklarını ve bizim modelimizde neden işe yaramadıklarını bilmek faydalı:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Araç</th><th>Platform</th><th>Pokémon GO'da kullanım</th><th>MapRaiders'da etkili mi?</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">PGSharp</td><td>Android (root gerek)</td><td>Konum sahteciliği, hızlı atılım</td><td class="check">— gereksiz</td></tr>
-      <tr><td class="feat-name">MocPOGO</td><td>iOS + Android</td><td>Sahte yürüme, joystick kontrolü</td><td class="check">— gereksiz</td></tr>
-      <tr><td class="feat-name">iPogo</td><td>iOS (jailbreak)</td><td>Konum + ileri özellikler</td><td class="check">— gereksiz</td></tr>
-      <tr><td class="feat-name">Tutuapp</td><td>Android</td><td>Modlu istemci</td><td class="check">— gereksiz</td></tr>
-      <tr><td class="feat-name">FGL Pro</td><td>Android</td><td>Sahte konum sağlayıcı</td><td class="check">— gereksiz</td></tr>
+      <tr><td class="feat-name">PGSharp</td><td>Android (root gerekli)</td><td>Konum sahteciliği, hızlı atılım</td><td class="check">Gereksiz</td></tr>
+      <tr><td class="feat-name">MocPOGO</td><td>iOS ve Android</td><td>Sahte yürüme, joystick kontrolü</td><td class="check">Gereksiz</td></tr>
+      <tr><td class="feat-name">iPogo</td><td>iOS (jailbreak)</td><td>Konum ve ileri özellikler</td><td class="check">Gereksiz</td></tr>
+      <tr><td class="feat-name">Tutuapp</td><td>Android</td><td>Modlu istemci</td><td class="check">Gereksiz</td></tr>
+      <tr><td class="feat-name">FGL Pro</td><td>Android</td><td>Sahte konum sağlayıcı</td><td class="check">Gereksiz</td></tr>
     </tbody>
   </table>""",
         },
@@ -1100,35 +1102,35 @@ K4 = {
             "label": "Neden gereksiz?",
             "title": "MapRaiders <em>fake-GPS'i neden gereksiz</em> kılar",
             "body": """
-    <p>Üç tasarım seçimi fake-GPS motivasyonunu sıfıra indirir:</p>
+    <p>Birkaç tasarım seçimi fake-GPS motivasyonunu sıfıra indiriyor:</p>
     <ul>
-      <li><strong>Bölge çürümesi.</strong> Sahte konumla bir alanı bir kez al, ama düzenli dönmezsen çürüme alır. Hile uzun vadeli avantaj sağlamaz.</li>
-      <li><strong>Hız doğrulaması.</strong> 25 km/saatten hızlı hareket reddedilir (araba, uçak, fake-GPS-zıplaması). Sadece yürüme, koşma, bisiklet sayılır.</li>
-      <li><strong>Klan tabanı.</strong> Klan, fiziksel komşulardan oluşur. Sahte konum bir kişiyi alabilir ama uzun vadeli klanlara katılmasını imkânsız kılar.</li>
+      <li><strong>Bölge çürümesi.</strong> Sahte konumla bir alanı bir kez alabilirsin, ama düzenli dönmezsen çürüme onu eritir. Hile uzun vadeli avantaj sağlamaz.</li>
+      <li><strong>Hız doğrulaması.</strong> 25 km/saatten hızlı hareket reddedilir (araba, uçak, fake-GPS sıçramaları). Yürüme, koşu ve bisiklet sayılır.</li>
+      <li><strong>Klan tabanı.</strong> Klanlar fiziksel komşulardan oluşur. Sahte konum bir kişinin tek başına alan almasına yardım edebilir ama uzun vadeli bir klana ait olmasını imkânsız kılar.</li>
     </ul>
-    <p>Sonuç: Oynamak için yürümen gerek. Hilenin bir anlamı yok.</p>
+    <p>Sonuç olarak oynamak için yürümen gerekiyor. Hilenin bir anlamı kalmıyor.</p>
             """,
         },
         {
             "label": "Adil oyun değer önermesi",
             "title": "Adil oyun bir <em>değer önermesidir</em>, sadece kural değil",
             "body": """
-    <p>Pokémon GO'nun fake-GPS sorunu sadece bir teknik problem değil — bir <strong>topluluk sorunudur</strong>. Hile yapanlarla karşılaşan dürüst oyuncular ya hile yapmaya başlar ya da bırakır. İki seçenek de oyunu öldürür.</p>
-    <p>MapRaiders bunu farklı çözüyor: Hile teknik olarak imkânsız değil — <strong>anlamsız</strong>. Yürümeden bölge tutamazsın. Bu, fiziksel adaleti garanti eder.</p>
+    <p>Pokémon GO'nun fake-GPS sorunu sadece teknik bir problem değil, aynı zamanda <strong>bir topluluk sorunudur</strong>. Hile yapanlarla karşılaşan dürüst oyuncular ya kendileri hile yapmaya başlıyor ya da oyunu bırakıyor. İki yol da oyunu öldürür.</p>
+    <p>MapRaiders bunu farklı çözüyor: hile teknik olarak imkânsız değil, <strong>anlamsız</strong>. Yürümeden bölge tutamazsın. Bu, fiziksel adaleti yapısal olarak garanti eder.</p>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders'da fake GPS işe yarar mı?",
-         "a": "Hayır. Hız doğrulaması (25 km/saat üst limit), bölge çürümesi (düzenli geçiş gerek) ve fiziksel klan tabanı sahte konumu anlamsız kılar. Sahte konumla alabilirsin ama tutamazsın."},
+         "a": "Hayır. Hız doğrulaması (25 km/saat üst limit), bölge çürümesi (düzenli geçiş şartı) ve fiziksel klan tabanı sahte konumu anlamsız kılar. Sahte konumla bir alan alabilirsin ama elinde tutamazsın."},
         {"q": "Hile yapanlar yasaklanır mı?",
-         "a": "Anormal GPS desenleri (zıplama, imkânsız hız) otomatik tespit edilir ve hesap işaretlenir. Ama esas savunma yapısaldır: Sistem hileyi avantajsız kılar."},
+         "a": "Anormal GPS desenleri (sıçramalar, imkânsız hız) otomatik tespit edilir ve hesap işaretlenir. Asıl savunma ise yapısaldır: sistem hile yapmayı doğrudan avantajsız kılar."},
         {"q": "Otomatik araç tespiti var mı?",
-         "a": "Evet. 25 km/saatten hızlı hareket araba olarak değerlendirilir ve bölge talebi reddedilir. Bisiklet (genelde 15-25 km/saat) sayılır, araba sayılmaz."},
+         "a": "Evet. 25 km/saatten hızlı hareket araba kabul edilir ve bölge talebi reddedilir. Bisiklet (genelde 15-25 km/saat) sayılır, araba sayılmaz."},
         {"q": "PGSharp veya MocPOGO ile oynayabilir miyim?",
-         "a": "Teknik olarak yükleyebilirsin ama anlamsız. Bu araçlar Pokémon GO'nun zayıf noktalarını sömürmek için yapılmıştır — MapRaiders'ın yapısı farklı."},
+         "a": "Teknik olarak yükleyebilirsin ama anlamı kalmaz. Bu araçlar Pokémon GO'nun zayıf noktalarını sömürmek için yapılmıştır, MapRaiders'ın yapısı farklı."},
         {"q": "Saldırılar adil mi?",
-         "a": "Evet. Bir bölgeye saldırmak için fiziksel olarak oraya gitmen gerek. Sonra savunma mini oyunu (XOX, taş-kâğıt-makas, mini satranç) iki oyuncuyu eşit seviyeye getirir."},
+         "a": "Evet. Bir bölgeye saldırmak için fiziksel olarak oraya gitmen gerekir. Sonra savunma mini oyunu (XOX, taş-kâğıt-makas, mini satranç) iki oyuncuyu eşit seviyeye getirir."},
     ],
     "internal_links": [
         ("/tr/bolge-oyunu.html", "Bölge oyunu nedir"),
@@ -1143,16 +1145,16 @@ K4 = {
 K5 = {
     "slug": "/tr/yuruyus-oyunu.html",
     "breadcrumb": "Yürüyüş Oyunu",
-    "title": "Yürüyüş oyunu — adımların bölge olur (kardiyo + oyun)",
-    "og_title": "Yürüyüş oyunu — adımların bölge olur",
-    "meta": "Yürüyüş oyunu: MapRaiders her adımı bölge fethine çevirir. Strava + oyun, kardiyo + eğlence, aile + sokak.",
+    "title": "Yürüyüş oyunu: adımların bölgeye dönüşür (kardiyo ve oyun)",
+    "og_title": "Yürüyüş oyunu: adımların bölgeye dönüşür",
+    "meta": "Yürüyüş oyunu: MapRaiders her adımı bölge fethine çevirir. Kardiyo, oyun ve mahalle aktivitesi tek uygulamada.",
     "keywords": "yürüyüş oyunu, yuruyus oyunu, yürüyerek kazan, koşu oyunu, kardiyo oyun, fitness mmo",
-    "badge": "Yürüyüş + Kardiyo",
-    "pricing_pill": "Sonsuza kadar ücretsiz · Pokémon GO'dan 4× az pil",
-    "h1_html": 'Yürüyüş oyunu — her <em>adımın bir amacı</em> var',
-    "lead": "Strava istatistik verir, Pokémon GO koleksiyon verir. Ama hiçbir oyun gerçek yürüyüş yolunu gerçek araziye çevirmiyor. MapRaiders çevirir: Her adım bölge şekillendirir, her tur onu savunur. Sonuçlu kardiyo.",
+    "badge": "Yürüyüş ve Kardiyo",
+    "pricing_pill": "Sonsuza kadar ücretsiz. Pokémon GO'ya kıyasla yaklaşık dört kat daha az pil.",
+    "h1_html": 'Yürüyüş oyunu: her <em>turun bir amacı</em> var',
+    "lead": "Strava istatistik verir, Pokémon GO koleksiyon verir. Ama hiçbiri gerçek yürüyüş yolunu gerçek araziye çevirmiyor. MapRaiders bunu yapar: her adım bölge şekillendirir, her tur onu savunur. Kardiyonun bir sonucu olur.",
     "trigger": {
-        "quote": "Kardiyo motivasyonum patladı.",
+        "quote": "Zaten her sabah koşuyorum, ama artık bir şeyi de savunuyorum. Tuhaf, bir anda ne kadar disiplin geliyor.",
         "author": "Vivian N., Hamburg bölgesinden koşucu (kapalı beta)"
     },
     "testers": [TESTER_VIVIAN, TESTER_RON],
@@ -1161,11 +1163,11 @@ K5 = {
             "label": "Sorun",
             "title": "Klasik yürüyüş uygulamalarının <em>eksiklikleri</em>",
             "body": """
-    <p>Strava, Nike Run Club, Adidas Running — zaman, mesafe, hız ölçer. Ama birçok yürüyüşçü ve koşucu için üç eksik nokta var:</p>
+    <p>Strava, Nike Run Club, Adidas Running zamanı, mesafeyi ve tempoyu ölçer. Ama birçok yürüyüşçü ve koşucu için bir kaç önemli nokta eksik kalıyor:</p>
     <ul>
-      <li><strong>Oyun unsuru yok.</strong> En iyi süreleri kovalamayan biri 4 hafta sonra motivasyonsuz kalır.</li>
-      <li><strong>Performans baskısı.</strong> Genel liderlik tabloları çoğu kişi için motive edici değil, demotive edici.</li>
-      <li><strong>Abonelik zorunluluğu.</strong> Strava Premium 8,99 dolar/ay heatmap ve rota karşılaştırma için, ücretsiz katmanda işlevsiz hale gelen özellikler.</li>
+      <li><strong>Oyun unsuru yok.</strong> En iyi süreleri kovalamayan biri dört hafta sonra motivasyonunu kaybediyor.</li>
+      <li><strong>Performans baskısı.</strong> Genele açık liderlik tabloları bazılarını motive ederken bir o kadar kişiyi de demotive ediyor.</li>
+      <li><strong>Abonelik zorunluluğu.</strong> Strava Premium ısı haritası ve rota karşılaştırması için aylık 8,99 dolar; ücretsiz katmanda bu özellikler neredeyse kullanılamaz hale geldi.</li>
     </ul>
             """,
         },
@@ -1174,44 +1176,44 @@ K5 = {
             "title": "MapRaiders <em>yürüyüş rutinini</em> nasıl değiştirir",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Bölgeyi tut</h3><p>Her rota bölgeyi savunur. 3 gün ara verirsen çürüme başlar — doğal bir geri dönüş motivasyonu.</p></div>
-    <div class="feat-card rv d1"><h3>Çürüme sayacı</h3><p>Çürüme değeri "Bugün yürümezsen mahallen %X küçülür" gösterir. Suçluluk değil — fiziksel gerçek.</p></div>
-    <div class="feat-card rv d2"><h3>Yürürken klan savunması</h3><p>Koşarken klan bölgesi saldırıya uğrarsa push bildirim alırsın. Yalnız koşmuyorsun — birlikte koşuyorsun.</p></div>
-    <div class="feat-card rv d3"><h3>Eko ödülü</h3><p>Geçerken ses ekoları. Diğer oyuncular sana sokağın hikayelerini anlatır — reklam yok, influencer yok.</p></div>
+    <div class="feat-card rv"><h3>Bölgeyi tut</h3><p>Her rota bölgeyi savunur. Üç gün ara verirsen çürüme başlar, doğal bir geri dönüş motivasyonu olur.</p></div>
+    <div class="feat-card rv d1"><h3>Çürüme sayacı</h3><p>Çürüme değeri "Bugün yürümezsen mahallen yüzde X kadar küçülür" der. Suçluluk değil, somut fiziksel gerçek.</p></div>
+    <div class="feat-card rv d2"><h3>Yürürken klan savunması</h3><p>Koşarken klan bölgesi saldırıya uğrarsa push bildirim alırsın. Yalnız koşmuyorsun, ekibinle birlikte koşuyorsun.</p></div>
+    <div class="feat-card rv d3"><h3>Eko ödülü</h3><p>Geçerken ses ekoları. Diğer oyuncular sokağın hikayelerini sana anlatıyor. Reklam yok, influencer yok.</p></div>
   </div>""",
         },
         {
             "label": "50+ yaş ve uzun ömür",
             "title": "<em>50+ yaş için</em> longevity gaming",
             "body": """
-    <p>Türkiye'de 50 yaş üstü yürüyüş kültürü güçlü — sabah parkta yürüyüşçüler, hafta sonu doğa yürüyüşleri, mahalle çevre turları. Ama klasik mobil oyunlar bu yaş grubuna hitap etmiyor: AR yorucu, hızlı reflexler gerekiyor, UI gençler için yapılmış.</p>
-    <p>MapRaiders farklı: <strong>Yürümek yeter</strong>. Bölge sahipliği uzun zamanda gelişir — günlerce, haftalarca. Klan kurmak organik. Aile ile birlikte yürümek bölgeyi büyütür. Bu, longevity gaming'in tanımıdır: Yıllar boyunca oynanabilir, takıntıya yol açmaz, sağlığı destekler.</p>
+    <p>Türkiye'de 50 yaş üstü yürüyüş kültürü güçlü: sabah parkta yürüyenler, hafta sonu doğa yürüyüşleri, mahalle çevre turları. Klasik mobil oyunlar bu yaş grubuna pek hitap etmiyor; AR yorucu, refleks gerektiriyor, arayüz gençler için tasarlanıyor.</p>
+    <p>MapRaiders farklı çalışıyor: <strong>yürümek yeterli</strong>. Bölge sahipliği günler ve haftalar içinde gelişir. Klan kurmak organik. Aileyle birlikte yürümek bölgeyi büyütür. Longevity gaming budur: yıllar boyunca oynanabilir, takıntıya yol açmaz, sağlığı destekler.</p>
             """,
         },
         {
             "label": "Çok sporlu",
-            "title": "Yürüyüş, koşu, bisiklet — <em>hepsi tek haritada</em>",
+            "title": "Yürüyüş, koşu, bisiklet: <em>hepsi tek haritada</em>",
             "body": """
-    <p>MapRaiders spor türüne göre ayrım yapmaz. Koşan, köpekle yürüyen veya işe bisikletle giden — GPS izi bölge oluşturur, uygulama agnostiktir:</p>
+    <p>MapRaiders spor türüne göre ayrım yapmaz. Koşan, köpeğiyle yürüyen veya işe bisikletle giden fark etmez; GPS izi bölge oluşturur, uygulama agnostiktir:</p>
     <ul>
       <li><strong>Koşu.</strong> Daha hızlı rotalar, tur başına daha büyük bölgeler.</li>
-      <li><strong>Yürüyüş / köpek.</strong> Günlük tekrar bölgeyi korur. Düşük kardiyo, yüksek bölge istikrarı.</li>
-      <li><strong>Bisiklet.</strong> Günlük daha büyük bölgeler, yavaş hız (25 km/saat altı geçerli — araba hilesi yok).</li>
+      <li><strong>Yürüyüş ve köpek turu.</strong> Günlük tekrar bölgeyi korur. Düşük kardiyo, yüksek bölge istikrarı.</li>
+      <li><strong>Bisiklet.</strong> Günde daha geniş bölgeler. 25 km/saat altı geçerli, araba ile hile yapmak mümkün değil.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "Pilim ne kadar dayanır?",
-         "a": "2 saatlik yürüyüşte tipik olarak %30-40 pil tüketimi (Pokémon GO ile AR'da ~%80). Değerler cihaz ve ekran parlaklığına göre değişir."},
+         "a": "İki saatlik bir yürüyüşte tipik olarak yüzde 30 ile 40 arası pil tüketimi olur. Aynı sürede Pokémon GO + AR yaklaşık yüzde 80 harcar. Değerler cihaza ve ekran parlaklığına göre değişir."},
         {"q": "Strava veya Nike Run Club ile çalışır mı?",
-         "a": "Şu anda doğrudan entegrasyon yok. Strava export 4. çeyrek 2026 yol haritasında. Ancak iki uygulamayı paralel çalıştırabilirsin — aynı GPS sensörünü çakışma olmadan kullanırlar."},
+         "a": "Şu anda doğrudan bir entegrasyon yok. Strava export 2026 dördüncü çeyrekte yol haritasında. İki uygulamayı paralel çalıştırabilirsin, aynı GPS sensörünü çakışma olmadan kullanırlar."},
         {"q": "Yürüyüş de sayılır mı?",
-         "a": "Evet. Minimum hız yok. Yürüyüş, koşu, doğa yürüyüşü, bisiklet — fiziksel olarak hareket ettiğin sürece bölge oluşur (araba hilesi yok)."},
+         "a": "Evet. Minimum hız yok. Yürüyüş, koşu, doğa yürüyüşü, bisiklet hepsi geçerli. Fiziksel olarak hareket ettiğin sürece bölge oluşur. 25 km/saat üstü hız reddedilir, böylece arabayla hile yapılamaz."},
         {"q": "Hasta olup yürüyemediğimde ne olur?",
-         "a": "Çürüme devam eder ama yavaş. 5-7 gün ara verirsen bölge belirgin küçülür; 14 gün sonra tamamen kaybedilebilir. Sen yokken klan devirleri toprağı korumaya yardımcı olur."},
+         "a": "Çürüme devam eder ama yavaş. 5 ile 7 gün ara verirsen bölge gözle görülür biçimde küçülür, 14 gün sonra tamamen kaybedilebilir. Sen yokken klan devirleri toprağı korumaya yardım eder."},
         {"q": "Mobil veri tüketir mi?",
-         "a": "Çok az. Canlı video yok, yüksek yüklü API yok. 1 saatlik rota tipik olarak 5-15 MB veri tüketir."},
+         "a": "Çok az. Canlı video yok, yoğun API çağrısı yok. Bir saatlik bir rota tipik olarak 5 ile 15 MB arası veri tüketir."},
     ],
     "internal_links": [
         ("/tr/bolge-oyunu.html", "Bölge oyunu nedir"),
@@ -1226,29 +1228,29 @@ K5 = {
 K6 = {
     "slug": "/tr/hazine-avi-uygulamasi.html",
     "breadcrumb": "Hazine Avı Uygulaması",
-    "title": "Hazine avı uygulaması — şehir tamamı canlı oyun (KVKK)",
-    "og_title": "Hazine avı uygulaması — şehir canlı oyun",
-    "meta": "Hazine avı uygulaması 2026: MapRaiders şehir tamamını açık hazine avına dönüştürür. Aile, çocuk, KVKK uyumlu.",
+    "title": "Hazine avı uygulaması: bütün şehir canlı bir oyun (KVKK uyumlu)",
+    "og_title": "Hazine avı uygulaması: şehir canlı oyun",
+    "meta": "Hazine avı uygulaması 2026: MapRaiders bütün şehri açık bir hazine avına dönüştürür. Aile dostu, çocuklar için uygun, KVKK uyumlu.",
     "keywords": "hazine avı uygulaması, hazine avi app, şehir kaşifliği, çocuk hazine avı, aile hazine avı",
-    "badge": "Hazine Avı · Aile",
-    "pricing_pill": "Sonsuza kadar ücretsiz · Tur satın alma yok",
-    "h1_html": 'Hazine avı uygulaması — bütün <em>şehir izlerle dolu</em>',
-    "lead": "Klasik hazine avı uygulamaları hazırlık ister: Tur satın al, istasyon ayarla, materyal yazdır. MapRaiders bunu tersine çevirir — ekolar zaten tüm şehre dağıtılmıştır. Diğer oyuncuların izlerini takip edersin veya kendinkilerini bırakırsın. Canlı, ücretsiz, hazırlıksız.",
+    "badge": "Hazine Avı (Aile)",
+    "pricing_pill": "Sonsuza kadar ücretsiz. Tur satın alma yok.",
+    "h1_html": 'Hazine avı uygulaması: bütün <em>şehir izlerle dolu</em>',
+    "lead": "Klasik hazine avı uygulamaları hazırlık ister: tur satın al, istasyon ayarla, materyal yazdır. MapRaiders bunu tersine çevirir. Ekolar zaten tüm şehre dağılmıştır. Diğer oyuncuların izlerini takip edersin veya kendin yenilerini bırakırsın. Canlı, ücretsiz, hazırlıksız.",
     "trigger": {
-        "quote": "Eko bırakmak şehir tamamında açık hazine avı gibi.",
+        "quote": "Bir kapı önüne kısa bir ses kaydı bırakıyorsun, üç gün sonra hiç tanımadığın biri onu bulmuş oluyor.",
         "author": "Aljoscha P., Berlin bölgesinden şehir kâşifi (kapalı beta)"
     },
     "testers": [TESTER_ALJOSCHA],
     "sections": [
         {
             "label": "Modern hazine avı",
-            "title": "Modern <em>hazine avı uygulamasının</em> 3 kriteri",
+            "title": "Modern bir <em>hazine avı uygulamasında</em> aranan kriterler",
             "body": """
-    <p>Üç kriter, 2020'lerin hazine avı uygulamalarını çıktı tabanlı çözümlerden ayırır:</p>
+    <p>2020'lerin hazine avı uygulamalarını basılı çözümlerden ayıran birkaç temel kriter var:</p>
     <ul>
       <li><strong>Canlı.</strong> İzler gerçek zamanlı oluşur, sadece önceden hazırlanmış turlarda değil.</li>
-      <li><strong>Sosyal.</strong> Oyuncular birbirleri için iz bırakır, sadece var olanları işlemez.</li>
-      <li><strong>Premium engeli yok.</strong> Aileler ve çocuklar 4,99 € tur satın almadan hemen başlar.</li>
+      <li><strong>Sosyal.</strong> Oyuncular birbirleri için iz bırakır, hazırlanmış olanı tüketmekle sınırlı kalmaz.</li>
+      <li><strong>Premium engeli yok.</strong> Aileler ve çocuklar 4,99 €'luk bir turu satın almadan hemen başlayabilir.</li>
     </ul>
             """,
         },
@@ -1259,9 +1261,9 @@ K6 = {
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Uygulama</th><th>Fiyat</th><th>Hazırlık</th><th>Canlı unsur</th><th>Oyun döngüsü</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">MapRaiders</td><td class="check">0 TL</td><td class="check">Sıfır</td><td class="check">Canlı</td><td>Eko + Görev + Bölge</td></tr>
-      <tr><td class="feat-name">Geocaching</td><td>Premium abonelik</td><td>Düşük — cache bul</td><td class="cross">Asenkron</td><td>Toplama</td></tr>
-      <tr><td class="feat-name">Actionbound</td><td>Bound satın alma</td><td>Yüksek — tur kur</td><td class="cross">✗</td><td>Tur başına</td></tr>
+      <tr><td class="feat-name">MapRaiders</td><td class="check">0 TL</td><td class="check">Sıfır</td><td class="check">Canlı</td><td>Eko, görev ve bölge</td></tr>
+      <tr><td class="feat-name">Geocaching</td><td>Premium abonelik</td><td>Düşük (cache bulma)</td><td class="cross">Asenkron</td><td>Toplama</td></tr>
+      <tr><td class="feat-name">Actionbound</td><td>Bound satın alma</td><td>Yüksek (tur kur)</td><td class="cross">✗</td><td>Tur başına</td></tr>
       <tr><td class="feat-name">Anyfox</td><td>Premium abonelik</td><td>Orta</td><td class="cross">✗</td><td>Tur başına</td></tr>
     </tbody>
   </table>""",
@@ -1270,40 +1272,40 @@ K6 = {
             "label": "Eko özellik",
             "title": "MapRaiders <em>hazine avını yeniden düşünür</em>",
             "body": """
-    <p>1. istasyondan 10. istasyona doğrusal bir tur yerine MapRaiders'da <strong>açık mekânsal bir hazine avı</strong> oluşur — şehir kendisi oyun alanıdır:</p>
+    <p>İlk istasyondan onuncuya kadar doğrusal bir tur yerine MapRaiders'da <strong>açık mekânsal bir hazine avı</strong> oluşur. Şehir kendisi oyun alanıdır:</p>
     <ul>
-      <li><strong>Eko bırak.</strong> Bir konuma ses, fotoğraf veya video ekosu bırak. Diğer oyuncular geçerken keşfeder.</li>
+      <li><strong>Eko bırak.</strong> Bir konuma ses, fotoğraf veya video ekosu bırak. Diğer oyuncular oradan geçince keşfeder.</li>
       <li><strong>Eko bul.</strong> Ekoların nerede olduğunu haritada gör. İzleri takip et, sırları bul, hikayeler dinle.</li>
-      <li><strong>Görev oluştur.</strong> Bir konumda küçük bir görev oluştur ("Oradaki kırmızı kapının fotoğrafını çek"). Diğer oyuncular yapar.</li>
-      <li><strong>Bölge katmanı.</strong> Hazine avı rotasını sık sık yürüyen onu bölge olarak fetheder — izler araziye dönüşür.</li>
+      <li><strong>Görev oluştur.</strong> Bir konumda küçük bir görev hazırla ("Oradaki kırmızı kapının fotoğrafını çek"). Diğer oyuncular yapar.</li>
+      <li><strong>Bölge katmanı.</strong> Bir hazine avı rotasını sık sık yürüyen onu bölge olarak fetheder. İzler zamanla araziye dönüşür.</li>
     </ul>
             """,
         },
         {
-            "label": "Aile + KVKK",
+            "label": "Aile ve KVKK",
             "title": "<em>Aile için</em> hazine avı uygulaması (KVKK uyumlu)",
             "body": """
-    <p>Türkiye'de hazine avı kültürü güçlü — okul gezileri, doğum günü partileri, mahalle çocuk oyunları. MapRaiders bunu akıllı telefon çağına taşır, çocukları ekran başında yalnız bırakmadan:</p>
+    <p>Türkiye'de hazine avı kültürü güçlüdür: okul gezileri, doğum günü partileri, mahalle çocuk oyunları. MapRaiders bunu akıllı telefon çağına taşır, üstelik çocukları ekran başında yalnız bırakmadan:</p>
     <ul>
-      <li><strong>Ebeveyn-çocuk etkinliği.</strong> Ebeveynler planlanmış bir rotada ses ekoları bırakır, çocuklar izleri takip eder — analog hareket, dijital ipuçları.</li>
-      <li><strong>Hareketli ekransız.</strong> Uygulama haritada yönlendirir; deneyim gerçek dünyada gerçekleşir.</li>
+      <li><strong>Ebeveyn-çocuk etkinliği.</strong> Ebeveynler planlanmış bir rotada ses ekoları bırakır, çocuklar izleri takip eder. Analog hareket, dijital ipuçları.</li>
+      <li><strong>Bedensel deneyim öne çıkar.</strong> Uygulama harita üzerinde yönlendirir, asıl deneyim gerçek dünyada yaşanır.</li>
       <li><strong>Çocuklar için KVKK uyumlu.</strong> Kişiselleştirilmiş reklam izleyicisi yok, veri satışı yok, ebeveyn onayı olmadan uygulama içi sohbet yok.</li>
-      <li><strong>Misafirperverlik çerçevesi.</strong> Komşular birbirleri için iz bırakır — mahalle bir aile gibi büyür.</li>
+      <li><strong>Mahalle çerçevesi.</strong> Komşular birbirleri için iz bırakır, mahalle dijital olarak da yakınlaşır.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders çocuklar için uygun mu?",
-         "a": "Evet, ebeveyn eşliğinde 9 yaşından itibaren. Uygulama KVKK uyumlu, reklamsız ve çocuklardan kişisel veri toplamıyor. Ebeveynler aile modunu etkinleştirebilir."},
+         "a": "Evet, ebeveyn eşliğinde 9 yaşından itibaren. Uygulama KVKK uyumludur, reklamsızdır ve çocuklardan kişisel veri toplamaz. Ebeveynler aile modunu etkinleştirebilir."},
         {"q": "Çocuklarla hazine avı için ne kadar hazırlık gerekir?",
-         "a": "Sıfır. Actionbound veya Anyfox'un aksine tur satın almak veya istasyon hazırlamak zorunda değilsin. Ekolar zaten tüm şehre dağıtılmıştır — diğer oyuncuların izlerini takip edersin veya kendinkilerini bırakırsın."},
+         "a": "Sıfır. Actionbound veya Anyfox'un aksine tur satın almak veya istasyon hazırlamak zorunda değilsin. Ekolar zaten şehre dağılmıştır; diğer oyuncuların izlerini takip eder veya kendin yenilerini bırakırsın."},
         {"q": "Hazine avı uygulaması ücretli mi?",
-         "a": "Hayır. Hazine avı işlevleri (eko bırakma, eko bulma, görev oluşturma) tamamen ücretsizdir. İsteğe bağlı olarak işaretçi tasarımları için 49 TL'den kozmetik ürünler vardır — oyun avantajı vermezler."},
+         "a": "Hayır. Hazine avı işlevleri (eko bırakma, eko bulma, görev oluşturma) tamamen ücretsizdir. İsteğe bağlı olarak işaretçi tasarımları için 49 TL'den başlayan kozmetik ürünler vardır, bunlar oyun avantajı vermez."},
         {"q": "Hazine avı küçük şehirlerde de çalışır mı?",
-         "a": "Evet. Küçük şehirlerde veya köylerde de eko bırakabilir ve görev oluşturabilirsin. Yoğun bölgelerde diğer oyunculardan daha fazla iz bulursun; kırsalda ise kendi turuna daha fazla yer kalır."},
+         "a": "Evet. Küçük şehirlerde veya köylerde de eko bırakabilir ve görev oluşturabilirsin. Yoğun bölgelerde diğer oyunculardan daha fazla iz bulursun, kırsalda ise kendi turuna daha fazla yer kalır."},
         {"q": "Uygulama Türkçe mi?",
-         "a": "Evet. MapRaiders tamamen Türkçe yerelleştirilmiştir — menüler, eko sistemi, ipuçları, destek."},
+         "a": "Evet. MapRaiders tamamen Türkçe yerelleştirilmiştir: menüler, eko sistemi, ipuçları, destek."},
     ],
     "internal_links": [
         ("/tr/bolge-oyunu.html", "Bölge oyunu nedir"),
@@ -1318,17 +1320,17 @@ K6 = {
 K7 = {
     "slug": "/tr/mahalle-oyunu.html",
     "breadcrumb": "Mahalle Oyunu",
-    "title": "Mahalle oyunu — komşularla doğal yoldan tanış",
-    "og_title": "Mahalle oyunu — komşularla doğal tanışma",
-    "meta": "Mahalle oyunu: MapRaiders ile kendi mahallenin haritasını oluştur, komşularını doğal yoldan tanı. Algoritma yok, reklam yok.",
+    "title": "Mahalle oyunu: komşularla doğal yoldan tanış",
+    "og_title": "Mahalle oyunu: komşularla doğal tanışma",
+    "meta": "Mahalle oyunu: MapRaiders ile kendi mahallenin haritasını oluştur, komşularını doğal yoldan tanı. İçerik akışı yok, reklam yok.",
     "keywords": "mahalle oyunu, komşu oyunu, mahalle uygulaması, sokak oyunu, semt oyunu",
-    "badge": "Mahalle · Misafirperverlik",
-    "pricing_pill": "Sonsuza kadar ücretsiz · WhatsApp paylaşımı",
-    "h1_html": 'Mahalle oyunu — <em>misafirperverliğin haritası</em>',
-    "lead": "Mahalle, Türk kültürünün kalbidir — komşu, çay, akşam yürüyüşü. Ama modern uygulamalar bunu yıkıyor: Algoritma seni Hindistan'daki bir TikTok'çuya bağlıyor, mahallendeki adamı değil. MapRaiders tersine çalışır: Harita sosyal ağdır, fiziksel yakınlık algoritma yerine geçer.",
+    "badge": "Mahalle Oyunu",
+    "pricing_pill": "Sonsuza kadar ücretsiz. WhatsApp ile paylaşım.",
+    "h1_html": 'Mahalle oyunu: <em>komşunun haritası</em>',
+    "lead": "Mahalle Türk kültürünün kalbidir: komşu, çay, akşam yürüyüşü. Modern uygulamalar bu dengeyi bozuyor; algoritma seni dünyanın öbür ucundaki bir TikTok'çuya bağlarken, yan kapındaki komşunla karşılaşma sıklığını azaltıyor. MapRaiders tersine çalışır: harita sosyal ağ olur, fiziksel yakınlık algoritmanın yerine geçer.",
     "trigger": {
-        "quote": "Misafirperverliğin haritası.",
-        "author": "MapRaiders Türk kültürü çapası"
+        "quote": "Bir kapı önüne kısa bir ses kaydı bırakıyorsun, üç gün sonra hiç tanımadığın biri onu bulmuş oluyor. Bir oyun için tuhaf biçimde samimi geliyor.",
+        "author": "Aljoscha P., Berlin bölgesinden şehir kâşifi (kapalı beta)"
     },
     "testers": ALL_TESTERS,
     "sections": [
@@ -1336,67 +1338,61 @@ K7 = {
             "label": "Mahalle çerçevesi",
             "title": "Türk <em>mahalle kültürü</em> ve dijital uçurum",
             "body": """
-    <p>Türk mahalle kültürünün dört temel direği vardır:</p>
-    <ul>
-      <li><strong>Komşuluk.</strong> Yan kapıdaki kişi ailenin uzantısıdır — selam, çay, yardım.</li>
-      <li><strong>Misafirperverlik.</strong> Yabancı bile kapıda durmaz — içeri buyrun.</li>
-      <li><strong>Akşam yürüyüşü.</strong> Aile ile mahalle çevresinde, sohbet için, çocuklar için, sağlık için.</li>
-      <li><strong>Yerel ekonomi.</strong> Köşedeki bakkal, sokağın kuaförü, manavda tanıdığın isim.</li>
-    </ul>
-    <p>Modern uygulamalar bu kültürün tam tersini yapıyor: Instagram seni dünyanın diğer ucuna gösteriyor, yan kapıdakine değil. TikTok algoritması coğrafyaya kayıtsız. WhatsApp grup sohbetlerinde yer alma şansını arttırırken, fiziksel olarak komşunla karşılaşma sıklığını azaltıyor.</p>
+    <p>Türk mahalle kültürünün birkaç güçlü direği var: yan kapıdaki kişiyi ailenin parçası gibi görmek, akşam yürüyüşü, köşedeki bakkalla isim üzerinden konuşmak. Bunlar dijital ortama otomatik olarak taşınmıyor.</p>
+    <p>Aksine, modern uygulamalar bu kültürün tam tersini kuruyor. Instagram seni dünyanın diğer ucuna yönlendiriyor, yan kapıdakine değil. TikTok algoritması coğrafyaya kayıtsız. WhatsApp grup sohbetleri çoğalırken, fiziksel olarak komşuyla karşılaşmalar azalıyor.</p>
             """,
         },
         {
-            "label": "Algoritma yok çerçevesi",
+            "label": "Algoritma değil harita",
             "title": "MapRaiders <em>algoritma yerine harita</em>",
             "body": """
-    <p>MapRaiders'da içerik akışı yok. Açıklayalım: Sosyal beslemeden, takipçi sayısından, viral video baskısından özgürsün. Tek "akış" haritadır — ve onu yürüdüğün adımların şekillendirir.</p>
+    <p>MapRaiders'da içerik akışı yok. Sosyal besleme, takipçi sayısı veya viral video baskısı bulamazsın. Tek "akış" haritadır ve onu yürüdüğün adımlar şekillendirir.</p>
             """,
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Komşu = Müttefik</h3><p>Klanın aynı sokakta yürüyen insanlardan oluşur. Discord değil, fiziksel komşuluk. Klan kurmak doğaldır.</p></div>
-    <div class="feat-card rv d1"><h3>Mekânsal nezaket</h3><p>Komşunun bölgesine saldırırsan onunla mini oyun oynarsın — saldırı bile bir karşılaşmadır.</p></div>
-    <div class="feat-card rv d2"><h3>Eko hediye gibidir</h3><p>Bir komşuya eko bırakırsın — "Bu kapı 50 yıl önce ailemizdeydi". Hikaye paylaşımı.</p></div>
-    <div class="feat-card rv d3"><h3>Yerel ekonomiye bağlantı</h3><p>Köşedeki bakkal görevler oluşturabilir — "Buradan geçen üç oyuncuya çay ikram et". Mahalle ekonomisi dijital olarak ödüllendirilir.</p></div>
+    <div class="feat-card rv"><h3>Komşu = müttefik</h3><p>Klanın aynı sokakta yürüyen insanlardan oluşur. Discord değil, fiziksel komşuluk. Klan kurmak doğal yoldan olur.</p></div>
+    <div class="feat-card rv d1"><h3>Mekânsal nezaket</h3><p>Komşunun bölgesine saldırırsan onunla mini oyun oynarsın. Saldırı bile bir karşılaşmaya dönüşür.</p></div>
+    <div class="feat-card rv d2"><h3>Eko bir hediye gibidir</h3><p>Bir komşuya eko bırakırsın: "Bu kapı 50 yıl önce ailemizdeydi". Hikaye doğrudan yere bağlanır.</p></div>
+    <div class="feat-card rv d3"><h3>Yerel ekonomiye bağlantı</h3><p>Köşedeki bakkal görev oluşturabilir: "Buradan geçen üç oyuncuya çay ikram et". Mahalle ekonomisi dijital olarak da ödüllendirilir.</p></div>
   </div>""",
         },
         {
             "label": "WhatsApp paylaşımı",
-            "title": "WhatsApp <em>klan davetleri</em>",
+            "title": "WhatsApp ile <em>klan davetleri</em>",
             "body": """
-    <p>Türkiye, dünyada WhatsApp kullanım oranı en yüksek pazarlardan biridir. Aile grupları, mahalle grupları, çocuk okulu grupları — her şey WhatsApp'tadır.</p>
-    <p>MapRaiders WhatsApp-natifdir:</p>
+    <p>Türkiye dünyada WhatsApp kullanım oranı en yüksek pazarlardan biridir. Aile grupları, mahalle grupları, okul grupları çoğunlukla WhatsApp üzerinden işliyor.</p>
+    <p>MapRaiders WhatsApp ile doğal şekilde uyumludur:</p>
     <ul>
-      <li><strong>Klan davet bağlantıları</strong> doğrudan WhatsApp ile paylaşılır — tek tıkla katılım.</li>
-      <li><strong>Bölge fethi paylaşımı</strong> ekran görüntüsü olarak komşu gruba gönderilir — "Bakın, sokağı fethettim!".</li>
-      <li><strong>Hazine avı çağrıları</strong> aile grubuna gönderilir — "Bu Cumartesi öğleden sonra, çocukları da getir".</li>
+      <li><strong>Klan davet bağlantıları</strong> doğrudan WhatsApp üzerinden paylaşılır, tek tıkla katılım sağlanır.</li>
+      <li><strong>Bölge fethi paylaşımı</strong> ekran görüntüsü olarak komşu grubuna gönderilir: "Bakın, sokağı fethettim!".</li>
+      <li><strong>Hazine avı çağrıları</strong> aile grubuna gönderilir: "Bu Cumartesi öğleden sonra, çocukları da getir".</li>
     </ul>
             """,
         },
         {
-            "label": "Aile + komşu",
+            "label": "Aile ve komşu",
             "title": "Mahalle oyunu <em>her yaşa</em>",
             "body": """
-    <p>MapRaiders'ı mahalle çerçevesinde kullanan dört yaş grubu:</p>
+    <p>MapRaiders'ı mahalle çerçevesinde kullanan birkaç farklı yaş grubu var:</p>
     <ul>
-      <li><strong>Çocuklar (9+).</strong> Aile modunda, ebeveynlerle birlikte hazine avı.</li>
-      <li><strong>Gençler.</strong> Klan kurmak, savunma mini oyunlarında strateji geliştirmek.</li>
-      <li><strong>Ebeveynler.</strong> Çocuklarla birlikte sokakta vakit geçirmek için bahane.</li>
-      <li><strong>Büyükanne / büyükbaba.</strong> Akşam yürüyüşü için motivasyon, sağlık için, mahallesinin haritasını "tutmak" için.</li>
+      <li><strong>Çocuklar (9+).</strong> Aile modunda, ebeveynleriyle birlikte hazine avı yapar.</li>
+      <li><strong>Gençler.</strong> Klan kurar, savunma mini oyunlarında strateji geliştirir.</li>
+      <li><strong>Ebeveynler.</strong> Çocuklarıyla sokakta vakit geçirmek için somut bir bahaneye kavuşur.</li>
+      <li><strong>Büyükanne ve büyükbaba.</strong> Akşam yürüyüşü için motivasyon, sağlık için bir teşvik, mahallesinin haritasını tutma duygusu.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders'da gerçekten komşularımı tanıyabilir miyim?",
-         "a": "Evet. Klanlar fiziksel olarak yakın oyunculardan oluşur. Aynı sokakta yürüyen başka bir oyuncu varsa muhtemelen sonunda klan yoldaşın olur. Doğal komşu tanışması — uygulamadan değil, paylaşılan rotadan."},
+         "a": "Evet. Klanlar fiziksel olarak yakın oyunculardan oluşur. Aynı sokakta yürüyen başka bir oyuncu varsa muhtemelen sonunda klan yoldaşın olur. Doğal komşu tanışması, uygulamadan değil, paylaşılan rotadan doğar."},
         {"q": "Mahremiyet ne durumda? Komşum nereye gittiğimi görür mü?",
          "a": "Hayır. Sadece kendi bölge sınırların görünür, kesin GPS izlerin değil. Klan üyeleri bile gerçek zamanlı konumunu göremez. Detaylar gizlilik sayfasında."},
-        {"q": "Algoritma gerçekten yok mu?",
-         "a": "Doğru. İçerik akışı yok, takipçi sayısı yok, viral video baskısı yok. Tek &bdquo;akış&rdquo; harita ve coğrafi olarak senin etrafındadır. Bilinçli bir tasarım kararı."},
+        {"q": "İçerik akışı gerçekten yok mu?",
+         "a": "Doğru. Sosyal besleme yok, takipçi sayısı yok, viral video baskısı yok. Tek &bdquo;akış&rdquo; haritadır ve coğrafi olarak senin etrafındadır. Bu bilinçli bir tasarım kararıdır."},
         {"q": "WhatsApp ile entegre mi?",
-         "a": "Evet. Klan davet bağlantıları, bölge fethi paylaşımları ve hazine avı çağrıları doğrudan WhatsApp ile paylaşılır. Türk kullanım alışkanlıklarına özel olarak tasarlandı."},
+         "a": "Evet. Klan davet bağlantıları, bölge fethi paylaşımları ve hazine avı çağrıları doğrudan WhatsApp üzerinden paylaşılır. Türk kullanım alışkanlıklarına göre tasarlandı."},
         {"q": "Yerel ekonomiye nasıl bağlı?",
-         "a": "Mahalle işletmeleri (bakkal, kuaför, kafe) MapRaiders'da görev oluşturabilir. Örnek: &bdquo;Buradan geçen üç oyuncuya çay ikram et&rdquo;. Bu, dijital traffic'i fiziksel mahalleye geri taşır."},
+         "a": "Mahalle işletmeleri (bakkal, kuaför, kafe) MapRaiders'da görev oluşturabilir. Örneğin &bdquo;Buradan geçen üç oyuncuya çay ikram et&rdquo;. Bu, dijital trafiği fiziksel mahalleye geri taşır."},
     ],
     "internal_links": [
         ("/tr/bolge-oyunu.html", "Bölge oyunu nedir"),
@@ -1419,22 +1415,22 @@ TWINS_DATA = [
     {
         "slug": "/tr/bolge-oyunu-yorumlar.html",
         "breadcrumb": "Bölge Oyunu Yorumları",
-        "title": "Bölge oyunu yorumları — Beta test kullanıcıları konuşur",
-        "og_title": "Bölge oyunu yorumları — MapRaiders beta",
-        "meta": "Bölge oyunu yorumları: Üç beta test kullanıcısı MapRaiders'ı kendi sokaklarında haftalarca test etti. Köpek sahibi, koşucu, şehir kâşifi — gerçek deneyimler.",
+        "title": "Bölge oyunu yorumları: beta test kullanıcıları anlatıyor",
+        "og_title": "Bölge oyunu yorumları: MapRaiders beta",
+        "meta": "Bölge oyunu yorumları: üç beta test kullanıcısı MapRaiders'ı kendi sokaklarında haftalarca test etti. Köpek sahibi, koşucu, şehir kâşifi tarafından yazılmış gerçek deneyimler.",
         "keywords": "bölge oyunu yorumları, bolge oyunu yorum, mapraiders yorum, gps oyun test",
-        "h1_html": 'Bölge oyunu — <em>gerçek yorumlar</em> betadan',
-        "lead": "Üç beta test kullanıcısı, üç farklı şehir bölgesi. Stuttgart, Hamburg ve Berlin'den dürüst raporlar — etkileyici sözler veya etkileyen kodları yok.",
+        "h1_html": 'Bölge oyunu: <em>gerçek yorumlar</em> betadan',
+        "lead": "Üç beta test kullanıcısı, üç farklı şehir bölgesi. Stuttgart, Hamburg ve Berlin'den dürüst raporlar. Marka cümleleri veya influencer kodu yok.",
         "intro_label": "Burada kim test ediyor?",
         "intro_title": "Üç kişi, üç <em>kullanım durumu</em>",
         "intro_body": """
-    <p>Üç beta test kullanıcısı üç farklı kullanıcı tipini temsil eder ve bu da bölge oyunu deneyimini dürüst kılar:</p>
+    <p>Üç beta test kullanıcısı birbirinden farklı kullanıcı tiplerini temsil ediyor; bu da karşılaştırmayı dürüst kılıyor:</p>
     <ul>
-      <li><strong>Ron C.</strong> Stuttgart bölgesinden: Köpek sahibi, günlük yürüyüş, oyun arka planı yok.</li>
-      <li><strong>Vivian N.</strong> Hamburg bölgesinden: Koşucu, 2018'de Pokémon GO'yu denedi ve 3 ay sonra bıraktı.</li>
-      <li><strong>Aljoscha P.</strong> Berlin bölgesinden: Şehir kâşifi, Ingress veteranı, Niantic ekosistemini birinci elden bilir.</li>
+      <li><strong>Ron C.</strong> Stuttgart bölgesinden: köpek sahibi, günlük yürüyüş, oyun geçmişi yok.</li>
+      <li><strong>Vivian N.</strong> Hamburg bölgesinden: koşucu, 2018'de Pokémon GO'yu denedi ve üç ay sonra bıraktı.</li>
+      <li><strong>Aljoscha P.</strong> Berlin bölgesinden: şehir kâşifi, Ingress veteranı, Niantic ekosistemini birinci elden bilir.</li>
     </ul>
-    <p>Üçü de MapRaiders'ı bağımsız olarak test etti — ücretli tanıtım yok, senaryo yok. Yorumlar Almanca orijinallerinden çevrilmiştir; Schema.org bunu şeffaflık için <code>translationOfWork</code> ile işaretler.</p>
+    <p>Üçü de MapRaiders'ı bağımsız olarak test etti. Ücretli tanıtım yok, senaryo yok. Yorumlar Almanca orijinallerinden çevrildi; Schema.org bunu şeffaflık için <code>translationOfWork</code> ile işaretler.</p>
         """,
         "internal_links": [
             ("/tr/bolge-oyunu.html", "Bölge oyunu nedir"),
@@ -1447,21 +1443,21 @@ TWINS_DATA = [
     {
         "slug": "/tr/konum-tabanli-oyun-yorumlar.html",
         "breadcrumb": "Konum Tabanlı Oyun Yorumları",
-        "title": "Konum tabanlı oyun yorumları — MapRaiders test edildi",
-        "og_title": "Konum tabanlı oyun yorumları — beta test",
-        "meta": "Konum tabanlı oyun yorumları: Üç beta test kullanıcısı MapRaiders'ı 4-6 hafta günlük rutinde kullandı. GPS doğruluğu, pil, oyun mekanikleri test edildi.",
+        "title": "Konum tabanlı oyun yorumları: MapRaiders test edildi",
+        "og_title": "Konum tabanlı oyun yorumları: beta test",
+        "meta": "Konum tabanlı oyun yorumları: üç beta test kullanıcısı MapRaiders'ı dört ile altı hafta arasında günlük rutininde kullandı. GPS doğruluğu, pil ve oyun mekanikleri test edildi.",
         "keywords": "konum tabanlı oyun yorumları, gps oyun test, konum oyun yorumu, location based game türkçe yorum",
-        "h1_html": 'Konum tabanlı oyun — <em>yorumlar</em> beta testten',
+        "h1_html": 'Konum tabanlı oyun: <em>beta testten yorumlar</em>',
         "lead": "Bir Pokémon GO veteranı, bir koşucu ve bir köpek sahibi aynı GPS MMO alternatifini test ederse ne olur? MapRaiders betasından üç çok farklı rapor.",
         "intro_label": "Test ortamı",
         "intro_title": "Nasıl <em>test ettik</em>",
         "intro_body": """
-    <p>Üç test kullanıcısı MapRaiders'ı normal rutininde 4-6 hafta kullandı — yapay test seansları yok, sponsorlu içerik yok:</p>
+    <p>Üç test kullanıcısı MapRaiders'ı normal rutininde dört ile altı hafta arasında kullandı. Yapay test seansları yok, sponsorlu içerik yok:</p>
     <ul>
       <li><strong>Günlük kullanım</strong> kendi şehirlerinde (Stuttgart, Hamburg, Berlin).</li>
-      <li><strong>Doğrudan karşılaştırma</strong> Pokémon GO ile Aljoscha P.'de (2 hafta paralel oynama).</li>
+      <li><strong>Pokémon GO ile doğrudan karşılaştırma</strong> Aljoscha P. tarafında (iki hafta paralel oynama).</li>
       <li><strong>Pil ölçümü</strong> uygulama ayarları üzerinden: saat başına ortalama tüketim.</li>
-      <li><strong>Dürüst geri bildirim kuralı:</strong> Buglar, hayal kırıklıkları ve istekler dile getirilir, sadece öne çıkanlar değil.</li>
+      <li><strong>Dürüst geri bildirim kuralı.</strong> Buglar, hayal kırıklıkları ve istekler de raporda yer alır, sadece öne çıkanlar değil.</li>
     </ul>
         """,
         "internal_links": [
@@ -1475,20 +1471,20 @@ TWINS_DATA = [
     {
         "slug": "/tr/pokemon-go-alternatif-yorumlar.html",
         "breadcrumb": "Pokémon GO Alternatif Yorumları",
-        "title": "Pokémon GO alternatif yorumları — Betadan dürüst raporlar",
-        "og_title": "Pokémon GO alternatif yorumları — gerçek beta",
-        "meta": "Pokémon GO alternatif yorumları MapRaiders betasından: Üç farklı kullanıcı tipi (köpek sahibi, koşucu, şehir kâşifi) MapRaiders deneyimi hakkında ne diyor.",
+        "title": "Pokémon GO alternatifi yorumları: betadan dürüst raporlar",
+        "og_title": "Pokémon GO alternatifi yorumları: gerçek beta",
+        "meta": "Pokémon GO alternatifi yorumları MapRaiders betasından: üç farklı kullanıcı tipi (köpek sahibi, koşucu, şehir kâşifi) MapRaiders deneyimi hakkında ne diyor?",
         "keywords": "pokemon go alternatif yorumları, pokemon go yerine yorumlar, mapraiders yorumu, beta test rapor",
-        "h1_html": 'Pokémon GO alternatif — <em>betadan dürüst raporlar</em>',
-        "lead": "Pokémon GO'dan ayrılan biri MapRaiders ile gerçek bölge sahipliğini nasıl deneyimliyor? Üç beta test kullanıcısı kendi rotalarında — Stuttgart, Hamburg, Berlin — açıkça konuşuyor.",
+        "h1_html": 'Pokémon GO alternatifi: <em>betadan dürüst raporlar</em>',
+        "lead": "Pokémon GO'dan ayrılan biri MapRaiders ile gerçek bölge sahipliğini nasıl deneyimliyor? Üç beta test kullanıcısı kendi rotalarında (Stuttgart, Hamburg, Berlin) açıkça konuşuyor.",
         "intro_label": "Test sorusu",
         "intro_title": "Bir Pokémon GO oyuncusu MapRaiders'ı <em>nasıl yaşar</em>?",
         "intro_body": """
-    <p>Test üç eksen üzerinde çalıştı:</p>
+    <p>Testimiz üç eksen üzerinde yürüdü:</p>
     <ul>
-      <li><strong>İlk eroberung deneyimi.</strong> İlk kendi sokak ne zaman &bdquo;benim arazim&rdquo; gibi hissettiriyor?</li>
-      <li><strong>Kayıp deneyimi.</strong> İlk bölge çürümesi veya bir saldırgana yenilgi nasıl tepki çekiyor?</li>
-      <li><strong>Savunma deneyimi.</strong> Savunma mini oyunları taktiksel mi, adil mi, sinir bozucu mu?</li>
+      <li><strong>İlk eroberung deneyimi.</strong> İlk kendi sokağın ne zaman &bdquo;benim arazim&rdquo; gibi hissettiriyor?</li>
+      <li><strong>Kayıp deneyimi.</strong> İlk bölge çürümesi veya bir saldırgana yenilgi nasıl bir tepki yaratıyor?</li>
+      <li><strong>Savunma deneyimi.</strong> Savunma mini oyunları taktiksel mi, adil mi, yoksa sinir bozucu mu?</li>
     </ul>
         """,
         "internal_links": [
@@ -1502,20 +1498,20 @@ TWINS_DATA = [
     {
         "slug": "/tr/fake-gps-olmadan-yorumlar.html",
         "breadcrumb": "Fake GPS Olmadan Yorumlar",
-        "title": "Fake GPS olmadan yorumlar — Adil GPS oyun deneyimi",
-        "og_title": "Fake GPS olmadan yorumlar — anti-cheat beta",
-        "meta": "Fake GPS olmadan yorumlar: MapRaiders'ın anti-cheat tasarımı betada nasıl çalışıyor? PGSharp ve MocPOGO'ya alışmış oyuncular için adil oyun nasıl hissettiriyor?",
+        "title": "Fake GPS olmadan yorumlar: adil GPS oyun deneyimi",
+        "og_title": "Fake GPS olmadan yorumlar: anti-cheat beta",
+        "meta": "Fake GPS olmadan yorumlar: MapRaiders'ın anti-cheat tasarımı betada nasıl çalışıyor? PGSharp ve MocPOGO kültürüne alışmış oyuncular için adil oyun nasıl hissettiriyor?",
         "keywords": "fake gps olmadan yorumlar, anti cheat gps oyun yorum, adil gps mmo, hilesiz gps oyun",
-        "h1_html": 'Fake GPS olmadan — <em>adil oyun yorumları</em>',
-        "lead": "Türkiye'de fake-GPS gerçek bir karaborsa. MapRaiders bunu farklı çözer — yapısal olarak. Üç beta test kullanıcısı bu değişimin nasıl hissettirdiğini paylaşıyor.",
+        "h1_html": 'Fake GPS olmadan: <em>adil oyun yorumları</em>',
+        "lead": "Türkiye'de fake-GPS gerçek bir karaborsa haline geldi. MapRaiders bunu yapısal düzeyde farklı çözer. Üç beta test kullanıcısı bu değişimin nasıl hissettirdiğini paylaşıyor.",
         "intro_label": "TR'ye özel test sorusu",
         "intro_title": "Fake-GPS kültüründe <em>adil oyun</em> nasıl hissettiriyor?",
         "intro_body": """
-    <p>TR'ye özel olarak üç soruyu test ettik:</p>
+    <p>Türkiye için özel olarak üç soruyu test ettik:</p>
     <ul>
-      <li><strong>Hile motivasyonu var mı?</strong> 25 km/saat üst limiti gerçekten hileyi anlamsız kılar mı?</li>
-      <li><strong>Sahte konum gerçekten engellenir mi?</strong> PGSharp veya MocPOGO ile test denendi.</li>
-      <li><strong>Adil oyun deneyimi nasıl?</strong> Pokémon GO'dan farkını oyuncular fark ediyor mu?</li>
+      <li><strong>Hile motivasyonu kalıyor mu?</strong> 25 km/saat üst limiti gerçekten hileyi anlamsız kılıyor mu?</li>
+      <li><strong>Sahte konum gerçekten engellenir mi?</strong> Test sırasında PGSharp ve MocPOGO denendi.</li>
+      <li><strong>Adil oyun deneyimi nasıl?</strong> Pokémon GO'dan farkı oyuncular tarafından fark ediliyor mu?</li>
     </ul>
         """,
         "internal_links": [
@@ -1529,20 +1525,20 @@ TWINS_DATA = [
     {
         "slug": "/tr/yuruyus-oyunu-yorumlar.html",
         "breadcrumb": "Yürüyüş Oyunu Yorumları",
-        "title": "Yürüyüş oyunu yorumları — Kardiyo testinde MapRaiders",
-        "og_title": "Yürüyüş oyunu yorumları — kardiyo + bölge",
-        "meta": "Yürüyüş oyunu yorumları: Beta test kullanıcıları kardiyo motivasyonu, uzun mesafede pil ve hastalık aralarından sonra bölge kaybı hakkında konuşuyor.",
+        "title": "Yürüyüş oyunu yorumları: kardiyo testinde MapRaiders",
+        "og_title": "Yürüyüş oyunu yorumları: kardiyo ve bölge",
+        "meta": "Yürüyüş oyunu yorumları: beta test kullanıcıları kardiyo motivasyonu, uzun mesafede pil ve hastalık aralarından sonra bölge kaybı hakkında konuşuyor.",
         "keywords": "yürüyüş oyunu yorumları, koşu oyun yorumu, kardiyo app yorumu, fitness mmo yorumlar",
-        "h1_html": 'Yürüyüş oyunu — <em>kardiyo testinden yorumlar</em>',
-        "lead": "Her tur gerçek arazi savunduğunda yürüyüş motivasyonuna ne olur? Soğuk algınlığı arasından sonra ilk çürüme nasıl hissettiriyor? Üç beta test kullanıcısı — koşucu, yürüyüşçü, şehir kâşifi.",
+        "h1_html": 'Yürüyüş oyunu: <em>kardiyo testinden yorumlar</em>',
+        "lead": "Her tur gerçek arazi savunduğunda yürüyüş motivasyonuna ne olur? Soğuk algınlığı arasından sonra ilk çürüme nasıl hissettiriyor? Üç beta test kullanıcısı (bir koşucu, bir yürüyüşçü ve bir şehir kâşifi) yanıtlıyor.",
         "intro_label": "Test eksenleri",
         "intro_title": "Bir <em>yürüyüş oyunu</em> ne sunmalı",
         "intro_body": """
     <p>Yürüyüş deneyimini üç eksende test ettik:</p>
     <ul>
-      <li><strong>Motivasyon çapası.</strong> Birisi aradan sonra ne zaman yeniden başlar?</li>
-      <li><strong>Uzun mesafede pil.</strong> 60-90 dakikalık rotalar pil ölmeden.</li>
-      <li><strong>Çoklu spor.</strong> Koşu, yürüyüş ve köpek turu için aynı şekilde çalışır mı?</li>
+      <li><strong>Motivasyon çapası.</strong> Birisi aradan sonra hangi anda yeniden başlıyor?</li>
+      <li><strong>Uzun mesafede pil.</strong> 60-90 dakikalık rotalar pil ölmeden tamamlanabiliyor mu?</li>
+      <li><strong>Çoklu spor.</strong> Koşu, yürüyüş ve köpek turu için aynı şekilde çalışıyor mu?</li>
     </ul>
         """,
         "internal_links": [
@@ -1556,20 +1552,20 @@ TWINS_DATA = [
     {
         "slug": "/tr/hazine-avi-uygulamasi-yorumlar.html",
         "breadcrumb": "Hazine Avı Uygulaması Yorumları",
-        "title": "Hazine avı uygulaması yorumları — Tur satın alma yok",
-        "og_title": "Hazine avı uygulaması yorumları — canlı şehir",
-        "meta": "Hazine avı uygulaması yorumları tur satın alma ve hazırlık olmadan: Beta test kullanıcıları MapRaiders'ın tüm şehri canlı hazine avına nasıl çevirdiğini paylaşıyor.",
+        "title": "Hazine avı uygulaması yorumları: tur satın alma olmadan",
+        "og_title": "Hazine avı uygulaması yorumları: canlı şehir",
+        "meta": "Hazine avı uygulaması yorumları, tur satın alma veya hazırlık olmadan: beta test kullanıcıları MapRaiders'ın tüm şehri canlı hazine avına nasıl çevirdiğini paylaşıyor.",
         "keywords": "hazine avı uygulaması yorumları, hazine avı app yorumu, şehir keşif yorum, aile hazine avı yorumlar",
-        "h1_html": 'Hazine avı uygulaması — <em>tur satın alma olmadan yorumlar</em>',
-        "lead": "Çoğu hazine avı uygulaması hazırlık ister: Tur satın al, rota planla, istasyon ayarla. Tüm şehir zaten izlerle dolu olduğunda nasıl hissettiriyor? Üç beta test kullanıcısı paylaşıyor.",
+        "h1_html": 'Hazine avı uygulaması: <em>tur satın alma olmadan yorumlar</em>',
+        "lead": "Çoğu hazine avı uygulaması hazırlık ister: tur satın al, rota planla, istasyon ayarla. Tüm şehir zaten izlerle dolu olduğunda bu nasıl hissettiriyor? Üç beta test kullanıcısı paylaşıyor.",
         "intro_label": "Test sorusu",
         "intro_title": "<em>Canlı hazine avı</em> hazırlık olmadan çalışır mı?",
         "intro_body": """
-    <p>Hazine avı işlevlerini üç ortamda test ettik:</p>
+    <p>Hazine avı işlevlerini üç farklı ortamda test ettik:</p>
     <ul>
-      <li><strong>Yalnız</strong> şehir kâşifi olarak (Aljoscha P.) — eko bırak, eko bul.</li>
-      <li><strong>Köpekle</strong> normal rutinde (Ron C.) — izler yan ürün olarak.</li>
-      <li><strong>Aile ortamı</strong> simüle edildi — yetişkinler ve çocuklar mekaniği ne kadar hızlı kavrıyor?</li>
+      <li><strong>Yalnız</strong> şehir kâşifi olarak (Aljoscha P.): eko bırak, eko bul.</li>
+      <li><strong>Köpekle</strong> normal rutinde (Ron C.): izler yan ürün olarak çıkıyor.</li>
+      <li><strong>Aile ortamı</strong> simüle edildi: yetişkinler ve çocuklar mekaniği ne kadar hızlı kavrıyor?</li>
     </ul>
         """,
         "internal_links": [
@@ -1583,20 +1579,20 @@ TWINS_DATA = [
     {
         "slug": "/tr/mahalle-oyunu-yorumlar.html",
         "breadcrumb": "Mahalle Oyunu Yorumları",
-        "title": "Mahalle oyunu yorumları — Komşu deneyimleri",
-        "og_title": "Mahalle oyunu yorumları — komşuluk + harita",
-        "meta": "Mahalle oyunu yorumları: Beta test kullanıcıları MapRaiders'ın mahalle algısını nasıl değiştirdiğini, komşularla karşılaşmaları ve WhatsApp paylaşımlarını paylaşıyor.",
+        "title": "Mahalle oyunu yorumları: komşu deneyimleri",
+        "og_title": "Mahalle oyunu yorumları: komşuluk ve harita",
+        "meta": "Mahalle oyunu yorumları: beta test kullanıcıları MapRaiders'ın mahalle algısını nasıl değiştirdiğini, komşularla karşılaşmaları ve WhatsApp paylaşımlarını anlatıyor.",
         "keywords": "mahalle oyunu yorumları, komşu oyun yorum, mahalle uygulama yorumlar, semt oyun test",
-        "h1_html": 'Mahalle oyunu — <em>komşu deneyimleri</em>',
-        "lead": "MapRaiders gerçekten komşu tanışmasına yol açıyor mu? Algoritma yok ne kadar uygulanabilir? WhatsApp paylaşımları işliyor mu? Üç beta test kullanıcısı yorum yapıyor.",
+        "h1_html": 'Mahalle oyunu: <em>komşu deneyimleri</em>',
+        "lead": "MapRaiders gerçekten komşu tanışmasına yol açıyor mu? İçerik akışı olmaması ne kadar uygulanabilir? WhatsApp paylaşımları doğal mı duruyor? Üç beta test kullanıcısı yorumluyor.",
         "intro_label": "Mahalle çerçevesi testi",
         "intro_title": "<em>Mahalle algısı</em> gerçekten değişiyor mu?",
         "intro_body": """
-    <p>Mahalle çerçevesi üç soru ile test edildi:</p>
+    <p>Mahalle çerçevesini üç soru ile test ettik:</p>
     <ul>
       <li><strong>Doğal komşu tanışması.</strong> Klan oluşumu fiziksel komşulardan gerçekleşiyor mu?</li>
-      <li><strong>Algoritma yok hissi.</strong> Sosyal beslemenin yokluğu rahatlatıyor mu?</li>
-      <li><strong>WhatsApp entegrasyonu.</strong> Klan davetleri ve bölge paylaşımları doğal hissettiriyor mu?</li>
+      <li><strong>İçerik akışının yokluğu.</strong> Sosyal beslemenin olmaması rahatlatıcı bir his mi yaratıyor?</li>
+      <li><strong>WhatsApp entegrasyonu.</strong> Klan davetleri ve bölge paylaşımları doğal mı duruyor?</li>
     </ul>
         """,
         "internal_links": [
@@ -1616,28 +1612,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/tr/mapraiders-yorumlar.html",
     "breadcrumb": "MapRaiders Yorumlar",
-    "title": "MapRaiders yorumları — Puanlar, beta testler, kurucu",
-    "og_title": "MapRaiders yorumları — bir bakışta",
-    "meta": "MapRaiders yorumları: 5,0/5 yıldız üç doğrulanmış beta testten, kurucu açıklaması, tüm killer sayfaları ve yorum sayfaları merkezi olarak bağlanmış.",
+    "title": "MapRaiders yorumları: puanlar, beta testler, kurucu açıklaması",
+    "og_title": "MapRaiders yorumları: bir bakışta",
+    "meta": "MapRaiders yorumları: üç doğrulanmış beta testten 5,0/5 yıldız, kurucu açıklaması, tüm killer sayfalar ve yorum sayfaları merkezi olarak bağlanmış.",
     "keywords": "mapraiders yorumları, mapraiders puan, mapraiders test, gps mmo yorumlar",
-    "badge": "Merkez & Genel Bakış",
-    "pricing_pill": "5,0 / 5 — 3 doğrulanmış beta yorumu",
-    "h1_html": '<em>MapRaiders yorumları</em> — GPS MMO hakkında bilmen gereken her şey',
-    "lead": "Stuttgart, Hamburg ve Berlin'den üç beta test kullanıcısı. Pokémon GO karşılaştırmasından hazine avı uygulamasına kadar 7 killer konu. 7 detay raporu. Tek merkez.",
+    "badge": "Merkez ve Genel Bakış",
+    "pricing_pill": "5,0 / 5 yıldız: 3 doğrulanmış beta yorumu",
+    "h1_html": '<em>MapRaiders yorumları</em>: GPS MMO hakkında her şey tek sayfada',
+    "lead": "Stuttgart, Hamburg ve Berlin'den üç beta test kullanıcısı. Pokémon GO karşılaştırmasından hazine avı uygulamasına kadar yedi killer konu, yedi detay raporu, tek bir merkezde toplandı.",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
         {"q": "MapRaiders nedir?",
-         "a": "MapRaiders Android için GPS tabanlı bir MMO oyunudur. Oyuncular hareket ile gerçek bölgeleri fetheder, ekolar bırakır, görevler oluşturur ve mini oyunlarla arazilerini savunur. Reklamsız, KVKK uyumlu, ücretsiz."},
+         "a": "MapRaiders, Android için GPS tabanlı bir MMO oyunudur. Oyuncular hareket ederek gerçek bölgeleri fetheder, ekolar bırakır, görevler oluşturur ve mini oyunlarla arazilerini savunur. Reklamsız, KVKK uyumlu ve ücretsizdir."},
         {"q": "Beta test kullanıcısı kaç kişi?",
-         "a": "Şu anda kamuoyuna açık üç kişi — onların izniyle ve gizlilik için ad + soyad baş harfi ile. Kapalı beta toplam olarak daha büyüktür; üç tanıtılan kişi ana kullanıcı tiplerini temsil eder."},
+         "a": "Şu anda kamuoyuyla paylaşılan üç kişi var. Bu üçü, onların izniyle ve gizlilik amacıyla ad ve soyad baş harfiyle yer alıyor. Kapalı beta toplam olarak daha büyük; üç tanıtılan kişi ana kullanıcı tiplerini temsil ediyor."},
         {"q": "Yorumlar gerçek mi?",
-         "a": "Evet. Üç test kullanıcısı kapalı betadan gerçek kişilerdir. Ücret almadılar; alıntılar Almanca olarak orijinal yazıldı. Schema.org Türkçe versiyonları translationOfWork ile Almanca orijinallerini gösterir — tam şeffaflık."},
+         "a": "Evet. Üç test kullanıcısı kapalı betadan gerçek kişilerdir. Ücret almadılar, alıntılar Almanca olarak orijinal yazıldı. Schema.org Türkçe versiyonları translationOfWork etiketi ile Almanca orijinallerine bağlar; bu tam şeffaflık sağlar."},
         {"q": "Beta test kullanıcısı nasıl olabilirim?",
-         "a": "Ana sayfada e-posta listesine kaydol. Beta yerleri dalgalar halinde verilir; öncelik düşük oyuncu yoğunluğundaki Türkiye şehirlerinden aktif yürüyüşçüler/koşucular/köpek sahiplerine."},
+         "a": "Ana sayfada e-posta listesine kaydol. Beta yerleri dalgalar halinde dağıtılıyor. Düşük oyuncu yoğunluğundaki Türkiye şehirlerinden aktif yürüyüşçüler, koşucular ve köpek sahipleri öncelikli."},
         {"q": "Uygulama resmi olarak ne zaman çıkıyor?",
-         "a": "MapRaiders Google Play'de kapalı beta olarak vardır. Türkiye için kamuya açık lansman 2026 yazında planlanıyor; iOS lansmanı 2026 üçüncü çeyreğinde."},
+         "a": "MapRaiders şu anda Google Play'de kapalı beta olarak yayında. Türkiye için kamuya açık lansman 2026 yazında planlanıyor, iOS lansmanı ise 2026 üçüncü çeyrekte."},
     ],
     "internal_links": [],
 }

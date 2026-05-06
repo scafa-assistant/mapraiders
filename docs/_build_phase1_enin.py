@@ -73,7 +73,7 @@ TESTER_RON = {
     "name": "Ron C.",
     "role": "Dog Owner · Stuttgart area, Germany",
     "role_long": "Dog owner from the Stuttgart area, Germany (closed beta)",
-    "quote": "My dog loves his walk — and I love that every walk makes my neighbourhood more visible on the map. I've conquered my whole street already.",
+    "quote": "My dog needs his two walks a day anyway, so I just take the block along now. Sounds silly, but I check every evening to see whether everything is still blue.",
     "date": "2026-03-15",
     "id_local": "review-ron-c-en-in",
     "id_de": "review-ron-c",
@@ -82,7 +82,7 @@ TESTER_VIVIAN = {
     "name": "Vivian N.",
     "role": "Runner · Hamburg area, Germany",
     "role_long": "Runner from the Hamburg area, Germany (closed beta)",
-    "quote": "I run every morning anyway. With MapRaiders every route has a goal: hold your territory or take it back. My cardio drive has exploded.",
+    "quote": "I jog every morning anyway, but now I am also defending something. My Alster loop belongs to me, and that is how it is going to stay. Funny how much discipline that suddenly mobilises.",
     "date": "2026-03-22",
     "id_local": "review-vivian-n-en-in",
     "id_de": "review-vivian-n",
@@ -91,7 +91,7 @@ TESTER_ALJOSCHA = {
     "name": "Aljoscha P.",
     "role": "Urban Explorer · Berlin area, Germany",
     "role_long": "Urban explorer from the Berlin area, Germany (closed beta)",
-    "quote": "Dropping Echoes and watching who finds them is like an open scavenger hunt across the whole city.",
+    "quote": "You drop a short audio clip at a doorway, three days later somebody you do not know has found it. That feels oddly intimate for a game.",
     "date": "2026-04-01",
     "id_local": "review-aljoscha-p-en-in",
     "id_de": "review-aljoscha-p",
@@ -100,12 +100,13 @@ ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 # Founder quote EN-IN (Master-Plan §1.4)
 FOUNDER_QUOTE = (
-    "I was one of the frustrated Pokémon GO players. I wanted real territory, "
-    "not a fleeting gym capture. I didn't want my steps sold to Saudi sovereign "
-    "funds, no ad-network business model, no required premium sub. So I built "
-    "MapRaiders — designed to run smooth on every Indian phone, from Tier-1 "
-    "flagships to Tier-2 budget devices. This is my home turf — and it's about "
-    "to be yours."
+    "I played Pokémon GO for three years and at some point I just stopped. "
+    "What I missed never arrived: real land instead of fleeting gyms. "
+    "When the Saudi takeover happened in 2025, it was clear to me that the Niantic model "
+    "is not heading where I want to go. So I am building MapRaiders myself, in a way "
+    "that runs properly on the phone most Indians actually own, not only on Tier-1 flagships. "
+    "Ad-free, no investor pressure, no compulsory subscription. My mohalla is my playing field. "
+    "Yours is yours to take."
 )
 
 # Pricing offers — IN PPP-Pricing in INR (Master-Plan §1.1)
@@ -125,7 +126,7 @@ DEFINED_TERMS = [
     ("Territory Decay", "Mechanic by which abandoned territories degrade over time and become claimable again"),
     ("Quest", "A player-created mini-task others can complete in the real world"),
     ("Clan", "An organic group of players who hold and defend territories together"),
-    ("Neighbourhood", "Your local block — the street you walk daily, your home turf"),
+    ("Neighbourhood", "Your local block, the street you walk daily, your home turf"),
     ("Artefact", "A rare collectable item discovered through Echo exploration"),
 ]
 
@@ -203,7 +204,7 @@ def testers_section_html(testers):
 {cards}
     </div>
     <p style="margin-top:24px;font-size:12px;color:var(--dim);max-width:680px;line-height:1.6">
-      Note: Testers are internal beta participants (closed beta). First name + initial is used at testers' privacy request. Reviews are translations from the German originals; Schema.org marks them with <code>translationOfWork</code> for transparency.
+      Note: testers are internal beta participants (closed beta). First name and initial is used because the testers asked for it. The reviews are translated from the German originals; Schema.org marks them with <code>translationOfWork</code> so anyone can check the source.
     </p>
   </div>
 </section>"""
@@ -226,7 +227,7 @@ def footer_html():
       <a href="/en-in/privacy.html">Privacy</a><a href="/en-in/terms.html">Terms</a><a href="/en-in/imprint.html">Imprint</a><a href="/en-in/contact.html">Contact</a>
     </div>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Conquer your neighbourhood. A product of Scafa Investments LLC.</p>
+  <p class="f-copy">&copy; 2026 MapRaiders. Conquer your neighbourhood. A product of Scafa Investments LLC.</p>
 </div>
 </footer>
 <script>
@@ -510,7 +511,7 @@ def build_schema_hub(page, all_killers, all_twins):
     item_list = {
         "@type": "ItemList",
         "@id": f"{SITE}{page['slug']}#itemlist",
-        "name": "MapRaiders EN-IN — all Killer and Reviews pages",
+        "name": "MapRaiders EN-IN: all Killer and Reviews pages",
         "itemListElement": []
     }
     pos = 1
@@ -559,7 +560,7 @@ def render_faq_html(faqs):
     return f"""<section class="sec">
 <div class="mx">
   <div class="sec-label rv">FAQ</div>
-  <h2 class="sec-title rv d1">Frequently Asked <em>Questions</em></h2>
+  <h2 class="sec-title rv d1">Common <em>questions</em></h2>
   <div class="faq-list">
 {chr(10).join(items)}
   </div>
@@ -597,7 +598,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>&ldquo;{page['trigger']['quote']}&rdquo;</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
 
     pricing_pill = ""
@@ -676,9 +677,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">Reviews</div>
-  <h2 class="sec-title rv d1">5.0 out of 5 — <em>3 verified beta reviews</em></h2>
+  <h2 class="sec-title rv d1">5.0 out of 5 from <em>three beta reviews</em></h2>
   <div class="prose rv d2">
-    <p>Three internal beta testers from Germany — a dog owner, a runner and an urban explorer — used MapRaiders for several weeks. The reviews below are translated from the German originals and represent real people from the closed beta. We use first name plus initial at the testers' privacy request.</p>
+    <p>Ron walks his dog every day, Vivian jogs in the morning, Aljoscha covers Berlin on foot. The three of them used MapRaiders for several weeks inside their normal routine and gave their feedback in German. We use first name and initial because the testers asked for that.</p>
   </div>
 </div>
 </section>"""
@@ -756,7 +757,7 @@ def render_hub_page(page, all_killers, all_twins):
   <div class="sec-label rv">Topic Hub India</div>
   <h2 class="sec-title rv d1">All <em>MapRaiders India topics</em> at a glance</h2>
   <div class="prose rv d2">
-    <p>This hub gathers all 7 Killer pages plus 7 dedicated reviews pages for the Indian market — from the Pokémon GO comparison to the cricket-fan map app, from low-end Android performance to citywide treasure hunts. UK-spelling throughout, INR pricing, UPI-friendly. Yeh app aapke neighbourhood ke liye banaya gaya hai — built for Tier-1 flagships and Tier-2 budget devices alike.</p>
+    <p>This hub holds all seven Killer pages and the seven matching reviews pages for the Indian market. Each page looks at MapRaiders from a different angle: once as a Pokémon GO alternative, once as a cricket-fan map, once as a walking app, once as a low-end Android game. You can read each page on its own, or work through them topic by topic. UK-spelling throughout, INR pricing, UPI-friendly, and built so a Redmi 9 in Indore runs it as smoothly as a flagship in South Bombay.</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -767,7 +768,7 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Reviews in detail</div>
-  <h2 class="sec-title rv d1">What beta testers report from <em>different perspectives</em></h2>
+  <h2 class="sec-title rv d1">What the beta testers report from <em>different angles</em></h2>
   <div class="features-grid">
 {twin_cards}
   </div>
@@ -776,10 +777,10 @@ def render_hub_page(page, all_killers, all_twins):
 
 <section class="sec">
 <div class="mx">
-  <div class="sec-label rv">Aggregate Rating</div>
-  <h2 class="sec-title rv d1">5.0 out of 5 — <em>3 verified beta reviews</em></h2>
+  <div class="sec-label rv">Aggregate rating</div>
+  <h2 class="sec-title rv d1">5.0 out of 5 from <em>three beta reviews</em></h2>
   <div class="prose rv d2">
-    <p>All reviews come from the closed beta phase, February–April 2026. Three testers — a dog owner, a runner, an urban explorer — tested MapRaiders on their own routes in Stuttgart, Hamburg and Berlin. The reviews shown here are translations from the German originals and represent real people. Schema.org marks them via <code>translationOfWork</code> for transparency. Indian beta testers (DPDPA-compliant) launch in Tier-2 phase post-launch.</p>
+    <p>The reviews are from the closed beta between February and April 2026. Ron tested in Stuttgart, Vivian in Hamburg, Aljoscha in Berlin. All three used the game on their own routes, not in an artificial test setting. The quotes are translated from the German originals and represent real people; Schema.org carries the <code>translationOfWork</code> link to the source for anyone who wants to verify. The Indian native-tester wave is planned post-launch, on a DPDPA-compliant programme.</p>
   </div>
 </div>
 </section>"""
@@ -840,69 +841,69 @@ def render_hub_page(page, all_killers, all_twins):
 K1 = {
     "slug": "/en-in/pokemon-go-alternative-free-india.html",
     "breadcrumb": "Pokémon GO Alternative Free India",
-    "title": "Pokémon GO Alternative Free India — UPI-friendly, no Saudi",
-    "og_title": "Pokémon GO Alternative Free India — Ad-Free, UPI-friendly",
-    "meta": "Looking for Pokémon GO alternative free in India? MapRaiders is 100% free, UPI-friendly, runs on Tier-2 phones. No Saudi ownership.",
+    "title": "Pokémon GO Alternative Free India: UPI-friendly, no Saudi",
+    "og_title": "Pokémon GO Alternative Free India: Ad-Free, UPI-friendly",
+    "meta": "Looking for a Pokémon GO alternative that is actually free in India? MapRaiders is free at the core, UPI-friendly and runs on Tier-2 phones. Independent ownership, not Saudi-controlled.",
     "keywords": "pokemon go alternative free india, free gps game india, ad-free location game india, niantic refugee india, upi friendly game",
     "badge": "Free Forever · India",
     "pricing_pill": "₹0 Gameplay · Cosmetic-IAP from ₹19 · UPI-friendly",
-    "h1_html": 'Pokémon GO Alternative Free India — <em>UPI-friendly</em>, no Saudi data, no battle pass',
-    "lead": "Looking for a Pokémon GO alternative in India that's actually free? Most so-called \"alternatives\" land you in the next premium trap with USD-pricing that doesn't fit Indian wallets. MapRaiders flips that: 100% free core gameplay, ₹19 cosmetic-IAP if you choose, UPI-friendly via Razorpay/Google Pay/PhonePe/Paytm. No Saudi sovereign-fund ownership, no ad-network business model.",
+    "h1_html": 'Pokémon GO alternative, free in India: <em>UPI-friendly</em>, no Saudi data flow, no battle pass',
+    "lead": "If you are looking for a Pokémon GO alternative in India that is actually free, you usually land in the next premium trap. USD-priced battle passes that do not match Indian wallets, or step counters with no real game underneath. MapRaiders takes the other route. The core gameplay is free and stays free, cosmetic items start at ₹19 if you ever feel like it, and payments run through Razorpay, Google Pay, PhonePe and Paytm. No Saudi sovereign-fund ownership, no ad network sitting on top of your location data.",
     "trigger": {
-        "quote": "100% free forever. UPI-friendly cosmetic store. Yeh app aapke neighbourhood ke liye banaya gaya hai.",
+        "quote": "Free forever at the core, UPI in the cosmetic store. Yeh app aapke mohalle ke liye banaya gaya hai.",
         "author": "René Scafarti, Founder"
     },
     "testers": [TESTER_VIVIAN, TESTER_ALJOSCHA],
     "sections": [
         {
-            "label": "Why search?",
-            "title": "Why Indian players are <em>actively searching</em> for Pokémon GO alternatives in 2026",
+            "label": "Why people are looking",
+            "title": "Why Indian players are <em>actively searching</em> for a Pokémon GO alternative in 2026",
             "body": """
-    <p>Three pain-points have made the Indian market ready for a real alternative since 2024:</p>
+    <p>Three things have pushed the Indian market towards a real alternative since 2024:</p>
     <ul>
-      <li><strong>USD-priced battle passes don't fit Indian wallets.</strong> ₹500-1000/month on a fleeting seasonal pass when ARPU in India is ₹3,500/year total — math doesn't work.</li>
-      <li><strong>Remote-Raid-Pass paywall.</strong> Niantic raised prices and cut availability — Indian players in Tier-2 cities effectively got locked out of endgame content.</li>
-      <li><strong>Saudi acquisition, March 2025.</strong> Niantic sold its game division (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) to Scopely — a subsidiary of the Saudi Public Investment Fund — for $3.5B. Location data of 30M+ monthly Pokémon GO players now flows indirectly to a foreign sovereign fund. India has DPDPA in force; trust matters.</li>
+      <li><strong>USD-priced battle passes do not fit Indian wallets.</strong> ₹500 to ₹1000 a month on a seasonal pass that disappears at the end of the season. With Indian mobile-game ARPU around ₹3,500 a year, the math simply does not add up.</li>
+      <li><strong>Remote-Raid-Pass paywall.</strong> Niantic raised prices and cut availability. Players in Tier-2 cities effectively got locked out of endgame content because going to enough physical raids is not realistic.</li>
+      <li><strong>Saudi acquisition in March 2025.</strong> Niantic sold its game division (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) to Scopely for 3.5 billion dollars. Scopely is a subsidiary of the Saudi Public Investment Fund. The location data of more than 30 million monthly Pokémon GO players now flows through that infrastructure. India has DPDPA in force, so trust on cross-border data flows matters more than it did two years ago.</li>
     </ul>
-    <p>Indian players searching for alternatives aren't looking for the next Pokémon GO clone. They're looking for <strong>something built against exactly those three problems</strong> — and built to run on Tier-2 phones.</p>
+    <p>Indian players searching for an alternative are not looking for the next Pokémon GO clone. They are looking for <strong>something built against those exact three problems</strong>, and built to run properly on a Tier-2 phone.</p>
             """,
         },
         {
-            "label": "What does free actually mean?",
-            "title": "What &ldquo;free&rdquo; actually means with <em>MapRaiders India</em>",
-            "body": "<p>Transparent tiers — no hidden paywalls, UPI-payment ready (Razorpay + Google Pay India + PhonePe + Paytm):</p>",
+            "label": "What &ldquo;free&rdquo; means here",
+            "title": "What &ldquo;free&rdquo; actually looks like in <em>MapRaiders India</em>",
+            "body": "<p>Tiers are open. No hidden paywall, no tutorial that suddenly stops after ten minutes, UPI ready through Razorpay, Google Pay India, PhonePe and Paytm:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Tier</th><th>What you get</th><th>Price (INR)</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">Free Forever</td><td>100% gameplay (territory, Echoes, quests, clans, defence, events)</td><td>₹0</td></tr>
+      <tr><td class="feat-name">Free Forever</td><td>The full gameplay (territory, Echoes, quests, clans, defence, events)</td><td>₹0</td></tr>
       <tr><td class="feat-name">Cosmetic-IAP</td><td>Marker designs, territory colours, clan emblems, skins</td><td>₹19 &ndash; ₹199</td></tr>
       <tr><td class="feat-name">MapRaiders Supporter (Sub)</td><td>Honour badge, beta access, monthly cosmetic pack, founder letter</td><td>₹89 / month</td></tr>
-      <tr><td class="feat-name">Lifetime Supporter</td><td>Collector cosmetic + credits mention</td><td>₹1,899 once</td></tr>
+      <tr><td class="feat-name">Lifetime Supporter</td><td>Collector cosmetic, plus a credits mention</td><td>₹1,899 once</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Important:</strong> Cosmetic items grant zero gameplay advantage. A free player and a Lifetime Supporter use identical mechanics. PPP-pricing for India built in from day one — not a flat USD-conversion.</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Important:</strong> cosmetic items give zero gameplay advantage. A free player and a Lifetime Supporter use the same mechanics. PPP-pricing for India is in from day one, not a flat dollar conversion.</p>""",
         },
         {
             "label": "The Saudi-Niantic question",
-            "title": "The <em>Saudi-Niantic question</em> — what happens to Indian players' data?",
+            "title": "The <em>Saudi-Niantic question</em>: what happens to Indian players' data?",
             "body": """
-    <p>In March 2025, Niantic sold its game division (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) for $3.5 billion to Scopely. Scopely is a subsidiary of the Saudi Public Investment Fund (PIF) — a state-controlled entity of Saudi Arabia.</p>
-    <p>What this means in practice: <strong>the location data of around 30 million monthly Pokémon GO players</strong> — including Indian players in Mumbai, Delhi, Bangalore, Chennai — now flows through Scopely's infrastructure. India's DPDPA (Digital Personal Data Protection Act) is in force, but cross-border data flows to sovereign-fund-controlled entities remain a grey area.</p>
-    <p>MapRaiders is a privately-held US LLC (Scafa Investments LLC, Florida), built by an independent team. We don't sell data, we don't run an ad network, and we are not state-controlled. DPDPA-aligned data handling for Indian users is built in.</p>
+    <p>In March 2025, Niantic sold its full game division (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) for 3.5 billion dollars to Scopely. Scopely is a subsidiary of the Saudi Public Investment Fund, formally a state-controlled entity of Saudi Arabia.</p>
+    <p>What that means in practice: the <strong>location data of around 30 million monthly Pokémon GO players</strong>, Indian players in Mumbai, Delhi, Bangalore and Chennai included, now flows through Scopely's infrastructure. India's DPDPA is in force, but cross-border data flows to sovereign-fund-controlled entities sit in a grey area that the company has not explained in detail in public.</p>
+    <p>MapRaiders is a privately held US LLC (Scafa Investments LLC, Florida), built by an independent team. We do not sell data, we do not run an ad network, and we are not state-controlled. DPDPA-aligned handling for Indian users is in the design from the start.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Is MapRaiders really free in India?",
-         "a": "Yes. The entire core gameplay — territories, Echoes, quests, clans, defence mini-games — stays free forever. No tier system, no battle pass, no required subscription. Cosmetic-IAP starts at ₹19."},
+         "a": "Yes. The full core game stays free: territories, Echoes, quests, clans, defence mini-games. No tier system, no battle pass, no compulsory subscription. Cosmetic-IAP is optional and starts at ₹19."},
         {"q": "Does MapRaiders support UPI payment?",
-         "a": "Yes. Razorpay + Google Pay India + PhonePe + Paytm are all integrated. UPI is the primary payment rail for India; Apple Pay is sekundär. Cosmetic items range ₹19-199, sub is ₹89/month, lifetime ₹1,899."},
+         "a": "Yes. Razorpay, Google Pay India, PhonePe and Paytm are all integrated. UPI is the primary payment rail for India. Cosmetic items run from ₹19 to ₹199, the supporter sub is ₹89 per month, the lifetime tier is ₹1,899."},
         {"q": "Will it run on my Tier-2 phone?",
-         "a": "Yes. MapRaiders is GPS-only (no AR), no camera-required gameplay, low-data, runs on 2GB RAM Android phones. See our dedicated games-for-low-end-android page for performance details."},
-        {"q": "What does &ldquo;no Saudi ownership&rdquo; mean?",
-         "a": "In March 2025, Niantic sold its game division to Scopely — a subsidiary of the Saudi Public Investment Fund — for $3.5B. Indian players' location data now indirectly flows to a foreign sovereign fund. MapRaiders is a privately-owned US LLC, not state-controlled, DPDPA-aligned."},
+         "a": "Yes. MapRaiders is GPS-only, with no AR and no camera-required gameplay, and uses very little data. It runs on 2GB RAM Android phones. The dedicated games-for-low-end-android page has the performance numbers."},
+        {"q": "What does &ldquo;no Saudi ownership&rdquo; actually mean?",
+         "a": "In March 2025, Niantic sold its game division (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) to Scopely, a subsidiary of the Saudi Public Investment Fund, for 3.5 billion dollars. Indian players' location data now flows indirectly through a foreign sovereign fund's infrastructure. MapRaiders is a privately owned US LLC, not state-controlled, and aligned with DPDPA for Indian users."},
         {"q": "When does the iOS version launch in India?",
-         "a": "MapRaiders is currently Android-only (closed beta on Google Play). Indian Android-share is ~95%, so this is by design. iOS launch is planned for Q3 2026."},
+         "a": "MapRaiders is currently Android-only (closed beta on Google Play). Around 95% of Indian smartphones are Android, so this is by design. iOS launch is planned for Q3 2026."},
     ],
     "internal_links": [
         ("/en-in/games-like-pokemon-go-india.html", "all games like Pokémon GO compared India"),
@@ -917,17 +918,17 @@ K1 = {
 K2 = {
     "slug": "/en-in/games-like-pokemon-go-india.html",
     "breadcrumb": "Games Like Pokémon GO India",
-    "title": "7 Games Like Pokémon GO India 2026 — Free, UPI, Cricket",
-    "og_title": "7 Games Like Pokémon GO India 2026 — MapRaiders Tops the List",
-    "meta": "7 games like Pokémon GO compared for India: free options, UPI-payments, low-end Android friendly, cricket-fan features. MapRaiders tops the list.",
+    "title": "7 Games Like Pokémon GO India 2026: free, UPI, cricket",
+    "og_title": "7 Games Like Pokémon GO India 2026: where MapRaiders fits in",
+    "meta": "Seven games like Pokémon GO compared for India: free options, UPI payments, low-end Android friendly, cricket-fan features. MapRaiders sits at the top because of how those criteria stack up.",
     "keywords": "games like pokemon go india, games similar to pokemon go india, pokemon go alternatives india, gps games india, location based games india, niantic alternative india",
     "badge": "Listicle India 2026",
-    "pricing_pill": "Top pick: indie + free + UPI + low-end Android friendly",
-    "h1_html": '7 Games Like Pokémon GO in India 2026 — and Why <em>Indie MapRaiders</em> Tops the List',
-    "lead": "Searching for games like Pokémon GO in India means filtering through Niantic-owned clones with USD-pricing, premium-paywalled relics, and step-counter mini-toys that ignore Tier-2 device reality. We compared the top 7 honestly for India — UPI-payments, low-RAM phones, cricket-fan features. One indie tops the list because no other game in this category combines free gameplay, real territory, AR-free GPS, INR-pricing and zero state ownership.",
+    "pricing_pill": "Top pick: indie, free, UPI, low-end Android friendly",
+    "h1_html": '7 games like Pokémon GO in India 2026, and why <em>indie MapRaiders</em> sits at the top',
+    "lead": "Searching for games like Pokémon GO in India usually means scrolling past Niantic clones priced in dollars, premium-paywalled relics from older years, and step-counter toys that ignore the Tier-2 device reality entirely. We compared the seven that actually matter for India: UPI payments, low-RAM phones, cricket-fan features. One indie ends up at the top because nothing else in the same category combines free gameplay, real territory, AR-free GPS, INR pricing and zero state ownership in one package.",
     "trigger": {
-        "quote": "My cardio drive exploded the moment every run became a conquest.",
-        "author": "Vivian N., Runner from the Hamburg area, Germany (closed beta)"
+        "quote": "I jog every morning anyway, but now I am also defending something. Funny how much discipline that suddenly mobilises.",
+        "author": "Vivian N., Runner from the Hamburg area (closed beta)"
     },
     "testers": ALL_TESTERS,
     "sections": [
@@ -935,19 +936,19 @@ K2 = {
             "label": "The problem",
             "title": "The <em>Pokémon GO problem</em> in India 2026",
             "body": """
-    <p>Four structural pain points define the search for alternatives in India specifically:</p>
+    <p>Four structural pain points define why Indian players look elsewhere:</p>
     <ul>
-      <li><strong>Pay-to-Win drift in USD.</strong> Remote-Raid passes, battle pass, monthly token bundles priced for US wallets. ₹500-1000/month on fleeting seasonal content makes no sense for Indian ARPU.</li>
-      <li><strong>AR battery drain on Tier-2 phones.</strong> Augmented Reality eats batteries alive — and Tier-2 budget devices feel it 2x harder. On a long route the game dies in 60 minutes.</li>
-      <li><strong>Tier-2/3 device exclusion.</strong> Many GPS games target flagships; budget Android phones with 2-3GB RAM are an afterthought. India has 600M+ such devices in active use.</li>
-      <li><strong>Saudi acquisition (March 2025) + Niantic-CEO geospatial-AI confession.</strong> Indian players' walks fed Niantic's training data; that company now sits inside Scopely / Saudi PIF. DPDPA in force adds another layer of trust complexity.</li>
+      <li><strong>Pay-to-Win drift, priced in dollars.</strong> Remote-Raid passes, battle pass, monthly token bundles, all priced for US wallets. ₹500 to ₹1000 a month on seasonal content that disappears does not match Indian ARPU.</li>
+      <li><strong>AR battery drain on Tier-2 phones.</strong> Augmented Reality eats batteries alive, and a Tier-2 budget device feels it about twice as hard. On a long walk the game dies inside an hour.</li>
+      <li><strong>Tier-2 and Tier-3 devices treated as an afterthought.</strong> Most GPS games target flagships, while budget Androids with 2 to 3GB of RAM are a side concern. India has more than 600 million such devices in active use.</li>
+      <li><strong>Saudi acquisition in March 2025, plus the Niantic geospatial-AI angle.</strong> Indian players' walks fed Niantic's training data, and that company now sits inside Scopely, owned by the Saudi PIF. With DPDPA in force, the trust picture got more complicated.</li>
     </ul>
             """,
         },
         {
             "label": "The list",
-            "title": "The 7 best Pokémon GO alternatives <em>for India</em> compared",
-            "body": "<p>Most listicles lump apps that share only one trait with Pokémon GO. We rank by what actually matters in India 2026 — INR-pricing, low-end Android support, UPI-payments, AR-free, real territory, no state ownership:</p>",
+            "title": "The seven best Pokémon GO alternatives <em>for India</em>, compared",
+            "body": "<p>Most listicles throw apps together that share a single trait with Pokémon GO. We rank by what actually matters in India in 2026: INR pricing, low-end Android support, UPI payments, AR-free GPS, real territory, no state ownership.</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead>
       <tr><th>#</th><th>Game</th><th>Price (INR)</th><th>UPI</th><th>2GB RAM friendly</th><th>Real territory</th><th>State-owned</th></tr>
@@ -968,25 +969,25 @@ K2 = {
             "title": "What MapRaiders does that <em>no other Pokémon GO alternative</em> does in India",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Persistent territory</h3><p>Walk a Connaught Place lane and it's yours — until decay or another player takes it. Not a fleeting gym capture.</p></div>
-    <div class="feat-card rv d1"><h3>Echo audio layer</h3><p>Drop audio, photo or video Echoes at real locations across Mumbai, Delhi, Bangalore. The city becomes a layered, social map — without AR.</p></div>
-    <div class="feat-card rv d2"><h3>7 defence mini-games</h3><p>Tic-Tac-Toe, RPS, Mini-Chess decide attacks. Strategy, not playtime, decides outcomes.</p></div>
-    <div class="feat-card rv d3"><h3>Cricket stadium territory</h3><p>IPL match day? Defend your team's home stadium territory. India-exclusive feature.</p></div>
-    <div class="feat-card rv d4"><h3>4× battery on Tier-2 phones</h3><p>GPS only — no camera, no AR. Roughly 4× longer battery life than Pokémon GO on long sessions, even on 2GB RAM budget devices.</p></div>
+    <div class="feat-card rv"><h3>Land that stays land</h3><p>Walk a Connaught Place lane and it is yours, until decay catches up or another player walks the same lane and challenges you. Not a gym that flips back in three hours.</p></div>
+    <div class="feat-card rv d1"><h3>Echo audio layer</h3><p>Drop an audio clip, photo or short video Echo at a real location in Mumbai, Delhi, Bangalore. Other players find them as they pass. No camera processing, no AR drain.</p></div>
+    <div class="feat-card rv d2"><h3>Seven defence mini-games</h3><p>Tic-Tac-Toe, Rock-Paper-Scissors, mini-chess and four more decide an attack. Whoever uses the head wins, not whoever bought the better pass.</p></div>
+    <div class="feat-card rv d3"><h3>Cricket stadium territory</h3><p>On IPL match day, defend your team's home stadium zone. India-exclusive feature, more in the cricket-fan map page.</p></div>
+    <div class="feat-card rv d4"><h3>Roughly four times the battery on Tier-2 phones</h3><p>GPS only, no camera, no AR. On long sessions the phone holds out around four times longer than Pokémon GO does, even on a 2GB RAM budget device.</p></div>
   </div>""",
         },
     ],
     "faq": [
         {"q": "Which game like Pokémon GO is actually free in India?",
-         "a": "MapRaiders is the only indie option in the top 7 with 100% free gameplay (cosmetic-only IAP from ₹19, UPI-friendly). Geocaching has a free tier but premium features paywall most of the experience; Walkr's free tier is also limited."},
+         "a": "MapRaiders is the only indie option in the top seven that keeps the full gameplay free; cosmetic-only IAP starts at ₹19 and is UPI-friendly. Geocaching has a free tier but locks most of the good experience behind premium, and Walkr's free tier is similarly thin."},
         {"q": "Are there games like Pokémon GO that aren't owned by Niantic?",
-         "a": "Yes. Since the March 2025 Niantic-Saudi deal, all 4 Niantic LBGs (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) are owned by Scopely / Saudi PIF. MapRaiders is the major non-Niantic alternative — privately-held US LLC, DPDPA-aligned."},
+         "a": "Yes. Since the March 2025 Niantic-Saudi deal, all four Niantic location-based games (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) are owned by Scopely, a Saudi PIF subsidiary. MapRaiders is the major non-Niantic option, a privately held US LLC with DPDPA-aligned data handling."},
         {"q": "Are there games like Pokémon GO without AR for Tier-2 phones?",
-         "a": "MapRaiders is intentionally AR-free. GPS + map only. Result: 4× longer battery life and works on 2GB RAM budget Androids without lag. Tu jaana hai, bas walk karo — your phone won't crash."},
+         "a": "MapRaiders is intentionally AR-free. GPS plus map, nothing more. Result: roughly four times the battery life on a long route, and stable performance on 2GB RAM budget Androids. Tu jaana hai, bas walk karo, the phone will keep up."},
         {"q": "Which alternative has cricket-fan features?",
-         "a": "MapRaiders' cricket-fan map app feature is India-exclusive — claim your IPL stadium territory, your team's neighbourhood, your match-day zone. No other GPS game in this list has this."},
-        {"q": "Are there games like Pokémon GO that work in Tier-2/3 cities?",
-         "a": "MapRaiders works wherever GPS works — Indore, Lucknow, Coimbatore, Bhubaneswar, Patna. We don't require dense PokéStop networks; territories can be claimed anywhere with active GPS signal."},
+         "a": "MapRaiders' cricket-fan map app feature is India-exclusive. Claim your IPL stadium zone, your team's neighbourhood, your match-day territory. None of the other GPS games in this list have anything like it."},
+        {"q": "Are there games like Pokémon GO that work in Tier-2 and Tier-3 cities?",
+         "a": "MapRaiders works wherever GPS works: Indore, Lucknow, Coimbatore, Bhubaneswar, Patna and so on. There is no PokéStop-style dense-network requirement; you can claim territory anywhere with an active GPS signal."},
     ],
     "internal_links": [
         ("/en-in/pokemon-go-alternative-free-india.html", "free Pokémon GO alternative India"),
@@ -1004,16 +1005,16 @@ K2 = {
 K3 = {
     "slug": "/en-in/territory-game-india.html",
     "breadcrumb": "Territory Game India",
-    "title": "Territory Game India — Real Land, Real Indian Streets",
-    "og_title": "Territory Game India — Conquer your neighbourhood, on every Indian phone",
-    "meta": "What is a territory game for India? MapRaiders is the only GPS MMO with persistent real-world land ownership built for Indian streets. Free, UPI-friendly, runs on Tier-2 phones.",
+    "title": "Territory Game India: real land, real Indian streets",
+    "og_title": "Territory Game India: conquer your neighbourhood, on every Indian phone",
+    "meta": "What is a territory game for India? MapRaiders is a GPS MMO with persistent real-world land ownership, built for Indian streets. Free at the core, UPI-friendly, runs on Tier-2 phones.",
     "keywords": "territory game india, territory game app india, claim territory india, gps territory game india, real-world conquest india, neighbourhood game india",
     "badge": "Territory Game India",
     "pricing_pill": "₹0 Forever · Cosmetic from ₹19 · Tier-2 phone friendly",
-    "h1_html": 'Territory Game India — The Only App Where <em>Real Indian Land</em> Actually Belongs to You',
-    "lead": "A real territory game for India should be more than a dot on a map that vanishes after five minutes. MapRaiders combines GPS, persistent land claiming, decay, and a defence system that makes conquest feel real — built for Indian streets, from Connaught Place to Cubbon Park to Marine Drive. Walk a lane — it's yours. As long as you defend it. Conquer your neighbourhood — works on every Indian phone.",
+    "h1_html": 'Territory Game India: the app where <em>real Indian land</em> actually stays yours',
+    "lead": "A territory game for India should be more than a dot on a map that vanishes after five minutes. MapRaiders combines GPS, persistent land claiming, decay and a defence system, so a conquest actually feels like one. From Connaught Place to Cubbon Park to Marine Drive. Walk a lane and it is yours, as long as you keep defending it. Conquer your mohalla, on every Indian phone.",
     "trigger": {
-        "quote": "Conquer your neighbourhood — works on every Indian phone, from Tier-1 flagships to Tier-2 budget devices.",
+        "quote": "Conquer your neighbourhood, on the phone you already own. Works on Tier-1 flagships and Tier-2 budget devices.",
         "author": "René Scafarti, Founder"
     },
     "testers": [TESTER_RON, TESTER_VIVIAN],
@@ -1022,12 +1023,12 @@ K3 = {
             "label": "Definition",
             "title": "What makes a <em>real territory game</em> for India",
             "body": """
-    <p><strong>A territory game</strong> lets players permanently claim, defend and grow real-world map areas. Unlike capture-style games (gyms, portals), ownership is <strong>persistent</strong> — even when the player is offline. For India, the four mechanics that make a real territory game:</p>
+    <p><strong>A territory game</strong> lets players permanently claim, defend and grow real-world map areas. Unlike capture-style games such as gyms or portals, ownership stays put even when the player is offline. For India, four mechanics matter:</p>
     <ul>
-      <li><strong>Persistence.</strong> Captured areas remain assigned to the player or clan until actively contested. Yeh aapka neighbourhood hai — until someone walks here and challenges you.</li>
-      <li><strong>Decay.</strong> Inactive territories shrink over time — nobody locks the map without playing. Fair for Tier-2 city players who maintain regular routines.</li>
-      <li><strong>Defence.</strong> Attacks are decided by a real-time mini-game between attacker and defender — not an automatic stat-check. Skill matters, not USD-priced upgrades.</li>
-      <li><strong>Clan handovers.</strong> Territories can be transferred to teammates or a clan — economic depth on the map. Build your gali ki gang into a co-defending alliance.</li>
+      <li><strong>Persistence.</strong> A captured area remains assigned to the player or clan until somebody actively contests it. Yeh aapka mohalla hai, until someone walks here and challenges you.</li>
+      <li><strong>Decay.</strong> Inactive territories shrink over time, so nobody just locks the map without playing. That is fair on Tier-2 city players who keep a regular routine.</li>
+      <li><strong>Defence.</strong> An attack is decided by a real-time mini-game between attacker and defender, not an automatic stat-check. Skill matters more than dollar-priced upgrades.</li>
+      <li><strong>Clan handovers.</strong> Territories can be transferred to teammates or a clan, so the map gets some economic depth. Your gali ki gang can grow into a co-defending alliance.</li>
     </ul>
             """,
         },
@@ -1036,37 +1037,37 @@ K3 = {
             "title": "The MapRaiders <em>territory system</em> for Indian streets",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Claim</h3><p>Walk, run, cycle a Connaught Place lane, a Cubbon Park route, a Marine Drive stretch. Your GPS trail creates the territory under your name as a visible polygon on the live map.</p></div>
-    <div class="feat-card rv d1"><h3>Decay engine</h3><p>Skip your territory for too long and it shrinks daily. Activity holds the land — not money. Fair for working-class players with regular routines.</p></div>
-    <div class="feat-card rv d2"><h3>Defence mini-games</h3><p>7 different mini-games decide attacks: Tic-Tac-Toe, RPS, Mini-Chess. Strategy beats grind. Beats Pokémon GO's Pay-to-Win raid passes.</p></div>
-    <div class="feat-card rv d3"><h3>Clan territory</h3><p>Multiple players can hold a territory together. Clan ground is more resilient — your gali ki gang co-defends harder than any solo attacker can break.</p></div>
+    <div class="feat-card rv"><h3>Claim</h3><p>Walk, jog or cycle a Connaught Place lane, a Cubbon Park route, a Marine Drive stretch. Your GPS trail draws a polygon under your name on the live map.</p></div>
+    <div class="feat-card rv d1"><h3>Decay engine</h3><p>Skip a territory for too long and it shrinks day by day. Activity holds the land. That is fair for working-class players with predictable daily routines.</p></div>
+    <div class="feat-card rv d2"><h3>Defence mini-games</h3><p>Seven mini-games decide attacks. Tic-Tac-Toe, Rock-Paper-Scissors, mini-chess and a few more. Strategy beats grind, and it beats Pay-to-Win raid passes.</p></div>
+    <div class="feat-card rv d3"><h3>Clan territory</h3><p>Several players can hold a territory together. Clan ground is more resilient. A gali ki gang co-defends harder than any single attacker can break.</p></div>
   </div>""",
         },
         {
             "label": "Indian use cases",
-            "title": "Real Indian streets — <em>real use cases</em>",
+            "title": "Real Indian streets, <em>real use cases</em>",
             "body": """
     <p>The same loop scales across very different Indian player types and cities:</p>
     <ul>
-      <li><strong>Connaught Place / Delhi.</strong> Walk the inner circle daily for two weeks; the territory becomes solid, defence-ready land. CP is yours.</li>
-      <li><strong>Cubbon Park / Bangalore.</strong> Morning jog → claim the park trails. Evening walk → defend them. Cardio drive + territory drive = double motivation.</li>
-      <li><strong>Marine Drive / Mumbai.</strong> Sunset walk along Queen's Necklace? Now it's mapped, claimed, and yours. The whole stretch can become clan territory.</li>
-      <li><strong>Tier-2 cities.</strong> Indore, Lucknow, Coimbatore — Tier-2 city players can dominate full neighbourhoods because the GPS-only mechanic doesn't need dense PokéStop networks.</li>
+      <li><strong>Connaught Place, Delhi.</strong> Walk the inner circle daily for two weeks and the territory turns solid, defence-ready land. CP is yours.</li>
+      <li><strong>Cubbon Park, Bangalore.</strong> Morning jog claims the park trails. Evening walk defends them. Cardio motivation and territory motivation pull in the same direction.</li>
+      <li><strong>Marine Drive, Mumbai.</strong> Sunset walk along Queen's Necklace? Now it is mapped, claimed and yours. The full stretch can become clan territory.</li>
+      <li><strong>Tier-2 cities.</strong> Indore, Lucknow, Coimbatore. Tier-2 city players can hold whole neighbourhoods because the GPS-only mechanic does not need a dense PokéStop network underneath.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "How does territory claiming work for Indian streets?",
-         "a": "You walk, run, or cycle through any street — Connaught Place, Cubbon Park, Marine Drive, your gali — and your GPS position claims that territory. It appears on the live map under your name and stays yours until another player physically walks there and challenges you in a defence mini-game. Real, persistent, yours."},
+         "a": "You walk, run or cycle through any street, whether it is Connaught Place, Cubbon Park, Marine Drive or your own gali. Your GPS position claims that territory; it shows up on the live map under your name and stays yours until another player physically walks there and challenges you in a defence mini-game."},
         {"q": "Can I lose my territory?",
-         "a": "Yes. The Territory Decay Engine reduces inactive territories daily. If you stop visiting your claimed areas, they gradually shrink. Stay active and keep walking your territory to maintain it. Fair for working-class players with regular daily routines."},
+         "a": "Yes. The Territory Decay Engine reduces inactive territories every day. If you stop visiting an area you claimed, it gradually shrinks. Stay active on your route and the territory stays. That is intentionally fair on working-class players with regular daily routines."},
         {"q": "What happens when someone attacks my territory?",
-         "a": "The attacker must physically walk to your territory. Then an interactive mini-game begins — both players compete head-to-head. The winner decides the fate of the territory. Strategy and skill matter more than time played or money spent."},
+         "a": "The attacker has to physically walk into your territory. From there, an interactive mini-game starts and both players compete head to head. The winner decides what happens to the territory. Strategy and skill matter more than time played or money spent."},
         {"q": "Can my friend group form a clan?",
-         "a": "Yes. Clans form organically and can jointly control large territory blocks. Clan-owned territory is more resilient — it takes coordinated attacks from multiple players to break it. Your gali ki gang naturally becomes a clan."},
+         "a": "Yes. Clans form organically and can jointly hold large blocks. Clan territory is more resilient, since it takes coordinated attacks from several players to break. Your gali ki gang naturally becomes a clan when you walk the same lanes together."},
         {"q": "Is the territory game free in India?",
-         "a": "Yes. The full territory loop is free. Cosmetic items (₹19–₹199) are visual only and provide zero gameplay advantage. UPI-friendly via Razorpay/Google Pay/PhonePe/Paytm."},
+         "a": "Yes. The full territory loop is free. Cosmetic items (₹19 to ₹199) are visual only and give zero gameplay advantage. UPI-friendly via Razorpay, Google Pay, PhonePe and Paytm."},
     ],
     "internal_links": [
         ("/en-in/games-like-pokemon-go-india.html", "all games like Pokémon GO compared India"),
@@ -1081,32 +1082,32 @@ K3 = {
 K4 = {
     "slug": "/en-in/games-for-low-end-android.html",
     "breadcrumb": "Games for Low-End Android",
-    "title": "Games for Low-End Android India — runs on 2GB RAM phones",
-    "og_title": "Games for Low-End Android India — Tier-2 phone friendly GPS MMO",
-    "meta": "Games for low-end Android in India: MapRaiders runs smooth on Tier-2/Tier-3 budget phones. 2GB RAM friendly, low-data, free. UK-spelling supported.",
+    "title": "Games for low-end Android India: runs on 2GB RAM phones",
+    "og_title": "Games for low-end Android India: Tier-2 phone friendly GPS MMO",
+    "meta": "Games for low-end Android in India: MapRaiders runs smoothly on Tier-2 and Tier-3 budget phones. 2GB RAM friendly, low data use, free at the core. UK-spelling throughout.",
     "keywords": "games for low-end android, games for 2gb ram android, low-end gps games india, tier-2 phone games, budget android games, lite mode games india",
-    "badge": "Tier-2/3 Friendly · India Exclusive",
-    "pricing_pill": "Built for India's streets · 2GB RAM minimum · ₹0 forever",
-    "h1_html": 'Games for Low-End Android India — <em>Built for India\'s Streets</em>, Tier-2 Phone Friendly',
-    "lead": "Games for low-end Android in India is a real category — 600M+ active devices in the 2-4GB RAM range, the backbone of Tier-2 and Tier-3 cities. Most GPS games target flagships and lag terribly on budget phones. MapRaiders is built differently: GPS-only (no AR), no camera-required gameplay, low-data, runs smooth on 2GB RAM Android phones, optional Lite Mode for 1GB devices. Yeh app aapke phone ke liye banaya gaya hai — built for the phone you actually own.",
+    "badge": "Tier-2 / Tier-3 Friendly · India Exclusive",
+    "pricing_pill": "Built for Indian streets · 2GB RAM minimum · ₹0 forever",
+    "h1_html": 'Games for low-end Android India: <em>built for the phone you actually own</em>, not the flagship in the ad',
+    "lead": "Games for low-end Android is a real category in India. Around 600 million active devices sit in the 2 to 4GB RAM range, and they are the backbone of most Tier-2 and Tier-3 cities. Most GPS games are made for flagships and lag badly on a budget phone. MapRaiders is the other way around: GPS-only with no AR, no camera-required gameplay, low data use, smooth on 2GB RAM Androids, with an optional Lite Mode for 1GB devices. Yeh app aapke phone ke liye banaya gaya hai, made for the phone in your hand right now.",
     "trigger": {
-        "quote": "Built for India's streets — Tier-2 city friendly. No flagship required.",
+        "quote": "Built for Indian streets, Tier-2 city friendly. No flagship needed.",
         "author": "René Scafarti, Founder"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
-            "label": "The Tier-2/3 reality",
-            "title": "The <em>Tier-2/3 device reality</em> — and why most GPS games ignore it",
+            "label": "The Tier-2 and Tier-3 reality",
+            "title": "The <em>Tier-2 and Tier-3 device reality</em>, and why most GPS games ignore it",
             "body": """
-    <p>India has 600M+ Android devices in active use. The split:</p>
+    <p>India has more than 600 million Android devices in active use. Roughly:</p>
     <ul>
-      <li><strong>Tier-1 flagships (8GB+ RAM):</strong> ~15% of devices — premium urban professionals.</li>
-      <li><strong>Tier-2 mid-range (4-6GB RAM):</strong> ~35% of devices — Tier-1/2 city working professionals.</li>
-      <li><strong>Tier-3 budget (2-4GB RAM):</strong> ~50% of devices — Tier-2/3 city players, students, family devices.</li>
+      <li><strong>Tier-1 flagships (8GB+ RAM):</strong> around 15% of devices, mostly premium urban professionals.</li>
+      <li><strong>Tier-2 mid-range (4 to 6GB RAM):</strong> around 35% of devices, working professionals across Tier-1 and Tier-2 cities.</li>
+      <li><strong>Tier-3 budget (2 to 4GB RAM):</strong> around 50% of devices, Tier-2 and Tier-3 city players, students and family devices.</li>
     </ul>
-    <p>Most global GPS games target the 15% of flagships and lag horribly on the other 85%. Pokémon GO with full AR on a 3GB Redmi crashes within 30 minutes; Monster Hunter Now is effectively unplayable on Tier-3 budget devices. The result: 510M Indian mobile gamers, but only ~180-320K MAU per Niantic LBG.</p>
-    <p>MapRaiders inverts that: <strong>built for the 85%, not the 15%</strong>.</p>
+    <p>Most global GPS games target the 15% of flagships and lag horribly on the other 85%. Pokémon GO with full AR on a 3GB Redmi tends to crash inside 30 minutes; Monster Hunter Now is basically unplayable on a Tier-3 budget device. The mismatch shows up in the numbers. India has roughly 510 million mobile gamers, but each Niantic location-based game only sees about 180 to 320 thousand monthly active users here.</p>
+    <p>MapRaiders flips that: <strong>built for the 85%, not the 15%</strong>.</p>
             """,
         },
         {
@@ -1114,18 +1115,18 @@ K4 = {
             "title": "MapRaiders <em>performance optimisations</em> for low-end Android",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>GPS-only, no AR</h3><p>No camera processing, no ARCore, no shader pipeline. Just GPS + map. Cuts CPU load by ~60% vs Pokémon GO with AR enabled.</p></div>
-    <div class="feat-card rv d1"><h3>2GB RAM minimum</h3><p>Tested on Redmi 9, Realme C-series, Samsung Galaxy M-series. Smooth 30fps territory updates on 2GB devices, no lag spikes.</p></div>
-    <div class="feat-card rv d2"><h3>Optional Lite Mode</h3><p>1GB RAM devices? Lite Mode disables animation effects, reduces map tile resolution, keeps full gameplay. No exclusion of Tier-3 city players.</p></div>
-    <div class="feat-card rv d3"><h3>Low-data design</h3><p>~5MB/hour active gameplay. Map tiles cached aggressively. Works on 2G/3G in rural Tier-2 areas without breaking. WhatsApp-friendly data budget.</p></div>
-    <div class="feat-card rv d4"><h3>Battery: 4× longer than Pokémon GO</h3><p>30-40% drain on 2 hours of active play vs Pokémon GO's 80%+ on Tier-2 phones. Tu jaana hai, bas walk karo — phone won't die.</p></div>
-    <div class="feat-card rv"><h3>APK size: under 50MB</h3><p>Compact install — no 800MB Niantic-style download. Friendly for Indian limited-storage budget phones.</p></div>
+    <div class="feat-card rv"><h3>GPS-only, no AR</h3><p>No camera processing, no ARCore, no shader pipeline. GPS plus a map, that is it. CPU load roughly 60% lower than Pokémon GO with AR enabled.</p></div>
+    <div class="feat-card rv d1"><h3>2GB RAM minimum</h3><p>Tested on the Redmi 9, the Realme C-series and Samsung Galaxy M-series. Territory updates run at 30fps on 2GB devices without lag spikes.</p></div>
+    <div class="feat-card rv d2"><h3>Optional Lite Mode</h3><p>On a 1GB RAM device, Lite Mode switches off animation effects and lowers map tile resolution. Full gameplay stays intact. Tier-3 city players are not excluded.</p></div>
+    <div class="feat-card rv d3"><h3>Low data use by design</h3><p>About 5MB per hour of active play. Map tiles cache aggressively, so it holds up on 2G or 3G in rural Tier-2 areas. WhatsApp-friendly data budget.</p></div>
+    <div class="feat-card rv d4"><h3>Battery: roughly four times longer than Pokémon GO</h3><p>30 to 40% drain on two hours of active play, compared to 80% or more for Pokémon GO on the same Tier-2 phones. Tu jaana hai, bas walk karo, the phone keeps up.</p></div>
+    <div class="feat-card rv"><h3>APK size under 50MB</h3><p>Compact install, no 800MB Niantic-style download. Friendly on Indian budget phones with tight storage.</p></div>
   </div>""",
         },
         {
             "label": "Comparison",
             "title": "GPS games <em>tested on budget Androids</em>",
-            "body": "<p>We tested the major GPS games on a Redmi 9 (2GB RAM, Snapdragon 439) — a representative Tier-3 budget Android in India:</p>",
+            "body": "<p>We tested the major GPS games on a Redmi 9 (2GB RAM, Snapdragon 439), a fairly representative Tier-3 budget Android for the Indian market:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Game</th><th>RAM minimum</th><th>Battery / 2hr</th><th>Lag spikes</th><th>Lite Mode</th></tr></thead>
     <tbody>
@@ -1140,17 +1141,17 @@ K4 = {
     ],
     "faq": [
         {"q": "Will MapRaiders run on my 2GB RAM phone?",
-         "a": "Yes. We test on Redmi 9, Realme C-series, Samsung Galaxy M-series. Smooth 30fps territory updates on 2GB devices, no lag spikes. For 1GB devices, optional Lite Mode disables animation effects and reduces map tile resolution while keeping full gameplay."},
+         "a": "Yes. We test on the Redmi 9, the Realme C-series and the Samsung Galaxy M-series. Territory updates run at 30fps on 2GB devices without lag spikes. On a 1GB device, Lite Mode disables animation effects and reduces map tile resolution while keeping the full gameplay intact."},
         {"q": "How much data does MapRaiders use?",
-         "a": "About 5MB/hour active gameplay. Map tiles cached aggressively, works on 2G/3G in rural Tier-2 areas. Friendly for Indian limited-data plans. WhatsApp-priority phones can run it without burning your data balance."},
+         "a": "Around 5MB per hour of active play. Map tiles cache aggressively, so it holds up on 2G or 3G in rural Tier-2 areas. It is gentle on Indian limited-data plans, even when WhatsApp is your priority app."},
         {"q": "Why does Pokémon GO lag so badly on my budget phone?",
-         "a": "AR (Augmented Reality) is the killer — camera processing + ARCore shader pipeline burns CPU and RAM aggressively. MapRaiders is intentionally AR-free, GPS-only. Cuts CPU load ~60%. Works smooth where Pokémon GO can't."},
-        {"q": "What's Lite Mode?",
-         "a": "Lite Mode is for 1GB RAM devices (Tier-3 budget Androids). Disables animation effects, reduces map tile resolution to 256px, simplifies UI transitions. Full gameplay stays — territory, Echoes, defence, clans. No exclusion of any Indian player."},
-        {"q": "Which Tier-2/3 phones are tested?",
-         "a": "Redmi 9, Redmi 9A, Realme C25, Realme Narzo 50A, Samsung Galaxy M12, Samsung Galaxy A03s, Tecno Spark 8, Infinix Hot 11. We test ongoing as new budget devices launch in India."},
-        {"q": "What's the APK size?",
-         "a": "Under 50MB on first install. Map tiles download on demand and cache. No 800MB Niantic-style upfront download. Easy on storage-limited Tier-3 budget phones."},
+         "a": "AR is the heavy part. Camera processing and the ARCore shader pipeline burn CPU and RAM aggressively. MapRaiders is intentionally AR-free, GPS only. CPU load drops by roughly 60%, which is why it stays smooth where Pokémon GO does not."},
+        {"q": "What is Lite Mode?",
+         "a": "Lite Mode is meant for 1GB RAM devices (Tier-3 budget Androids). It disables animation effects, reduces map tile resolution to 256 pixels and simplifies UI transitions. The full gameplay stays: territory, Echoes, defence, clans. No Indian player gets excluded."},
+        {"q": "Which Tier-2 and Tier-3 phones are tested?",
+         "a": "Redmi 9, Redmi 9A, Realme C25, Realme Narzo 50A, Samsung Galaxy M12, Samsung Galaxy A03s, Tecno Spark 8, Infinix Hot 11. We keep adding new budget devices as they launch in India."},
+        {"q": "What is the APK size?",
+         "a": "Under 50MB on first install. Map tiles download on demand and then cache. There is no Niantic-style 800MB upfront download, which helps on storage-tight Tier-3 budget phones."},
     ],
     "internal_links": [
         ("/en-in/games-like-pokemon-go-india.html", "all games like Pokémon GO compared India"),
@@ -1165,29 +1166,29 @@ K4 = {
 K5 = {
     "slug": "/en-in/walking-app-with-game-india.html",
     "breadcrumb": "Walking App with Game India",
-    "title": "Walking App with Game India — gamified cardio + UPI",
-    "og_title": "Walking App with Game India — Cardio + Territory + UPI-friendly",
-    "meta": "Walking app with game element for India. MapRaiders gamifies every walk: territory + Echoes + clans. Free, UPI-friendly, 50+ longevity-friendly.",
+    "title": "Walking App with Game India: gamified cardio plus UPI",
+    "og_title": "Walking App with Game India: cardio, territory, UPI-friendly",
+    "meta": "A walking app with a real game underneath, made for India. MapRaiders puts territory, Echoes and clans on top of every walk. Free at the core, UPI-friendly, and gentle enough for the 50+ crowd.",
     "keywords": "walking app with game india, gamified walking app india, walking game app india, fitness gps game india, longevity walking india, healthy walking app india",
     "badge": "Walking + Game · India",
     "pricing_pill": "₹0 forever · UPI-friendly · 50+ longevity ready",
-    "h1_html": 'Walking App with a <em>Real Game</em> for India — Gamified Cardio Meets UPI-friendly',
-    "lead": "Walking is the cardiovascular and cognitive backbone of healthy aging — and India has the world's largest population of daily walkers. Yet most walking apps in India are either step-counters with no game depth, or USD-priced premium stat trackers. MapRaiders gamifies every walk: territory + Echoes + clans. Free, UPI-friendly, runs on Tier-2 phones, family-mode for kids and 50+ longevity-friendly for parents and grandparents.",
+    "h1_html": 'Walking app with a <em>real game</em> for India: gamified cardio that respects your wallet',
+    "lead": "Walking is the cardiovascular and cognitive backbone of healthy aging, and India has the largest population of daily walkers in the world. Yet most walking apps available here are either step counters with no game underneath, or USD-priced premium stat trackers. MapRaiders puts a game on every walk: territory, Echoes, clans. The core is free, payments run through UPI, it runs on Tier-2 phones, and it is gentle enough for kids in family mode and for parents or grandparents looking for a 50+ longevity routine.",
     "trigger": {
-        "quote": "My cardio drive has exploded — every run became a conquest.",
-        "author": "Vivian N., Runner from the Hamburg area, Germany (closed beta)"
+        "quote": "I jog every morning anyway, but now I am also defending something. Funny how much discipline that mobilises.",
+        "author": "Vivian N., Runner from the Hamburg area (closed beta)"
     },
     "testers": [TESTER_VIVIAN, TESTER_RON],
     "sections": [
         {
             "label": "The problem",
-            "title": "Why classic walking apps <em>don't work for India</em>",
+            "title": "Why classic walking apps <em>do not really work for India</em>",
             "body": """
-    <p>Three structural gaps explain why Strava and step-counter apps lose Indian users beyond the first 4 weeks:</p>
+    <p>Three structural gaps explain why Strava and the usual step counters lose Indian users after the first four weeks:</p>
     <ul>
-      <li><strong>USD-priced premium tiers.</strong> Strava Premium is ~$11.99/month — that's ₹1,000+ per month. Indian walkers want gamified motivation, not premium-paywalled stats.</li>
-      <li><strong>No game element on free tier.</strong> Step counters reward you with a number. Numbers don't pull people back daily, especially in Tier-2/3 cities where social-walk culture is the norm.</li>
-      <li><strong>No social map for the neighbourhood.</strong> Indian walks are social — morning park walks with friends, evening colony rounds with neighbours. None of these apps make the map social. Aap akele walking nahi karte — walks are inherently social.</li>
+      <li><strong>USD-priced premium tiers.</strong> Strava Premium is around 11.99 dollars a month, which translates to ₹1,000 plus. Indian walkers want gamified motivation, not premium-paywalled stats.</li>
+      <li><strong>No game on the free tier.</strong> A step counter rewards you with a number. Numbers do not pull people back daily, especially in Tier-2 and Tier-3 cities where social-walk culture is the norm.</li>
+      <li><strong>No social layer for the neighbourhood.</strong> Indian walks are social. Morning park walks with friends, evening colony rounds with neighbours. None of these apps make the map social. Aap akele walking nahi karte. Walks here are inherently a group thing.</li>
     </ul>
             """,
         },
@@ -1208,42 +1209,42 @@ K5 = {
   </table>""",
         },
         {
-            "label": "MapRaiders for India walks",
+            "label": "MapRaiders for Indian walks",
             "title": "MapRaiders <em>mechanics for Indian walking culture</em>",
             "body": """
-    <p>Indian walking is inherently social. MapRaiders' mechanics fit that — instead of a solo step-counter, the whole neighbourhood becomes the playground:</p>
+    <p>Indian walking is inherently social, so MapRaiders is built around that rather than around a solo step counter. The whole neighbourhood turns into the playing field:</p>
     <ul>
-      <li><strong>Morning park walk.</strong> Cubbon Park, Lodi Garden, Sanjay Van — claim your morning route as territory. Friends in the same park naturally form your clan.</li>
-      <li><strong>Evening colony walk.</strong> Walking with neighbours? Drop Echoes for each other (audio voice notes, photos). Tomorrow's walk has surprises.</li>
-      <li><strong>Sunday family walk.</strong> Kids on COPPA-aligned mode follow Echo-trails like a treasure hunt. Parents claim territory. Multi-generational play.</li>
+      <li><strong>Morning park walk.</strong> Cubbon Park, Lodi Garden, Sanjay Van. Claim your morning route as territory. Friends in the same park naturally end up in the same clan.</li>
+      <li><strong>Evening colony walk.</strong> Walking with neighbours? Drop voice-note Echoes or photos for each other. Tomorrow's walk has small surprises waiting.</li>
+      <li><strong>Sunday family walk.</strong> Kids on the COPPA-aligned mode follow Echo trails like a treasure hunt. Parents claim territory. The same walk becomes multi-generational play.</li>
     </ul>
             """,
         },
         {
-            "label": "50+ Longevity",
-            "title": "<em>50+ longevity gaming</em> — for Indian parents and grandparents",
+            "label": "50+ longevity",
+            "title": "<em>50+ longevity gaming</em>: for Indian parents and grandparents",
             "body": """
-    <p>Walking is doctor-prescribed for diabetes management, cardiovascular health, and cognitive decline prevention — three conditions disproportionately impacting Indian 50+. The same generation is the fastest-growing buyer of smartphones (Tier-1 cities). They want:</p>
+    <p>Walking is doctor-prescribed for diabetes management, cardiovascular health and slowing cognitive decline. Those three are disproportionately common in Indian 50+ adults. The same generation is also the fastest-growing smartphone buyer in Tier-1 cities. What they want is fairly specific:</p>
     <ul>
-      <li><strong>Mobility goals</strong> that feel meaningful, not punishing — &ldquo;walked 8000 steps&rdquo; doesn't pull them back; &ldquo;defended my colony lane&rdquo; does.</li>
-      <li><strong>Cognitive engagement</strong> on the daily walk — strategy mini-games during defence keep the mind sharp.</li>
-      <li><strong>Social-low-stakes connection</strong> — clan with the same morning-park crowd, not nationwide leaderboards.</li>
+      <li><strong>Mobility goals that feel meaningful</strong>, not punishing. &ldquo;Walked 8000 steps&rdquo; does not pull them back; &ldquo;defended my colony lane&rdquo; does.</li>
+      <li><strong>Cognitive engagement</strong> on the daily walk. The defence mini-games are simple but tactical, which keeps the mind a little sharper.</li>
+      <li><strong>Low-stakes social connection.</strong> A clan made up of the same morning-park crowd, not a nationwide leaderboard fight.</li>
     </ul>
-    <p>MapRaiders' territory loop hits all three without any age-targeted UX. The same loop that makes 25-year-old runners faster makes 60-year-old walkers more consistent.</p>
+    <p>The territory loop hits all three without any age-targeted UX. The same loop that makes a 25-year-old runner faster makes a 60-year-old walker more consistent.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Is MapRaiders a Strava replacement for India?",
-         "a": "No — Strava measures performance precisely; MapRaiders adds gameplay to the same walk. Use both in parallel without conflict. But if you only want gamified motivation without USD-priced Premium, MapRaiders alone is enough."},
+         "a": "Not really. Strava measures performance precisely; MapRaiders puts gameplay on top of the same walk. You can use both in parallel without any conflict. But if you only want gamified motivation and you would rather not pay for Strava Premium in dollars, MapRaiders on its own is enough."},
         {"q": "Does it work for slow walking?",
-         "a": "Yes. There's no minimum speed. Walking, jogging, hiking, cycling — all generate territory as long as you're physically moving. Auto-cheat detection prevents shortcuts."},
-        {"q": "Will it drain my battery on a 1-hour Cubbon Park walk?",
-         "a": "About 15-20% on a 1-hour walk (vs 40%+ for Pokémon GO with AR). No camera, no AR rendering, GPS sample-rate optimised. Tier-2 phones handle it smooth."},
+         "a": "Yes. There is no minimum speed. Walking, jogging, hiking and cycling all generate territory as long as you are physically moving. Auto-cheat detection takes care of GPS shortcuts."},
+        {"q": "Will it drain my battery on a one-hour Cubbon Park walk?",
+         "a": "Around 15 to 20% on a one-hour walk, compared to 40% or more for Pokémon GO with AR. No camera, no AR rendering, GPS sample rate is tuned. Tier-2 phones handle it smoothly."},
         {"q": "Is there a sub required for India?",
-         "a": "No. The full walking + game loop is free forever. Cosmetic items are optional (₹19-199) and grant zero gameplay advantage. UPI-friendly via Razorpay/Google Pay/PhonePe/Paytm."},
+         "a": "No. The full walking and game loop is free forever. Cosmetic items are optional (₹19 to ₹199) and give zero gameplay advantage. UPI-friendly via Razorpay, Google Pay, PhonePe and Paytm."},
         {"q": "Can my parents (50+) use it easily?",
-         "a": "Yes. The territory mechanic is straightforward — walk, claim. No tutorial overload. The defence mini-games are simple (Tic-Tac-Toe, RPS) that don't require gaming background. Many beta testers are 50+."},
+         "a": "Yes. The territory mechanic is straightforward: walk, claim. There is no tutorial overload. The defence mini-games are simple (Tic-Tac-Toe, Rock-Paper-Scissors) and do not require any gaming background. Several beta testers are over 50."},
     ],
     "internal_links": [
         ("/en-in/games-like-pokemon-go-india.html", "all games like Pokémon GO compared India"),
@@ -1258,14 +1259,14 @@ K5 = {
 K6 = {
     "slug": "/en-in/treasure-hunt-app-india.html",
     "breadcrumb": "Treasure Hunt App India",
-    "title": "Treasure Hunt App India — citywide, family, Diwali-ready",
-    "og_title": "Treasure Hunt App India — Citywide, Family, Free",
-    "meta": "Best treasure hunt app for India 2026: live, citywide, no purchases, no premium tour fees. MapRaiders turns any city into an open-ended treasure hunt — kids, family, festival-ready.",
+    "title": "Treasure Hunt App India: citywide, family, festival-ready",
+    "og_title": "Treasure Hunt App India: citywide, family-friendly, free",
+    "meta": "A treasure hunt app for India that is actually live and citywide, with no tour purchases or premium fees. MapRaiders turns any city into an open-ended hunt for kids, families and festival days.",
     "keywords": "treasure hunt app india, citywide treasure hunt india, family treasure hunt india, urban treasure hunt india, free treasure hunt india, scavenger hunt app india",
     "badge": "Live Treasure Hunt · India",
     "pricing_pill": "₹0 Forever · No tour purchases · Family-safe (DPDPA-aligned)",
-    "h1_html": 'Treasure Hunt App India — A Whole City of <em>Hidden Echoes</em>, Always Live',
-    "lead": "Most treasure hunt apps in India require prep: buy a tour pack, set up stations, print clue sheets in colour. MapRaiders flips that — Echoes are already across the entire city, from Old Delhi gullies to Bandra by-lanes to T-Nagar streets. You follow other players' clues or leave your own. Live, free, no setup. Family-friendly with DPDPA-aligned parental controls; competitive depth for adults via clan territory. Diwali, Holi, Eid, Navratri-ready festival hooks built in.",
+    "h1_html": 'Treasure Hunt App India: a whole city of <em>hidden Echoes</em>, always live',
+    "lead": "Most treasure hunt apps in India need prep: buy a tour pack, set up stations, print colour clue sheets. MapRaiders works the other way around. Echoes are already spread across the whole city, from Old Delhi gullies to Bandra by-lanes to T-Nagar streets. You follow other players' clues or you leave your own. Live, free, no setup needed. Family-friendly with DPDPA-aligned parental controls, and competitive depth for adults through clan territory. Diwali, Holi, Eid and Navratri hooks are already in.",
     "trigger": {
         "quote": "Mark your colours this Holi. Drop Echoes across the whole city.",
         "author": "Brand vision India"
@@ -1276,12 +1277,12 @@ K6 = {
             "label": "What counts",
             "title": "What makes a <em>modern treasure hunt app</em> for India",
             "body": """
-    <p>Three criteria separate 2020s treasure-hunt apps from the print-and-clue era — and India 2026 has its own additions:</p>
+    <p>A few criteria separate the 2020s treasure-hunt apps from the print-and-clue era. India 2026 has its own additions on top:</p>
     <ul>
-      <li><strong>Live.</strong> Clues exist in real time, not only inside pre-built tours.</li>
+      <li><strong>Live.</strong> Clues exist in real time, not only inside pre-built tours that someone bought weeks earlier.</li>
       <li><strong>Social.</strong> Players leave clues for each other instead of grinding through static stations.</li>
-      <li><strong>No premium gate.</strong> Indian families and kids walk in instantly without buying a ₹500 tour.</li>
-      <li><strong>Festival-aware.</strong> Holi, Diwali, Eid, Navratri — culture-relevant treasure-hunt themes that respect Indian festival calendar.</li>
+      <li><strong>No premium gate.</strong> An Indian family or a group of kids should be able to walk in instantly, without buying a ₹500 tour first.</li>
+      <li><strong>Festival aware.</strong> Holi, Diwali, Eid, Navratri. Themes that respect the Indian festival calendar instead of pasting a Christmas skin on top of everything.</li>
     </ul>
             """,
         },
@@ -1292,8 +1293,8 @@ K6 = {
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>App</th><th>Price (INR)</th><th>Setup</th><th>Live element</th><th>Indian festival hooks</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">Goosechase</td><td class="cross">USD per-event fees</td><td class="cross">High — build hunt</td><td class="cross">Pre-built only</td><td class="cross">No</td></tr>
-      <tr><td class="feat-name">Actionbound</td><td class="cross">USD bound purchases</td><td class="cross">High — build tour</td><td class="cross">✗</td><td class="cross">No</td></tr>
+      <tr><td class="feat-name">Goosechase</td><td class="cross">USD per-event fees</td><td class="cross">High: build the hunt</td><td class="cross">Pre-built only</td><td class="cross">No</td></tr>
+      <tr><td class="feat-name">Actionbound</td><td class="cross">USD bound purchases</td><td class="cross">High: build the tour</td><td class="cross">✗</td><td class="cross">No</td></tr>
       <tr><td class="feat-name">Geocaching</td><td class="cross">Premium-paywalled</td><td class="check">Low</td><td class="cross">Asynchronous</td><td class="cross">No</td></tr>
       <tr><td class="feat-name">Local Indian event apps</td><td class="cross">Per-event fees</td><td class="cross">Event-driven</td><td class="cross">Pre-built</td><td>Some</td></tr>
       <tr><td class="feat-name">MapRaiders</td><td class="check">₹0</td><td class="check">Zero</td><td class="check">Live</td><td class="check">Holi, Diwali, Eid, Navratri</td></tr>
@@ -1301,16 +1302,16 @@ K6 = {
   </table>""",
         },
         {
-            "label": "How we reinvent it",
-            "title": "How MapRaiders <em>reinvents</em> the Indian treasure hunt",
+            "label": "How it works here",
+            "title": "How MapRaiders <em>reshapes</em> the Indian treasure hunt",
             "body": """
-    <p>Instead of a linear tour from station 1 to station 10, MapRaiders creates an <strong>open-ended spatial treasure hunt</strong> across the whole Indian city:</p>
+    <p>Instead of a linear tour from station 1 to station 10, MapRaiders sets up an <strong>open-ended spatial treasure hunt</strong> across the whole Indian city:</p>
     <ul>
-      <li><strong>Drop Echoes.</strong> Leave an audio, photo or video Echo at a real location — Connaught Place inner circle, Charminar lanes, Goa beach huts. Other players discover them.</li>
-      <li><strong>Find Echoes.</strong> See on the map where Echoes are. Follow the trail, find secrets, hear stories.</li>
-      <li><strong>Build quests.</strong> Create a small task at a place (&ldquo;photograph the red door near Galli #4&rdquo;). Other players complete it.</li>
-      <li><strong>Festival hooks.</strong> Holi → mark your colours quest. Diwali → light-trail Echo discovery. Eid → community gathering quest. Navratri → 9-day territory streak challenges.</li>
-      <li><strong>Territory layer.</strong> Walk a treasure-hunt route often enough and it becomes claimed territory — your hunt becomes your land.</li>
+      <li><strong>Drop Echoes.</strong> Leave an audio, photo or video Echo at a real spot. Connaught Place inner circle, Charminar lanes, a Goa beach hut. Other players discover them later.</li>
+      <li><strong>Find Echoes.</strong> See on the map where Echoes are. Follow the trail, find small secrets, hear short stories.</li>
+      <li><strong>Build quests.</strong> Create a tiny task at a place (&ldquo;photograph the red door near Galli #4&rdquo;). Other players complete it.</li>
+      <li><strong>Festival hooks.</strong> Holi: mark-your-colours quest. Diwali: light-trail Echo discovery. Eid: community gathering quest. Navratri: nine-day territory streaks.</li>
+      <li><strong>Territory layer.</strong> Walk a hunt route often enough and it turns into claimed territory. Your hunt becomes your land.</li>
     </ul>
             """,
         },
@@ -1318,27 +1319,27 @@ K6 = {
             "label": "Family use case",
             "title": "Treasure hunt app for <em>Indian families</em>",
             "body": """
-    <p>Treasure hunts are timeless Indian family activity — birthday parties, Diwali gatherings, school events. MapRaiders brings that into the smartphone era without putting kids alone in front of a screen:</p>
+    <p>Treasure hunts are a timeless Indian family activity, common at birthday parties, Diwali gatherings and school events. MapRaiders brings that into the smartphone era without putting kids alone in front of a screen:</p>
     <ul>
-      <li><strong>Parent-and-kid activity.</strong> Parents drop audio Echoes along a planned route in the colony park; kids follow the clues — physical movement, digital hints.</li>
-      <li><strong>Screen-light by design.</strong> The app guides on the map; the experience happens in the real world.</li>
-      <li><strong>DPDPA-aligned (Indian DPDPA + COPPA-aligned).</strong> No personally identifiable information from minors, ad-free, parental mode for restricted gameplay.</li>
-      <li><strong>Festival-ready.</strong> Diwali Echo trails, Holi colour quests, Eid community circuits — culturally relevant, respectful, never appropriative.</li>
+      <li><strong>Parent-and-kid activity.</strong> Parents drop audio Echoes along a route in the colony park; kids follow the clues. Physical movement, digital hints.</li>
+      <li><strong>Screen-light by design.</strong> The app only points the way on the map; the actual experience happens in the real world.</li>
+      <li><strong>DPDPA and COPPA aligned.</strong> No personally identifiable information from minors, no ads, parental mode for restricted gameplay. DPDPA-aligned data handling for Indian users is built in.</li>
+      <li><strong>Festival ready.</strong> Diwali Echo trails, Holi colour quests, Eid community circuits. Culturally relevant, respectful, never appropriative.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "Is MapRaiders safe for Indian kids?",
-         "a": "Yes, ages 9+ with parental supervision. The app collects no personally identifiable information from minors (DPDPA + COPPA-aligned), is ad-free, and has a parental mode for restricted gameplay. DPDPA-compliant data handling for Indian users built in."},
+         "a": "Yes, from age 9 upwards with parental supervision. The app collects no personally identifiable information from minors (DPDPA and COPPA aligned), runs without ads, and has a parental mode that restricts gameplay. DPDPA-aligned data handling for Indian users is part of the design."},
         {"q": "How much prep do I need for a Diwali treasure hunt with kids?",
-         "a": "Zero. Unlike Actionbound or Goosechase you don't buy a tour or pre-set stations. Echoes are already across the city — you follow other players' clues or drop your own. Festival hooks for Diwali (light-trail Echoes), Holi (colour quests), Eid (community circuits), Navratri (9-day streaks) are built in."},
+         "a": "None. Unlike Actionbound or Goosechase you do not buy a tour or pre-set stations. Echoes are already spread across the city, so you can follow other players' clues or drop your own. Festival hooks for Diwali (light-trail Echoes), Holi (colour quests), Eid (community circuits) and Navratri (nine-day streaks) are already in."},
         {"q": "Are there treasure hunt features for adults?",
-         "a": "Yes. MapRaiders' Echo system + clan territory mechanics scale from family-fun to competitive multiplayer. Adults can run citywide hunts, competitive defence challenges, or build neighbourhood quest chains."},
+         "a": "Yes. The Echo system and the clan territory mechanic scale from family fun all the way up to competitive multiplayer. Adults can run citywide hunts, competitive defence challenges, or build neighbourhood quest chains."},
         {"q": "Does it cost anything in India?",
-         "a": "No. The treasure-hunt features (drop Echoes, find Echoes, build quests) are 100% free. Cosmetic items (₹19–₹199) are optional and grant zero gameplay advantage. UPI-friendly via Razorpay/Google Pay/PhonePe/Paytm."},
-        {"q": "Does it work in Tier-2/3 cities?",
-         "a": "Yes. Even in Tier-2/3 cities like Indore, Coimbatore, Bhubaneswar you can drop Echoes and build quests. Dense Tier-1 cities (Mumbai, Delhi, Bangalore) have more clues from other players; Tier-2/3 areas leave your route more room for solo exploration."},
+         "a": "No. The treasure-hunt features (drop Echoes, find Echoes, build quests) are completely free. Cosmetic items (₹19 to ₹199) are optional and give zero gameplay advantage. UPI-friendly via Razorpay, Google Pay, PhonePe and Paytm."},
+        {"q": "Does it work in Tier-2 and Tier-3 cities?",
+         "a": "Yes. In Tier-2 and Tier-3 cities such as Indore, Coimbatore or Bhubaneswar you can drop Echoes and build quests just the same. Dense Tier-1 cities (Mumbai, Delhi, Bangalore) have more clues from other players, so Tier-2 and Tier-3 areas tend to give you more room for solo exploration on a fresh route."},
     ],
     "internal_links": [
         ("/en-in/pokemon-go-alternative-free-india.html", "free Pokémon GO alternative India"),
@@ -1353,14 +1354,14 @@ K6 = {
 K7 = {
     "slug": "/en-in/cricket-fan-map-app.html",
     "breadcrumb": "Cricket Fan Map App",
-    "title": "Cricket Fan Map App — defend your stadium territory IPL",
-    "og_title": "Cricket Fan Map App — Defend your IPL stadium territory",
-    "meta": "Cricket fan map app for IPL/T20 fans: MapRaiders lets you claim your stadium, your team's neighbourhood, your match-day territory. UK-spelling, UPI.",
+    "title": "Cricket Fan Map App: defend your stadium territory on IPL days",
+    "og_title": "Cricket Fan Map App: defend your IPL stadium territory",
+    "meta": "A cricket fan map app for IPL and T20 fans. MapRaiders lets you claim your stadium, your team's neighbourhood and your match-day zone on a real map. UK-spelling, UPI-friendly.",
     "keywords": "cricket fan map app, ipl stadium territory game, cricket gps game india, t20 fan app, cricket fan game, stadium territory app",
     "badge": "Cricket Fan · India Exclusive",
-    "pricing_pill": "Defend your stadium territory · IPL/T20-ready · ₹0 free",
-    "h1_html": 'Cricket Fan Map App — <em>Defend Your Stadium Territory</em> on IPL Match Days',
-    "lead": "Cricket isn't a sport in India — it's a cultural identity. MapRaiders is the first GPS map app built for cricket fans: claim your IPL home stadium, defend your team's neighbourhood, build clan territory around match-day zones. Wankhede for Mumbai Indians fans, Chinnaswamy for RCB, Eden Gardens for KKR, Chepauk for CSK — your stadium becomes territory you actually own. Free, UPI-friendly, runs on Tier-2 phones. India-exclusive feature.",
+    "pricing_pill": "Defend your stadium territory · IPL and T20 ready · ₹0 free",
+    "h1_html": 'Cricket fan map app: <em>defend your stadium territory</em> on IPL match days',
+    "lead": "Cricket in India is not just a sport, it is part of who people are. MapRaiders is the first GPS map app built around that. Claim your IPL home stadium, defend your team's neighbourhood, build clan territory around match-day zones. Wankhede for Mumbai Indians fans, Chinnaswamy for RCB, Eden Gardens for KKR, Chepauk for CSK. Your stadium becomes ground you actually hold on the map. Free at the core, UPI-friendly, runs on Tier-2 phones. India-exclusive feature.",
     "trigger": {
         "quote": "IPL match day? Defend your stadium territory. Match khatam, territory shuru.",
         "author": "Brand vision India"
@@ -1373,18 +1374,18 @@ K7 = {
             "body": """
     <p>India's cricket-fan demographic is unique globally:</p>
     <ul>
-      <li><strong>~700M+ active cricket fans.</strong> The largest single-sport fanbase on Earth — and the most digitally engaged.</li>
-      <li><strong>IPL season is a national event.</strong> March-May annually. 60+ matches, 10 franchise teams, dedicated city-fan loyalties (Mumbai Indians, CSK, RCB, KKR, Delhi Capitals, etc.).</li>
-      <li><strong>T20 World Cup + bilateral series</strong> create year-round cricket-fan engagement in India.</li>
-      <li><strong>Stadium pilgrimages.</strong> Wankhede, Chinnaswamy, Eden Gardens, Chepauk — these are sacred grounds for fans, not just venues. The neighbourhoods around them are tribal territory.</li>
+      <li><strong>Around 700 million active cricket fans.</strong> The largest single-sport fanbase on Earth, and probably the most digitally engaged one.</li>
+      <li><strong>IPL season is a national event.</strong> March to May every year. 60-plus matches, ten franchise teams, dedicated city-fan loyalties (Mumbai Indians, CSK, RCB, KKR, Delhi Capitals and so on).</li>
+      <li><strong>T20 World Cup and bilateral series</strong> keep cricket-fan engagement going year-round in India.</li>
+      <li><strong>Stadium pilgrimages.</strong> Wankhede, Chinnaswamy, Eden Gardens, Chepauk. For fans these are sacred ground, not just venues, and the neighbourhoods around them are tribal territory.</li>
     </ul>
-    <p>Yet no GPS-game app addresses this. Pokémon GO, Ingress, Monster Hunter Now — none have cricket-fan features. The category is empty. MapRaiders fills it.</p>
+    <p>And yet no GPS game addresses any of this. Pokémon GO, Ingress, Monster Hunter Now: none have cricket-fan features. The category is empty. MapRaiders fills it.</p>
             """,
         },
         {
             "label": "Stadium territories",
-            "title": "<em>Stadium territories</em> — claim your home ground",
-            "body": "<p>Each major Indian cricket stadium becomes a high-value territory zone in MapRaiders. Walk to the stadium on match day — defend your team's home ground. Walk daily within 2km — own the neighbourhood:</p>",
+            "title": "<em>Stadium territories</em>: claim your home ground",
+            "body": "<p>Each major Indian cricket stadium becomes a high-value territory zone in MapRaiders. Walk to the stadium on match day to defend your team's home ground. Walk the area daily within a 2km radius and you own the neighbourhood around it:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Stadium</th><th>City</th><th>Home franchise (IPL)</th><th>MapRaiders zone radius</th></tr></thead>
     <tbody>
@@ -1403,40 +1404,40 @@ K7 = {
             "title": "Match-day <em>quests and clan territory</em>",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Match-day boost</h3><p>On IPL match days, the home stadium territory zone earns 2x territory weight. Defend hard during your team's match — earn fan-clan glory.</p></div>
-    <div class="feat-card rv d1"><h3>Fan clans</h3><p>Mumbai Indians fans naturally form Wankhede clan. CSK fans form Chepauk clan. Co-defend your team's neighbourhood territory across the IPL season.</p></div>
-    <div class="feat-card rv d2"><h3>Pre-match Echoes</h3><p>Drop pre-match audio predictions, fan chants, post-match reaction Echoes. Build the city's cricket-Echo soundtrack.</p></div>
-    <div class="feat-card rv d3"><h3>Inter-team battles</h3><p>RCB fans vs Mumbai Indians fans clan-vs-clan territorial battles when teams meet in IPL. Real cricket rivalry, real-world map.</p></div>
-    <div class="feat-card rv d4"><h3>T20 World Cup mode</h3><p>National team match days unite all clan-rivalries into one Team India fan zone — every Indian city becomes blue territory.</p></div>
+    <div class="feat-card rv"><h3>Match-day boost</h3><p>On IPL match days, the home stadium zone earns double territory weight. Defend hard during your team's match and earn fan-clan glory.</p></div>
+    <div class="feat-card rv d1"><h3>Fan clans</h3><p>Mumbai Indians fans naturally form a Wankhede clan, CSK fans form a Chepauk clan. Together you co-defend your team's neighbourhood through the IPL season.</p></div>
+    <div class="feat-card rv d2"><h3>Pre-match Echoes</h3><p>Drop pre-match audio predictions, fan chants and post-match reactions. Over a season, your city builds up a cricket-Echo soundtrack of its own.</p></div>
+    <div class="feat-card rv d3"><h3>Inter-team battles</h3><p>RCB fans against Mumbai Indians fans, clan against clan, on the days the teams meet. Real cricket rivalry plays out on the real-world map.</p></div>
+    <div class="feat-card rv d4"><h3>T20 World Cup mode</h3><p>On national team match days the clan rivalries pause, and every Indian city briefly turns into one Team India blue zone.</p></div>
   </div>""",
         },
         {
             "label": "Indian cricket culture",
             "title": "Built with <em>respect for Indian cricket culture</em>",
             "body": """
-    <p>Cricket in India is sacred — and MapRaiders is built with deep respect for that. Important boundaries:</p>
+    <p>Cricket here is close to sacred, and MapRaiders is built with respect for that. A few clear lines:</p>
     <ul>
-      <li><strong>No player endorsement claims.</strong> We don't claim partnership with Sachin Tendulkar, Virat Kohli, MS Dhoni, Rohit Sharma or any cricketer. Fans can name their clans freely; the app never implies endorsement.</li>
-      <li><strong>No BCCI affiliation claims.</strong> MapRaiders is independent and not affiliated with BCCI, IPL, or any franchise.</li>
-      <li><strong>No team logos in-app.</strong> Fans can rep their team via clan colours and clan names; trademarked team logos are not used in-app.</li>
-      <li><strong>Respectful celebration of fan culture.</strong> The app celebrates the cultural-cricket bond between fans and stadium neighbourhoods, not the trademarked commercial property.</li>
+      <li><strong>No player endorsement claims.</strong> We do not claim a partnership with Sachin Tendulkar, Virat Kohli, MS Dhoni, Rohit Sharma or any other cricketer. Fans can name their clans freely; the app never implies endorsement.</li>
+      <li><strong>No BCCI affiliation claims.</strong> MapRaiders is independent and not affiliated with BCCI, IPL or any franchise.</li>
+      <li><strong>No team logos in-app.</strong> Fans can rep their team through clan colours and clan names; trademarked team logos are not used inside the app.</li>
+      <li><strong>Respect for fan culture.</strong> The app celebrates the cultural bond between fans and stadium neighbourhoods, not the trademarked commercial property around them.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "Is MapRaiders affiliated with IPL or BCCI?",
-         "a": "No. MapRaiders is independent — built by Scafa Investments LLC. We don't claim affiliation with BCCI, IPL, any franchise, or any player. Fans can rep their team via clan colours and names; trademarked logos are not used in-app."},
-        {"q": "Can I claim Wankhede / Chepauk / Eden Gardens / Chinnaswamy as territory?",
-         "a": "Yes. Each major Indian cricket stadium has a 2km territory zone. Walk to the stadium on match day, defend your team's home ground. Walk the neighbourhood daily — own it long-term."},
+         "a": "No. MapRaiders is independent; it is built by Scafa Investments LLC. We do not claim any affiliation with BCCI, IPL, any franchise or any individual player. Fans can rep their team through clan colours and clan names; trademarked logos are not used inside the app."},
+        {"q": "Can I claim Wankhede, Chepauk, Eden Gardens or Chinnaswamy as territory?",
+         "a": "Yes. Each major Indian cricket stadium has a 2km territory zone around it. Walk to the stadium on match day to defend your team's home ground. Walk the surrounding neighbourhood daily and you can hold it long-term."},
         {"q": "What happens during an IPL match day?",
-         "a": "On match days, the home stadium territory zone earns 2x territory weight. Fan clans naturally form (Mumbai Indians fans = Wankhede clan, CSK fans = Chepauk clan). Inter-team match days create clan-vs-clan territorial battles for fans of opposing teams."},
+         "a": "On match days, the home stadium zone earns double territory weight. Fan clans naturally form: Mumbai Indians fans cluster around Wankhede, CSK fans around Chepauk. On days when rival teams meet, clan-versus-clan territorial battles spill onto the map for fans of both sides."},
         {"q": "Is there a Sachin Tendulkar or Virat Kohli mode?",
-         "a": "No. We don't claim endorsement from any cricketer. Fans can name their clan after their favourite player freely (clan names are user-generated), but the app never implies official endorsement."},
+         "a": "No. We do not claim endorsement from any cricketer. Fans are free to name their clan after their favourite player (clan names are user-generated), but the app never implies official endorsement."},
         {"q": "What about T20 World Cup or India national team matches?",
-         "a": "Team India match days unite all clan-rivalries into one shared blue territory zone — every Indian city celebrates collectively. Cricket-fan map app for international cricket too, not just IPL."},
-        {"q": "Will it work outside Tier-1 stadium cities?",
-         "a": "Yes. Tier-2/3 city fans can claim their local cricket grounds, gully-cricket spots, club-level stadiums. Cricket is everywhere in India — the territory map reflects that."},
+         "a": "On Team India match days the clan rivalries pause and every Indian city briefly turns into one Team India blue zone. So this is a cricket-fan map app for international cricket too, not only for the IPL."},
+        {"q": "Will it work outside the Tier-1 stadium cities?",
+         "a": "Yes. Tier-2 and Tier-3 city fans can claim their local cricket grounds, gully-cricket spots and club-level stadiums. Cricket is everywhere in India and the territory map reflects that."},
     ],
     "internal_links": [
         ("/en-in/games-like-pokemon-go-india.html", "all games like Pokémon GO compared India"),
@@ -1458,22 +1459,22 @@ TWINS_DATA = [
     {
         "slug": "/en-in/pokemon-go-alternative-reviews-india.html",
         "breadcrumb": "Pokémon GO Alternative Reviews India",
-        "title": "Pokémon GO Alternative Reviews India — Beta Testers Speak",
-        "og_title": "Pokémon GO Alternative Reviews India — Real Beta Tester Voices",
-        "meta": "Pokémon GO alternative reviews from the MapRaiders closed beta: three testers from Stuttgart, Hamburg and Berlin report honestly on cardio, dog walks and urban exploration. Built for India.",
+        "title": "Pokémon GO Alternative Reviews India: beta testers speak",
+        "og_title": "Pokémon GO Alternative Reviews India: real beta tester voices",
+        "meta": "Pokémon GO alternative reviews from the MapRaiders closed beta. Three testers from Stuttgart, Hamburg and Berlin report honestly on cardio, dog walks and urban exploration. Read with India in mind.",
         "keywords": "pokemon go alternative reviews india, mapraiders reviews india, gps game test india, beta tester report india, indie pokemon go alternative india",
-        "h1_html": 'Pokémon GO Alternative — <em>Real Reviews</em> for Indian Players',
-        "lead": "Three internal beta testers from three German urban areas used MapRaiders for several weeks. Their unvarnished reports — no marketing copy, no influencer promo codes. Reviews translated from the German originals. Indian beta-tester wave launches Tier-2 post-launch (DPDPA-compliant).",
-        "intro_label": "Who's testing?",
+        "h1_html": 'Pokémon GO alternative: <em>real reviews</em> for Indian players',
+        "lead": "Three internal beta testers from three German urban areas used MapRaiders for several weeks. Their reports are not marketing copy and there are no influencer promo codes. The reviews are translated from the German originals. The Indian native-tester wave is planned post-launch on a DPDPA-compliant programme.",
+        "intro_label": "Who is testing?",
         "intro_title": "Three people, three <em>use cases</em>",
         "intro_body": """
-    <p>The three beta testers cover three very different personas — and that's exactly what makes the comparison to Pokémon GO honest:</p>
+    <p>The three beta testers cover three very different personas, which is what makes the comparison to Pokémon GO honest:</p>
     <ul>
       <li><strong>Ron C.</strong> from the Stuttgart area: dog owner, daily walk, no gamer background.</li>
-      <li><strong>Vivian N.</strong> from the Hamburg area: runner, tried Pokémon GO in 2018 and quit after 3 months.</li>
+      <li><strong>Vivian N.</strong> from the Hamburg area: runner, tried Pokémon GO in 2018 and quit after three months.</li>
       <li><strong>Aljoscha P.</strong> from the Berlin area: urban explorer, Ingress veteran, knows the Niantic ecosystem firsthand.</li>
     </ul>
-    <p>All three tested MapRaiders independently — no paid promotion, no scripts. Quotes are translations from German originals; Schema.org marks them with <code>translationOfWork</code> for transparency. Indian native testers (DPDPA-compliant) launch in Tier-2 phase.</p>
+    <p>All three tested MapRaiders independently. No paid promotion, no scripts. Quotes are translations from the German originals; Schema.org marks them with <code>translationOfWork</code> so anyone can verify. Indian native testers will join post-launch under a DPDPA-compliant programme.</p>
         """,
         "internal_links": [
             ("/en-in/pokemon-go-alternative-free-india.html", "free Pokémon GO alternative India"),
@@ -1485,22 +1486,22 @@ TWINS_DATA = [
     {
         "slug": "/en-in/games-like-pokemon-go-reviews-india.html",
         "breadcrumb": "Games Like Pokémon GO Reviews India",
-        "title": "Games Like Pokémon GO Reviews India — MapRaiders in Beta",
-        "og_title": "Reviews: Games Like Pokémon GO India — MapRaiders Beta",
-        "meta": "Reviews of games like Pokémon GO for India: three German beta testers report on MapRaiders — territory system, Echoes and defence mini-games in real-world daily use.",
+        "title": "Games Like Pokémon GO Reviews India: MapRaiders in beta",
+        "og_title": "Reviews: Games Like Pokémon GO India, the MapRaiders beta",
+        "meta": "Reviews of games like Pokémon GO for India. Three German beta testers report on MapRaiders: territory system, Echoes and defence mini-games inside real daily use.",
         "keywords": "games like pokemon go reviews india, pokemon go alternative test india, gps mmo test india, mapraiders test india, beta review india",
-        "h1_html": 'Games Like Pokémon GO India — <em>Reviews from the Beta</em>',
-        "lead": "What happens when a Pokémon GO veteran, a runner and a dog owner all test the same GPS-MMO alternative? Three very different reports from the MapRaiders closed beta — relevant for Indian players who want gamified motivation without USD-priced battle passes.",
+        "h1_html": 'Games like Pokémon GO India: <em>reviews from the beta</em>',
+        "lead": "What happens when a Pokémon GO veteran, a runner and a dog owner all test the same GPS-MMO alternative? Three very different reports from the MapRaiders closed beta. Useful reading for Indian players who want gamified motivation without USD-priced battle passes.",
         "intro_label": "Test setting",
         "intro_title": "How we <em>tested</em>",
         "intro_body": """
-    <p>The three testers used MapRaiders for 4-6 weeks in their normal routine — no artificial test sessions, no sponsored content. Concretely:</p>
+    <p>The three testers used MapRaiders for four to six weeks inside their normal routine. No artificial test sessions, no sponsored content. The setup:</p>
     <ul>
       <li><strong>Daily use</strong> in their own urban area (Stuttgart, Hamburg, Berlin).</li>
-      <li><strong>Direct comparison</strong> with Pokémon GO at Aljoscha P. (parallel play for 2 weeks).</li>
+      <li><strong>Direct comparison</strong> with Pokémon GO at Aljoscha P. (two weeks of parallel play).</li>
       <li><strong>Battery measurement</strong> via app settings: average consumption per hour.</li>
-      <li><strong>Honest-feedback rule:</strong> bugs, frustration and wishes are mentioned alongside highlights.</li>
-      <li><strong>Indian native testers</strong> launch Tier-2 post-launch (DPDPA-compliant programme).</li>
+      <li><strong>Honest-feedback rule:</strong> bugs, frustration and wishes are noted alongside the highlights.</li>
+      <li><strong>Indian native testers</strong> join post-launch under a DPDPA-compliant programme.</li>
     </ul>
         """,
         "internal_links": [
@@ -1513,22 +1514,22 @@ TWINS_DATA = [
     {
         "slug": "/en-in/territory-game-reviews-india.html",
         "breadcrumb": "Territory Game Reviews India",
-        "title": "Territory Game Reviews India — Beta Testers on MapRaiders",
-        "og_title": "Territory Game India — Real Beta Reviews",
-        "meta": "Territory game reviews from real daily use: three German beta testers report how claiming land, decay and defence mini-games feel in actual urban routines. Relevant for Indian streets.",
+        "title": "Territory Game Reviews India: beta testers on MapRaiders",
+        "og_title": "Territory Game India: real beta reviews",
+        "meta": "Territory game reviews from real daily use. Three German beta testers report how claiming land, decay and defence mini-games feel inside an actual urban routine. The same loop carries over to Indian streets.",
         "keywords": "territory game reviews india, claim territory game test india, land conquest app reviews india, territory game test india",
-        "h1_html": 'Territory Game India — When <em>Your Own Street</em> Belongs to You',
-        "lead": "What does it feel like to actually conquer a real street? Three beta testers report on their first territory, the first decay shock, and the first defence mini-game. Translated for Indian context — same loop works on Connaught Place, Cubbon Park, Marine Drive.",
+        "h1_html": 'Territory game India: when <em>your own street</em> belongs to you',
+        "lead": "What does it actually feel like to conquer a real street? Three beta testers report on their first territory, the first decay shock and the first defence mini-game. The loop translates directly to Indian context: Connaught Place, Cubbon Park, Marine Drive.",
         "intro_label": "What matters in the test?",
         "intro_title": "What makes a <em>territory game</em> tangible",
         "intro_body": """
     <p>The territory test runs along three experience axes:</p>
     <ul>
       <li><strong>Conquest.</strong> When does the first claimed street feel like &ldquo;my land&rdquo;?</li>
-      <li><strong>Loss.</strong> How do you react to the first decay or losing land to an attacker?</li>
-      <li><strong>Defence.</strong> How do the defence mini-games feel — tactical, fair, frustrating?</li>
+      <li><strong>Loss.</strong> How do you react to the first decay, or to losing land to an attacker?</li>
+      <li><strong>Defence.</strong> How do the defence mini-games feel: tactical, fair, frustrating?</li>
     </ul>
-    <p>The three testers' quotes cover all three axes from very different perspectives — the Indian player can map the same experience to their own neighbourhood.</p>
+    <p>The three testers' quotes cover all three axes from very different angles, which means an Indian player can map the same experience onto their own neighbourhood without a leap.</p>
         """,
         "internal_links": [
             ("/en-in/territory-game-india.html", "territory game India"),
@@ -1540,22 +1541,22 @@ TWINS_DATA = [
     {
         "slug": "/en-in/games-for-low-end-android-reviews.html",
         "breadcrumb": "Games for Low-End Android Reviews",
-        "title": "Games for Low-End Android Reviews — Tier-2 Phone Tested",
-        "og_title": "Games for Low-End Android Reviews — Performance on Tier-2 Phones",
-        "meta": "Games for low-end Android reviews: how does MapRaiders perform on Redmi 9, Realme C-series, Galaxy M-series? Three beta testers + Tier-3 device benchmark report.",
+        "title": "Games for Low-End Android Reviews: Tier-2 phone tested",
+        "og_title": "Games for Low-End Android Reviews: performance on Tier-2 phones",
+        "meta": "Games for low-end Android reviews: how does MapRaiders actually run on a Redmi 9, a Realme C-series or a Galaxy M-series? Three beta testers plus a Tier-3 device benchmark report.",
         "keywords": "games for low-end android reviews, tier-2 phone game reviews, 2gb ram android game test, budget android game reviews, redmi 9 game test",
-        "h1_html": 'Games for Low-End Android — <em>Real Reviews</em> on Tier-2 Phones',
-        "lead": "Will MapRaiders run smooth on a 2GB RAM Redmi 9? On a Realme C25? On a Galaxy M12? Three German beta testers + Tier-3 budget Android benchmark testing report. India-relevant performance reality.",
+        "h1_html": 'Games for low-end Android: <em>real reviews</em> on Tier-2 phones',
+        "lead": "Will MapRaiders run smoothly on a 2GB RAM Redmi 9? On a Realme C25? On a Galaxy M12? Three German beta testers plus a Tier-3 budget Android benchmark report. The performance reality, written for India.",
         "intro_label": "Test setting",
         "intro_title": "How we tested <em>low-end Android performance</em>",
         "intro_body": """
-    <p>Beyond the German tester reviews, we ran dedicated Tier-2/3 device testing for the Indian market:</p>
+    <p>Beyond the German tester reviews, we ran dedicated Tier-2 and Tier-3 device testing for the Indian market:</p>
     <ul>
-      <li><strong>Redmi 9</strong> (2GB RAM, Snapdragon 439) — 4-week daily test.</li>
-      <li><strong>Realme C25</strong> (4GB RAM, Helio G70) — 2-week parallel test.</li>
-      <li><strong>Galaxy M12</strong> (4GB RAM, Exynos 850) — battery + lag measurements.</li>
-      <li><strong>Tecno Spark 8</strong> (3GB RAM) — Lite Mode test.</li>
-      <li><strong>Lite Mode benchmark</strong> on a Galaxy A03s (1GB RAM) — full gameplay validation.</li>
+      <li><strong>Redmi 9</strong> (2GB RAM, Snapdragon 439): four-week daily test.</li>
+      <li><strong>Realme C25</strong> (4GB RAM, Helio G70): two-week parallel test.</li>
+      <li><strong>Galaxy M12</strong> (4GB RAM, Exynos 850): battery and lag measurements.</li>
+      <li><strong>Tecno Spark 8</strong> (3GB RAM): Lite Mode test.</li>
+      <li><strong>Lite Mode benchmark</strong> on a Galaxy A03s (1GB RAM): full gameplay validation.</li>
     </ul>
         """,
         "internal_links": [
@@ -1568,19 +1569,19 @@ TWINS_DATA = [
     {
         "slug": "/en-in/walking-app-reviews-india.html",
         "breadcrumb": "Walking App Reviews India",
-        "title": "Walking App Reviews India — Gamified GPS Walking in Beta",
-        "og_title": "Walking App Reviews India — Cardio + Territory in the Real World",
-        "meta": "Walking app reviews from the MapRaiders beta for India: cardio motivation, battery life on long routes, territory loss after illness pauses. Three real testers report.",
+        "title": "Walking App Reviews India: gamified GPS walking in beta",
+        "og_title": "Walking App Reviews India: cardio plus territory in the real world",
+        "meta": "Walking app reviews from the MapRaiders beta, written with India in mind. Cardio motivation, battery life on long routes, territory loss after a sick week. Three real testers report.",
         "keywords": "walking app reviews india, gamified walking app reviews india, fitness gps app reviews india, longevity walking reviews",
-        "h1_html": 'Walking Apps with a Game — <em>Real Reviews</em> for India',
-        "lead": "What happens to walking motivation when every route defends real land? How does the first decay after a sick week feel? Three beta testers report — a runner, a walker, an urban explorer. Same loop applies to morning park walks in Cubbon Park or evening colony walks in any Tier-2 city.",
+        "h1_html": 'Walking apps with a game: <em>real reviews</em> for India',
+        "lead": "What happens to walking motivation when every route defends real land? How does the first decay after a sick week feel? Three beta testers report: a runner, a walker, an urban explorer. The same loop carries over to morning park walks at Cubbon Park or evening colony walks in any Tier-2 city.",
         "intro_label": "Test axes",
         "intro_title": "What a <em>walking-with-game app</em> needs to deliver",
         "intro_body": """
     <p>We tested the walking experience along three axes:</p>
     <ul>
-      <li><strong>Motivation anchor.</strong> When does someone come back after a pause?</li>
-      <li><strong>Battery on long routes.</strong> 60-90-minute walks without battery death — critical on Tier-2 phones.</li>
+      <li><strong>Motivation anchor.</strong> When does somebody come back after a pause?</li>
+      <li><strong>Battery on long routes.</strong> 60 to 90 minute walks without the phone dying. Critical on Tier-2 phones.</li>
       <li><strong>Cross-activity.</strong> Does it work for running, walking and dog walks equally?</li>
     </ul>
         """,
@@ -1594,20 +1595,20 @@ TWINS_DATA = [
     {
         "slug": "/en-in/treasure-hunt-reviews-india.html",
         "breadcrumb": "Treasure Hunt Reviews India",
-        "title": "Treasure Hunt App Reviews India — No-Setup Live City Hunt",
-        "og_title": "Treasure Hunt App India — Beta Test Reviews",
-        "meta": "Treasure hunt app reviews without tour purchases or setup: beta testers report how MapRaiders turns the whole city into a live treasure hunt — Diwali, Holi, family-ready.",
+        "title": "Treasure Hunt App Reviews India: no-setup live city hunt",
+        "og_title": "Treasure Hunt App India: beta test reviews",
+        "meta": "Treasure hunt app reviews without tour purchases or any prep. Beta testers report how MapRaiders turns the whole city into a live hunt, with Indian festival hooks for Diwali and Holi.",
         "keywords": "treasure hunt app reviews india, citywide treasure hunt reviews india, family treasure hunt reviews india, urban hunt app test india",
-        "h1_html": 'Treasure Hunt App India — <em>Reviews</em> Without Tour Purchases',
-        "lead": "Most treasure hunt apps need prep: buy a tour, plan a route, set up stations. What does it feel like when the whole city is already filled with clues? Three beta testers report. Indian festival hooks (Diwali, Holi, Eid, Navratri) tested separately.",
+        "h1_html": 'Treasure hunt app India: <em>reviews</em> without tour purchases',
+        "lead": "Most treasure hunt apps need prep: buy a tour, plan a route, set up stations. What does it feel like when the whole city is already filled with clues? Three beta testers report. Indian festival hooks (Diwali, Holi, Eid, Navratri) are tested separately.",
         "intro_label": "Test question",
         "intro_title": "Does a <em>live treasure hunt</em> work without setup?",
         "intro_body": """
     <p>We tested the treasure-hunt features in three settings:</p>
     <ul>
-      <li><strong>Solo</strong> as urban explorer (Aljoscha P.) — drop Echoes, find Echoes.</li>
-      <li><strong>With dog</strong> on the regular walk (Ron C.) — clues as a side product of the routine.</li>
-      <li><strong>Family setting</strong> simulated — how fast do adults + kids understand the mechanic? Indian-family testing follows in Tier-2 wave.</li>
+      <li><strong>Solo</strong> as urban explorer (Aljoscha P.): drop Echoes, find Echoes.</li>
+      <li><strong>With dog</strong> on the regular walk (Ron C.): clues as a side product of the routine.</li>
+      <li><strong>Family setting</strong> simulated: how fast do adults and kids understand the mechanic? Indian-family testing follows in the Tier-2 wave.</li>
     </ul>
         """,
         "internal_links": [
@@ -1620,22 +1621,22 @@ TWINS_DATA = [
     {
         "slug": "/en-in/cricket-fan-reviews-india.html",
         "breadcrumb": "Cricket Fan Map App Reviews",
-        "title": "Cricket Fan Map App Reviews — IPL Stadium Territory Tests",
-        "og_title": "Cricket Fan Map App — Real Reviews from IPL-Fan Beta Testers",
-        "meta": "Cricket fan map app reviews: how does claiming Wankhede, Chinnaswamy, Eden Gardens or Chepauk as territory feel? IPL-season test reports from MapRaiders beta.",
+        "title": "Cricket Fan Map App Reviews: IPL stadium territory tests",
+        "og_title": "Cricket Fan Map App: real reviews from IPL-fan beta testers",
+        "meta": "Cricket fan map app reviews. How does it feel to claim Wankhede, Chinnaswamy, Eden Gardens or Chepauk as territory? IPL-season test reports from the MapRaiders beta.",
         "keywords": "cricket fan map app reviews, ipl stadium territory game reviews, cricket gps game reviews india, t20 fan app reviews",
-        "h1_html": 'Cricket Fan Map App — <em>Reviews</em> from IPL-Fan Beta',
-        "lead": "What does it feel like to claim Wankhede on a Mumbai Indians match day? Defend Chinnaswamy as RCB? Hold Chepauk for CSK? Beta tester reports on the cricket-fan map app — the IN-exclusive feature that turns IPL season into territorial gameplay.",
+        "h1_html": 'Cricket fan map app: <em>reviews</em> from the IPL-fan beta',
+        "lead": "What does it actually feel like to claim Wankhede on a Mumbai Indians match day? To defend Chinnaswamy as RCB, or to hold Chepauk for CSK? Beta tester reports on the cricket-fan map app, the India-exclusive feature that turns IPL season into territorial gameplay.",
         "intro_label": "Cricket-fan test",
         "intro_title": "Why <em>stadium territory</em> matters for Indian fans",
         "intro_body": """
-    <p>Cricket in India is cultural identity, not just a sport. We tested cricket-fan features along three axes:</p>
+    <p>Cricket in India is cultural identity, not only a sport. We tested cricket-fan features along three axes:</p>
     <ul>
-      <li><strong>Match-day defence.</strong> 2x territory weight on home stadium during IPL match day. How does that feel for a fan?</li>
-      <li><strong>Fan-clan formation.</strong> Do Mumbai Indians fans naturally form a Wankhede clan? Do CSK fans form Chepauk clan?</li>
-      <li><strong>Inter-team battles.</strong> RCB vs Mumbai Indians match day — clan-vs-clan territorial battle. Does it heighten cricket fandom?</li>
+      <li><strong>Match-day defence.</strong> Double territory weight on the home stadium during an IPL match day. How does that feel for a fan?</li>
+      <li><strong>Fan-clan formation.</strong> Do Mumbai Indians fans naturally form a Wankhede clan? Do CSK fans form a Chepauk clan?</li>
+      <li><strong>Inter-team battles.</strong> RCB versus Mumbai Indians match day, with a clan-versus-clan territorial battle. Does it heighten the cricket fandom or feel forced?</li>
     </ul>
-    <p>Indian cricket-fan beta wave launches with IPL 2026 (March-May). German beta testers tested the underlying territory mechanic, not cricket-specific features.</p>
+    <p>The Indian cricket-fan beta wave is planned for IPL 2026 (March to May). The German beta testers stress-tested the underlying territory mechanic, not the cricket-specific features.</p>
         """,
         "internal_links": [
             ("/en-in/cricket-fan-map-app.html", "cricket fan map app"),
@@ -1654,28 +1655,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/en-in/mapraiders-reviews-india.html",
     "breadcrumb": "MapRaiders Reviews India",
-    "title": "MapRaiders Reviews India — Beta Tests, Founder, All Topics",
-    "og_title": "MapRaiders Reviews India — All Beta Voices in One Place",
-    "meta": "MapRaiders reviews India: 5.0 of 5 from three verified beta tests, founder statement, all Killer pages and reviews pages linked from one hub. UPI-friendly, Tier-2 phone ready.",
+    "title": "MapRaiders Reviews India: beta tests, founder, all topics",
+    "og_title": "MapRaiders Reviews India: all the beta voices in one place",
+    "meta": "MapRaiders reviews India: 5.0 out of 5 from three verified beta tests, the founder's statement, plus every Killer page and review page linked from one hub. UPI-friendly, Tier-2 phone ready.",
     "keywords": "mapraiders reviews india, mapraiders beta reviews india, gps mmo reviews india, indie pokemon go alternative reviews india",
-    "badge": "Hub & Overview India",
-    "pricing_pill": "5.0 / 5 — 3 verified beta reviews",
-    "h1_html": '<em>MapRaiders Reviews India</em> — Everything You Need to Know About the GPS MMO',
-    "lead": "Three beta testers from Stuttgart, Hamburg and Berlin. Seven Killer topics built for India — from Pokémon GO comparison to cricket-fan map app, from low-end Android performance to citywide treasure hunts. Seven dedicated reviews pages. One hub. UPI-friendly, Tier-2 phone ready, DPDPA-aligned.",
+    "badge": "Hub and Overview India",
+    "pricing_pill": "5.0 out of 5 from three verified beta reviews",
+    "h1_html": '<em>MapRaiders reviews India</em>: everything worth knowing about the GPS MMO',
+    "lead": "Three beta testers from Stuttgart, Hamburg and Berlin. Seven Killer topics built for India: Pokémon GO comparison, cricket-fan map app, low-end Android performance, citywide treasure hunts. Seven dedicated reviews pages. One hub. UPI-friendly, Tier-2 phone ready, DPDPA-aligned.",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
         {"q": "What is MapRaiders, exactly?",
-         "a": "MapRaiders is a GPS-based MMO for Android. Players claim real territories through movement, leave Echoes, build quests, and defend their land with mini-games. Ad-free, AR-free, free gameplay. Built with India-specific features: UPI-payments, low-end Android support, cricket-fan map mode."},
+         "a": "MapRaiders is a GPS-based MMO for Android. Players claim real territories through movement, leave Echoes, build quests and defend their land with mini-games. Ad-free, AR-free, free at the core. India-specific features include UPI payments, low-end Android support and the cricket-fan map mode."},
         {"q": "How many beta testers are these?",
-         "a": "Currently three German testers we feature publicly — with their consent and using first name + initial for privacy. The full closed beta is larger; the three featured here represent the main personas. Indian native beta wave (DPDPA-compliant) launches Tier-2 post-launch."},
+         "a": "Currently three German testers feature publicly, with their consent and using first name plus initial for privacy. The full closed beta is larger; these three represent the main personas. The Indian native beta wave is planned post-launch under a DPDPA-compliant programme."},
         {"q": "Are the reviews real?",
-         "a": "Yes. The three testers are real people from the closed beta. They were not paid; the quotes are originally written in German. Schema.org marks the EN-IN versions with translationOfWork pointing to the German originals — full transparency."},
+         "a": "Yes. The three testers are real people from the closed beta. They were not paid; the quotes are originally written in German. Schema.org marks the EN-IN versions with translationOfWork pointing back to the German originals so anyone can verify the source."},
         {"q": "How can I become a beta tester in India?",
-         "a": "Join the email list on the homepage. Indian beta wave launches Tier-2 post-launch with DPDPA-compliant programme. Priority goes to active walkers/runners/cricket-fans in Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad, plus selected Tier-2 cities."},
+         "a": "Join the email list on the homepage. The Indian wave launches post-launch under a DPDPA-compliant programme. Priority goes to active walkers, runners and cricket fans in Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Kolkata, Pune and Ahmedabad, plus selected Tier-2 cities."},
         {"q": "When does the app launch officially in India?",
-         "a": "MapRaiders is on Google Play as a closed beta. Public India launch is targeted for Summer 2026 with full UPI-integration; iOS launch follows in Q3 2026."},
+         "a": "MapRaiders is on Google Play as a closed beta. Public India launch is targeted for Summer 2026 with full UPI integration. iOS follows in Q3 2026."},
     ],
     "internal_links": [],
 }

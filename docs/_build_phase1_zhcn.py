@@ -81,7 +81,7 @@ TESTER_RON = {
     "name": "Ron C.",
     "role": "狗主人・斯图加特地区",
     "role_long": "斯图加特地区的狗主人（封闭测试）",
-    "quote": "我的狗喜欢遛弯，我喜欢每次遛弯都让我的小区在地图上更显眼。已经占领了我整条街。",
+    "quote": "我家狗反正一天得遛两次，那不如顺手把街区也带上。听起来挺傻的，但每天晚上我都会瞄一眼，看看是不是还都是蓝的。",
     "date": "2026-03-15",
     "id": "review-ron-c",
 }
@@ -89,7 +89,7 @@ TESTER_VIVIAN = {
     "name": "Vivian N.",
     "role": "慢跑者・汉堡地区",
     "role_long": "汉堡地区的慢跑者（封闭测试）",
-    "quote": "本来每天早上就跑步。有了MapRaiders，每条路线都有目标：守住领地或夺回。心肺动力爆表。",
+    "quote": "我本来每天早上就跑，现在多了一件事要做：守着自己的圈子。Alster湖那一圈是我的，我希望它一直是。奇怪，这居然能逼出这么多自律。",
     "date": "2026-03-22",
     "id": "review-vivian-n",
 }
@@ -97,16 +97,16 @@ TESTER_ALJOSCHA = {
     "name": "Aljoscha P.",
     "role": "城市探索者・柏林地区",
     "role_long": "柏林地区的城市探索者（封闭测试）",
-    "quote": "放下Echo看谁找到，就像整座城市的开放寻宝。发现了从没见过的角落。",
+    "quote": "你在某个门口留下一段几秒的录音，三天后被一个完全不认识的人捡到。说实话，对一个游戏来说，那种感觉有点过于私密了。",
     "date": "2026-04-01",
     "id": "review-aljoscha-p",
 }
 ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 FOUNDER_QUOTE = (
-    "我曾是Pokémon GO中受挫的玩家之一。我想要真正的领地，而不是短暂的道馆捕获。"
-    "我不想要广告轰炸，也不想要强制premium订阅。"
-    "所以我建造了MapRaiders。这是我的主场——很快也会成为你的。"
+    "我玩了三年Pokémon GO，后来慢慢就放下了。一直缺的那个东西始终没来：真正属于自己的地，而不是几分钟就翻盘的道馆。"
+    "我也不想再忍无止境的活动票、季票、抽卡。所以我自己写了MapRaiders。"
+    "没有广告，没有投资人的KPI压力，没有强制订阅。我的街区是我的，你的街区，你自己拿。"
 )
 
 # Pricing-Offers USD dominant + CNY Sub (Master-Plan §1.1, Diaspora-Fokus)
@@ -128,7 +128,7 @@ DEFINED_TERMS = [
     ("公会", "共同守护和保卫领地的玩家有机群体"),
     ("任务", "玩家创建、其他玩家可在现实世界完成的小任务"),
     ("防守小游戏", "领地受争夺时触发的小游戏（井字棋、剪刀石头布、迷你国际象棋）"),
-    ("小区", "玩家所在的真实邻里或地区（CN：小区，NICHT 社區）"),
+    ("小区", "玩家所在的真实邻里或地区"),
     ("收藏品", "玩家创建并放置在领地中的收藏物件"),
     ("放下回声", "在现实地点留下回声的行为"),
     ("领地衰减", "闲置领地随时间退化、可被再次占领的机制"),
@@ -207,7 +207,7 @@ def testers_section_html(testers):
 {cards}
     </div>
     <p style="margin-top:24px;font-size:12px;color:var(--dim);max-width:680px;line-height:1.8">
-      备注：测试者为封闭测试参与者。为保护隐私，姓氏已省略。原文为德文，于 Schema 中以 <code>translationOfWork</code> 标注。
+      备注：测试者为封闭测试参与者。出于隐私考虑，姓氏没有放出来。原文是德文，已在 Schema 中以 <code>translationOfWork</code> 标注。
     </p>
   </div>
 </section>"""
@@ -231,7 +231,7 @@ def footer_html():
       <a href="/agb.html">服务条款</a><a href="/datenschutz.html">隐私政策</a><a href="/impressum.html">运营者信息</a><a href="/kontakt.html">联系我们</a>
     </div>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; 你的街区，你的领地。由 Scafa Investments LLC 提供。</p>
+  <p class="f-copy">&copy; 2026 MapRaiders。你的街区，你的领地。由 Scafa Investments LLC 提供。</p>
 </div>
 </footer>
 <script>
@@ -524,7 +524,7 @@ def build_schema_hub(page, all_killers, all_twins):
     item_list = {
         "@type": "ItemList",
         "@id": f"{SITE}{page['slug']}#itemlist",
-        "name": "MapRaiders ZH-CN — 所有评价及Killer页面",
+        "name": "MapRaiders ZH-CN：所有评价及Killer页面",
         "itemListElement": []
     }
     pos = 1
@@ -585,8 +585,8 @@ def render_internal_links_html(links):
     items = "\n".join(f'    <a href="{href}">{anchor}</a>' for href, anchor in links)
     return f"""<section class="cta-sec">
 <div class="mx">
-  <h2 class="rv">探索更多<em>相关主题</em></h2>
-  <p class="rv d1">深入了解MapRaiders的世界：</p>
+  <h2 class="rv">看看其他<em>相关主题</em></h2>
+  <p class="rv d1">想再多看一点 MapRaiders 的内容：</p>
   <div class="links-row rv d2">
 {items}
   </div>
@@ -611,7 +611,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>「{page['trigger']['quote']}」</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
 
     pricing_pill = ""
@@ -688,9 +688,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">评分</div>
-  <h2 class="sec-title rv d1">5.0 / 5 — <em>3名封闭测试参与者的验证评价</em></h2>
+  <h2 class="sec-title rv d1">5.0 / 5：<em>3名封闭测试参与者的真实反馈</em></h2>
   <div class="prose rv d2">
-    <p>3名德国的测试者（狗主人、慢跑者、城市探索者）在数周内使用了MapRaiders。以下感想原文为德文，代表封闭测试的真实参与者。为保护隐私，姓氏已省略。</p>
+    <p>3位德国测试者（狗主人、慢跑者、城市探索者）在几周时间里用了 MapRaiders。下面的反馈原文是德文，由封闭测试的真实参与者写的。出于隐私考虑，姓氏没有放出来。</p>
   </div>
 </div>
 </section>"""
@@ -766,7 +766,7 @@ def render_hub_page(page, all_killers, all_twins):
   <div class="sec-label rv">主题中心</div>
   <h2 class="sec-title rv d1">MapRaiders的<em>所有主题</em>一览</h2>
   <div class="prose rv d2">
-    <p>这里可以看到所有7个Killer页面和7个评价页面。从Pokémon GO替代到无VPN直接玩、从领地游戏到散步游戏化、从量子计划替代到寻宝游戏，MapRaiders从不同角度呈现。每页可独立阅读，但整体串连会浮现出一幅完整图像。</p>
+    <p>这里能看到全部7个Killer页面和7篇评价。从 Pokémon GO 替代到不用VPN直接玩，从领地游戏到散步游戏化，再到量子计划补位和城市寻宝，每个角度都拆开来讲了一次。每篇都能单独读，串起来又是一张完整的图。</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -777,7 +777,7 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">评价详情</div>
-  <h2 class="sec-title rv d1">从<em>不同视角</em>看测试者的声音</h2>
+  <h2 class="sec-title rv d1">从<em>不同视角</em>看测试者的反馈</h2>
   <div class="features-grid">
 {twin_cards}
   </div>
@@ -787,9 +787,9 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">综合评分</div>
-  <h2 class="sec-title rv d1">5.0 / 5 — <em>3位验证封闭测试评价</em></h2>
+  <h2 class="sec-title rv d1">5.0 / 5：<em>3位封闭测试参与者反馈</em></h2>
   <div class="prose rv d2">
-    <p>所有评价皆收集自2026年2月至4月的封闭测试。3位测试者（狗主人、慢跑者、城市探索者）分别在斯图加特、汉堡、柏林以自己的路线试用了MapRaiders。评论原文为德文，代表真实参与者。</p>
+    <p>所有反馈都来自2026年2月到4月的封闭测试。3位测试者分别是狗主人、慢跑者、城市探索者，按各自的路线在斯图加特、汉堡、柏林试用了 MapRaiders。原文是德文，由真实参与者写的。</p>
   </div>
 </div>
 </section>"""
@@ -847,16 +847,16 @@ def render_hub_page(page, all_killers, all_twins):
 K1 = {
     "slug": "/zh-cn/领地游戏.html",
     "breadcrumb": "领地游戏",
-    "title": "领地游戏 — 真正的土地征服GPS MMO",
-    "og_title": "领地游戏 — 真正的土地征服GPS MMO",
+    "title": "领地游戏：在真实地图上征服土地的GPS MMO",
+    "og_title": "领地游戏：在真实地图上征服土地的GPS MMO",
     "meta": "领地游戏应用：MapRaiders让你在真实地图上持续占有领地的GPS MMO。免费、无广告、无AR、无强制订阅。一步一步，征服你的街区。",
     "keywords": "领地游戏, 领地, GPS MMO, 位置游戏, 散步, 应用",
     "badge": "领地游戏",
     "pricing_pill": "永久免费 · 外观内购自选（¥15 起）",
-    "h1_html": '领地游戏 — 真正的<em>土地征服GPS MMO</em>',
-    "lead": "提到「领地游戏」，搜索结果通常是棋盘游戏或维基百科。能在真实地图上持续占有领地的手机应用，至今仍很罕见。MapRaiders 是把你走过的街道转化为持续归属领地的GPS MMO。免费、无广告、无AR、无强制premium订阅。",
+    "h1_html": '领地游戏：在真实地图上<em>征服你的土地</em>',
+    "lead": "搜「领地游戏」基本上跳出来的不是棋盘游戏就是维基词条。真正能在地图上持续占有一片地的手机应用，到今天还是少数。MapRaiders 把你走过的每条街变成留得住的领地。免费，没广告，没AR，也不强制订阅。",
     "trigger": {
-        "quote": "征服你的街区——无需VPN。",
+        "quote": "把你的街区拿下来。无需VPN。",
         "author": "MapRaiders 概念"
     },
     "testers": [TESTER_RON, TESTER_VIVIAN],
@@ -881,7 +881,7 @@ K1 = {
             "body": "",
             "extra": """  <div class="features-grid">
     <div class="feat-card rv"><h3>占领</h3><p>走路、跑步或骑车经过街道时，GPS轨迹会在地图上化作领地多边形，刻上你的名字。</p></div>
-    <div class="feat-card rv d1"><h3>衰减引擎</h3><p>不常经过的领地每天会微幅缩小。活动本身决定领地的存续——而非付费。</p></div>
+    <div class="feat-card rv d1"><h3>衰减引擎</h3><p>不常经过的领地每天会一点点缩。能不能保住，看你走不走，不看你充不充。</p></div>
     <div class="feat-card rv d2"><h3>防守小游戏</h3><p>井字棋、剪刀石头布、迷你国际象棋等7种对战决胜负。比拼的是策略，不是时间。</p></div>
     <div class="feat-card rv d3"><h3>公会领地</h3><p>多名玩家可共同持有同一块领地。公会领地更强韧，单人攻击者难以突破。</p></div>
   </div>""",
@@ -890,8 +890,8 @@ K1 = {
             "label": "Pokémon GO 的不同",
             "title": "Pokémon GO <em>没有</em>的部分",
             "body": """
-    <p>Pokémon GO 是出色的位置游戏。但它没有「真正的领地」概念。道馆只是短暂占领，几分钟后就会被翻覆，没有持续、没有衰减、没有公会继承。MapRaiders 填补的，正是 Pokémon GO 从未涉足的空白——<strong>真实土地的持续归属</strong>。</p>
-    <p>另一个现实问题：Pokémon GO 在中国大陆<strong>无法直接玩</strong>，玩家通常需要VPN才能访问。MapRaiders 不依赖任何被屏蔽的服务——GPS-only，新加坡服务器，海外华人与VPN用户都可直接使用。</p>
+    <p>Pokémon GO 本身做得不错，但它没有「真正的领地」这个概念。道馆只是短暂占着，几分钟之后就会被翻盘。没有持续，没有衰减，也没有公会继承。MapRaiders 想填的，就是这个空白：<strong>真实土地的持续归属</strong>。</p>
+    <p>另一个绕不开的现实：Pokémon GO 在中国大陆<strong>没法直接玩</strong>，多数玩家得靠VPN进去。MapRaiders 走的是另一条路：GPS-only，新加坡服务器，不依赖被屏蔽的任何服务，海外华人和国内用户都能直接连上。</p>
             """,
         },
     ],
@@ -911,7 +911,7 @@ K1 = {
         ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
         ("/zh-cn/无VPN位置游戏.html", "无VPN位置游戏"),
         ("/zh-cn/量子计划替代.html", "量子计划替代"),
-        ("/zh-cn/领地游戏-评价.html", "领地游戏 — 评价"),
+        ("/zh-cn/领地游戏-评价.html", "领地游戏 ：评价"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -919,14 +919,14 @@ K1 = {
 K2 = {
     "slug": "/zh-cn/位置游戏.html",
     "breadcrumb": "位置游戏",
-    "title": "位置游戏推荐 2026 — 7款GPS游戏对比",
-    "og_title": "位置游戏推荐 2026 — 7款对比",
-    "meta": "位置游戏推荐 2026：7款GPS位置游戏完整对比。MapRaiders是唯一持续占有领地的GPS MMO，免费、无AR、无VPN、海外华人可直接玩。",
+    "title": "位置游戏推荐 2026：7款GPS游戏对比",
+    "og_title": "位置游戏推荐 2026：7款对比",
+    "meta": "位置游戏推荐 2026：7款GPS位置游戏完整对比。MapRaiders专注持续占有领地的GPS MMO，免费、无AR、无需VPN、海外华人可直接玩。",
     "keywords": "位置游戏, 位置游戏推荐, GPS游戏, 2026, 对比, Pokemon GO, 量子计划",
     "badge": "位置游戏推荐",
     "pricing_pill": "MapRaiders 永久免费 · 外观内购自选",
-    "h1_html": '位置游戏推荐 2026 — <em>真实领地</em>可占有的7款应用',
-    "lead": "在寻找位置游戏吗？2026年的选择丰富：Pokémon GO、Pikmin Bloom、Ingress、量子计划、地球入侵等等都各有特色。但若论「能持续占有真实领地」这个层面，MapRaiders 是独特的选择。对比一下，找到最适合你的位置游戏。",
+    "h1_html": '位置游戏推荐 2026：可占有<em>真实领地</em>的7款应用',
+    "lead": "想找一款位置游戏？2026年选择不少：Pokémon GO、Pikmin Bloom、Ingress、量子计划、地球入侵，各有各的玩法。但如果你在意「能不能持续占住一片真实的地」，MapRaiders 走的是不太一样的路线。对一对，看哪款适合你。",
     "trigger": {
         "quote": "Pokemon GO在中国玩不了，MapRaiders到处都能玩。",
         "author": "MapRaiders 概念"
@@ -948,7 +948,7 @@ K2 = {
         {
             "label": "7款对比",
             "title": "2026年版・<em>位置游戏推荐7款</em>",
-            "body": "<p>每款应用都有它的强项。MapRaiders 专注领地，Pokémon GO 是收集，Pikmin Bloom 是步数——尊重各自的特色，对比如下：</p>",
+            "body": "<p>每款应用都有自己的长处。MapRaiders 在领地，Pokémon GO 在收集，Pikmin Bloom 在步数。下面这张表把它们放到一起对比一下：</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead>
       <tr><th>#</th><th>应用</th><th>提供商</th><th>特色</th><th>真正的领地</th><th>无需VPN</th></tr>
@@ -1009,7 +1009,7 @@ K2 = {
         ("/zh-cn/散步游戏化App.html", "散步游戏化App"),
         ("/zh-cn/寻宝游戏App.html", "寻宝游戏App"),
         ("/zh-cn/量子计划替代.html", "量子计划替代"),
-        ("/zh-cn/位置游戏-评价.html", "位置游戏 — 评价"),
+        ("/zh-cn/位置游戏-评价.html", "位置游戏 ：评价"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -1017,16 +1017,16 @@ K2 = {
 K3 = {
     "slug": "/zh-cn/Pokemon-GO替代免费.html",
     "breadcrumb": "Pokemon GO替代免费",
-    "title": "Pokemon GO替代 免费 — 无需VPN直接玩",
-    "og_title": "Pokemon GO替代免费 — MapRaiders",
+    "title": "Pokemon GO 替代：免费，无需VPN",
+    "og_title": "Pokemon GO 替代免费：MapRaiders",
     "meta": "Pokemon GO替代免费应用：MapRaiders独立运营、无广告、无AR、无强制订阅、无需VPN。海外华人与中国用户均可直接玩的GPS MMO。",
     "keywords": "Pokemon GO 替代, Pokemon GO 免费, Pokemon GO 替代品, 位置游戏, 无AR",
     "badge": "Pokemon GO 替代",
     "pricing_pill": "完全免费 · 无广告 · 无AR · 无需VPN",
-    "h1_html": 'Pokémon GO 替代 — <em>免费，无需VPN</em>',
-    "lead": "你想玩Pokémon GO，但中国大陆无法直接访问？需要VPN还经常断线？担心AR耗电？MapRaiders 是独立的替代选择。GPS-only，无AR，无广告，无强制订阅。新加坡服务器，无需VPN即可直接玩，能持续占有真实领地的GPS MMO。",
+    "h1_html": 'Pokémon GO 替代：<em>免费，无需VPN</em>',
+    "lead": "想玩Pokémon GO，但在国内连不上？开了VPN还动不动断线？怕AR一开半小时就没电？MapRaiders 是另一个选择，独立运营，GPS-only，没AR，没广告，也不强制订阅。新加坡服务器，无需VPN就能直接玩，是一款能持续占有真实领地的GPS MMO。",
     "trigger": {
-        "quote": "无氪金。无广告。无订阅。",
+        "quote": "不氪金，不放广告，不卖订阅。",
         "author": "MapRaiders 概念"
     },
     "testers": [TESTER_VIVIAN, TESTER_ALJOSCHA],
@@ -1035,14 +1035,14 @@ K3 = {
             "label": "为什么找替代",
             "title": "寻找Pokémon GO<em>替代</em>的理由",
             "body": """
-    <p>Pokémon GO 是优秀的位置游戏。但对中国玩家来说，几个问题特别明显：</p>
+    <p>Pokémon GO 本身没毛病。但放到国内玩家身上，几个问题挺明显：</p>
     <ul>
-      <li><strong>无法直接玩。</strong>Pokémon GO 在中国大陆未通过NPPA审批，需要VPN才能访问。VPN本身不稳定，加上Pokémon GO对GPS+网络要求高，体验经常中断。</li>
-      <li><strong>付费疲劳。</strong>季票、远程团体战票、各种加成——免费也能玩，但不付费就追不上的部分越来越多。</li>
-      <li><strong>电池消耗。</strong>AR模式耗电快，长时间散步不适合。</li>
-      <li><strong>AR疲劳。</strong>每天散步、通勤都要启动AR，逐渐感到麻烦。</li>
+      <li><strong>没法直接玩。</strong>Pokémon GO 在中国大陆没通过NPPA审批，得靠VPN进。VPN本身就不太稳，再加上游戏对GPS和网络都挑，玩着玩着断线是常态。</li>
+      <li><strong>付费疲劳。</strong>季票、远程团体战票、各种加成。免费也能玩，但不掏钱就追不上的部分一年比一年多。</li>
+      <li><strong>电池消耗。</strong>AR模式费电，散步走个一小时就空。</li>
+      <li><strong>AR疲劳。</strong>每天散步、通勤都得举起手机，时间一长就嫌烦。</li>
     </ul>
-    <p>MapRaiders 在这4个层面提供不同的选项。</p>
+    <p>MapRaiders 在这4件事上做了不一样的选择。</p>
             """,
         },
         {
@@ -1064,7 +1064,7 @@ K3 = {
             "label": "对比 Pokémon GO",
             "title": "Pokémon GO <em>的差异与共通点</em>",
             "body": """
-    <p>Pokémon GO 与 MapRaiders 同属「位置游戏」，但玩法不同。一起玩，各自的长处更显著：</p>
+    <p>Pokémon GO 和 MapRaiders 都算「位置游戏」，但玩法不在一个方向上。一起玩，各自的长处反而更明显：</p>
             """,
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>层面</th><th>Pokémon GO</th><th>MapRaiders</th></tr></thead>
@@ -1108,7 +1108,7 @@ K3 = {
         ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
         ("/zh-cn/无VPN位置游戏.html", "无VPN位置游戏"),
         ("/zh-cn/领地游戏.html", "领地游戏"),
-        ("/zh-cn/Pokemon-GO替代免费-评价.html", "Pokemon GO替代 — 评价"),
+        ("/zh-cn/Pokemon-GO替代免费-评价.html", "Pokemon GO替代 ：评价"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -1116,51 +1116,51 @@ K3 = {
 K4 = {
     "slug": "/zh-cn/无VPN位置游戏.html",
     "breadcrumb": "无VPN位置游戏",
-    "title": "无VPN位置游戏 — 在中国直接玩，无需翻墙",
-    "og_title": "无VPN位置游戏 — 直接玩，无需翻墙",
-    "meta": "无需VPN玩位置游戏：MapRaiders直接玩，无需翻墙。Pokemon GO替代品，中国可玩——免费、无广告、AR不需要、新加坡服务器低延迟。",
-    "keywords": "无VPN, 位置游戏, 中国可玩, 无需翻墙, Pokemon GO 替代, 新加坡服务器",
+    "title": "无VPN位置游戏：在国内直接玩",
+    "og_title": "无VPN位置游戏：直接玩",
+    "meta": "无需VPN玩位置游戏：MapRaiders直接玩。Pokemon GO替代品，国内可玩，免费、无广告、不用AR、新加坡服务器低延迟。",
+    "keywords": "无VPN, 位置游戏, 中国可玩, Pokemon GO 替代, 新加坡服务器",
     "badge": "无VPN位置游戏",
     "pricing_pill": "无需VPN · 直接玩 · 新加坡服务器",
-    "h1_html": '无VPN位置游戏 — 在<em>中国直接玩</em>，无需翻墙',
-    "lead": "想玩位置游戏，但 Pokémon GO、Ingress、Pikmin Bloom 在中国大陆都需要VPN？VPN不稳定，连接经常断，玩不到一半就掉线？MapRaiders 解决这个技术问题：新加坡服务器、GPS-only架构、不依赖任何被屏蔽的服务。直接玩，无需翻墙。",
+    "h1_html": '无VPN位置游戏：在<em>国内直接玩</em>',
+    "lead": "想玩位置游戏，但 Pokémon GO、Ingress、Pikmin Bloom 都得挂VPN？VPN本身不稳，玩着玩着就断？MapRaiders 在架构上就避开了这个问题：新加坡服务器、GPS-only、不依赖任何被屏蔽的服务。直接打开就能玩。",
     "trigger": {
-        "quote": "Pokemon GO在中国玩不了，MapRaiders到处都能玩。",
+        "quote": "Pokémon GO 在国内连不上，MapRaiders 到哪儿都能玩。",
         "author": "MapRaiders 概念"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
-            "label": "Pokémon GO 在中国",
-            "title": "Pokémon GO <em>在中国大陆的现状</em>",
+            "label": "Pokémon GO 在国内",
+            "title": "Pokémon GO <em>在国内的现状</em>",
             "body": """
-    <p>Pokémon GO 自2016年全球上线至今，从未通过中国大陆的<strong>NPPA（国家新闻出版署）</strong>游戏审批。这意味着：</p>
+    <p>Pokémon GO 从2016年全球上线到现在，没有拿到<strong>NPPA（国家新闻出版署）</strong>的版号。具体的影响是：</p>
     <ul>
-      <li><strong>不在中国大陆App Store上架。</strong>iPhone用户无法直接下载。</li>
-      <li><strong>不在中国大陆Android应用商店上架。</strong>华为、小米、OPPO、vivo应用市场均无。</li>
-      <li><strong>需要VPN访问游戏服务器。</strong>即使从海外商店下载安装，进入游戏也会卡在登录界面。</li>
+      <li><strong>不在国内App Store上架。</strong>iPhone用户无法直接下载。</li>
+      <li><strong>不在国内Android应用商店上架。</strong>华为、小米、OPPO、vivo应用市场都没有。</li>
+      <li><strong>需要VPN访问游戏服务器。</strong>就算从海外商店装好，进游戏也常常卡在登录页。</li>
     </ul>
-    <p>这不是政治问题，而是<strong>技术与监管现实</strong>——任何依赖 Google Maps API、Firebase Auth、Niantic 自有服务器的游戏，在中国大陆都会遇到访问障碍。</p>
+    <p>这是个技术加监管的现实问题：任何依赖 Google Maps API、Firebase Auth、Niantic 自有服务器的游戏，在国内都会遇到访问障碍。</p>
             """,
         },
         {
             "label": "为什么VPN方案不够好",
             "title": "为什么<em>VPN方案</em>不是答案",
             "body": """
-    <p>很多Pokémon GO中国玩家选择VPN方案，但这有几个根本问题：</p>
+    <p>很多Pokémon GO玩家选择挂VPN，但这套方案本身有几个槽点：</p>
     <ul>
-      <li><strong>不稳定。</strong>VPN连接经常断开，游戏中GPS定位会突然「跳」到VPN出口节点（日本、新加坡），触发反作弊系统。</li>
-      <li><strong>延迟高。</strong>道馆战、团体战需要低延迟，VPN增加200–500ms，影响实时操作。</li>
-      <li><strong>电池负担。</strong>VPN加密+AR模式+GPS定位三重负担，手机1–2小时即耗光电池。</li>
-      <li><strong>账号风险。</strong>Niantic对位置「跳跃」非常敏感，频繁VPN切换有被封号风险。</li>
-      <li><strong>VPN本身的合规性。</strong>个人VPN使用有合规风险，企业用户可能违反公司IT政策。</li>
+      <li><strong>不稳定。</strong>VPN经常断线，断线之后游戏里的GPS会突然「跳」到VPN出口节点（日本、新加坡），直接触发反作弊。</li>
+      <li><strong>延迟高。</strong>道馆战、团体战要低延迟，VPN一下就把延迟拉高200到500毫秒，实时操作受影响。</li>
+      <li><strong>电池吃紧。</strong>VPN加密、AR模式、GPS定位三件事一起上，手机一两小时就空了。</li>
+      <li><strong>账号风险。</strong>Niantic对位置「跳跃」很敏感，频繁切VPN有被封号的可能。</li>
+      <li><strong>合规层面。</strong>个人挂VPN本身就有合规风险，公司发的工作机更可能直接违反IT政策。</li>
     </ul>
             """,
         },
         {
             "label": "MapRaiders 的技术架构",
             "title": "MapRaiders 的<em>架构层面</em>解决方案",
-            "body": "<p>MapRaiders 从一开始就考虑全球访问的技术稳定性，<strong>不是后期适配，而是架构层面的设计</strong>：</p>",
+            "body": "<p>MapRaiders 一开始就把全球访问的稳定性考虑进去了。<strong>这不是后期补的兼容，而是从架构层做的设计</strong>：</p>",
             "extra": """  <div class="features-grid">
     <div class="feat-card rv"><h3>新加坡主服务器</h3><p>对中国大陆、东南亚、海外华人均提供低延迟访问（一般50–80ms）。新加坡是访问中国大陆最稳定的国际节点之一。</p></div>
     <div class="feat-card rv d1"><h3>GPS-only架构</h3><p>不使用 Google Maps API、不使用 Firebase。地图基于 OpenStreetMap，认证使用自有服务器。无被屏蔽的依赖项。</p></div>
@@ -1183,7 +1183,7 @@ K4 = {
       <tr><td class="feat-name">Geocaching</td><td>部分功能</td><td>部分依赖Google服务</td><td>不稳定</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px">注：MapRaiders 与 Tencent 的「量子计划」并非竞争关系，而是 <strong>互补</strong>——MapRaiders 提供领地/公会战的深度，量子计划提供本地化收集体验。许多用户两个都玩。</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px">注：MapRaiders 与 Tencent 的「量子计划」不是竞争关系，更像是互补。MapRaiders 走的是领地、公会战这一边，量子计划在本地化收集上做得很扎实。很多用户两个都装。</p>""",
         },
         {
             "label": "适合谁",
@@ -1191,10 +1191,10 @@ K4 = {
             "body": """
     <p>MapRaiders 特别适合：</p>
     <ul>
-      <li><strong>曾经的 Pokémon GO 玩家</strong>，受够VPN不稳定，想找一个真正能在中国大陆顺畅玩的GPS游戏。</li>
-      <li><strong>不想用VPN</strong>的用户——可能是合规要求（企业用户）、可能是技术麻烦、可能是单纯不想折腾。</li>
-      <li><strong>海外华人</strong>——新加坡、温哥华、纽约的华人，使用同一个新加坡服务器，与国内朋友数据互通。</li>
-      <li><strong>每天遛狗、慢跑、散步</strong>的人——日常活动自然转化为领地占领，不需要复杂操作。</li>
+      <li><strong>以前的 Pokémon GO 玩家。</strong>受够了VPN断线，想找一款在国内真的能流畅玩的GPS游戏。</li>
+      <li><strong>不想用VPN的用户。</strong>可能是公司IT政策不允许，可能是嫌折腾，也可能就是单纯不想装。</li>
+      <li><strong>海外华人。</strong>新加坡、温哥华、纽约的朋友，连同一个新加坡服务器，跟国内朋友数据互通。</li>
+      <li><strong>每天遛狗、慢跑、散步的人。</strong>日常活动自然就在累积领地，不用专门为玩游戏多走几步。</li>
     </ul>
             """,
         },
@@ -1209,14 +1209,14 @@ K4 = {
         {"q": "数据存在哪里？会不会被外国政府访问？",
          "a": "玩家数据存储于新加坡数据中心。Scafa Investments LLC 是美国佛罗里达州注册的独立公司。数据传输使用TLS 1.3加密，数据库静态加密AES-256。我们不主动向任何政府提供数据，除非有合法司法程序。"},
         {"q": "和量子计划相比怎么样？",
-         "a": "Tencent的量子计划是优秀的国内位置游戏，本地化做得非常好。MapRaiders 与量子计划是互补关系——MapRaiders 强项是领地/公会战的深度，量子计划强项是本地化收集体验。许多用户两个都玩，对应不同的游戏需求。"},
+         "a": "Tencent的量子计划在国内位置游戏里做得很到位，本地化扎实。MapRaiders 和量子计划是互补关系：MapRaiders 长处在领地和公会战的深度，量子计划长处在本地化的收集体验。很多用户两个都玩，对应不同的需求。"},
     ],
     "internal_links": [
         ("/zh-cn/领地游戏.html", "领地游戏"),
         ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
         ("/zh-cn/Pokemon-GO替代免费.html", "Pokemon GO替代免费"),
         ("/zh-cn/量子计划替代.html", "量子计划替代"),
-        ("/zh-cn/无VPN位置游戏-评价.html", "无VPN位置游戏 — 评价"),
+        ("/zh-cn/无VPN位置游戏-评价.html", "无VPN位置游戏 ：评价"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -1224,16 +1224,16 @@ K4 = {
 K5 = {
     "slug": "/zh-cn/散步游戏化App.html",
     "breadcrumb": "散步游戏化App",
-    "title": "散步游戏化App — 心肺动力+领地征服",
-    "og_title": "散步游戏化App — 心肺+领地",
-    "meta": "散步游戏化App：MapRaiders让每次散步成为领地征服。免费、无广告、无AR，把日常步行转化为持续的乐趣。Strava的GPS游戏化补充。",
+    "title": "散步游戏化App：把走路变成领地占领",
+    "og_title": "散步游戏化App：走路就是占地",
+    "meta": "散步游戏化App：MapRaiders让每次散步都在累积领地。免费、无广告、无AR，把日常步行变成有目标感的事。可以和Strava并用。",
     "keywords": "散步 App, 散步游戏化, 走路 App, 步行游戏, 慢跑, 健身, Strava 替代",
     "badge": "散步游戏化App",
-    "pricing_pill": "永久免费 · 心肺动力爆表",
-    "h1_html": '散步游戏化App — <em>心肺动力</em>+领地征服',
-    "lead": "每天都散步，但越来越觉得无聊？走路App只是计步器，没有目标？MapRaiders 把日常散步变成「领地征服」——每条走过的路线都成为你在地图上的领地。除非衰减或被攻击，否则永远是你的。免费、无广告、无AR，慢跑、遛狗、上下班通勤都适用。",
+    "pricing_pill": "永久免费 · 走起来有目标",
+    "h1_html": '散步游戏化App：把<em>走路</em>变成领地占领',
+    "lead": "每天都在走，但走着走着没意思？计步App就只是个数字，没目标？MapRaiders 给走路加了一层意义：每条走过的路都会在地图上变成你的领地。只要还在走，它就在；不走了才会慢慢缩。免费，没广告，没AR，慢跑、遛狗、通勤都能用。",
     "trigger": {
-        "quote": "心肺动力爆表。",
+        "quote": "心肺动力一下就上来了。",
         "author": "Vivian N.（汉堡地区，封闭测试）"
     },
     "testers": [TESTER_VIVIAN, TESTER_RON],
@@ -1242,13 +1242,13 @@ K5 = {
             "label": "为什么散步App不够",
             "title": "<em>普通散步App</em>的问题",
             "body": """
-    <p>市面上的散步App，多数只做这几件事：</p>
+    <p>市面上的散步App，多半就这几件事：</p>
     <ul>
-      <li><strong>计步。</strong>今天走了多少步——但走完就忘了。</li>
-      <li><strong>路线记录。</strong>看到自己走过的红线——但没有持续意义。</li>
-      <li><strong>积分排名。</strong>和好友比谁走得多——但很快失去动力。</li>
+      <li><strong>计步。</strong>今天走了多少步，走完就忘了。</li>
+      <li><strong>路线记录。</strong>地图上一条红线，看了一眼就过了。</li>
+      <li><strong>积分排名。</strong>跟朋友比谁走得多，新鲜两周也就那样。</li>
     </ul>
-    <p>真正能让你<strong>每天都想多走一点</strong>的，是「目标感」。MapRaiders 用「领地」给散步赋予真实的延续意义：今天没走，明天领地就缩；坚持走，整个小区都是你的。</p>
+    <p>真正能让你<strong>每天都想再多走一点</strong>的，是「目标感」。MapRaiders 用「领地」把这件事接上：今天没走，明天那一片就缩一点；连着走下去，整个小区慢慢都是你的。</p>
             """,
         },
         {
@@ -1266,11 +1266,11 @@ K5 = {
             "label": "Strava 互补",
             "title": "MapRaiders <em>与 Strava 怎么搭配</em>",
             "body": """
-    <p>MapRaiders 不取代 Strava 这类专业运动数据App，而是<strong>互补</strong>：</p>
+    <p>MapRaiders 不取代 Strava 这类专业运动数据App，更像是叠加在它旁边：</p>
     <ul>
-      <li><strong>Strava 提供训练数据。</strong>配速、心率、爬升、间歇训练分析——专业跑者需要的。</li>
-      <li><strong>MapRaiders 提供游戏化动机。</strong>把训练路线变成持续的领地，让「再多跑一点」有具体回报。</li>
-      <li><strong>同时使用。</strong>两者互不冲突。早晨跑步：Strava记录数据，MapRaiders记录领地。回家后两边都有收获。</li>
+      <li><strong>Strava 给训练数据。</strong>配速、心率、爬升、间歇分析，专业跑者要的那些。</li>
+      <li><strong>MapRaiders 给目标感。</strong>把训练路线变成持续的领地，让「再多跑一公里」有个具体的理由。</li>
+      <li><strong>一起开。</strong>两边互不冲突。早上出去跑：Strava记数据，MapRaiders记领地，回家两边都有收获。</li>
     </ul>
             """,
         },
@@ -1279,7 +1279,7 @@ K5 = {
             "title": "<em>60+长辈</em>也能用",
             "body": "<p>MapRaiders 对长辈非常友好：</p>",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>不需要复杂操作</h3><p>打开App、放进口袋——就这样。GPS自动记录，散步结束后自然显示领地。</p></div>
+    <div class="feat-card rv"><h3>不需要复杂操作</h3><p>打开App，放进口袋，就这样。GPS会自己记，回家一看领地就在那儿。</p></div>
     <div class="feat-card rv d1"><h3>家人共同玩</h3><p>子女在国内/海外都用同一个App，与父母「同一个地图上」散步，是新型的代际连接。</p></div>
     <div class="feat-card rv d2"><h3>每天动力</h3><p>「今天没走，领地缩了」是温和但有效的健康动机，比单纯计步有效得多。</p></div>
     <div class="feat-card rv d3"><h3>低电池消耗</h3><p>不用AR，2小时散步只消耗约15%电池，老人手机也撑得住。</p></div>
@@ -1290,11 +1290,11 @@ K5 = {
         {"q": "散步真的能变成游戏吗？",
          "a": "可以。MapRaiders 把GPS轨迹自动转化为领地多边形，刻在地图上。每天散步的同一条路，会形成一片你的领地。看到地图上自己的「色块」每天扩张或收缩，是非常具体的动机。"},
         {"q": "需要专门为玩游戏走路吗？",
-         "a": "不需要。MapRaiders 的设计就是融入日常——遛狗、买菜、上下班、接孩子。任何步行都自然累积领地。不要求你为玩游戏多走路。"},
+         "a": "不需要。MapRaiders 的设定就是顺着日常走：遛狗、买菜、上下班、接孩子，所有步行都会自然累积领地。不需要你为了玩这个游戏多走一步。"},
         {"q": "和健身App冲突吗？",
          "a": "不会。MapRaiders 与 Strava、Keep、华为运动健康等专业健身App互补使用。健身App记录身体数据，MapRaiders 提供「目标感」。"},
         {"q": "60岁以上的父母能用吗？",
-         "a": "可以。界面非常简单——打开App放进口袋就行。家人朋友可以一起玩，是温和的健康激励。我们的封闭测试有60+用户成功使用。"},
+         "a": "可以。界面挺简单的，打开App放进口袋就行。家人朋友也能一起玩，作为温和的健康激励效果不错。我们封闭测试里就有60岁以上的用户在用。"},
         {"q": "电池消耗怎么样？",
          "a": "因为不用AR，MapRaiders 比 Pokémon GO 省电约4倍。2小时散步约消耗15%电池，5–6小时长途徒步约30–40%。建议带充电宝作后备。"},
     ],
@@ -1302,7 +1302,7 @@ K5 = {
         ("/zh-cn/领地游戏.html", "领地游戏"),
         ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
         ("/zh-cn/量子计划替代.html", "量子计划替代"),
-        ("/zh-cn/散步App-值得吗.html", "散步App — 值得吗"),
+        ("/zh-cn/散步App-值得吗.html", "散步App ：值得吗"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -1310,16 +1310,16 @@ K5 = {
 K6 = {
     "slug": "/zh-cn/寻宝游戏App.html",
     "breadcrumb": "寻宝游戏App",
-    "title": "寻宝游戏App 2026 — 整座城市的开放寻宝",
-    "og_title": "寻宝游戏App 2026 — 城市开放寻宝",
-    "meta": "寻宝游戏App：MapRaiders让整座城市成为开放寻宝。免费、家庭适用、无广告、回声机制让真实世界变成发现之地。",
+    "title": "寻宝游戏App 2026：把城市变成寻宝场",
+    "og_title": "寻宝游戏App 2026：城市寻宝",
+    "meta": "寻宝游戏App：MapRaiders 把整座城市变成开放寻宝。免费、家庭适用、无广告，「回声」机制让真实街道成为发现的地方。",
     "keywords": "寻宝游戏, 寻宝App, 城市寻宝, 儿童游戏, 家庭活动, 探险",
     "badge": "寻宝游戏App",
-    "pricing_pill": "永久免费 · 整座城市就是游乐场",
-    "h1_html": '寻宝游戏App — <em>整座城市</em>的开放寻宝',
-    "lead": "寻宝游戏App通常设计为固定关卡：A点、B点、C点。MapRaiders 不一样。整座城市本身就是寻宝舞台——其他玩家留下的「回声」散落在你日常经过的每个转角。家人、朋友、狗狗一起出门散步，自然就会发现。城市，就是最大的开放寻宝游戏。",
+    "pricing_pill": "永久免费 · 城市就是游乐场",
+    "h1_html": '寻宝游戏App：把<em>整座城市</em>变成寻宝场',
+    "lead": "寻宝App大多是固定关卡：A点、B点、C点。MapRaiders 不一样。整座城市就是舞台，其他玩家留下的「回声」散在你每天经过的转角。带家人、带朋友、带狗一起出门，自然会撞上。城市本身，就是最大的开放寻宝场。",
     "trigger": {
-        "quote": "整座城市的开放寻宝。",
+        "quote": "整座城市散着别人的痕迹，挺奇妙的。",
         "author": "Aljoscha P.（柏林地区，封闭测试）"
     },
     "testers": [TESTER_ALJOSCHA, TESTER_RON],
@@ -1328,13 +1328,13 @@ K6 = {
             "label": "现代寻宝App",
             "title": "现代<em>寻宝App</em>的3个标准",
             "body": """
-    <p>2026年的寻宝App，与十年前完全不同。今天玩家期待的标准是：</p>
+    <p>2026年的寻宝App，跟十年前完全不是一回事。今天玩家想要的大概是这几个标准：</p>
     <ul>
-      <li><strong>即时性。</strong>不必预先设定路线，城市里已经散落着宝藏。</li>
-      <li><strong>社交性。</strong>发现其他玩家留下的宝藏，是共创的乐趣。</li>
-      <li><strong>免费。</strong>不必购买关卡或订阅，就能把每个城市变成游乐场。</li>
+      <li><strong>即时性。</strong>不用预先排路线，城市里已经有东西可找。</li>
+      <li><strong>社交性。</strong>找到的是别人留下的痕迹，这本身就是共创。</li>
+      <li><strong>免费。</strong>不用买关卡或者订阅，每个城市都能当游乐场。</li>
     </ul>
-    <p>MapRaiders 同时满足这3个标准，是新类型的寻宝App。</p>
+    <p>MapRaiders 同时满足这3点，玩起来更像新一代的寻宝App。</p>
             """,
         },
         {
@@ -1355,13 +1355,13 @@ K6 = {
             "label": "回声机制",
             "title": "MapRaiders 的<em>回声机制</em>",
             "body": """
-    <p>回声是玩家在地点留下的音频、照片、视频信息。下一个经过的玩家会发现它，街道的每个角落都留有他人的故事：</p>
+    <p>回声是玩家在地点留下的音频、照片或短视频。下一个经过的人就会捡到它，街角和门口都藏着别人留下的故事：</p>
     <ul>
-      <li><strong>音频回声。</strong>「这条巷子的面包店超好吃」「这个转角夕阳最美」这类一句话信息。</li>
-      <li><strong>照片回声。</strong>季节风景、有趣招牌、隐藏小店的照片。</li>
-      <li><strong>视频回声。</strong>短视频传达场所氛围。</li>
+      <li><strong>音频回声。</strong>「这条巷子里那家面包店真不错」「这个转角夕阳最好看」这种一句话的提示。</li>
+      <li><strong>照片回声。</strong>季节里的风景、有意思的招牌、藏起来的小店。</li>
+      <li><strong>视频回声。</strong>几秒钟的短片，把当下的氛围带过来。</li>
     </ul>
-    <p>这些散落在城市里，散步时偶然发现的机制。</p>
+    <p>这些东西散在城里，散步的时候偶然会撞到。</p>
             """,
         },
         {
@@ -1392,7 +1392,7 @@ K6 = {
         ("/zh-cn/领地游戏.html", "领地游戏"),
         ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
         ("/zh-cn/量子计划替代.html", "量子计划替代"),
-        ("/zh-cn/寻宝游戏App-评价.html", "寻宝游戏 — 评价"),
+        ("/zh-cn/寻宝游戏App-评价.html", "寻宝游戏 ：评价"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -1400,32 +1400,32 @@ K6 = {
 K7 = {
     "slug": "/zh-cn/量子计划替代.html",
     "breadcrumb": "量子计划替代",
-    "title": "量子计划替代 — 更深度的GPS MMO",
-    "og_title": "量子计划替代 — 更深度的GPS MMO",
-    "meta": "量子计划替代：MapRaiders提供真正的领地、公会战、防守小游戏。比量子计划更深度的GPS MMO体验，可以同时玩两个，互补不冲突。",
+    "title": "量子计划替代：补一层领地战的GPS MMO",
+    "og_title": "量子计划替代：领地战GPS MMO",
+    "meta": "量子计划替代：MapRaiders 补上持续领地、公会战、防守小游戏。和量子计划互补，两个可以同时玩。",
     "keywords": "量子计划, 量子计划 替代, Tencent LBG, 位置游戏, 公会战, 领地",
     "badge": "量子计划替代",
     "pricing_pill": "互补不冲突 · 可同时玩",
-    "h1_html": '量子计划替代 — <em>更深度</em>的领地战',
-    "lead": "如果你已经在玩 Tencent 的「量子计划」，可能会觉得意犹未尽——希望有更深度的领地系统、公会战、玩家对战机制。MapRaiders 不是要取代量子计划，而是补充它的不足：真正的持续领地、7种防守小游戏、有机公会形成。两个可以同时玩，提供完整的GPS游戏体验。",
+    "h1_html": '量子计划替代：补一层<em>领地战</em>',
+    "lead": "已经在玩 Tencent 的「量子计划」，但有时还是觉得没玩够？想要更深的领地、公会战、玩家对战？MapRaiders 不打算取代量子计划，更想补上它没覆盖的那块：持续领地、7种防守小游戏、邻居自然形成的公会。两个一起开，构成完整的GPS游戏体验。",
     "trigger": {
-        "quote": "超越量子计划——真正的领地+公会战。",
+        "quote": "量子计划之外，再加一层领地战。",
         "author": "MapRaiders 概念"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
             "label": "量子计划是什么",
-            "title": "<em>量子计划</em>——Tencent 的国内LBG",
+            "title": "<em>量子计划</em>：Tencent 的国内LBG",
             "body": """
-    <p><strong>量子计划</strong>是 Tencent（腾讯）推出的位置游戏，2024年起在中国大陆运营。Tencent 作为国内最大的游戏发行商之一，量子计划的本地化、UI、运营都做得非常出色：</p>
+    <p><strong>量子计划</strong>是 Tencent（腾讯）做的位置游戏，2024年起在国内运营。腾讯在国内游戏发行这块经验充足，量子计划在本地化、UI、运营上都很扎实：</p>
     <ul>
-      <li><strong>本地化深度。</strong>游戏内容、UI、客服全部中文，符合中国玩家习惯。</li>
-      <li><strong>合规上架。</strong>已通过NPPA审批，所有应用商店均可下载，无需VPN。</li>
-      <li><strong>微信生态集成。</strong>登录、社交、分享都通过微信，符合国内用户习惯。</li>
-      <li><strong>稳定的国内服务器。</strong>低延迟，高峰期也流畅。</li>
+      <li><strong>本地化深度。</strong>游戏内容、界面、客服全是中文，贴近国内玩家习惯。</li>
+      <li><strong>合规上架。</strong>有NPPA版号，各大应用商店都能下，不需要VPN。</li>
+      <li><strong>微信生态。</strong>登录、社交、分享都走微信，国内用户用着顺手。</li>
+      <li><strong>稳定的国内服务器。</strong>延迟低，高峰期也能玩。</li>
     </ul>
-    <p>量子计划的强项是「本地化的收集型LBG」——这块做得非常优秀，MapRaiders 不与之竞争。</p>
+    <p>量子计划的强项是「本地化的收集型LBG」，这块做得很到位，MapRaiders 不打算去碰这块。</p>
             """,
         },
         {
@@ -1436,7 +1436,7 @@ K7 = {
     <div class="feat-card rv"><h3>真正的持续领地</h3><p>不只是「占领点位」，而是整片地图区域以你的名字持续归属。除非衰减或被攻击，永远是你的。</p></div>
     <div class="feat-card rv d1"><h3>7种防守小游戏</h3><p>领地受到攻击时，由策略小游戏（井字棋、剪刀石头布、迷你国际象棋等）决胜负，不是自动算分。</p></div>
     <div class="feat-card rv d2"><h3>有机公会形成</h3><p>公会不是预设服务器，而是从邻居自然形成。常走同一条街的玩家自动成为伙伴。</p></div>
-    <div class="feat-card rv d3"><h3>玩家创建内容</h3><p>玩家可创建任务、放下回声、设置挑战——城市变成共同创造的游戏空间。</p></div>
+    <div class="feat-card rv d3"><h3>玩家创建内容</h3><p>玩家可以创建任务、放下回声、设置挑战。城市慢慢变成大家一起搭出来的游戏空间。</p></div>
   </div>""",
         },
         {
@@ -1457,40 +1457,40 @@ K7 = {
       <tr><td class="feat-name">免费程度</td><td>有付费内容</td><td>外观自选，机制全免费</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>结论：</strong>不是替代，而是<strong>互补</strong>。量子计划提供本地化深度，MapRaiders 提供领地战深度。</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>结论：</strong>不是替代关系，更像互补。量子计划负责本地化深度，MapRaiders 负责领地战深度。</p>""",
         },
         {
             "label": "可以同时玩",
             "title": "<em>可以同时玩两个</em>",
             "body": """
-    <p>两款游戏完全可以同时玩，互不冲突：</p>
+    <p>两款游戏完全可以同时开，互不冲突：</p>
     <ul>
-      <li><strong>电池负担。</strong>两个都不用AR（MapRaiders完全不用，量子计划主要场景也不用），同时开启不会快速耗电。</li>
-      <li><strong>路线复用。</strong>同一条散步路线，量子计划记录收集，MapRaiders记录领地，一举两得。</li>
-      <li><strong>不同社交圈。</strong>量子计划的微信好友与MapRaiders的小区邻居，是不同的社交关系，不冲突。</li>
-      <li><strong>不同节奏。</strong>量子计划适合短时游玩（5–10分钟收集任务），MapRaiders适合长期累积（每天散步）。</li>
+      <li><strong>电池负担。</strong>两边都不大用AR（MapRaiders完全不用，量子计划主要场景也不开），一起开不会立刻把电吃光。</li>
+      <li><strong>路线复用。</strong>同一条散步路，量子计划那边记收集，MapRaiders这边记领地，一趟出门两份收获。</li>
+      <li><strong>不同社交圈。</strong>量子计划走的是微信好友，MapRaiders走的是小区邻居，两套关系不撞车。</li>
+      <li><strong>不同节奏。</strong>量子计划适合5到10分钟的短任务，MapRaiders是每天散步慢慢累积的那种。</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders 是要取代量子计划吗？",
-         "a": "不是。MapRaiders 与量子计划是互补关系。量子计划在本地化、微信生态、收集型LBG方面非常优秀，MapRaiders 在领地战、公会战、防守机制方面有深度。两个可以同时玩。"},
+         "a": "不是。MapRaiders 和量子计划是互补关系。量子计划在本地化、微信生态、收集型LBG这块做得很好，MapRaiders 强项在领地战、公会战、防守机制。两个可以一起玩。"},
         {"q": "对 Tencent 的量子计划有什么看法？",
-         "a": "量子计划是优秀的产品，特别是本地化深度和稳定性。Tencent 在游戏运营方面经验丰富，对国内市场理解深刻。MapRaiders 学习了量子计划的许多产品设计思路。"},
+         "a": "量子计划是个不错的产品，本地化和稳定性都做得很扎实。腾讯在游戏运营方面经验丰富，对国内市场理解很深。MapRaiders 也从量子计划的产品设计里学到了不少东西。"},
         {"q": "MapRaiders 在中国大陆能玩吗？",
          "a": "是的。MapRaiders 使用新加坡服务器，GPS-only架构，不依赖被屏蔽的服务，无需VPN即可访问。但相对于量子计划的国内服务器（延迟<30ms），MapRaiders 延迟在50–80ms。"},
         {"q": "MapRaiders 会上架国内应用商店吗？",
          "a": "目前暂未申请NPPA审批（小团队，资源有限），主要服务海外华人和国内VPN-free玩家。如果未来用户基数扩大，会考虑通过国内代理商进行合规上架。"},
         {"q": "微信集成深度如何？",
-         "a": "MapRaiders 支持微信分享（页面、领地战绩、回声）。但与量子计划相比，微信生态的深度集成（如微信登录、微信好友列表）暂未实现。这是我们持续改进的方向之一。"},
+         "a": "MapRaiders 支持微信分享（页面、领地战绩、回声）。不过比起量子计划，微信生态的深度集成（比如微信登录、好友列表）暂时还没做。这块是我们后续会继续打磨的方向。"},
     ],
     "internal_links": [
         ("/zh-cn/领地游戏.html", "领地游戏"),
         ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
         ("/zh-cn/Pokemon-GO替代免费.html", "Pokemon GO替代免费"),
         ("/zh-cn/无VPN位置游戏.html", "无VPN位置游戏"),
-        ("/zh-cn/量子计划替代-评价.html", "量子计划替代 — 评价"),
+        ("/zh-cn/量子计划替代-评价.html", "量子计划替代 ：评价"),
         ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
     ],
 }
@@ -1506,183 +1506,183 @@ TWINS_DATA = [
     {
         "slug": "/zh-cn/领地游戏-评价.html",
         "breadcrumb": "领地游戏 评价",
-        "title": "领地游戏 评价 — 3名测试者的真实声音",
-        "og_title": "领地游戏 评价 — 封闭测试",
-        "meta": "领地游戏评价：3名封闭测试参与者描述他们在 MapRaiders 中第一次占领、第一次衰减、第一次防守的体验。原文德文，translationOfWork标注。",
+        "title": "领地游戏 评价：3名测试者的真实反馈",
+        "og_title": "领地游戏 评价：封闭测试",
+        "meta": "领地游戏评价：3名封闭测试参与者讲他们在 MapRaiders 里第一次占领、第一次衰减、第一次防守的感受。原文德文，translationOfWork 标注。",
         "keywords": "领地游戏 评价, 领地游戏 心得, MapRaiders 评价",
-        "h1_html": '领地游戏 — <em>测试者的声音</em>',
-        "lead": "真实领地占领的感觉是怎样？3名封闭测试参与者描述他们第一次获得领地、第一次经历衰减、第一次玩防守小游戏的体验。",
+        "h1_html": '领地游戏：<em>测试者的反馈</em>',
+        "lead": "真正占下一片地是什么感觉？3名封闭测试参与者讲他们第一次拿到领地、第一次被衰减、第一次玩防守小游戏的体验。",
         "intro_label": "测试视角",
         "intro_title": "领地游戏的<em>体验维度</em>",
         "intro_body": """
-    <p>领地游戏测试中，我们看3个体验维度：</p>
+    <p>这次测试，我们重点看3个维度：</p>
     <ul>
-      <li><strong>占领。</strong>第一次自己的街道变成「我的领地」是什么感觉？</li>
-      <li><strong>失去。</strong>第一次衰减或被攻击者夺取，怎么面对？</li>
-      <li><strong>防守。</strong>防守小游戏是策略性、公平、有压力吗？</li>
+      <li><strong>占领。</strong>自己常走的街道第一次变成「我的领地」是什么感觉？</li>
+      <li><strong>失去。</strong>第一次被衰减、被对手夺走，心里什么反应？</li>
+      <li><strong>防守。</strong>防守小游戏是策略性的、公平的、有压力的吗？</li>
     </ul>
-    <p>3名测试者从3个不同视角覆盖这些维度。</p>
+    <p>3名测试者从3个不同角度把这些维度覆盖了一遍。</p>
         """,
         "internal_links": [
             ("/zh-cn/领地游戏.html", "领地游戏"),
             ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
-            ("/zh-cn/位置游戏-评价.html", "位置游戏 — 评价"),
+            ("/zh-cn/位置游戏-评价.html", "位置游戏 ：评价"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
     {
         "slug": "/zh-cn/位置游戏-评价.html",
         "breadcrumb": "位置游戏 评价",
-        "title": "位置游戏 评价 — MapRaiders 3城实测",
-        "og_title": "位置游戏 评价 — 3城实测",
-        "meta": "位置游戏评价：MapRaiders 封闭测试的3名参与者，分享他们在德国3城市的真实体验。",
+        "title": "位置游戏 评价：MapRaiders 3城实测",
+        "og_title": "位置游戏 评价：3城实测",
+        "meta": "位置游戏评价：MapRaiders 封闭测试的3名参与者，分享他们在德国3座城市的真实体验。",
         "keywords": "位置游戏 评价, 位置游戏 体验, MapRaiders 评价",
-        "h1_html": '位置游戏 — <em>3城实测评价</em>',
-        "lead": "位置游戏的体验，与所在地区的玩家密度有关。斯图加特、汉堡、柏林3名测试者，分享各自的城市体验。",
+        "h1_html": '位置游戏：<em>3城实测评价</em>',
+        "lead": "位置游戏好不好玩，跟所在地区的玩家密度有关系。斯图加特、汉堡、柏林3名测试者，分享各自城市的体验。",
         "intro_label": "3城3风格",
-        "intro_title": "<em>位置游戏</em>各地不同？",
+        "intro_title": "<em>位置游戏</em>各地玩法不同？",
         "intro_body": """
-    <p>位置游戏的乐趣，受所在地区玩家密度影响。3名测试者覆盖了不同的城市档案：</p>
+    <p>位置游戏的乐趣会被所在地的玩家密度影响。3名测试者刚好覆盖了不同的城市档案：</p>
     <ul>
-      <li><strong>柏林（Aljoscha P.）</strong>——城市探索者密度高、回声多、跨区域移动。</li>
-      <li><strong>汉堡（Vivian N.）</strong>——Alster湖周边慢跑者多，心肺动力为主的使用。</li>
-      <li><strong>斯图加特（Ron C.）</strong>——狗主人聚落，较安静的邻里逻辑。</li>
+      <li><strong>柏林（Aljoscha P.）：</strong>城市探索者密度高，回声多，跨区域移动多。</li>
+      <li><strong>汉堡（Vivian N.）：</strong>Alster湖周边慢跑者多，主打心肺动力的使用场景。</li>
+      <li><strong>斯图加特（Ron C.）：</strong>狗主人聚集，邻里逻辑更安静一些。</li>
     </ul>
         """,
         "internal_links": [
             ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
             ("/zh-cn/领地游戏.html", "领地游戏"),
-            ("/zh-cn/领地游戏-评价.html", "领地游戏 — 评价"),
+            ("/zh-cn/领地游戏-评价.html", "领地游戏 ：评价"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
     {
         "slug": "/zh-cn/Pokemon-GO替代免费-评价.html",
         "breadcrumb": "Pokemon GO替代 评价",
-        "title": "Pokemon GO替代 评价 — 并用测试",
-        "og_title": "Pokemon GO替代 评价",
-        "meta": "Pokemon GO替代评价：3名封闭测试参与者分享 Pokémon GO 与 MapRaiders 并用体验。",
+        "title": "Pokemon GO 替代 评价：并用测试",
+        "og_title": "Pokemon GO 替代 评价",
+        "meta": "Pokemon GO 替代评价：3名封闭测试参与者分享 Pokémon GO 和 MapRaiders 并用的体验。",
         "keywords": "Pokemon GO 替代 评价, Pokemon GO 比较, 并用",
-        "h1_html": 'Pokémon GO 替代 — <em>并用测试</em>',
-        "lead": "继续玩 Pokémon GO 同时使用 MapRaiders 会怎样？3名封闭测试参与者率直分享并用体验。",
+        "h1_html": 'Pokémon GO 替代：<em>并用测试</em>',
+        "lead": "Pokémon GO 不停，再加上 MapRaiders 会怎样？3名封闭测试参与者直接讲并用的真实感受。",
         "intro_label": "并用测试",
-        "intro_title": "<em>2款并用</em>会怎样？",
+        "intro_title": "<em>两款一起玩</em>会怎样？",
         "intro_body": """
-    <p>很多玩家保留 Pokémon GO，同时试 MapRaiders。测试者体验：</p>
+    <p>不少玩家不打算放下 Pokémon GO，再加一个 MapRaiders 试试。测试者主要看这几件事：</p>
     <ul>
-      <li><strong>电池影响。</strong>2款一起开没问题吗？</li>
+      <li><strong>电池影响。</strong>两款一起开手机扛得住吗？</li>
       <li><strong>使用分配。</strong>早上玩哪个，下午玩哪个？</li>
-      <li><strong>持续性。</strong>2款会不会太忙？</li>
+      <li><strong>持续性。</strong>两款一起玩会不会太忙？</li>
     </ul>
         """,
         "internal_links": [
             ("/zh-cn/Pokemon-GO替代免费.html", "Pokemon GO替代免费"),
             ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
-            ("/zh-cn/无VPN位置游戏-评价.html", "无VPN位置游戏 — 评价"),
+            ("/zh-cn/无VPN位置游戏-评价.html", "无VPN位置游戏 ：评价"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
     {
         "slug": "/zh-cn/无VPN位置游戏-评价.html",
         "breadcrumb": "无VPN位置游戏 评价",
-        "title": "无VPN位置游戏 评价 — 中国用户实测",
-        "og_title": "无VPN位置游戏 评价 — 中国用户实测",
-        "meta": "无VPN位置游戏评价：中国大陆用户与海外华人实测 MapRaiders 在新加坡服务器架构下的访问稳定性、延迟、电池表现。",
-        "keywords": "无VPN 评价, 中国 位置游戏, MapRaiders 中国, 新加坡服务器",
-        "h1_html": '无VPN位置游戏 — <em>中国用户实测</em>',
-        "lead": "MapRaiders 真的不需要VPN吗？延迟如何？稳定吗？测试者从访问稳定性、延迟、电池3个层面分享。",
+        "title": "无VPN位置游戏 评价：国内用户实测",
+        "og_title": "无VPN位置游戏 评价：国内用户实测",
+        "meta": "无VPN位置游戏评价：国内用户和海外华人实测 MapRaiders 在新加坡服务器架构下的访问稳定性、延迟、电池表现。",
+        "keywords": "无VPN 评价, 国内 位置游戏, MapRaiders 国内, 新加坡服务器",
+        "h1_html": '无VPN位置游戏：<em>国内用户实测</em>',
+        "lead": "MapRaiders 真的不用VPN吗？延迟怎么样？稳不稳？测试者从访问稳定性、延迟、电池3个层面给出真实回答。",
         "intro_label": "技术访问测试",
-        "intro_title": "<em>无需VPN</em>的真实体验",
+        "intro_title": "<em>不用VPN</em>到底什么感觉",
         "intro_body": """
-    <p>从中国大陆用户的角度，3名测试者分享：</p>
+    <p>从国内用户角度看，3名测试者主要关注这几点：</p>
     <ul>
-      <li><strong>访问稳定性。</strong>新加坡服务器在4G/5G/家庭宽带下是否都稳定？</li>
-      <li><strong>延迟体验。</strong>50–80ms对位置游戏体验影响如何？</li>
-      <li><strong>电池消耗。</strong>无VPN加密负担，相比Pokémon GO+VPN方案省电多少？</li>
+      <li><strong>访问稳定性。</strong>新加坡服务器在4G、5G、家庭宽带下都稳定吗？</li>
+      <li><strong>延迟体验。</strong>50到80ms 对位置游戏体验影响多大？</li>
+      <li><strong>电池消耗。</strong>不挂VPN加密这层负担，比 Pokémon GO 加 VPN 的方案能省多少电？</li>
     </ul>
         """,
         "internal_links": [
             ("/zh-cn/无VPN位置游戏.html", "无VPN位置游戏"),
             ("/zh-cn/Pokemon-GO替代免费.html", "Pokemon GO替代免费"),
-            ("/zh-cn/领地游戏-评价.html", "领地游戏 — 评价"),
+            ("/zh-cn/领地游戏-评价.html", "领地游戏 ：评价"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
     {
         "slug": "/zh-cn/散步App-值得吗.html",
         "breadcrumb": "散步App 值得吗",
-        "title": "散步App 值得吗 — MapRaiders 30天实测",
-        "og_title": "散步App 值得吗 — 30天实测",
-        "meta": "散步App值得吗：3名测试者实测 MapRaiders 30天后的真实感受。是否真的能让散步变成游戏？心肺动力、坚持度、电池。",
+        "title": "散步App 值得吗：MapRaiders 30天实测",
+        "og_title": "散步App 值得吗：30天实测",
+        "meta": "散步App值得吗：3名测试者实测 MapRaiders 30天后的真实感受。是否真的能把散步变成游戏？心肺动力、坚持度、电池。",
         "keywords": "散步App 值得吗, 散步App 评价, 散步游戏化, MapRaiders 评价",
-        "h1_html": '散步App — <em>值得吗？30天实测</em>',
-        "lead": "MapRaiders 是否真的能让散步变成游戏，让人坚持下去？3名测试者30天后率直分享。",
+        "h1_html": '散步App：<em>值得吗？30天实测</em>',
+        "lead": "MapRaiders 真的能让散步变成游戏，能让人坚持下去吗？3名测试者用了30天之后给出直接的回答。",
         "intro_label": "30天测试",
-        "intro_title": "<em>散步游戏化</em>体验维度",
+        "intro_title": "<em>散步游戏化</em>的几个维度",
         "intro_body": """
-    <p>散步游戏化App测试，从以下维度评估：</p>
+    <p>散步游戏化App的测试，主要看这几个维度：</p>
     <ul>
-      <li><strong>动力维持。</strong>30天后是否还想继续？</li>
-      <li><strong>电池负担。</strong>每天开1小时影响日常使用吗？</li>
-      <li><strong>家庭/社交。</strong>能与家人朋友一起玩吗？</li>
+      <li><strong>动力维持。</strong>30天之后还想继续吗？</li>
+      <li><strong>电池负担。</strong>每天开1小时，影响平常使用吗？</li>
+      <li><strong>家庭和社交。</strong>能跟家人朋友一起玩吗？</li>
     </ul>
         """,
         "internal_links": [
             ("/zh-cn/散步游戏化App.html", "散步游戏化App"),
             ("/zh-cn/领地游戏.html", "领地游戏"),
-            ("/zh-cn/寻宝游戏App-评价.html", "寻宝游戏 — 评价"),
+            ("/zh-cn/寻宝游戏App-评价.html", "寻宝游戏 ：评价"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
     {
         "slug": "/zh-cn/寻宝游戏App-评价.html",
         "breadcrumb": "寻宝游戏App 评价",
-        "title": "寻宝游戏App 评价 — 回声机制体验",
-        "og_title": "寻宝游戏App 评价 — 回声机制",
-        "meta": "寻宝游戏App评价：以回声机制为中心，3名封闭测试参与者分享 MapRaiders 中的寻宝体验。",
+        "title": "寻宝游戏App 评价：回声机制体验",
+        "og_title": "寻宝游戏App 评价：回声机制",
+        "meta": "寻宝游戏App评价：以回声机制为核心，3名封闭测试参与者分享在 MapRaiders 中的寻宝体验。",
         "keywords": "寻宝游戏 评价, 寻宝App 体验, 回声机制",
-        "h1_html": '寻宝游戏App — <em>回声机制体验</em>',
-        "lead": "MapRaiders 的回声机制让整座城市变成寻宝舞台。3名测试者率直分享留下回声、发现回声的体验。",
+        "h1_html": '寻宝游戏App：<em>回声机制体验</em>',
+        "lead": "MapRaiders 的回声机制把整座城市变成寻宝场。3名测试者直接分享留回声、撞到回声的真实感受。",
         "intro_label": "回声测试",
-        "intro_title": "<em>回声机制</em>体验维度",
+        "intro_title": "<em>回声机制</em>的几个维度",
         "intro_body": """
-    <p>回声机制测试从以下维度评估：</p>
+    <p>回声机制的测试，主要看这几个维度：</p>
     <ul>
-      <li><strong>留下容易度。</strong>音频、照片、视频回声创建是否直觉？</li>
-      <li><strong>发现乐趣。</strong>找到别人回声的瞬间感觉如何？</li>
-      <li><strong>家庭适用。</strong>能与孩子一起玩吗？</li>
+      <li><strong>留得方便吗。</strong>录音、拍照、短视频，做回声的过程是否顺手？</li>
+      <li><strong>找到的瞬间。</strong>撞到别人留下的东西是什么感觉？</li>
+      <li><strong>家庭场景。</strong>能跟孩子一起玩吗？</li>
     </ul>
         """,
         "internal_links": [
             ("/zh-cn/寻宝游戏App.html", "寻宝游戏App"),
             ("/zh-cn/散步游戏化App.html", "散步游戏化App"),
-            ("/zh-cn/散步App-值得吗.html", "散步App — 值得吗"),
+            ("/zh-cn/散步App-值得吗.html", "散步App ：值得吗"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
     {
         "slug": "/zh-cn/量子计划替代-评价.html",
         "breadcrumb": "量子计划替代 评价",
-        "title": "量子计划替代 评价 — 并用30天",
-        "og_title": "量子计划替代 评价 — 并用30天",
-        "meta": "量子计划替代评价：3名测试者实测量子计划与 MapRaiders 并用30天的体验。两款互补还是冲突？",
+        "title": "量子计划替代 评价：并用30天",
+        "og_title": "量子计划替代 评价：并用30天",
+        "meta": "量子计划替代评价：3名测试者实测量子计划和 MapRaiders 并用30天的体验。互补还是冲突？",
         "keywords": "量子计划 评价, 量子计划 替代, MapRaiders 评价, Tencent LBG",
-        "h1_html": '量子计划替代 — <em>并用30天评价</em>',
-        "lead": "量子计划与 MapRaiders 是否真的能同时玩？3名测试者30天并用后率直分享。",
+        "h1_html": '量子计划替代：<em>并用30天评价</em>',
+        "lead": "量子计划和 MapRaiders 真的能同时玩吗？3名测试者用了30天之后直接给出答案。",
         "intro_label": "并用测试",
-        "intro_title": "<em>量子计划+MapRaiders</em>体验维度",
+        "intro_title": "<em>量子计划 + MapRaiders</em> 体验维度",
         "intro_body": """
-    <p>两款GPS游戏并用测试，从以下维度评估：</p>
+    <p>两款GPS游戏一起开的测试，主要看这几个维度：</p>
     <ul>
-      <li><strong>互补性。</strong>两款是否真的覆盖不同需求？</li>
-      <li><strong>电池负担。</strong>同时开启对手机使用影响如何？</li>
-      <li><strong>社交生态。</strong>微信好友圈与MapRaiders邻居圈是否冲突？</li>
+      <li><strong>互补性。</strong>两款是不是真的覆盖了不同的需求？</li>
+      <li><strong>电池负担。</strong>同时开着对日常用机影响多大？</li>
+      <li><strong>社交生态。</strong>微信好友圈和 MapRaiders 邻居圈会撞车吗？</li>
     </ul>
         """,
         "internal_links": [
             ("/zh-cn/量子计划替代.html", "量子计划替代"),
             ("/zh-cn/位置游戏.html", "位置游戏推荐 2026"),
-            ("/zh-cn/无VPN位置游戏-评价.html", "无VPN位置游戏 — 评价"),
+            ("/zh-cn/无VPN位置游戏-评价.html", "无VPN位置游戏 ：评价"),
             ("/zh-cn/MapRaiders-评价.html", "MapRaiders的所有评价"),
         ],
     },
@@ -1696,28 +1696,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/zh-cn/MapRaiders-评价.html",
     "breadcrumb": "MapRaiders 评价",
-    "title": "MapRaiders 评价 — 全评价与封闭测试",
-    "og_title": "MapRaiders 评价 — 全部一览",
-    "meta": "MapRaiders 评价：5.0/5（3名验证封闭测试评价）、创始人声明、所有Killer页面与评价的中心页面。",
+    "title": "MapRaiders 评价：全部反馈与封闭测试",
+    "og_title": "MapRaiders 评价：全部一览",
+    "meta": "MapRaiders 评价：5.0/5（3名封闭测试参与者反馈）、创始人说明，以及所有Killer页面和评价的中心页。",
     "keywords": "MapRaiders 评价, MapRaiders 心得, MapRaiders 评分, GPS MMO 评价",
     "badge": "中心・全部一览",
-    "pricing_pill": "5.0 / 5 — 3名验证封闭测试评价",
-    "h1_html": '<em>MapRaiders 评价</em> — 关于 GPS MMO 你需要知道的一切',
-    "lead": "斯图加特、汉堡、柏林3名封闭测试参与者。从 Pokémon GO 替代到散步游戏化、从无VPN直接玩到量子计划替代，7个Killer主题、7篇详细评价，一个中心。",
+    "pricing_pill": "5.0 / 5：3名封闭测试参与者反馈",
+    "h1_html": '<em>MapRaiders 评价</em>：关于这款 GPS MMO 你想知道的都在这',
+    "lead": "斯图加特、汉堡、柏林3名封闭测试参与者。从 Pokémon GO 替代到散步游戏化，从不用VPN到量子计划补位，7个Killer主题、7篇评价，一个中心页全收齐。",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
         {"q": "MapRaiders 是什么？",
-         "a": "MapRaiders 是 Android 的 GPS MMO 游戏。玩家通过移动占领真实领地、留下回声、创建任务、用小游戏防守领地。免费、无广告、无AR、无需VPN。"},
+         "a": "MapRaiders 是 Android 上的 GPS MMO 游戏。玩家通过走动占领真实领地、留下回声、创建任务，用小游戏防守领地。免费，没广告，不用AR，也不需要VPN。"},
         {"q": "封闭测试有多少测试者？",
-         "a": "目前公开的3名为本人同意下，因隐私原因以名字+缩写介绍。封闭测试整体规模更大，3名代表主要的玩家类型。"},
-        {"q": "评价是真实的吗？",
-         "a": "是的。3名测试者是封闭测试真实参与者。没收任何报酬，评论原文德文，Schema.org 标注日期与语言（translationOfWork）。"},
+         "a": "公开露面的3位是在本人同意之后才放出来的，出于隐私考虑只用名字加缩写。封闭测试本身规模更大，这3位代表主要的玩家类型。"},
+        {"q": "这些评价是真的吗？",
+         "a": "是的。3位测试者是封闭测试的真实参与者，没拿任何报酬，原文是德文，在 Schema.org 里通过 translationOfWork 标注了日期和语言。"},
         {"q": "我可以成为封闭测试测试者吗？",
-         "a": "从首页的邮件表单登记。根据空缺情况分阶段开放名额。玩家密度低的地区优先。"},
-        {"q": "正式版何时推出？",
-         "a": "MapRaiders 目前在 Google Play 以封闭测试提供。正式发行预计 2026 年内，iOS 版预计 2026 年第3季。"},
+         "a": "在首页邮件表单留个邮箱就行。我们会根据名额分批放，玩家密度低的地区会优先。"},
+        {"q": "正式版什么时候出？",
+         "a": "目前在 Google Play 以封闭测试形式提供。正式发行计划在2026年内，iOS 版预计2026年第3季。"},
     ],
     "internal_links": [],
 }

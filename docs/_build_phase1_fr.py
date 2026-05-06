@@ -68,7 +68,7 @@ TESTER_RON = {
     "name_de": "Ron C.",
     "role": "Maître de chien · région de Stuttgart",
     "role_long": "Maître de chien de la région de Stuttgart (bêta fermée)",
-    "quote": "Mon chien adore sa promenade — et j'adore que chaque promenade rend mon quartier plus visible sur la carte. J'ai déjà conquis toute ma rue.",
+    "quote": "Mon chien sort deux fois par jour de toute façon, du coup je prends le bloc avec moi sans y penser. Ça paraît bête, mais le soir je vérifie quand même que tout est encore bleu.",
     "date": "2026-03-15",
     "id": "review-ron-c",
 }
@@ -77,7 +77,7 @@ TESTER_VIVIAN = {
     "name_de": "Vivian N.",
     "role": "Coureuse · région de Hambourg",
     "role_long": "Coureuse de la région de Hambourg (bêta fermée)",
-    "quote": "Je cours déjà chaque matin. Avec MapRaiders chaque parcours a un but : tenir le territoire ou le reconquérir. Ma motivation cardio a explosé.",
+    "quote": "Je cours déjà tous les matins, sauf que maintenant je défends quelque chose. Mon tour de l'Alster m'appartient, et je voudrais que ça reste comme ça. Bizarre la discipline que ça mobilise d'un coup.",
     "date": "2026-03-22",
     "id": "review-vivian-n",
 }
@@ -86,7 +86,7 @@ TESTER_ALJOSCHA = {
     "name_de": "Aljoscha P.",
     "role": "Explorateur urbain · région de Berlin",
     "role_long": "Explorateur urbain de la région de Berlin (bêta fermée)",
-    "quote": "Déposer des Échos et voir qui les trouve, c'est comme une chasse au trésor ouverte à travers toute la ville.",
+    "quote": "Tu poses une petite piste audio devant une porte d'immeuble, trois jours plus tard quelqu'un que tu ne connais pas l'a trouvée. Ça fait un effet bizarrement intime pour un jeu.",
     "date": "2026-04-01",
     "id": "review-aljoscha-p",
 }
@@ -94,10 +94,11 @@ ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 # Founder Quote FR (Master-Plan §1.4)
 FOUNDER_QUOTE = (
-    "J'étais l'un des joueurs frustrés de Pokémon GO. Je voulais un vrai territoire, pas une "
-    "capture de gym éphémère. Je ne voulais pas vendre mes pas à des fonds saoudiens, pas de "
-    "modèle publicitaire, pas d'abonnement premium obligatoire. J'ai donc construit MapRaiders. "
-    "C'est mon terrain de jeu personnel — et ce sera bientôt le tien."
+    "J'ai joué à Pokémon GO pendant trois ans, puis j'ai fini par lâcher. Ce qui me manquait "
+    "n'est jamais venu : du vrai terrain au lieu de gyms qui s'évaporent. Quand le rachat saoudien "
+    "est tombé en 2025, c'était clair pour moi que la direction prise par Niantic n'était plus la "
+    "mienne. Donc je construis MapRaiders moi-même. Sans pub, sans pression d'investisseurs, sans "
+    "abonnement obligatoire. Mon quartier, c'est mon terrain de jeu ; le tien, tu peux aller le chercher."
 )
 
 # Pricing offers (EUR incl. 20% TVA — Master-Plan §1.1)
@@ -192,7 +193,7 @@ def testers_section_html(testers):
 {cards}
     </div>
     <p style="margin-top:24px;font-size:12px;color:var(--dim);max-width:680px;line-height:1.6">
-      Mention : Les testeurs sont des participants internes de la bêta fermée (Allemagne). Seul le prénom + initiale est utilisé à la demande des testeurs, pour des raisons de protection de la vie privée. Les avis ont été traduits depuis les originaux allemands vers le français.
+      Note : les testeurs sont des participants internes de la bêta fermée (Allemagne). Le prénom + initiale est utilisé à leur demande, pour des raisons de vie privée. Les avis ont été traduits depuis l'allemand vers le français.
     </p>
   </div>
 </section>"""
@@ -202,7 +203,7 @@ def sharing_block_html(slug):
     """WhatsApp-Sharing-Button + Telegram + Mastodon (FR-privacy-tech-audience)."""
     url = f"{SITE}{slug}"
     enc = url.replace(":", "%3A").replace("/", "%2F")
-    wa_text = f"D%C3%A9couvre%20MapRaiders%20-%20{enc}"
+    wa_text = f"Regarde%20MapRaiders%20%3A%20{enc}"
     return f"""<!-- SHARING -->
 <style>.mr-share{{margin:32px auto 16px;max-width:1180px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:16px 28px;background:rgba(0,0,0,.02);border-radius:10px}}.mr-share__label{{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:8px}}.mr-share__btn{{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:99px;font-size:13px;font-weight:500;color:var(--text);text-decoration:none;transition:all .15s ease}}.mr-share__btn:hover{{border-color:var(--accent);transform:translateY(-1px)}}.mr-share__btn.wa{{border-color:#25D366}}.mr-share__btn.wa:hover{{background:#25D366;color:#fff}}</style>
 <div class="mr-share" aria-label="Partager"><span class="mr-share__label">Partager :</span><a class="mr-share__btn wa" href="https://wa.me/?text={wa_text}" target="_blank" rel="noopener noreferrer">📱 WhatsApp</a><a class="mr-share__btn" href="https://t.me/share/url?url={enc}" target="_blank" rel="noopener noreferrer">✈️ Telegram</a><a class="mr-share__btn" href="https://mastodonshare.com/?text={wa_text}" target="_blank" rel="noopener noreferrer">🐘 Mastodon</a></div>"""
@@ -217,7 +218,7 @@ def footer_html():
       <a href="/agb.html">CGU</a><a href="/datenschutz.html">Confidentialité</a><a href="/impressum.html">Mentions légales</a><a href="/kontakt.html">Contact</a>
     </div>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Conquiers ton quartier de vrai. Un produit de Scafa Investments LLC.</p>
+  <p class="f-copy">&copy; 2026 MapRaiders. Ton quartier, ton terrain. Scafa Investments LLC.</p>
 </div>
 </footer>
 <script>
@@ -516,7 +517,7 @@ def build_schema_hub(page, all_killers, all_twins):
     item_list = {
         "@type": "ItemList",
         "@id": f"{SITE}{page['slug']}#itemlist",
-        "name": "MapRaiders FR — toutes les pages Killer et avis",
+        "name": "MapRaiders FR : toutes les pages Killer et avis",
         "itemListElement": []
     }
     pos = 1
@@ -603,7 +604,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>«&nbsp;{page['trigger']['quote']}&nbsp;»</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
 
     pricing_pill = ""
@@ -682,9 +683,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">Avis</div>
-  <h2 class="sec-title rv d1">5,0 sur 5 — <em>3 avis vérifiés de la bêta</em></h2>
+  <h2 class="sec-title rv d1">5,0 sur 5 étoiles, sur <em>trois avis bêta</em></h2>
   <div class="prose rv d2">
-    <p>Trois testeurs de la bêta fermée — un maître de chien, une coureuse et un explorateur urbain — ont utilisé MapRaiders pendant plusieurs semaines. Les témoignages ci-dessous représentent des personnes réelles de la bêta fermée (Allemagne). Les avis ont été traduits depuis les originaux allemands vers le français. Pour des raisons de protection de la vie privée, nous utilisons uniquement le prénom + initiale.</p>
+    <p>Ron sort tous les jours avec son chien, Vivian court le matin, Aljoscha arpente Berlin à pied. Tous les trois ont utilisé MapRaiders plusieurs semaines dans leur routine normale, et ont fait remonter leurs retours en allemand. Pour des raisons de vie privée, nous n'utilisons que le prénom et l'initiale.</p>
   </div>
 </div>
 </section>"""
@@ -760,9 +761,9 @@ def render_hub_page(page, all_killers, all_twins):
     sections_html = f"""<section class="sec">
 <div class="mx">
   <div class="sec-label rv">Hub Thématique</div>
-  <h2 class="sec-title rv d1">Tous les <em>sujets MapRaiders</em> au même endroit</h2>
+  <h2 class="sec-title rv d1">Tous les <em>sujets MapRaiders</em> en un seul endroit</h2>
   <div class="prose rv d2">
-    <p>Ici tu trouves les 7 pages Killer plus 7 avis détaillés qui éclairent MapRaiders sous différents angles — de la comparaison avec Pokémon GO à l'application de chasse au trésor, du jeu de territoire au compagnon de course. Chaque page est indépendante ; ensemble, elles forment l'image complète.</p>
+    <p>Tu trouves ici les sept pages Killer et les sept avis détaillés qui leur correspondent. Chaque page regarde MapRaiders depuis un angle différent : tantôt comme alternative à Pokémon GO, tantôt comme appli de chasse au trésor, tantôt comme compagnon de course. Tu peux lire chaque page seule, ou enchaîner sujet par sujet.</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -773,7 +774,7 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Avis détaillés</div>
-  <h2 class="sec-title rv d1">Ce que disent les testeurs sous <em>différentes perspectives</em></h2>
+  <h2 class="sec-title rv d1">Ce que les testeurs racontent sous <em>plusieurs angles</em></h2>
   <div class="features-grid">
 {twin_cards}
   </div>
@@ -782,10 +783,10 @@ def render_hub_page(page, all_killers, all_twins):
 
 <section class="sec">
 <div class="mx">
-  <div class="sec-label rv">Note Agrégée</div>
-  <h2 class="sec-title rv d1">5,0 sur 5 — <em>3 avis vérifiés de la bêta</em></h2>
+  <div class="sec-label rv">Note agrégée</div>
+  <h2 class="sec-title rv d1">5,0 sur 5 étoiles, sur <em>trois avis bêta</em></h2>
   <div class="prose rv d2">
-    <p>Tous les avis proviennent de la phase de bêta fermée (février-avril 2026). Trois testeurs — un maître de chien, une coureuse et un explorateur urbain — ont testé MapRaiders sur leurs propres parcours à Stuttgart, Hambourg et Berlin. Les avis affichés ici ont été traduits des originaux allemands et représentent des personnes réelles.</p>
+    <p>Les avis viennent de la bêta fermée, entre février et avril 2026. Ron a testé à Stuttgart, Vivian à Hambourg, Aljoscha à Berlin. Tous les trois ont utilisé le jeu sur leurs propres parcours, pas dans un setup de test artificiel. Les retours ont été écrits à l'origine en allemand, ils sont traduits ici en français et correspondent à des personnes réelles.</p>
   </div>
 </div>
 </section>"""
@@ -846,16 +847,16 @@ def render_hub_page(page, all_killers, all_twins):
 K1 = {
     "slug": "/fr/jeu-territoire.html",
     "breadcrumb": "Jeu de territoire",
-    "title": "Jeu de territoire — conquiers ton quartier de vrai",
-    "og_title": "Jeu de territoire — où la terre est vraiment à toi",
-    "meta": "Jeu de territoire 2026 : MapRaiders est le seul GPS MMO avec possession réelle et persistante. Sans Niantic, sans Saudi, sans pub. RGPD-conforme.",
+    "title": "Jeu de territoire 2026 : la rue que tu marches devient à toi",
+    "og_title": "Jeu de territoire : la terre que tu marches t'appartient",
+    "meta": "Jeu de territoire 2026 : MapRaiders est un GPS MMO avec possession persistante de zones réelles. Indépendant, RGPD-conforme, sans pub.",
     "keywords": "jeu de territoire, jeu territoire gps, jeu conquete territoire, conquete quartier app, territory game france, jeu rgpd",
-    "badge": "Jeu de Territoire",
-    "pricing_pill": "Free Forever · RGPD-conforme · Sans Niantic",
-    "h1_html": 'Jeu de territoire — le seul où la <em>terre est vraiment à toi</em>',
-    "lead": "Un jeu de territoire devrait être plus qu'un point qui disparaît en 5 minutes sur une carte. MapRaiders combine GPS, capture persistante de zone et un système de défense qui rend la conquête réelle possible. Tu marches dans une rue — elle est à toi. Tant que tu la défends. Sans Niantic, sans fonds saoudien, sans pub.",
+    "badge": "Jeu de territoire",
+    "pricing_pill": "Free Forever. RGPD. Indépendant.",
+    "h1_html": 'Jeu de territoire : la rue que tu <em>marches devient à toi</em>',
+    "lead": "Un jeu de territoire, ce devrait être autre chose qu'un point qui s'évapore au bout de cinq minutes sur une carte. MapRaiders combine GPS, capture persistante de zone et un système de défense où la conquête tient vraiment. Tu marches dans une rue, elle est à toi. Tant que tu la défends. Pas d'éditeur Niantic derrière, pas de fonds souverain, pas de pub.",
     "trigger": {
-        "quote": "Conquiers ton quartier — sans Niantic, sans Saudi, sans pub.",
+        "quote": "Conquiers ton quartier. Sans Niantic, sans pub, sans fonds étatique.",
         "author": "MapRaiders, principe de marque"
     },
     "testers": [TESTER_RON, TESTER_VIVIAN],
@@ -864,48 +865,48 @@ K1 = {
             "label": "Définition",
             "title": "Ce qui fait un <em>vrai jeu de territoire</em>",
             "body": """
-    <p><strong>Un jeu de territoire</strong> est un jeu où les joueurs possèdent des zones revendiquées sur la carte de façon persistante, défendent et étendent ces zones. Contrairement aux jeux de capture (gym, portail), la possession reste <strong>persistante</strong> — même quand le joueur est hors ligne.</p>
-    <p>Les quatre mécaniques qui définissent un vrai jeu de territoire :</p>
+    <p><strong>Un jeu de territoire</strong>, c'est un jeu où les joueurs possèdent des zones revendiquées sur la carte de façon persistante, les défendent et les étendent. Contrairement aux jeux de capture (gym, portail), la possession reste <strong>persistante</strong>, même quand le joueur est hors ligne.</p>
+    <p>Quatre mécaniques définissent un vrai jeu de territoire :</p>
     <ul>
       <li><strong>Persistance.</strong> Les zones conquises restent attribuées au joueur ou au clan jusqu'à ce qu'elles soient activement reprises.</li>
-      <li><strong>Decay.</strong> Les territoires inactifs rétrécissent avec le temps — personne ne bloque définitivement sans jouer activement.</li>
-      <li><strong>Défense.</strong> En cas d'attaque, un mini-jeu entre les deux joueurs décide — pas de comparaison automatique de stats.</li>
-      <li><strong>Transferts de clan.</strong> Les territoires peuvent être transmis aux alliés ou au clan — profondeur économique.</li>
+      <li><strong>Decay.</strong> Les territoires inactifs rétrécissent avec le temps. Personne ne bloque indéfiniment une zone sans la rejouer.</li>
+      <li><strong>Défense.</strong> En cas d'attaque, c'est un mini-jeu entre les deux joueurs qui tranche, pas une comparaison automatique de stats.</li>
+      <li><strong>Transferts de clan.</strong> Les territoires peuvent être transmis aux alliés ou au clan, ce qui ouvre une profondeur économique.</li>
     </ul>
             """,
         },
         {
             "label": "Système MapRaiders",
-            "title": "Le <em>système de territoires</em> MapRaiders en détail",
+            "title": "Le <em>système de territoires</em> MapRaiders, en détail",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Revendiquer</h3><p>Marche, promène le chien ou pédale dans une rue. La trace GPS génère le territoire à ton nom — comme polygone visible sur la carte.</p></div>
-    <div class="feat-card rv d1"><h3>Decay Engine</h3><p>Qui ne parcourt pas régulièrement un territoire le voit rétrécir de quelques pour cent par jour. L'activité maintient la terre — pas l'argent.</p></div>
-    <div class="feat-card rv d2"><h3>Mini-jeux de défense</h3><p>7 mini-jeux différents décident des attaques : morpion, pierre-papier-ciseaux, mini-échecs. La stratégie compte plus que le temps de jeu.</p></div>
-    <div class="feat-card rv d3"><h3>Territoires de clan</h3><p>Plusieurs joueurs peuvent maintenir un territoire ensemble. Les zones de clan sont plus robustes — un seul attaquant ne suffit pas pour les briser.</p></div>
+    <div class="feat-card rv"><h3>Revendiquer</h3><p>Marche, promène le chien ou pédale dans une rue. La trace GPS génère le territoire à ton nom, sous forme de polygone visible sur la carte.</p></div>
+    <div class="feat-card rv d1"><h3>Decay Engine</h3><p>Si tu ne parcours plus régulièrement un territoire, il rétrécit de quelques pourcents par jour. C'est l'activité qui maintient la terre, pas le porte-monnaie.</p></div>
+    <div class="feat-card rv d2"><h3>Mini-jeux de défense</h3><p>Sept mini-jeux différents tranchent les attaques : morpion, pierre-papier-ciseaux, mini-échecs. La stratégie compte plus que les heures jouées.</p></div>
+    <div class="feat-card rv d3"><h3>Territoires de clan</h3><p>Plusieurs joueurs peuvent maintenir un territoire ensemble. Les zones de clan sont plus robustes : un attaquant seul ne suffit pas à les briser.</p></div>
   </div>""",
         },
         {
-            "label": "Pourquoi les autres ne sont pas",
-            "title": "Pourquoi Pokémon GO et Ingress <em>ne sont pas</em> de vrais jeux de territoire",
+            "label": "Pourquoi les autres ne le sont pas",
+            "title": "Pourquoi Pokémon GO et Ingress <em>ne sont pas</em> vraiment des jeux de territoire",
             "body": """
-    <p><strong>Les captures de gym de Pokémon GO</strong> sont éphémères : qui détient un record pendant quelques heures gagne des pièces — mais le territoire lui-même ne peut pas être compris comme possession de terre. Le gym est un point, pas une zone.</p>
-    <p><strong>Les portails d'Ingress</strong> sont similaires : des points qui se connectent par liens en triangles. Le jeu connaît des champs entre portails, mais pas de possession persistante de terre. Qui reste une semaine sans ouvrir l'app ne perd pas «&nbsp;son quartier&nbsp;» — il ne lui a jamais vraiment été attribué.</p>
-    <p>MapRaiders attaque exactement ce point : le <strong>territoire est la ressource de jeu</strong>, pas le point au-dessus. Tu gagnes de la terre, tu perds de la terre, tu transfères de la terre — comme dans un vrai jeu spatial.</p>
+    <p><strong>Les captures de gym de Pokémon GO</strong> sont éphémères. Qui détient un record pendant quelques heures gagne des pièces, mais le territoire lui-même ne se comprend pas comme possession de terre. Le gym est un point, pas une zone.</p>
+    <p><strong>Les portails d'Ingress</strong> fonctionnent sur un principe proche : des points qui se relient par des liens en triangles. Le jeu connaît des champs entre portails, mais pas de possession persistante de terrain. Si tu restes une semaine sans ouvrir l'app, tu ne perds pas «&nbsp;ton quartier&nbsp;» pour autant : il ne t'a jamais vraiment été attribué.</p>
+    <p>MapRaiders s'attaque exactement à ce point : le <strong>territoire est la ressource de jeu</strong>, pas le point posé dessus. Tu gagnes de la terre, tu en perds, tu en transfères. Comme dans un jeu spatial classique.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Comment fonctionne le système de territoires dans MapRaiders ?",
-         "a": "Tu marches physiquement dans des rues et revendiques des zones GPS. Ces territoires apparaissent sur la carte en direct et sont à toi — tant qu'aucun autre joueur ne passe par là pour défier. Si tu défends avec succès, la zone reste à toi."},
+         "a": "Tu marches physiquement dans des rues et tu revendiques des zones GPS. Ces territoires apparaissent en direct sur la carte et restent à toi tant qu'aucun joueur ne passe pour te défier. Si tu défends avec succès, la zone reste à ton nom."},
         {"q": "Puis-je perdre mon territoire ?",
-         "a": "Oui. Le système de Decay fait rétrécir les zones inactives chaque jour. Qui reste actif et parcourt régulièrement sa zone la maintient. Qui s'arrête, perd. Cela maintient la carte vivante."},
+         "a": "Oui. Le système de Decay fait rétrécir les zones inactives chaque jour. Qui reste actif et parcourt régulièrement sa zone la maintient ; qui s'arrête, perd. C'est ce qui garde la carte vivante."},
         {"q": "Que se passe-t-il lors d'une attaque territoriale ?",
-         "a": "L'attaquant doit arriver physiquement sur ton territoire. Alors un mini-jeu interactif commence — défenseur et attaquant jouent l'un contre l'autre. Qui gagne le mini-jeu décide du sort de la zone."},
+         "a": "L'attaquant doit arriver physiquement sur ton territoire. À ce moment-là, un mini-jeu interactif se lance entre défenseur et attaquant. Le sort de la zone se joue à ce mini-match, pas à un calcul automatique."},
         {"q": "Existe-t-il un système de territoires de clan ?",
-         "a": "Oui. Les clans dans MapRaiders émergent organiquement et peuvent revendiquer des territoires ensemble. Les zones de clan sont plus fortes et nécessitent plusieurs attaquants pour être brisées. Le travail d'équipe paie."},
+         "a": "Oui. Les clans MapRaiders se forment de façon organique et peuvent revendiquer des territoires ensemble. Les zones de clan sont plus solides : il faut plusieurs attaquants pour les briser, donc le travail d'équipe paie."},
         {"q": "Le jeu de territoire est-il gratuit ?",
-         "a": "Oui. Tout le gameplay de territoire est gratuit. Optionnellement, des cosmétiques (1,99€ – 8,99€) pour designs de marqueurs et couleurs de territoires — sans avantage de jeu. Paiement par carte bancaire, PayPal, Apple Pay, Google Pay ou Klarna."},
+         "a": "Oui. Tout le gameplay de territoire reste gratuit. Les cosmétiques optionnels (1,99€ à 8,99€) servent à personnaliser marqueurs et couleurs de territoires, sans avantage de jeu. Paiement par carte bancaire, PayPal, Apple Pay, Google Pay ou Klarna."},
     ],
     "internal_links": [
         ("/fr/jeu-geolocalise.html", "Meilleur jeu géolocalisé 2026"),
@@ -920,16 +921,16 @@ K1 = {
 K2 = {
     "slug": "/fr/jeu-geolocalise.html",
     "breadcrumb": "Jeu géolocalisé",
-    "title": "Jeu géolocalisé 2026 — RGPD, sans Saudi, sans pub",
-    "og_title": "Jeu géolocalisé 2026 — le GPS MMO honnête, RGPD",
-    "meta": "Le meilleur jeu géolocalisé 2026 : territoire réel, RGPD-conforme, sans pub, sans Saudi. MapRaiders est le GPS MMO honnête, gratuit, sans AR.",
+    "title": "Jeu géolocalisé 2026 : un GPS MMO indépendant, RGPD, sans pub",
+    "og_title": "Jeu géolocalisé 2026 : un GPS MMO honnête, RGPD",
+    "meta": "Jeu géolocalisé 2026 : MapRaiders propose un territoire persistant, RGPD-conforme, sans pub. GPS MMO indépendant, gratuit, sans AR.",
     "keywords": "jeu geolocalise, jeu geolocalise 2026, meilleur jeu geolocalise france, gps mmo, jeu gps android, location based game",
     "badge": "GPS MMO",
-    "pricing_pill": "Free Forever · RGPD · Sans pub",
-    "h1_html": 'Jeu géolocalisé — <em>conquiers ton quartier</em> de vrai',
-    "lead": "Les jeux géolocalisés devraient être plus que des points éphémères sur une carte. MapRaiders combine GPS, capture persistante de territoire et un système de défense qui rend la conquête réelle possible. Tu marches dans une rue — elle est à toi. Tant que tu la défends. Sans fake GPS, sans AR qui draine la batterie, sans pub. RGPD-conforme, hébergement européen, sans propriétaire saoudien.",
+    "pricing_pill": "Free Forever. RGPD. Sans pub.",
+    "h1_html": 'Jeu géolocalisé : <em>conquiers ton quartier</em> pour de vrai',
+    "lead": "Les jeux géolocalisés devraient être autre chose que des points éphémères sur une carte. MapRaiders combine GPS, capture persistante de territoire et un système de défense où la conquête tient. Tu marches dans une rue, elle est à toi. Tant que tu la défends. Pas de fake GPS, pas d'AR qui vide la batterie, pas de pub. Hébergement européen, RGPD-conforme, sans propriétaire étatique.",
     "trigger": {
-        "quote": "Tes pas ne sont pas vendus à Big Tech ni aux fonds souverains.",
+        "quote": "Tes pas ne sont vendus ni à Big Tech, ni à un fonds souverain.",
         "author": "MapRaiders, principe RGPD"
     },
     "testers": ALL_TESTERS,
@@ -938,14 +939,14 @@ K2 = {
             "label": "Définition",
             "title": "Qu'est-ce qu'un <em>jeu géolocalisé</em>",
             "body": """
-    <p>Un <strong>jeu géolocalisé (Location-Based Game)</strong> utilise la position géographique de l'appareil comme mécanique centrale. Contrairement aux jeux AR, qui ont besoin en plus de la caméra, un jeu purement géolocalisé fonctionne uniquement avec la carte — économisant la batterie et protégeant la vie privée.</p>
-    <p>MapRaiders est un <strong>GPS MMO</strong> : des milliers de joueurs se déplacent simultanément sur la même carte, s'affrontent en temps réel et partagent un système unifié de territoires. Sans AR, sans caméra, sans casque VR.</p>
+    <p>Un <strong>jeu géolocalisé (Location-Based Game)</strong> utilise la position géographique de l'appareil comme mécanique centrale. Contrairement aux jeux AR qui ont besoin en plus de la caméra, un jeu purement géolocalisé fonctionne avec la carte uniquement. C'est meilleur pour la batterie et pour la vie privée.</p>
+    <p>MapRaiders est un <strong>GPS MMO</strong> : des milliers de joueurs se déplacent en même temps sur la même carte, s'affrontent en temps réel et partagent un système commun de territoires. Pas d'AR, pas de caméra, pas de casque VR.</p>
             """,
         },
         {
-            "label": "Les 7 meilleurs",
-            "title": "Les 7 meilleurs jeux géolocalisés comparés — et pourquoi <em>MapRaiders</em> est le seul avec territoire réel",
-            "body": "<p>La plupart des listes mélangent des apps qui ne partagent qu'une caractéristique avec Pokémon GO. Ici on est honnête :</p>",
+            "label": "Sept comparés",
+            "title": "Sept jeux géolocalisés comparés, et pourquoi <em>MapRaiders</em> propose un vrai territoire persistant",
+            "body": "<p>La plupart des listes mélangent des apps qui ne partagent qu'une seule caractéristique avec Pokémon GO. Voici une variante plus honnête :</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead>
       <tr><th>App</th><th>Opérateur</th><th>Sans pub</th><th>Territoire réel</th><th>Confiance RGPD</th></tr>
@@ -962,40 +963,40 @@ K2 = {
   </table>""",
         },
         {
-            "label": "Différence",
-            "title": "Ce qui rend MapRaiders <em>unique</em>",
+            "label": "Ce qui change",
+            "title": "Ce qui change concrètement avec <em>MapRaiders</em>",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Territoires persistants</h3><p>En conquérant une rue, elle est à toi — jusqu'à ce que quelqu'un la reprenne ou que le decay agisse. Pas de gyms éphémères.</p></div>
-    <div class="feat-card rv d1"><h3>Échos au lieu d'AR</h3><p>Dépose des Échos audio, photo ou vidéo dans des lieux réels. D'autres joueurs les découvrent. Sans AR qui draine la batterie.</p></div>
-    <div class="feat-card rv d2"><h3>7 mini-jeux de défense</h3><p>Lors d'attaques : morpion, pierre-papier-ciseaux ou mini-échecs. Stratégie au lieu de simple temps de jeu.</p></div>
-    <div class="feat-card rv d3"><h3>Clans organiques</h3><p>Les clans émergent du voisinage, pas de serveurs Discord. Qui court dans la même rue devient allié.</p></div>
-    <div class="feat-card rv d4"><h3>Batterie économisée</h3><p>Juste GPS, sans caméra, sans AR. 4× plus d'autonomie de batterie que Pokémon GO sur longs trajets.</p></div>
+    <div class="feat-card rv"><h3>Territoires persistants</h3><p>Conquiers une rue, elle est à toi jusqu'à ce que quelqu'un la reprenne ou que le decay grignote. Pas de gym éphémère.</p></div>
+    <div class="feat-card rv d1"><h3>Échos plutôt qu'AR</h3><p>Dépose des Échos audio, photo ou vidéo dans des lieux réels. D'autres joueurs les découvrent. Sans AR qui vide la batterie.</p></div>
+    <div class="feat-card rv d2"><h3>Sept mini-jeux de défense</h3><p>En cas d'attaque : morpion, pierre-papier-ciseaux ou mini-échecs. La tête, pas les heures jouées.</p></div>
+    <div class="feat-card rv d3"><h3>Clans organiques</h3><p>Les clans naissent du voisinage, pas d'un serveur Discord. Qui court dans la même rue devient allié.</p></div>
+    <div class="feat-card rv d4"><h3>Batterie ménagée</h3><p>Juste du GPS, sans caméra ni AR. Sur les longs trajets, le téléphone tient à peu près quatre fois plus longtemps que sous Pokémon GO.</p></div>
   </div>""",
         },
         {
             "label": "Cas d'usage FR",
-            "title": "Cas d'usage <em>français</em>",
-            "body": "<p>MapRaiders s'adapte à quatre profils principaux en France :</p>",
+            "title": "Quatre <em>profils français</em> typiques",
+            "body": "<p>MapRaiders s'ajuste à quatre profils dominants en France :</p>",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Promenade canine</h3><p>~7,5 millions de chiens en France — la promenade quotidienne devient maintenance de territoire.</p></div>
-    <div class="feat-card rv d1"><h3>Course matinale</h3><p>Cardio avec but : défendre territoire ou le reconquérir. Strava + jeu, en complément.</p></div>
-    <div class="feat-card rv d2"><h3>Tour de France personnel</h3><p>Marque ton parcours cycliste. Chaque kilomètre conquit. Événements saisonniers FR.</p></div>
-    <div class="feat-card rv d3"><h3>Activité famille</h3><p>Chasse au trésor avec Échos, sans AR, sans pub — pour enfants et adultes. RGPD-compatible enfants.</p></div>
+    <div class="feat-card rv"><h3>Promenade canine</h3><p>Environ 7,5 millions de chiens en France. La sortie quotidienne devient entretien de territoire, sans rien changer à la routine.</p></div>
+    <div class="feat-card rv d1"><h3>Course du matin</h3><p>Cardio avec un but : tenir le territoire ou le reprendre. Tu peux faire tourner Strava et MapRaiders en parallèle, ils ne se gênent pas.</p></div>
+    <div class="feat-card rv d2"><h3>Tour de France perso</h3><p>Marque tes parcours à vélo, kilomètre par kilomètre. Cosmétiques saisonniers en juillet, événements territoriaux nationaux.</p></div>
+    <div class="feat-card rv d3"><h3>Sortie en famille</h3><p>Chasse au trésor par Échos, sans AR ni pub, pour les enfants comme pour les adultes. Compatible RGPD enfants.</p></div>
   </div>""",
         },
     ],
     "faq": [
         {"q": "Qu'est-ce qu'un jeu géolocalisé ?",
-         "a": "Un jeu géolocalisé (Location-Based Game) utilise ta position GPS pour déclencher des mécaniques de jeu. MapRaiders utilise le GPS pour lier territoires, Échos et quêtes à des lieux réels — ta ville devient le terrain de jeu."},
+         "a": "Un jeu géolocalisé (Location-Based Game) utilise ta position GPS pour déclencher des mécaniques de jeu. MapRaiders se sert du GPS pour relier territoires, Échos et quêtes à des lieux réels. Ta ville devient le terrain de jeu."},
         {"q": "Ai-je besoin de la Réalité Augmentée ?",
-         "a": "Non. MapRaiders est délibérément sans AR. N'utilise que le GPS et la carte. Cela économise la batterie et la vie privée — sans caméra, sans capture faciale."},
+         "a": "Non. MapRaiders est volontairement sans AR. L'app n'utilise que le GPS et la carte. C'est mieux pour la batterie et pour la vie privée : pas de caméra, pas de capture faciale."},
         {"q": "Fonctionne-t-il dans toute la France ?",
-         "a": "Oui. Partout où il y a des données OpenStreetMap. Dans les centres urbains comme Paris, Lyon, Marseille la densité de joueurs est élevée ; en zone rurale, moins de compétition mais territoires plus grands."},
+         "a": "Oui. Partout où OpenStreetMap couvre le terrain. Dans les centres urbains comme Paris, Lyon ou Marseille, la densité de joueurs est élevée. En zone rurale, moins de concurrence et des territoires plus grands."},
         {"q": "Mes données de localisation sont-elles vendues ?",
-         "a": "Non. Nous sommes RGPD-conformes, sans SDK publicitaire, sans vente de données, sans propriétaire étatique. Contrairement à Pokémon GO, qui depuis mars 2025 appartient au groupe Scopely (PIF saoudien). Hébergement européen, mentions légales conformes CNIL."},
+         "a": "Non. Nous sommes RGPD-conformes, sans SDK publicitaire, sans vente de données et sans propriétaire étatique. Contrairement à Pokémon GO qui appartient depuis mars 2025 à Scopely (filiale du PIF saoudien). Hébergement européen, mentions légales conformes CNIL."},
         {"q": "Combien ça coûte ?",
-         "a": "Le gameplay est gratuit. Cosmétiques (1,99€ – 8,99€) sans avantages de jeu, juste esthétique. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna FR."},
+         "a": "Le gameplay est gratuit. Les cosmétiques (1,99€ à 8,99€) sont purement esthétiques, sans avantage de jeu. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna FR."},
     ],
     "internal_links": [
         ("/fr/jeu-territoire.html", "Jeu de territoire réel"),
@@ -1013,36 +1014,36 @@ K2 = {
 K3 = {
     "slug": "/fr/alternative-pokemon-go-gratuit.html",
     "breadcrumb": "Alternative Pokémon GO gratuit",
-    "title": "Alternative Pokémon GO gratuit — sans pub, sans Saudi",
-    "og_title": "Alternative Pokémon GO gratuit — 100% libre, sans Battle Pass",
-    "meta": "Tu cherches une alternative Pokémon GO gratuit ? MapRaiders est 100% gratuit, sans pub, sans Battle Pass. Territoire réel, pas de capture éphémère de gym. RGPD.",
+    "title": "Alternative Pokémon GO gratuite : sans pub, sans Battle Pass",
+    "og_title": "Alternative Pokémon GO gratuite : 100% libre, sans Battle Pass",
+    "meta": "Alternative Pokémon GO gratuite : MapRaiders reste 100% gratuit, sans pub, sans Battle Pass. Territoire réel, pas de gym éphémère. RGPD.",
     "keywords": "alternative pokemon go gratuit, alternative pokemon go gratuite, jeu gps gratuit france, sans pub, sans battle pass, rgpd",
     "badge": "Alternative Pokémon GO",
-    "pricing_pill": "0€ gameplay · Cosmétique optionnel à partir de 1,99€",
-    "h1_html": 'Alternative Pokémon GO gratuit — sans pub, <em>sans fonds saoudien</em>, sans Battle Pass',
-    "lead": "Qui cherche une alternative à Pokémon GO sans Battle Pass, sans folie de Remote Raid Pass et sans pub, tombe souvent dans le piège premium suivant. MapRaiders inverse cela : le gameplay complet est et reste gratuit. Pas de niveaux, pas d'abonnement obligatoire, pas de vente de données — paiement par carte bancaire ou Klarna pour les cosmétiques optionnels.",
+    "pricing_pill": "Gameplay 0€. Cosmétique optionnel à partir de 1,99€.",
+    "h1_html": 'Alternative Pokémon GO gratuite : sans pub, <em>sans fonds étatique</em>, sans Battle Pass',
+    "lead": "Beaucoup de joueurs cherchent une alternative à Pokémon GO qui n'impose ni Battle Pass, ni Remote Raid Pass à rallonge, ni pub, et finissent par tomber dans le piège du premium suivant. MapRaiders prend l'autre chemin : tout le gameplay reste gratuit, point. Pas de niveau payant, pas d'abonnement obligatoire, pas de vente de données. Pour les cosmétiques optionnels, tu paies par carte bancaire ou Klarna.",
     "trigger": {
-        "quote": "Tes pas ne sont pas vendus à Big Tech ni aux fonds souverains.",
+        "quote": "Tes pas ne sont vendus ni à Big Tech, ni à un fonds souverain.",
         "author": "MapRaiders, principe RGPD"
     },
     "testers": [TESTER_VIVIAN, TESTER_ALJOSCHA],
     "sections": [
         {
             "label": "Pourquoi chercher ?",
-            "title": "Pourquoi les joueurs Pokémon GO français cherchent <em>des alternatives gratuites</em> en 2026",
+            "title": "Pourquoi les joueurs Pokémon GO français cherchent <em>une alternative gratuite</em> en 2026",
             "body": """
-    <p>Trois points de douleur ont mûri le marché français entre 2024 et 2026 :</p>
+    <p>Trois points de friction ont fait mûrir le marché français entre 2024 et 2026 :</p>
     <ul>
-      <li><strong>Frustration Battle Pass.</strong> Passes saisonniers avec avantages bloqués sans payer. Qui rate une saison, perd les récompenses pour toujours.</li>
-      <li><strong>Polémique Remote Raid Pass.</strong> Niantic a augmenté les prix et réduit la disponibilité — une vague de joueurs français a arrêté en 2023.</li>
-      <li><strong>Acquisition saoudienne mars 2025.</strong> Niantic a vendu Pokémon GO à Scopely (filiale du Public Investment Fund saoudien). Les données de localisation de millions de joueurs arrivent maintenant indirectement à un fonds souverain étranger — préoccupation CNIL/RGPD majeure.</li>
+      <li><strong>Frustration Battle Pass.</strong> Des passes saisonniers dont les avantages restent bloqués sans paiement. Qui rate une saison perd ses récompenses pour de bon.</li>
+      <li><strong>Polémique Remote Raid Pass.</strong> Niantic a augmenté les prix et réduit la disponibilité. Une vague de joueurs français a décroché en 2023.</li>
+      <li><strong>Rachat saoudien de mars 2025.</strong> Niantic a vendu Pokémon GO à Scopely, filiale du Public Investment Fund saoudien. Les données de localisation de millions de joueurs remontent désormais indirectement à un fonds souverain étranger. La question CNIL/RGPD est posée.</li>
     </ul>
             """,
         },
         {
-            "label": "Que signifie gratuit ?",
-            "title": "Ce que <em>«&nbsp;gratuit&nbsp;»</em> signifie vraiment dans MapRaiders",
-            "body": "<p>Tiers transparents — sans paywall caché, sans blocage de tutoriel après 10 minutes :</p>",
+            "label": "Que veut dire gratuit ?",
+            "title": "Ce que <em>«&nbsp;gratuit&nbsp;»</em> veut dire concrètement dans MapRaiders",
+            "body": "<p>Des tiers transparents, sans paywall caché ni blocage de tutoriel après dix minutes :</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Tier</th><th>Inclus</th><th>Prix (FR, TVA 20%)</th></tr></thead>
     <tbody>
@@ -1052,37 +1053,37 @@ K3 = {
       <tr><td class="feat-name">Soutien à vie</td><td>Cosmétique collectionneur + crédits in-game</td><td>99€ (une fois)</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Important :</strong> Les cosmétiques ne donnent aucun avantage de jeu. Qui n'achète rien joue avec des mécaniques identiques au Soutien à vie.</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>À noter :</strong> les cosmétiques ne donnent aucun avantage de jeu. Tu joues avec exactement les mêmes mécaniques qu'un joueur Soutien à vie.</p>""",
         },
         {
             "label": "Paiement FR",
-            "title": "Paiement <em>européen</em> — sans casse-tête",
+            "title": "Paiement <em>européen</em>, sans casse-tête",
             "body": """
-    <p>Les cosmétiques optionnels et l'abonnement Soutien sont payables par Carte Bancaire, PayPal, Apple Pay, Google Pay ou Klarna FR — sans avoir à entrer des données de carte américaine. Klarna te permet de payer en 3 ou 4 fois sans frais. Le cosmétique se débloque en quelques secondes.</p>
-    <p>Prestataires de paiement intégrés : Stripe Europe, PayPal Europe, Klarna FR. Pas de frais supplémentaires pour le joueur, pas de PayPal obligatoire, hébergement européen.</p>
+    <p>Les cosmétiques optionnels et l'abonnement Soutien se paient par Carte Bancaire, PayPal, Apple Pay, Google Pay ou Klarna FR. Pas besoin de saisir une carte américaine. Klarna te laisse payer en 3 ou 4 fois sans frais. Le cosmétique se débloque en quelques secondes.</p>
+    <p>Côté prestataires : Stripe Europe, PayPal Europe, Klarna FR. Pas de frais cachés pour le joueur, pas de PayPal obligatoire, hébergement européen.</p>
             """,
         },
         {
             "label": "La question saoudienne",
-            "title": "La <em>question Saudi-Niantic</em> — qu'arrive-t-il à tes pas ?",
+            "title": "Que deviennent <em>tes pas</em> depuis le rachat ?",
             "body": """
-    <p>En mars 2025, Niantic a vendu sa division jeux (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) pour 3,5 milliards de dollars à Scopely. Scopely est une filiale du Public Investment Fund (PIF) saoudien — formellement une entité contrôlée par l'État saoudien.</p>
-    <p>Concrètement, cela signifie : les <strong>données de localisation d'environ 30 millions de joueurs mensuels de Pokémon GO</strong> — où ils courent, quand ils promènent le chien, quels itinéraires ils empruntent chaque jour — sont maintenant traitées par l'infrastructure de Scopely. Les détails des transferts de données ne sont pas divulgués publiquement. Ce qui est clair : il n'y a pas de protection RGPD-équivalente contre les acteurs liés à des fonds souverains hors UE.</p>
-    <p>MapRaiders est une LLC américaine en <strong>propriété privée</strong> (Scafa Investments LLC, Floride), développée par une équipe indépendante. Nous opérons des serveurs RGPD-compatibles en Europe, ne vendons pas de données, n'avons pas de réseau publicitaire connecté et ne sommes contrôlés par aucun État.</p>
+    <p>En mars 2025, Niantic a vendu sa division jeux (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) pour 3,5 milliards de dollars à Scopely. Scopely est une filiale du Public Investment Fund (PIF) saoudien, donc formellement une entité contrôlée par l'État saoudien.</p>
+    <p>Ce que ça implique : les <strong>données de localisation d'environ 30 millions de joueurs mensuels de Pokémon GO</strong> (où ils courent, quand ils promènent le chien, quels itinéraires ils prennent chaque jour) passent désormais par l'infrastructure Scopely. Le détail des transferts de données n'est pas rendu public. Ce qui est sûr, c'est qu'il n'existe pas de protection équivalente au RGPD face à un acteur lié à un fonds souverain hors UE.</p>
+    <p>MapRaiders est une LLC américaine en <strong>propriété privée</strong> (Scafa Investments LLC, Floride), portée par une équipe indépendante. Nos serveurs sont en Europe et conformes RGPD, nous ne vendons pas de données, aucun réseau publicitaire n'est branché dessus, aucun État ne nous contrôle.</p>
             """,
         },
     ],
     "faq": [
         {"q": "MapRaiders est-il vraiment gratuit pour toujours ?",
-         "a": "Oui. Tout le gameplay principal — conquérir des territoires, déposer des Échos, créer des quêtes, former des clans — reste gratuit pour toujours. Pas de système de niveaux, pas de Battle Pass, pas d'abonnement obligatoire."},
+         "a": "Oui. Tout le gameplay principal (conquérir des territoires, déposer des Échos, créer des quêtes, former des clans) reste gratuit pour toujours. Pas de système de niveaux payants, pas de Battle Pass, pas d'abonnement obligatoire."},
         {"q": "Combien coûte le Cosmétique-IAP ?",
-         "a": "Les cosmétiques comme designs de marqueurs, couleurs de territoires ou emblèmes de clan coûtent entre 1,99€ et 8,99€ (TVA 20% incluse). Ils ne donnent aucun avantage de jeu, juste esthétique. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna."},
+         "a": "Les cosmétiques (designs de marqueurs, couleurs de territoires, emblèmes de clan) coûtent entre 1,99€ et 8,99€ TVA 20% incluse. Ils sont purement esthétiques, sans avantage de jeu. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna."},
         {"q": "Puis-je payer en plusieurs fois ?",
-         "a": "Oui, via Klarna FR — 3 ou 4 fois sans frais sur les cosmétiques et le Soutien Sub. Tu peux aussi utiliser PayPal Europe, Carte Bancaire ou Apple/Google Pay."},
+         "a": "Oui, via Klarna FR : 3 ou 4 fois sans frais sur les cosmétiques et sur le Soutien Sub. Tu peux aussi utiliser PayPal Europe, Carte Bancaire ou Apple/Google Pay."},
         {"q": "Y a-t-il de la pub dans l'app ?",
-         "a": "Non. MapRaiders est 100% sans pub. Nous ne vendons ni tes données ni espace publicitaire. RGPD-conforme, hébergement européen."},
-        {"q": "Que signifie «&nbsp;sans fonds saoudien&nbsp;» ?",
-         "a": "En mars 2025, Niantic a vendu sa division jeux (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) pour 3,5 milliards de dollars à Scopely — filiale du Public Investment Fund saoudien. Les données de localisation de plus de 30 millions de joueurs mensuels arrivent maintenant indirectement à un fonds souverain étranger. MapRaiders est une LLC américaine privée, non contrôlée par aucun État, RGPD-conforme."},
+         "a": "Non. MapRaiders est 100% sans pub. Nous ne vendons ni tes données, ni d'espace publicitaire. Conforme RGPD, hébergement européen."},
+        {"q": "Que veut dire «&nbsp;sans fonds étatique&nbsp;» ?",
+         "a": "En mars 2025, Niantic a vendu sa division jeux (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) pour 3,5 milliards de dollars à Scopely, filiale du Public Investment Fund saoudien. Les données de localisation de plus de 30 millions de joueurs mensuels remontent désormais indirectement à un fonds souverain étranger. MapRaiders, à l'inverse, est une LLC américaine privée, sans actionnaire étatique, RGPD-conforme."},
     ],
     "internal_links": [
         ("/fr/jeu-geolocalise.html", "Meilleur jeu géolocalisé 2026"),
@@ -1097,46 +1098,46 @@ K3 = {
 K4 = {
     "slug": "/fr/pokemon-go-saudi-alternative.html",
     "breadcrumb": "Pokémon GO Saudi alternative",
-    "title": "Pokémon GO Saudi — alternative française RGPD",
-    "og_title": "Pokémon GO Saudi alternative — RGPD, sans PIF, indépendant",
-    "meta": "Pokémon GO racheté par l'Arabie Saoudite en 2025 ? Tes données vont à un fonds souverain. MapRaiders est l'alternative française RGPD-conforme, indépendante.",
+    "title": "Pokémon GO Saudi : une alternative RGPD pour la France",
+    "og_title": "Pokémon GO Saudi alternative : RGPD, sans PIF, indépendante",
+    "meta": "Pokémon GO racheté par un fonds souverain saoudien en 2025 ? MapRaiders est une alternative RGPD-conforme, indépendante, hébergée en Europe.",
     "keywords": "pokemon go saudi, pokemon go arabie saoudite, pokemon go scopely pif, alternative pokemon go rgpd, jeu gps independant, alternative niantic saoudien",
-    "badge": "RGPD · Sans PIF · FR-Exclusif",
-    "pricing_pill": "RGPD-conforme · Hébergement Europe · Sans fonds souverain",
-    "h1_html": 'Pokémon GO Saudi — l\'<em>alternative française RGPD</em> qui n\'appartient à aucun État',
-    "lead": "En mars 2025, Niantic a vendu Pokémon GO à Scopely — filiale du Public Investment Fund (PIF) saoudien. Du jour au lendemain, les données de localisation de 30 millions de joueurs mensuels — dont des centaines de milliers de Français — atterrissent indirectement chez un fonds souverain étranger. La CNIL surveille. Les joueurs s'inquiètent. MapRaiders est l'alternative française RGPD-conforme, indépendante, sans PIF, sans pub, gratuite.",
+    "badge": "RGPD. Sans PIF. FR-Exclusif.",
+    "pricing_pill": "RGPD-conforme. Hébergement Europe. Sans fonds souverain.",
+    "h1_html": 'Pokémon GO Saudi : l\'<em>alternative RGPD</em> qui n\'appartient à aucun État',
+    "lead": "En mars 2025, Niantic a vendu Pokémon GO à Scopely, filiale du Public Investment Fund (PIF) saoudien. Du jour au lendemain, les données de localisation de 30 millions de joueurs mensuels (dont des centaines de milliers de Français) atterrissent indirectement chez un fonds souverain étranger. La CNIL regarde. Les joueurs s'interrogent. MapRaiders propose une voie de sortie : RGPD-conforme, indépendante, sans PIF, sans pub, gratuite.",
     "trigger": {
-        "quote": "Tes pas ne sont pas vendus à Big Tech ni aux fonds souverains.",
-        "author": "MapRaiders, principe RGPD-GOLD"
+        "quote": "Tes pas ne sont vendus ni à Big Tech, ni à un fonds souverain.",
+        "author": "MapRaiders, principe RGPD"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
-            "label": "Mars 2025 — les faits",
-            "title": "L'<em>acquisition saoudienne</em> de Pokémon GO — chronologie sourcée",
+            "label": "Mars 2025, les faits",
+            "title": "Le <em>rachat saoudien</em> de Pokémon GO, chronologie sourcée",
             "body": """
     <p>Mars 2025. Niantic, Inc. (San Francisco, créateur de Pokémon GO et Ingress) annonce officiellement la vente de sa division Games à Scopely pour 3,5 milliards de dollars. Sont inclus : Pokémon GO, Ingress Prime, Pikmin Bloom et Monster Hunter Now.</p>
-    <p>Scopely n'est pas un éditeur indépendant. Depuis avril 2023, Scopely est une filiale à 100% de Savvy Games Group — entité détenue à 100% par le Public Investment Fund (PIF) saoudien. Le PIF est le fonds souverain du Royaume d'Arabie Saoudite, géré directement par le prince héritier Mohammed bin Salman.</p>
-    <p>Concrètement : depuis mars 2025, l'infrastructure technique et les données de Pokémon GO sont sous contrôle d'une filiale d'un fonds souverain saoudien. Les détails des transferts de données vers le siège saoudien ne sont pas publiquement divulgués. Aucune communication officielle de la CNIL n'a été émise à ce jour.</p>
+    <p>Scopely n'est pas un éditeur indépendant. Depuis avril 2023, Scopely est une filiale à 100% de Savvy Games Group, entité elle-même détenue à 100% par le Public Investment Fund (PIF) saoudien. Le PIF est le fonds souverain du Royaume d'Arabie Saoudite, dirigé directement par le prince héritier Mohammed bin Salman.</p>
+    <p>Concrètement : depuis mars 2025, l'infrastructure technique et les données de Pokémon GO sont sous contrôle d'une filiale d'un fonds souverain saoudien. Le détail des transferts de données vers le siège saoudien n'est pas rendu public. Aucune communication officielle de la CNIL n'a été émise à ce jour.</p>
             """,
         },
         {
             "label": "Implications RGPD",
-            "title": "Implications pour les joueurs FR — la <em>question CNIL/RGPD</em>",
+            "title": "Côté joueurs FR : la <em>question CNIL/RGPD</em>",
             "body": """
-    <p>Quatre points de friction RGPD/CNIL apparaissent immédiatement :</p>
+    <p>Quatre points de friction RGPD/CNIL sortent du lot :</p>
     <ul>
-      <li><strong>Transferts hors UE non transparents.</strong> Le PIF est basé à Riyad. L'Arabie Saoudite n'est pas reconnue comme pays à protection adéquate par la Commission européenne. Tout transfert nécessite des Clauses Contractuelles Types (CCT) — opacité actuelle.</li>
-      <li><strong>Données de localisation = données sensibles.</strong> Trajets quotidiens, itinéraires de course, lieux de promenade canine : profil comportemental complet. La CNIL classe ces données comme particulièrement sensibles (Délibération 2023-014).</li>
-      <li><strong>Consentement éclairé compromis.</strong> Les utilisateurs FR ayant accepté les CGU Niantic en 2017-2024 n'ont pas consenti à un transfert vers un fonds souverain saoudien. Le RGPD exige un nouveau consentement spécifique.</li>
-      <li><strong>Risque de demandes étatiques.</strong> Une infrastructure contrôlée par un État peut être soumise à des demandes d'accès gouvernementales — sans recours équivalent au RGPD européen.</li>
+      <li><strong>Transferts hors UE peu transparents.</strong> Le PIF est basé à Riyad. L'Arabie Saoudite n'est pas reconnue comme pays à protection adéquate par la Commission européenne. Tout transfert exige des Clauses Contractuelles Types (CCT), et là-dessus on manque d'informations.</li>
+      <li><strong>Localisation = donnée sensible.</strong> Trajets quotidiens, itinéraires de course, lieux de promenade canine : c'est un profil comportemental complet. La CNIL classe ces données comme particulièrement sensibles (Délibération 2023-014).</li>
+      <li><strong>Consentement éclairé fragilisé.</strong> Les utilisateurs FR qui ont accepté les CGU Niantic entre 2017 et 2024 n'ont pas consenti à un transfert vers un fonds souverain saoudien. Le RGPD impose un nouveau consentement spécifique.</li>
+      <li><strong>Risque de réquisition étatique.</strong> Une infrastructure sous contrôle d'un État peut faire l'objet de demandes d'accès gouvernementales, sans recours équivalent au cadre européen.</li>
     </ul>
-    <p>La CNIL a infligé 55 millions d'euros d'amendes RGPD en 2024 et 331 mesures correctives. Le contexte français est juridiquement strict.</p>
+    <p>Pour rappel : la CNIL a infligé 55 millions d'euros d'amendes RGPD en 2024 et prononcé 331 mesures correctives. Le cadre français est juridiquement strict.</p>
             """,
         },
         {
             "label": "MapRaiders indépendant",
-            "title": "Pourquoi MapRaiders <em>reste indépendant</em> — statut, financement, juridiction",
+            "title": "Pourquoi MapRaiders <em>reste indépendant</em> : statut, financement, juridiction",
             "body": "",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Critère</th><th>Pokémon GO (depuis 03/2025)</th><th>MapRaiders</th></tr></thead>
@@ -1145,38 +1146,38 @@ K4 = {
       <tr><td class="feat-name">Financement</td><td>Fonds souverain étatique</td><td class="check">Auto-financé, indépendant</td></tr>
       <tr><td class="feat-name">Hébergement données</td><td>Infrastructure Scopely (US/Saudi)</td><td class="check">Serveurs UE, conformes RGPD</td></tr>
       <tr><td class="feat-name">SDK publicitaires</td><td class="cross">Présents</td><td class="check">Aucun</td></tr>
-      <tr><td class="feat-name">Vente de données</td><td>Politique opaque</td><td class="check">Aucune — modèle cosmétique</td></tr>
+      <tr><td class="feat-name">Vente de données</td><td>Politique opaque</td><td class="check">Aucune. Modèle cosmétique</td></tr>
       <tr><td class="feat-name">Recours utilisateur</td><td>CGU américaines/saoudiennes</td><td class="check">Droit européen + CNIL</td></tr>
       <tr><td class="feat-name">Mentions légales FR</td><td>Anglais primaire</td><td class="check">Conformes CNIL, en français</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Garantie de non-acquisition :</strong> Scafa Investments LLC s'engage à ne pas vendre MapRaiders à un acteur étatique ou à un fonds souverain. Cette clause est inscrite dans les CGU et opposable juridiquement.</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Garantie de non-cession :</strong> Scafa Investments LLC s'engage à ne pas vendre MapRaiders à un acteur étatique ou à un fonds souverain. La clause figure dans les CGU et reste opposable juridiquement.</p>""",
         },
         {
-            "label": "Mastodon + Qwant",
+            "label": "Mastodon, Qwant",
             "title": "Pour la communauté <em>Privacy-Tech française</em>",
             "body": """
-    <p>MapRaiders s'aligne avec l'écosystème Privacy-Tech français :</p>
+    <p>MapRaiders s'aligne sur l'écosystème Privacy-Tech français :</p>
     <ul>
-      <li><strong>Compte Mastodon</strong> sur instance francophone (mamot.fr ou pouet.chapril.org). Pas de Twitter/X obligatoire.</li>
-      <li><strong>Indexation Qwant</strong> en plus de Google. Le moteur de recherche français est notre cible secondaire.</li>
-      <li><strong>Pas de Google Analytics.</strong> Stats internes uniquement, pas de tracking tiers.</li>
-      <li><strong>Open data approche.</strong> Cartographie OpenStreetMap, pas Google Maps.</li>
+      <li><strong>Compte Mastodon</strong> sur instance francophone (mamot.fr ou pouet.chapril.org), sans obligation Twitter/X.</li>
+      <li><strong>Indexation Qwant</strong> en plus de Google ; le moteur de recherche français reste une cible secondaire affirmée.</li>
+      <li><strong>Pas de Google Analytics.</strong> Stats internes uniquement, sans tracker tiers.</li>
+      <li><strong>Approche open data.</strong> Cartographie OpenStreetMap plutôt que Google Maps.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "Pokémon GO appartient-il vraiment à l'Arabie Saoudite maintenant ?",
-         "a": "Indirectement, oui. En mars 2025, Niantic a vendu sa division jeux (incluant Pokémon GO) à Scopely pour 3,5 milliards de dollars. Scopely est filiale à 100% de Savvy Games Group, lui-même détenu à 100% par le Public Investment Fund (PIF) — fonds souverain de l'État saoudien. Les serveurs et l'infrastructure sont donc sous contrôle d'une entité étatique étrangère."},
+         "a": "Indirectement, oui. En mars 2025, Niantic a vendu sa division jeux (dont Pokémon GO) à Scopely pour 3,5 milliards de dollars. Scopely est filiale à 100% de Savvy Games Group, lui-même détenu à 100% par le Public Investment Fund (PIF), fonds souverain de l'État saoudien. Les serveurs et l'infrastructure sont donc sous contrôle d'une entité étatique étrangère."},
         {"q": "Mes données Pokémon GO sont-elles transférées en Arabie Saoudite ?",
-         "a": "Les détails des transferts de données ne sont pas publiquement divulgués par Scopely. Ce qui est certain : l'infrastructure et la gouvernance des données sont sous contrôle Scopely depuis mars 2025. L'Arabie Saoudite n'étant pas reconnue par la Commission européenne comme pays à protection adéquate, tout transfert nécessite des Clauses Contractuelles Types — opacité actuelle."},
+         "a": "Le détail des transferts n'est pas rendu public par Scopely. Ce qui est sûr, c'est que depuis mars 2025 l'infrastructure et la gouvernance des données sont sous contrôle Scopely. L'Arabie Saoudite n'étant pas reconnue par la Commission européenne comme pays à protection adéquate, tout transfert exige des Clauses Contractuelles Types ; le cadre exact reste opaque."},
         {"q": "MapRaiders est-il RGPD-conforme et hébergé en Europe ?",
-         "a": "Oui. Serveurs en Europe (Allemagne/France selon le déploiement), aucun SDK publicitaire, mentions légales conformes CNIL en français, droit applicable européen. Scafa Investments LLC (Floride) est l'éditeur privé indépendant, sans actionnaire étatique."},
+         "a": "Oui. Serveurs en Europe (Allemagne ou France selon le déploiement), aucun SDK publicitaire, mentions légales conformes CNIL en français, droit applicable européen. Scafa Investments LLC (Floride) est l'éditeur privé indépendant, sans actionnaire étatique."},
         {"q": "MapRaiders peut-il être racheté par un fonds souverain plus tard ?",
-         "a": "Une clause de non-acquisition étatique est inscrite dans les CGU MapRaiders. Scafa Investments LLC s'engage juridiquement à ne pas céder le projet à un acteur étatique ou à un fonds souverain. Cette clause est opposable juridiquement et auditable."},
+         "a": "Une clause de non-cession étatique figure dans les CGU MapRaiders. Scafa Investments LLC s'engage juridiquement à ne pas céder le projet à un acteur étatique ou à un fonds souverain. La clause est opposable et auditable."},
         {"q": "Comment migrer de Pokémon GO vers MapRaiders ?",
-         "a": "Pas de migration de compte (les données Niantic restent chez Scopely). Tu crées un nouveau compte MapRaiders avec ton e-mail, tu commences sur ta propre rue, tu conquiers ton quartier en quelques semaines de marche/course. Beaucoup d'ex-joueurs Pokémon GO disent que c'est libérateur — pas de FOMO de saison perdue, pas de Battle Pass à rattraper."},
+         "a": "Il n'y a pas de migration de compte : les données Niantic restent chez Scopely. Tu crées un nouveau compte MapRaiders avec ton e-mail, tu démarres sur ta propre rue, et tu reprends ton quartier en quelques semaines de marche ou de course. Beaucoup d'ex-joueurs Pokémon GO trouvent ça plutôt libérateur : pas de FOMO de saison perdue, pas de Battle Pass à rattraper."},
     ],
     "internal_links": [
         ("/fr/jeu-territoire.html", "Jeu de territoire réel"),
@@ -1191,95 +1192,95 @@ K4 = {
 K5 = {
     "slug": "/fr/application-marche-avec-jeu.html",
     "breadcrumb": "Application marche avec jeu",
-    "title": "Application marche avec jeu — Strava + territoire",
-    "og_title": "Application marche avec jeu — cardio + jeu + santé",
-    "meta": "Application marche avec jeu ? MapRaiders transforme chaque promenade en conquête de territoire. Cardio + jeu + santé. Compatible Strava. RGPD, sans pub.",
+    "title": "Application de marche avec jeu : chaque pas conquiert un territoire",
+    "og_title": "Application de marche avec jeu : cardio, jeu, santé",
+    "meta": "Application de marche avec jeu : MapRaiders transforme chaque promenade en conquête de territoire. Cardio, jeu, santé. Compatible Strava, RGPD, sans pub.",
     "keywords": "application marche avec jeu, application marche jeu, app cardio gps france, strava territoire, app marche rgpd, application sport gps",
-    "badge": "Cardio + Jeu",
-    "pricing_pill": "Free Forever · 4× moins de batterie que Pokémon GO · Compatible Strava",
-    "h1_html": 'Application marche avec jeu — quand <em>chaque pas</em> conquiert un territoire',
-    "lead": "Les apps de marche donnent des statistiques. Les jeux de marche comme Pokémon GO donnent de la collection. Mais aucune app ne transforme ton vrai chemin en vraie terre. MapRaiders si : chaque pas forme un territoire, chaque retour le défend. Cardio avec conséquence. Famille ensemble. Santé pour de vrai. Et compatible Strava — on complète, on ne remplace pas.",
+    "badge": "Cardio plus jeu",
+    "pricing_pill": "Free Forever. Quatre fois moins de batterie que Pokémon GO. Compatible Strava.",
+    "h1_html": 'Application de marche avec jeu : quand <em>chaque pas</em> conquiert un territoire',
+    "lead": "Les apps de marche donnent des stats. Les jeux de marche type Pokémon GO donnent de la collection. Mais aucune ne transforme ton vrai chemin en vrai terrain. MapRaiders, si : chaque pas façonne un territoire, chaque retour le défend. Cardio avec conséquence, sortie famille, santé qui tient. Et compatible Strava : on complète, on ne remplace pas.",
     "trigger": {
-        "quote": "Je cours déjà chaque matin. Avec MapRaiders chaque parcours a un but : tenir le territoire ou le reconquérir. Ma motivation cardio a explosé.",
+        "quote": "Je cours déjà tous les matins, sauf que maintenant je défends quelque chose. Mon tour de l'Alster m'appartient, et je voudrais que ça reste comme ça.",
         "author": "Vivian N., coureuse de la région de Hambourg (bêta fermée)"
     },
     "testers": [TESTER_VIVIAN, TESTER_RON],
     "sections": [
         {
-            "label": "Le problème",
-            "title": "Pourquoi les <em>apps de marche</em> traditionnelles ne suffisent pas",
+            "label": "Le manque",
+            "title": "Pourquoi les <em>apps de marche</em> classiques ne suffisent pas",
             "body": """
-    <p>Strava, Nike Run Club, Adidas Running, Decathlon Coach — mesurent temps, distance, allure. Mais trois points manquent à beaucoup de Français :</p>
+    <p>Strava, Nike Run Club, Adidas Running, Decathlon Coach mesurent le temps, la distance, l'allure. Mais beaucoup de Français y trouvent trois manques :</p>
     <ul>
-      <li><strong>Pas d'élément de jeu.</strong> Qui ne poursuit pas de records personnels perd la motivation en 4 semaines.</li>
-      <li><strong>Pression de performance.</strong> Les classements publics démotivent plus qu'ils n'aident.</li>
-      <li><strong>Forçage d'abonnement.</strong> Strava Premium 8,99€/mois pour les cartes thermiques et comparaisons d'itinéraires qui deviennent inutiles dans le plan gratuit.</li>
+      <li><strong>Pas d'enjeu de jeu.</strong> Si tu ne chasses pas tes propres records, la motivation tombe en quatre semaines.</li>
+      <li><strong>Pression de performance.</strong> Les classements publics démotivent souvent plus qu'ils n'aident.</li>
+      <li><strong>Pression à l'abonnement.</strong> Strava Premium à 8,99€/mois pour des cartes thermiques et des comparaisons qui deviennent inutilisables dans le plan gratuit.</li>
     </ul>
             """,
         },
         {
-            "label": "La solution",
-            "title": "Comment MapRaiders <em>change ta routine</em> de marche",
+            "label": "Ce que ça change",
+            "title": "Comment MapRaiders <em>déplace ta routine</em> de marche",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Tenir le territoire</h3><p>Chaque parcours défend de la terre. Qui s'arrête 3 jours voit le decay agir — incitation naturelle au retour.</p></div>
-    <div class="feat-card rv d1"><h3>Compteur de Decay</h3><p>La valeur de Decay montre : «&nbsp;Si tu ne cours pas aujourd'hui, ton quartier rétrécit de X%&nbsp;». Sans culpabilité — juste réalité physique.</p></div>
-    <div class="feat-card rv d2"><h3>Défense de clan en courant</h3><p>Pendant la course, des notifications push avertissent quand le territoire du clan est attaqué. Tu ne cours pas seul — tu cours ensemble.</p></div>
-    <div class="feat-card rv d3"><h3>Récompense via Écho</h3><p>Échos audio quand tu passes. D'autres joueurs racontent des histoires de la rue — sans pub, sans influenceur.</p></div>
+    <div class="feat-card rv"><h3>Tenir le territoire</h3><p>Chaque sortie défend du terrain. Trois jours sans bouger et le decay grignote, ce qui suffit en général à te faire ressortir.</p></div>
+    <div class="feat-card rv d1"><h3>Indicateur de Decay</h3><p>La jauge te dit : «&nbsp;si tu ne sors pas aujourd'hui, ton quartier rétrécit de X%&nbsp;». Pas de culpabilisation, juste un fait physique.</p></div>
+    <div class="feat-card rv d2"><h3>Défense de clan en courant</h3><p>Pendant la course, des notifications push préviennent quand le territoire du clan est attaqué. Tu ne cours plus seul.</p></div>
+    <div class="feat-card rv d3"><h3>Récompense par Écho</h3><p>Des Échos audio se déclenchent quand tu passes. D'autres joueurs racontent leur rue, sans pub ni influenceur.</p></div>
   </div>""",
         },
         {
-            "label": "Strava complément",
-            "title": "MapRaiders <em>complète</em> Strava — ne remplace pas",
+            "label": "Strava en complément",
+            "title": "MapRaiders <em>complète</em> Strava au lieu de le remplacer",
             "body": """
-    <p>MapRaiders ne concurrence pas Strava sur les métriques de performance. Tu peux faire tourner les deux apps en même temps, ils utilisent le même capteur GPS sans conflit. Ce que Strava ne donne pas : territoire réel et défense sociale. Ce que MapRaiders ne donne pas : analyse détaillée des splits d'allure et zones cardiaques.</p>
-    <p>Combinaison idéale : <strong>Strava pour l'analyse technique, MapRaiders pour la motivation quotidienne et le territoire.</strong> Lance les deux, sans douleur de batterie disproportionnée — l'un avec AR, l'autre sans.</p>
+    <p>MapRaiders ne joue pas dans la même cour que Strava sur les métriques de performance. Tu peux laisser tourner les deux apps en parallèle ; elles utilisent le même capteur GPS sans conflit. Strava ne donne pas de territoire réel ni de défense sociale. MapRaiders ne donne pas d'analyse détaillée des splits d'allure ou des zones cardiaques.</p>
+    <p>La combinaison la plus simple : <strong>Strava pour l'analyse, MapRaiders pour la motivation quotidienne et le terrain.</strong> Tu lances les deux, sans coût batterie disproportionné, l'un avec AR et l'autre sans.</p>
             """,
         },
         {
-            "label": "Tour de France personnel",
-            "title": "Ton <em>Tour de France</em> personnel — chaque kilomètre conquit",
+            "label": "Tour de France perso",
+            "title": "Ton <em>Tour de France</em> à toi, kilomètre par kilomètre",
             "body": """
-    <p>Le Tour de France est culte en France. MapRaiders permet de vivre cet esprit chaque matin :</p>
+    <p>Le Tour de France a un statut culte. MapRaiders te permet d'en vivre l'esprit chaque matin :</p>
     <ul>
-      <li><strong>Chaque rue conquise = étape gagnée.</strong> Le rythme journalier devient saga personnelle.</li>
-      <li><strong>Mode cycliste optimisé.</strong> Détection automatique de vélo, polygones de territoire larges adaptés à la vitesse cycliste.</li>
-      <li><strong>Maillot virtuel.</strong> Cosmétiques saisonniers en juillet — maillots jaune/vert/pois rouges.</li>
-      <li><strong>Événements estivaux.</strong> Bastille Day (14 juillet) et 1er semaine du Tour : événements territoriaux nationaux.</li>
+      <li><strong>Une rue conquise vaut une étape.</strong> Le rythme du jour devient une petite saga personnelle.</li>
+      <li><strong>Mode cycliste optimisé.</strong> Détection automatique du vélo, polygones de territoire larges adaptés à la vitesse.</li>
+      <li><strong>Maillot virtuel.</strong> Cosmétiques saisonniers en juillet : jaune, vert, pois rouges.</li>
+      <li><strong>Événements estivaux.</strong> 14 juillet et première semaine du Tour : événements territoriaux nationaux.</li>
     </ul>
             """,
         },
         {
-            "label": "60+ longévité",
-            "title": "Marcher pour <em>60 ans et plus</em> — longévité française",
+            "label": "60 ans et plus",
+            "title": "Marcher passé <em>60 ans</em>, sans AR ni compétition agressive",
             "body": """
-    <p>La France compte plus de 17 millions de personnes de 60+. La marche est l'activité physique la plus recommandée par les gériatres — mais la motivation manque. MapRaiders résout cela sans AR (qui déroute) et sans compétition agressive (qui éloigne) :</p>
+    <p>La France compte plus de 17 millions de personnes de 60 ans et plus. La marche est l'activité la plus recommandée par les gériatres, mais la motivation manque souvent. MapRaiders répond à ça sans AR qui déroute et sans compétition qui éloigne :</p>
     <ul>
-      <li><strong>Rythme propre.</strong> Pas de vitesse minimum. Walking, marche avec canne, avec ami — tout compte pour le territoire.</li>
-      <li><strong>La même rue chaque jour fonctionne.</strong> Persistance au-delà de la distance. Qui répète, maintient.</li>
-      <li><strong>Communauté de quartier.</strong> Clans organiques avec voisins. Sans Discord, sans chat toxique.</li>
-      <li><strong>RGPD-compatible.</strong> Pour les seniors préoccupés par la vie privée — sans pub ciblée, sans vente de localisation.</li>
+      <li><strong>Rythme libre.</strong> Pas de vitesse minimum. Walking, marche avec canne, marche avec un proche : tout compte pour le territoire.</li>
+      <li><strong>La même rue chaque jour, ça marche.</strong> La persistance prime sur la distance. Qui répète, maintient.</li>
+      <li><strong>Communauté de quartier.</strong> Clans organiques entre voisins, sans Discord ni chat toxique.</li>
+      <li><strong>Compatible RGPD.</strong> Pour les seniors attentifs à la vie privée : pas de pub ciblée, pas de vente de localisation.</li>
       <li><strong>Le plaisir de marcher n'a pas d'âge.</strong></li>
     </ul>
             """,
         },
     ],
     "faq": [
-        {"q": "Combien de temps de batterie dure ?",
-         "a": "Sur une marche d'1 heure, typiquement 15-25% de batterie (vs ~50% pour Pokémon GO avec AR). Les valeurs varient selon l'appareil et la luminosité de l'écran."},
+        {"q": "Combien de batterie ça consomme ?",
+         "a": "Sur une marche d'une heure, typiquement entre 15 et 25% de batterie (contre environ 50% pour Pokémon GO avec AR). Les valeurs varient selon l'appareil et la luminosité de l'écran."},
         {"q": "Fonctionne-t-il avec Strava ou Nike Run Club ?",
-         "a": "Actuellement sans intégration directe. Tu peux faire tourner les deux apps en même temps — ils utilisent le même capteur GPS sans conflit. Intégration Strava prévue pour Q4 2026."},
-        {"q": "La marche lente compte-t-elle aussi ?",
-         "a": "Oui. Pas de vitesse minimum. Walking, marche lente, promenade — tout forme du territoire, tant qu'il y a un mouvement physique réel (pas d'auto-cheating)."},
+         "a": "Pas d'intégration directe pour l'instant. Tu peux faire tourner les deux apps en parallèle ; elles utilisent le même capteur GPS sans se gêner. Une intégration Strava est prévue pour Q4 2026."},
+        {"q": "La marche lente compte-t-elle ?",
+         "a": "Oui. Pas de vitesse minimum. Walking, marche lente, promenade : tout forme du territoire dès qu'il y a un vrai mouvement physique (pas d'auto-cheating)."},
         {"q": "Une personne âgée peut-elle l'utiliser ?",
-         "a": "Oui, c'est conçu pour tous les âges. Sans AR, sans bruit, sans pression d'allure. Grandes lettres, contraste élevé, contrôles simples. Le plaisir de marcher n'a pas d'âge."},
-        {"q": "Combien consomme en données mobiles ?",
-         "a": "Modéré. Sans live-vidéo, sans API lourde. Une marche d'1 heure utilise typiquement 5-15 MB. RGPD-conforme, sans tracking publicitaire."},
+         "a": "Oui, c'est pensé pour tous les âges. Pas d'AR, pas de bruit, pas de pression sur l'allure. Grands caractères, contraste élevé, contrôles simples."},
+        {"q": "Combien ça consomme en données mobiles ?",
+         "a": "Peu. Pas de live vidéo, pas d'API lourde. Une marche d'une heure utilise en gros 5 à 15 Mo. Conforme RGPD, sans tracking publicitaire."},
     ],
     "internal_links": [
         ("/fr/jeu-geolocalise.html", "Meilleur jeu géolocalisé 2026"),
         ("/fr/alternative-pokemon-go-gratuit.html", "Alternative Pokémon GO gratuit"),
-        ("/fr/woog-alternative.html", "Woog alternative — promenade chien"),
+        ("/fr/woog-alternative.html", "Woog alternative : promenade chien"),
         ("/fr/application-marche-avis.html", "Avis : ça vaut le coup ?"),
         ("/fr/mapraiders-avis.html", "Tous les avis"),
     ],
@@ -1289,29 +1290,29 @@ K5 = {
 K6 = {
     "slug": "/fr/chasse-au-tresor-application.html",
     "breadcrumb": "Chasse au trésor application",
-    "title": "Chasse au trésor application — ville entière en direct",
-    "og_title": "Chasse au trésor application — ville entière d'Échos cachés",
-    "meta": "Chasse au trésor application 2026 : en direct, ville entière, sans acheter de tour, sans pub. MapRaiders transforme ta ville en chasse au trésor ouverte. RGPD enfants.",
+    "title": "Chasse au trésor application : la ville entière en direct",
+    "og_title": "Chasse au trésor application : ta ville pleine d'Échos",
+    "meta": "Chasse au trésor application 2026 : en direct, à l'échelle de la ville, sans acheter de tour, sans pub. MapRaiders ouvre la chasse au trésor à toute ta ville. Compatible RGPD enfants.",
     "keywords": "chasse au tresor application, chasse au tresor app, chasse tresor smartphone, chasse tresor famille, geocaching alternative, chasse au tresor enfants",
-    "badge": "Chasse au Trésor",
-    "pricing_pill": "Free Forever · Sans acheter de tour · Ville entière",
-    "h1_html": 'Chasse au trésor application — une <em>ville entière d\'Échos</em> cachés',
-    "lead": "Les apps traditionnelles de chasse au trésor comme Geocaching exigent un abonnement premium et des tours pré-définis. MapRaiders inverse cela : les Échos sont déjà éparpillés dans la ville entière. Tu suis les traces d'autres joueurs ou laisses les tiens. En direct, gratuit, sans acheter de tour, sans préparation. RGPD-compatible enfants.",
+    "badge": "Chasse au trésor",
+    "pricing_pill": "Free Forever. Sans acheter de tour. Toute la ville.",
+    "h1_html": 'Chasse au trésor application : une <em>ville entière d\'Échos</em> cachés',
+    "lead": "Les apps traditionnelles de chasse au trésor comme Geocaching demandent un abonnement premium et des tours pré-définis. MapRaiders prend l'autre voie : les Échos sont déjà éparpillés à l'échelle de la ville. Tu suis les traces d'autres joueurs ou tu laisses les tiennes. En direct, gratuit, sans acheter de tour, sans préparation. Compatible RGPD enfants.",
     "trigger": {
-        "quote": "Déposer des Échos et voir qui les trouve, c'est comme une chasse au trésor ouverte à travers toute la ville.",
+        "quote": "Tu poses une petite piste audio devant une porte d'immeuble, trois jours plus tard quelqu'un que tu ne connais pas l'a trouvée.",
         "author": "Aljoscha P., explorateur urbain de la région de Berlin (bêta fermée)"
     },
     "testers": [TESTER_ALJOSCHA, TESTER_RON],
     "sections": [
         {
             "label": "Critères",
-            "title": "Ce qu'une <em>chasse au trésor application moderne</em> devrait avoir",
+            "title": "Ce qu'une <em>application de chasse au trésor moderne</em> devrait offrir",
             "body": """
-    <p>Trois critères séparent les apps de chasse au trésor des années 2020 des solutions de papier imprimé :</p>
+    <p>Trois critères séparent les apps de chasse au trésor des années 2020 des chasses sur papier imprimé :</p>
     <ul>
-      <li><strong>En direct.</strong> Les indices apparaissent en temps réel, pas seulement dans des tours pré-fabriqués.</li>
-      <li><strong>Social.</strong> Les joueurs laissent des indices les uns aux autres, au lieu de seulement suivre.</li>
-      <li><strong>Sans barrière premium.</strong> Parents et enfants entrent immédiatement, sans devoir acheter un tour à 15€.</li>
+      <li><strong>En direct.</strong> Les indices apparaissent en temps réel, pas uniquement dans un tour pré-fabriqué.</li>
+      <li><strong>Social.</strong> Les joueurs se laissent des indices entre eux, au lieu de seulement suivre.</li>
+      <li><strong>Sans paywall.</strong> Parents et enfants entrent immédiatement, sans avoir à acheter un tour à 15€.</li>
     </ul>
             """,
         },
@@ -1322,8 +1323,8 @@ K6 = {
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>App</th><th>Prix</th><th>Préparation</th><th>En direct ?</th><th>Loop de jeu</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">Geocaching</td><td>Sub Premium ~5,99€/mois</td><td>Faible — trouver caches</td><td class="cross">Asynchrone</td><td>Collecter</td></tr>
-      <tr><td class="feat-name">Actionbound</td><td>Tours / Sub</td><td>Élevée — monter tour</td><td class="cross">✗</td><td>Par-tour</td></tr>
+      <tr><td class="feat-name">Geocaching</td><td>Sub Premium ~5,99€/mois</td><td>Faible (trouver caches)</td><td class="cross">Asynchrone</td><td>Collecter</td></tr>
+      <tr><td class="feat-name">Actionbound</td><td>Tours / Sub</td><td>Élevée (monter tour)</td><td class="cross">✗</td><td>Par-tour</td></tr>
       <tr><td class="feat-name">Anyfox</td><td>Premium-Sub</td><td>Moyenne</td><td class="cross">Asynchrone</td><td>Scanner codes</td></tr>
       <tr><td class="feat-name">Munzee</td><td>Premium-Sub</td><td>Moyenne</td><td class="cross">Asynchrone</td><td>Scanner codes</td></tr>
       <tr><td class="feat-name">MapRaiders</td><td class="check">0€</td><td class="check">Zéro</td><td class="check">En direct</td><td>Échos + Quêtes + Territoire</td></tr>
@@ -1334,40 +1335,40 @@ K6 = {
             "label": "Échos",
             "title": "Comment MapRaiders <em>repense</em> la chasse au trésor",
             "body": """
-    <p>Au lieu d'un tour linéaire de la station 1 à 10, MapRaiders crée une <strong>chasse au trésor spatiale ouverte</strong> — la ville entière est le terrain de jeu :</p>
+    <p>Plutôt qu'un tour linéaire de la station 1 à 10, MapRaiders ouvre une <strong>chasse au trésor spatiale</strong> à l'échelle de la ville :</p>
     <ul>
-      <li><strong>Déposer des Échos.</strong> Dépose un Écho audio, photo ou vidéo dans un lieu. D'autres joueurs le découvrent en passant.</li>
-      <li><strong>Trouver des Échos.</strong> Vois sur la carte où sont les Échos. Suis les traces, trouve des secrets, écoute des histoires.</li>
-      <li><strong>Créer des quêtes.</strong> Crée une petite tâche dans un lieu («&nbsp;Prends une photo de la porte rouge là-bas&nbsp;»). D'autres joueurs accomplissent.</li>
-      <li><strong>Couche de territoire.</strong> Qui parcourt fréquemment un itinéraire de chasse au trésor le conquiert comme territoire — les traces deviennent terre.</li>
+      <li><strong>Déposer des Échos.</strong> Pose un Écho audio, photo ou vidéo dans un lieu. D'autres joueurs le découvrent en passant.</li>
+      <li><strong>Trouver des Échos.</strong> Vois sur la carte où sont les Échos. Tu suis les traces, tu trouves des secrets, tu écoutes des histoires.</li>
+      <li><strong>Créer des quêtes.</strong> Pose une petite tâche dans un lieu («&nbsp;prends une photo de la porte rouge là-bas&nbsp;»). D'autres joueurs s'en chargent.</li>
+      <li><strong>Couche de territoire.</strong> Qui parcourt souvent un itinéraire de chasse au trésor finit par le conquérir comme territoire. Les traces deviennent terrain.</li>
     </ul>
             """,
         },
         {
-            "label": "Enfants RGPD",
-            "title": "Chasse au trésor application pour <em>enfants et famille</em>",
+            "label": "Enfants, RGPD",
+            "title": "Une chasse au trésor pour <em>enfants et familles</em>",
             "body": """
-    <p>La chasse au trésor est culture française d'enfance — pistes à la craie, traces de feuilles, cachette finale avec bonbons. MapRaiders amène cela à l'ère du smartphone, sans laisser les enfants seuls devant l'écran :</p>
+    <p>La chasse au trésor fait partie de la culture d'enfance française : pistes à la craie, traces de feuilles, cachette finale avec bonbons. MapRaiders amène ça à l'ère du smartphone, sans planter les enfants devant un écran :</p>
     <ul>
-      <li><strong>Activité parents-enfants.</strong> Les parents déposent des Échos audio sur un itinéraire planifié, les enfants suivent les traces — mouvement analogique, indices numériques.</li>
-      <li><strong>Écran minimum, monde maximum.</strong> L'app guide sur la carte ; l'expérience se passe dans le monde réel.</li>
-      <li><strong>RGPD-compatible enfants.</strong> Conformité CNIL stricte : pas de tracker publicitaire personnalisé, pas de vente de données, pas de chat in-app sans approbation parentale.</li>
-      <li><strong>Mode famille.</strong> Événements privés de Pâques, Noël, anniversaire — uniquement pour le groupe familial.</li>
+      <li><strong>Sortie parents-enfants.</strong> Les parents déposent des Échos audio sur un parcours préparé, les enfants suivent les traces. Mouvement réel, indices numériques.</li>
+      <li><strong>Écran au minimum, monde au maximum.</strong> L'app guide sur la carte ; l'expérience se passe dehors.</li>
+      <li><strong>Compatible RGPD enfants.</strong> Conformité CNIL stricte : pas de tracker publicitaire personnalisé, pas de vente de données, pas de chat in-app sans accord parental.</li>
+      <li><strong>Mode famille.</strong> Événements privés de Pâques, Noël, anniversaire, réservés au groupe familial.</li>
     </ul>
             """,
         },
     ],
     "faq": [
-        {"q": "MapRaiders est-il approprié pour les enfants ?",
-         "a": "Oui, à partir de 9 ans avec accompagnement parental. L'app est RGPD-conforme, sans pub et ne collecte pas de données personnelles d'enfants. Les parents peuvent activer un mode famille avec contrôle total."},
-        {"q": "Combien de préparation pour une chasse avec enfants ?",
-         "a": "Zéro. Contrairement à Actionbound ou Munzee, tu n'as pas besoin d'acheter un tour ni de préparer des stations. Les Échos sont déjà éparpillés dans la ville — il suffit de suivre les traces d'autres joueurs ou de laisser les tiens."},
-        {"q": "L'application de chasse au trésor coûte-t-elle quelque chose ?",
-         "a": "Non. Les fonctions de chasse au trésor (déposer des Échos, trouver des Échos, créer des quêtes) sont totalement gratuites. Optionnellement, des cosmétiques à partir de 1,99€ — sans avantage de jeu. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna."},
+        {"q": "MapRaiders convient-il aux enfants ?",
+         "a": "Oui, à partir de 9 ans avec accompagnement parental. L'app est RGPD-conforme, sans pub, et ne collecte pas de données personnelles d'enfants. Les parents peuvent activer un mode famille avec contrôle complet."},
+        {"q": "Quelle préparation pour une chasse avec les enfants ?",
+         "a": "Zéro. Contrairement à Actionbound ou Munzee, pas besoin d'acheter un tour ou de monter des stations. Les Échos sont déjà répartis dans la ville. Il suffit de suivre les traces d'autres joueurs ou de laisser les tiennes."},
+        {"q": "L'application de chasse au trésor coûte quelque chose ?",
+         "a": "Non. Les fonctions de chasse au trésor (déposer des Échos, en trouver, créer des quêtes) sont 100% gratuites. Cosmétiques optionnels à partir de 1,99€, sans avantage de jeu. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna."},
         {"q": "Fonctionne-t-il dans les petites villes ?",
-         "a": "Oui. Même dans les petites villes ou villages, tu peux déposer des Échos et créer des quêtes. Dans les grands centres tu trouves plus de traces d'autres joueurs ; en campagne, ton tour a plus d'espace propre."},
+         "a": "Oui. Même en village ou en petite ville, tu peux déposer des Échos et créer des quêtes. Dans les grands centres, tu trouves plus de traces d'autres joueurs ; en campagne, ton tour a plus d'espace pour lui."},
         {"q": "L'app est-elle en français ?",
-         "a": "Oui. MapRaiders est entièrement localisé en français — menus, système d'Échos, indices, support. Mentions légales et politique de confidentialité conformes CNIL."},
+         "a": "Oui. MapRaiders est entièrement localisé en français : menus, système d'Échos, indices, support. Mentions légales et politique de confidentialité conformes CNIL."},
     ],
     "internal_links": [
         ("/fr/alternative-pokemon-go-gratuit.html", "Alternative Pokémon GO gratuit"),
@@ -1382,58 +1383,58 @@ K6 = {
 K7 = {
     "slug": "/fr/woog-alternative.html",
     "breadcrumb": "Woog alternative",
-    "title": "Woog alternative — MapRaiders pour le territoire",
-    "og_title": "Woog alternative — utilise les deux ensemble pour le jeu",
-    "meta": "Tu utilisais Woog pour les promenades de chien ? Woog a fermé en 2018. MapRaiders comble le vide : territoire, Échos, défense. Pour la promenade canine.",
+    "title": "Woog alternative : MapRaiders comble le vide laissé en 2018",
+    "og_title": "Woog alternative : MapRaiders pour le territoire de quartier",
+    "meta": "Tu utilisais Woog pour les promenades de chien ? Woog a fermé en 2018. MapRaiders comble une partie du vide : territoire, Échos, communauté locale.",
     "keywords": "woog alternative, woog application, woog ferme, alternative woog promenade chien, app promenade chien france, walkies game france",
-    "badge": "Woog Vide · FR-Exclusif",
-    "pricing_pill": "Free Forever · Le vide Woog comblé · 7,5M chiens en FR",
-    "h1_html": 'Woog alternative — <em>MapRaiders</em> comble le vide depuis 2018',
-    "lead": "Woog était l'app française de réseau social cartographique pour maîtres de chien — un projet beau, pionnier, hexagonal. Woog a fermé en 2018, et le vide n'a jamais été comblé. Aucune app française ne propose depuis cette combinaison de carte sociale + promenade canine + communauté locale. MapRaiders n'est pas le clone de Woog — mais ajoute exactement ce qui manquait : territoire, Échos, défense, jeu. Avec ou sans ton ancien réflexe Woog.",
+    "badge": "Vide Woog. FR-Exclusif.",
+    "pricing_pill": "Free Forever. Une partie du vide Woog comblée. 7,5 M de chiens en FR.",
+    "h1_html": 'Woog alternative : <em>MapRaiders</em> comble une partie du vide depuis 2018',
+    "lead": "Woog, c'était l'app française de réseau social cartographique pour maîtres de chien : un projet beau, pionnier, fait en France. Woog a fermé en 2018, et personne n'a vraiment comblé le vide depuis. Aucune app française ne propose plus cette combinaison de carte sociale, promenade canine et communauté de quartier. MapRaiders n'est pas un clone de Woog. Mais il ajoute ce qui manquait : territoire, Échos, défense, jeu. Avec ou sans ton ancien réflexe Woog.",
     "trigger": {
-        "quote": "Avec Woog ou seul — MapRaiders pour le territoire.",
+        "quote": "Avec ou sans souvenir Woog : MapRaiders pour le territoire.",
         "author": "MapRaiders, principe de complément"
     },
     "testers": [TESTER_RON, TESTER_VIVIAN],
     "sections": [
         {
             "label": "Hommage Woog",
-            "title": "Woog était <em>super</em> — et a manqué à beaucoup",
+            "title": "Woog était <em>bien</em>, et beaucoup l'ont regretté",
             "body": """
-    <p>Woog (anciennement <em>WoogAvenue</em>) a été lancée en 2014 par une équipe française. L'idée : une carte sociale pour maîtres de chien, où tu pouvais voir d'autres tutaniers à proximité, partager des spots de promenade, créer des rencontres canines. C'était pionnier — bien avant que Strava ne devienne mainstream, bien avant que les apps GPS ne se multiplient.</p>
-    <p>Woog a fermé en 2018. Les raisons : modèle économique difficile, financement insuffisant, équipe dispersée. Beaucoup de maîtres français ont gardé la nostalgie de cette époque où une app française simple créait du lien de quartier autour des chiens.</p>
-    <p>Le vide n'a jamais été vraiment comblé. Petbnb, Wagit, Yummypets : aucun n'a la dimension carte sociale + jeu de quartier que Woog promettait. MapRaiders n'est pas Woog 2.0 — c'est autre chose. Mais qui aimait Woog trouvera dans MapRaiders quelques échos familiers, et beaucoup de nouveau.</p>
+    <p>Woog (à l'origine <em>WoogAvenue</em>) a été lancée en 2014 par une équipe française. L'idée : une carte sociale pour maîtres de chien, où tu voyais les autres tutaniers à proximité, où tu partageais des spots de promenade, où tu organisais des rencontres canines. C'était pionnier, bien avant que Strava ne devienne mainstream, bien avant la multiplication des apps GPS.</p>
+    <p>Woog a fermé en 2018. Les raisons connues : modèle économique difficile, financement insuffisant, équipe dispersée. Pas mal de maîtres français ont gardé la nostalgie de cette période où une app française simple suffisait à créer du lien de quartier autour des chiens.</p>
+    <p>Le vide n'a jamais vraiment été comblé. Petbnb, Wagit, Yummypets : aucun n'a la dimension carte sociale plus jeu de quartier que Woog laissait entrevoir. MapRaiders n'est pas Woog 2.0, c'est autre chose. Mais qui aimait Woog y trouvera quelques échos familiers, et pas mal de nouveau.</p>
             """,
         },
         {
-            "label": "Ce que MapRaiders ajoute",
+            "label": "Ce que ça ajoute",
             "title": "Ce que MapRaiders <em>ajoute</em> à la promenade canine",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Territoire conquis</h3><p>Chaque promenade étend ton polygone. En 2 semaines, tu possèdes ta rue. En 2 mois, le quartier. Sans effort supplémentaire.</p></div>
-    <div class="feat-card rv d1"><h3>Échos du quartier</h3><p>D'autres maîtres déposent des Échos audio («&nbsp;Ici mon chien Bento adore renifler&nbsp;»). Tu découvres en passant — communauté pet du quartier.</p></div>
-    <div class="feat-card rv d2"><h3>Quêtes pour maîtres</h3><p>«&nbsp;Prends une photo du chien dans un parc inconnu&nbsp;». Petites quêtes qui apportent variété à la routine.</p></div>
-    <div class="feat-card rv d3"><h3>Trace personnelle</h3><p>La carte se souvient des chemins préférés de ton chien. Mémoire visuelle de la cohabitation quotidienne.</p></div>
-    <div class="feat-card rv d4"><h3>Défense et jeu</h3><p>Mini-jeux de défense quand quelqu'un attaque ton territoire. Élément ludique que Woog n'avait pas.</p></div>
+    <div class="feat-card rv"><h3>Territoire conquis</h3><p>Chaque promenade étend ton polygone. En deux semaines, tu possèdes ta rue. En deux mois, ton quartier. Sans effort supplémentaire.</p></div>
+    <div class="feat-card rv d1"><h3>Échos du quartier</h3><p>D'autres maîtres déposent des Échos audio («&nbsp;ici mon chien Bento adore renifler&nbsp;»). Tu découvres en passant : c'est une petite communauté pet de proximité.</p></div>
+    <div class="feat-card rv d2"><h3>Quêtes pour maîtres</h3><p>«&nbsp;Prends une photo du chien dans un parc inconnu&nbsp;» : des petites quêtes qui apportent de la variété à la routine.</p></div>
+    <div class="feat-card rv d3"><h3>Trace personnelle</h3><p>La carte se souvient des chemins préférés de ton chien. C'est une mémoire visuelle de la cohabitation quotidienne.</p></div>
+    <div class="feat-card rv d4"><h3>Défense et jeu</h3><p>Mini-jeux de défense quand quelqu'un attaque ton territoire. Cette couche ludique, Woog ne l'avait pas.</p></div>
     <div class="feat-card rv"><h3>Clans organiques</h3><p>Plusieurs maîtres du même quartier deviennent automatiquement clan. Sans Discord, sans inscription forcée.</p></div>
   </div>""",
         },
         {
-            "label": "Utiliser ensemble",
-            "title": "<em>Utiliser les deux ensemble</em> — quand une autre app de promenade existe",
+            "label": "Cohabiter avec une autre app",
+            "title": "<em>Utiliser les deux</em> quand une autre app de promenade existe déjà",
             "body": """
-    <p>MapRaiders ne remplace pas une app de promenade canine spécialisée (carnet de santé, vétérinaires, services). Si tu utilises déjà une app pour gérer ton chien (vaccins, RDV véto, croquettes), garde-la. MapRaiders s'ajoute par-dessus :</p>
+    <p>MapRaiders ne remplace pas une app spécialisée de promenade canine (carnet de santé, vétos, services). Si tu utilises déjà une app pour gérer ton chien (vaccins, RDV véto, croquettes), garde-la. MapRaiders se rajoute par-dessus :</p>
     <ul>
-      <li><strong>App véto/santé pour la logistique.</strong> RDV, vaccins, recherche de pet sitter.</li>
+      <li><strong>App véto ou santé pour la logistique.</strong> RDV, vaccins, recherche de pet sitter.</li>
       <li><strong>MapRaiders pour le jeu et la communauté.</strong> Territoire, Échos, défense, voisinage.</li>
       <li><strong>Pas de conflit GPS.</strong> Les deux apps utilisent le même capteur sans surconsommation notable.</li>
-      <li><strong>Pas d'obligation Woog-like.</strong> Tu peux jouer seul, sans interaction sociale forcée.</li>
+      <li><strong>Aucune obligation sociale.</strong> Tu peux jouer seul, sans interaction sociale forcée.</li>
     </ul>
             """,
         },
         {
-            "label": "Comparatif sanft",
-            "title": "Woog (souvenir) vs <em>MapRaiders</em> (aujourd'hui)",
+            "label": "Comparatif respectueux",
+            "title": "Woog (souvenir) face à <em>MapRaiders</em> (aujourd'hui)",
             "body": "",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Critère</th><th>Woog (2014-2018)</th><th>MapRaiders (2026+)</th></tr></thead>
@@ -1448,20 +1449,20 @@ K7 = {
       <tr><td class="feat-name">Élargissement</td><td>Chiens uniquement</td><td>Maîtres + coureurs + cyclistes + familles</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Hommage :</strong> Woog était une idée française remarquable. MapRaiders n'est pas son successeur officiel — mais comble une partie du vide laissé. Avec respect pour le projet original.</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Hommage :</strong> Woog était une idée française remarquable. MapRaiders n'est pas son successeur officiel, mais comble une partie du vide laissé, avec respect pour le projet d'origine.</p>""",
         },
     ],
     "faq": [
         {"q": "MapRaiders est-il le successeur de Woog ?",
-         "a": "Non, pas officiellement. MapRaiders est un projet indépendant développé par Scafa Investments LLC (Floride). Mais beaucoup d'anciens utilisateurs Woog y trouvent des échos familiers : carte sociale, communauté de quartier, focus promenade. Avec en plus un élément de jeu (territoire, défense) que Woog n'avait pas."},
+         "a": "Non, pas officiellement. MapRaiders est un projet indépendant porté par Scafa Investments LLC (Floride). Mais pas mal d'anciens utilisateurs Woog y retrouvent des échos familiers : carte sociale, communauté de quartier, focus promenade. Avec en plus une couche de jeu (territoire, défense) que Woog n'avait pas."},
         {"q": "Pourquoi Woog a-t-il fermé en 2018 ?",
-         "a": "Les raisons exactes appartiennent à l'équipe Woog. Généralement les apps de niche freemium françaises de cette époque ont souffert d'un modèle économique difficile et de financement insuffisant face aux géants américains. Le marché français était peut-être trop petit pour soutenir une app sociale dédiée chiens à l'époque."},
+         "a": "Les raisons précises appartiennent à l'équipe Woog. De façon générale, les apps de niche freemium françaises de cette période ont eu du mal entre un modèle économique difficile et un financement insuffisant face aux géants américains. Le marché français était sans doute trop petit à l'époque pour porter une app sociale spécialisée chiens."},
         {"q": "Mes anciennes données Woog sont-elles importables ?",
          "a": "Non, les serveurs Woog sont éteints depuis 2018. Aucune importation possible. Tu démarres frais sur MapRaiders avec ta propre rue."},
-        {"q": "MapRaiders fonctionne-t-il pour les chiens petits, âgés, lents ?",
-         "a": "Oui. Pas de vitesse minimum. Le jeu respecte le rythme du chien — marche lente, arrêts fréquents pour renifler, tout compte comme mouvement réel. Comme Woog respectait tous les types de promenades."},
-        {"q": "Y a-t-il pub de marques de croquettes ou pet shops ?",
-         "a": "Non. MapRaiders est 100% sans pub — ni croquettes, ni pet shops, ni marques. Pet-friendly authentique, comme Woog l'était."},
+        {"q": "MapRaiders fonctionne-t-il pour les chiens petits, âgés ou lents ?",
+         "a": "Oui. Pas de vitesse minimum. Le jeu respecte le rythme du chien : marche lente, arrêts fréquents pour renifler, tout compte comme mouvement réel. Dans la même logique que Woog avec tous les types de promenades."},
+        {"q": "Y a-t-il de la pub de marques de croquettes ou de pet shops ?",
+         "a": "Non. MapRaiders est 100% sans pub : pas de croquettes, pas de pet shops, pas de marques. Pet-friendly authentique, comme Woog l'était."},
     ],
     "internal_links": [
         ("/fr/jeu-territoire.html", "Jeu de territoire réel"),
@@ -1483,22 +1484,22 @@ TWINS_DATA = [
     {
         "slug": "/fr/jeu-territoire-avis.html",
         "breadcrumb": "Jeu de territoire avis",
-        "title": "Jeu de territoire avis — testeurs bêta sur MapRaiders",
-        "og_title": "Jeu de territoire — avis réels de la bêta",
-        "meta": "Avis sur jeu de territoire au quotidien : trois testeurs bêta racontent comment conquérir terre, decay et mini-jeux de défense fonctionnent dans l'espace urbain réel.",
+        "title": "Jeu de territoire avis : testeurs bêta sur MapRaiders",
+        "og_title": "Jeu de territoire : avis réels de la bêta",
+        "meta": "Avis sur jeu de territoire au quotidien : trois testeurs bêta racontent comment fonctionnent la conquête, le decay et les mini-jeux de défense en milieu urbain réel.",
         "keywords": "jeu de territoire avis, jeu de territoire test, conquerir territoire app avis, mapraiders avis territoire",
-        "h1_html": 'Jeu de territoire — quand <em>ta rue</em> est à toi',
-        "lead": "Comment c'est de conquérir une rue pour de vrai ? Trois testeurs bêta racontent le premier territoire, le premier choc de Decay et le premier mini-jeu de défense.",
+        "h1_html": 'Jeu de territoire : quand <em>ta rue</em> est à toi',
+        "lead": "Qu'est-ce que ça fait de conquérir une rue pour de vrai ? Trois testeurs bêta racontent leur premier territoire, leur premier choc de Decay et leur premier mini-jeu de défense.",
         "intro_label": "Ce qui compte au test",
         "intro_title": "Ce qui rend un <em>jeu de territoire</em> tangible",
         "intro_body": """
-    <p>Au test de territoire, trois axes d'expérience comptent :</p>
+    <p>Au test, trois axes d'expérience nous intéressaient :</p>
     <ul>
-      <li><strong>Conquête.</strong> Quand la première rue se sent comme «&nbsp;ma terre&nbsp;» ?</li>
-      <li><strong>Perte.</strong> Comment réagir au premier Decay ou à la première défaite face à un attaquant ?</li>
-      <li><strong>Défense.</strong> Comment se sentent les mini-jeux de défense — tactiques, justes, frustrants ?</li>
+      <li><strong>Conquête.</strong> À quel moment la première rue se met à ressembler à «&nbsp;ma terre&nbsp;» ?</li>
+      <li><strong>Perte.</strong> Quelle réaction au premier Decay ou à la première défaite face à un attaquant ?</li>
+      <li><strong>Défense.</strong> Comment ressent-on les mini-jeux de défense au quotidien ?</li>
     </ul>
-    <p>Les citations des trois testeurs couvrent tous les trois axes sous des perspectives très différentes.</p>
+    <p>Les retours des trois testeurs couvrent ces trois axes sous des angles bien différents.</p>
         """,
         "internal_links": [
             ("/fr/jeu-territoire.html", "Jeu de territoire réel"),
@@ -1510,21 +1511,21 @@ TWINS_DATA = [
     {
         "slug": "/fr/jeu-geolocalise-avis.html",
         "breadcrumb": "Jeu géolocalisé avis",
-        "title": "Jeu géolocalisé avis — MapRaiders au test réel",
-        "og_title": "Jeu géolocalisé — avis de testeurs bêta",
-        "meta": "Avis sur jeu géolocalisé : trois testeurs bêta rapportent sur batterie, précision GPS, RGPD et plaisir réel au quotidien urbain.",
+        "title": "Jeu géolocalisé avis : MapRaiders en test réel",
+        "og_title": "Jeu géolocalisé : avis de testeurs bêta",
+        "meta": "Avis sur jeu géolocalisé : trois testeurs bêta racontent batterie, précision GPS, ressenti RGPD et plaisir réel au quotidien urbain.",
         "keywords": "jeu geolocalise avis, jeu geolocalise test, gps mmo test, mapraiders avis france",
-        "h1_html": 'Jeu géolocalisé — <em>avis</em> de testeurs bêta',
-        "lead": "Quelle précision GPS dans les centres urbains ? Combien de batterie l'app consomme sur de longs trajets ? Comment se ressent la conformité RGPD côté joueur ? Trois testeurs répondent honnêtement.",
+        "h1_html": 'Jeu géolocalisé : <em>avis</em> de testeurs bêta',
+        "lead": "Quelle précision GPS dans les centres urbains ? Combien de batterie l'app prend sur les longs trajets ? Comment se ressent la conformité RGPD côté joueur ? Trois testeurs répondent sans filtre.",
         "intro_label": "Axes du test",
         "intro_title": "Ce que nous avons testé sur un <em>jeu géolocalisé</em>",
         "intro_body": """
-    <p>Le test du jeu géolocalisé tournait autour de quatre axes concrets :</p>
+    <p>Le test tournait autour de quatre axes concrets :</p>
     <ul>
       <li><strong>Précision GPS</strong> dans les ravines urbaines et sous les ponts.</li>
-      <li><strong>Consommation de batterie</strong> sur trajets de 1 à 2 heures (comparé à Pokémon GO).</li>
-      <li><strong>Sentiment de vie privée</strong> : combien de gêne de tracking apparaît ?</li>
-      <li><strong>Mécanique de jeu</strong> : territoire, Échos et quêtes fonctionnent-ils au quotidien réel ?</li>
+      <li><strong>Consommation de batterie</strong> sur des trajets d'une à deux heures, en comparaison de Pokémon GO.</li>
+      <li><strong>Ressenti vie privée :</strong> combien de gêne de tracking surgit pendant l'usage ?</li>
+      <li><strong>Mécanique de jeu :</strong> territoire, Échos et quêtes tiennent-ils au quotidien réel ?</li>
     </ul>
         """,
         "internal_links": [
@@ -1537,22 +1538,22 @@ TWINS_DATA = [
     {
         "slug": "/fr/alternative-pokemon-go-avis.html",
         "breadcrumb": "Alternative Pokémon GO avis",
-        "title": "Alternative Pokémon GO ça vaut le coup ? — testeurs bêta",
-        "og_title": "Alternative Pokémon GO ça vaut le coup ? Bêta-test honnête",
-        "meta": "Alternative Pokémon GO ça vaut le coup ? Trois testeurs bêta de Stuttgart, Hambourg et Berlin répondent honnêtement sur cardio, promenade et exploration urbaine.",
+        "title": "Alternative Pokémon GO, ça vaut le coup ? Bêta-testeurs répondent",
+        "og_title": "Alternative Pokémon GO, ça vaut le coup ? Bêta-test honnête",
+        "meta": "Alternative Pokémon GO, ça vaut le coup ? Trois testeurs bêta de Stuttgart, Hambourg et Berlin répondent sur cardio, promenade et exploration urbaine.",
         "keywords": "alternative pokemon go avis, alternative pokemon go test, mapraiders avis, betatest pokemon go alternative",
-        "h1_html": 'Alternative Pokémon GO — <em>ça vaut vraiment le coup ?</em>',
-        "lead": "Trois testeurs bêta de trois régions métropolitaines allemandes ont utilisé MapRaiders pendant plusieurs semaines. Voici les rapports sans filtre — sans marketing-talk, sans code d'influenceur.",
+        "h1_html": 'Alternative Pokémon GO : <em>ça vaut vraiment le coup ?</em>',
+        "lead": "Trois testeurs bêta de trois régions métropolitaines allemandes ont utilisé MapRaiders plusieurs semaines. Voici leurs retours sans filtre, sans langage marketing, sans code d'influenceur.",
         "intro_label": "Qui a testé ?",
         "intro_title": "Trois personnes, trois <em>cas d'usage</em>",
         "intro_body": """
-    <p>Les trois testeurs bêta couvrent trois personas très différentes — et c'est ce qui rend la comparaison avec Pokémon GO honnête :</p>
+    <p>Les trois testeurs bêta couvrent trois profils très différents, et c'est ce qui rend la comparaison avec Pokémon GO honnête :</p>
     <ul>
-      <li><strong>Ron C.</strong> de la région de Stuttgart : maître de chien, promenade quotidienne, sans background gamer.</li>
-      <li><strong>Vivian N.</strong> de la région de Hambourg : coureuse, a joué Pokémon GO en 2018 et arrêté après 3 mois.</li>
-      <li><strong>Aljoscha P.</strong> de la région de Berlin : explorateur urbain, vétéran d'Ingress, connaît l'écosystème Niantic en première ligne.</li>
+      <li><strong>Ron C.</strong>, région de Stuttgart : maître de chien, sortie quotidienne, sans background gamer.</li>
+      <li><strong>Vivian N.</strong>, région de Hambourg : coureuse, a joué Pokémon GO en 2018 puis arrêté après trois mois.</li>
+      <li><strong>Aljoscha P.</strong>, région de Berlin : explorateur urbain, vétéran d'Ingress, connaît l'écosystème Niantic de l'intérieur.</li>
     </ul>
-    <p>Les trois ont testé MapRaiders indépendamment — sans promotion payée, sans script. Les citations ont été traduites des originaux allemands.</p>
+    <p>Les trois ont testé MapRaiders indépendamment, sans promotion payée ni script. Les citations ont été traduites des originaux allemands.</p>
         """,
         "internal_links": [
             ("/fr/alternative-pokemon-go-gratuit.html", "Alternative Pokémon GO gratuit"),
@@ -1564,21 +1565,21 @@ TWINS_DATA = [
     {
         "slug": "/fr/pokemon-go-saudi-avis.html",
         "breadcrumb": "Pokémon GO Saudi avis",
-        "title": "Pokémon GO Saudi avis — testeurs bêta sur RGPD",
-        "og_title": "Pokémon GO Saudi alternative — avis RGPD honnêtes",
-        "meta": "Pokémon GO Saudi avis : trois testeurs bêta racontent comment ils vivent l'alternative RGPD-conforme, indépendante, sans fonds souverain. Hambourg, Stuttgart, Berlin.",
+        "title": "Pokémon GO Saudi avis : testeurs bêta sur l'aspect RGPD",
+        "og_title": "Pokémon GO Saudi alternative : avis RGPD honnêtes",
+        "meta": "Pokémon GO Saudi avis : trois testeurs bêta racontent comment ils vivent l'alternative RGPD-conforme, indépendante, sans fonds souverain.",
         "keywords": "pokemon go saudi avis, pokemon go scopely avis, alternative niantic saoudien avis, mapraiders rgpd avis",
-        "h1_html": 'Pokémon GO Saudi — <em>avis sur l\'alternative RGPD</em>',
-        "lead": "Comment se sentent les joueurs Pokémon GO ex-Niantic après le rachat saoudien de mars 2025 ? Trois testeurs bêta racontent leur transition vers une alternative RGPD-conforme, indépendante.",
+        "h1_html": 'Pokémon GO Saudi : <em>avis sur l\'alternative RGPD</em>',
+        "lead": "Comment se sentent les joueurs Pokémon GO ex-Niantic depuis le rachat saoudien de mars 2025 ? Trois testeurs bêta racontent leur transition vers une alternative RGPD-conforme et indépendante.",
         "intro_label": "Question centrale",
-        "intro_title": "L'<em>indépendance étatique</em> change-t-elle l'expérience de jeu ?",
+        "intro_title": "L'<em>indépendance étatique</em> change-t-elle vraiment l'expérience de jeu ?",
         "intro_body": """
     <p>Les trois testeurs bêta ont évalué l'argument anti-PIF sous des angles pratiques :</p>
     <ul>
-      <li><strong>Ressenti privacy.</strong> Différence entre savoir que tes pas vont à un PIF étatique et savoir qu'ils ne vont nulle part ?</li>
-      <li><strong>Trust juridique.</strong> Mentions légales conformes CNIL, hébergement européen — comment ça se ressent ?</li>
-      <li><strong>Migration mentale.</strong> Comment lâcher Pokémon GO après 7 ans d'investissement personnel ?</li>
-      <li><strong>Compatibilité usage.</strong> Faut-il rejouer toute la stratégie ou les réflexes restent valides ?</li>
+      <li><strong>Ressenti privacy :</strong> ça change quoi de savoir que tes pas ne vont nulle part, plutôt qu'à un fonds étatique ?</li>
+      <li><strong>Trust juridique :</strong> mentions légales conformes CNIL, hébergement européen, comment ça se ressent côté joueur ?</li>
+      <li><strong>Migration mentale :</strong> comment lâcher Pokémon GO après sept ans d'investissement personnel ?</li>
+      <li><strong>Compatibilité usage :</strong> faut-il refaire toute la stratégie, ou les réflexes restent valides ?</li>
     </ul>
         """,
         "internal_links": [
@@ -1591,20 +1592,20 @@ TWINS_DATA = [
     {
         "slug": "/fr/application-marche-avis.html",
         "breadcrumb": "Application marche avis",
-        "title": "Application marche avec jeu avis — test réel",
-        "og_title": "Application marche avec jeu — ça vaut le coup au quotidien ?",
-        "meta": "Application marche avec jeu ça vaut le coup ? Testeurs bêta racontent motivation cardio, batterie sur longs trajets et perte de territoire après pause maladie.",
+        "title": "Application de marche avec jeu : avis et test réel",
+        "og_title": "Application de marche avec jeu : ça vaut le coup au quotidien ?",
+        "meta": "Application de marche avec jeu, ça vaut le coup ? Testeurs bêta racontent motivation cardio, batterie sur longs trajets et perte de territoire après pause maladie.",
         "keywords": "application marche avis, application marche jeu avis, cardio app test france, strava territoire avis",
-        "h1_html": 'Application marche avec jeu — <em>ça vaut le coup ?</em>',
-        "lead": "Que devient la motivation à marcher quand chaque parcours défend de la vraie terre ? Comment se sent le premier Decay après une pause grippe ? Trois testeurs bêta — une coureuse, un walker, un explorateur urbain — répondent.",
+        "h1_html": 'Application de marche avec jeu : <em>ça vaut le coup ?</em>',
+        "lead": "Que devient la motivation à marcher quand chaque parcours défend du vrai terrain ? Quel effet le premier Decay après une grippe ? Une coureuse, un walker et un explorateur urbain répondent.",
         "intro_label": "Axes du test",
-        "intro_title": "Ce qu'une <em>application de marche</em> doit livrer",
+        "intro_title": "Ce qu'une <em>application de marche</em> doit tenir",
         "intro_body": """
-    <p>Nous avons testé l'expérience de marche sur trois axes :</p>
+    <p>Nous avons regardé l'expérience de marche sur trois axes :</p>
     <ul>
-      <li><strong>Ancrage motivationnel.</strong> Quand quelqu'un revient après une pause ?</li>
-      <li><strong>Batterie en long trajet.</strong> Trajets de 60-90 minutes sans vider le téléphone.</li>
-      <li><strong>Cross-modalité.</strong> Fonctionne-t-il pareil pour course, walking et promenade canine ?</li>
+      <li><strong>Ancrage motivationnel :</strong> à quel moment quelqu'un revient après une pause ?</li>
+      <li><strong>Batterie en long trajet :</strong> tenir 60 à 90 minutes sans vider le téléphone.</li>
+      <li><strong>Polyvalence :</strong> fonctionne-t-il aussi bien pour la course, le walking et la promenade canine ?</li>
     </ul>
         """,
         "internal_links": [
@@ -1617,20 +1618,20 @@ TWINS_DATA = [
     {
         "slug": "/fr/chasse-au-tresor-avis.html",
         "breadcrumb": "Chasse au trésor avis",
-        "title": "Chasse au trésor application avis — testeurs bêta MapRaiders",
-        "og_title": "Chasse au trésor application — avis réels de la bêta",
-        "meta": "Avis sur application de chasse au trésor sans acheter de tour ni préparation : testeurs bêta racontent comment MapRaiders transforme la ville entière en chasse au trésor en direct.",
+        "title": "Chasse au trésor application avis : testeurs bêta MapRaiders",
+        "og_title": "Chasse au trésor application : avis réels de la bêta",
+        "meta": "Avis sur application de chasse au trésor sans acheter de tour ni préparation : testeurs bêta racontent comment MapRaiders ouvre la ville entière à la chasse au trésor en direct.",
         "keywords": "chasse au tresor application avis, chasse au tresor app test, chasse tresor live avis, famille chasse tresor avis",
-        "h1_html": 'Chasse au trésor application — <em>avis</em> sans acheter de tour',
-        "lead": "La plupart des apps de chasse au trésor exigent de la préparation : acheter un tour, planifier l'itinéraire, monter les stations. Comment se sent-on quand la ville entière vient déjà pleine d'indices ? Trois testeurs bêta répondent.",
+        "h1_html": 'Chasse au trésor application : <em>avis</em> sans acheter de tour',
+        "lead": "La plupart des apps de chasse au trésor demandent de la préparation : acheter un tour, planifier l'itinéraire, monter les stations. Quel ressenti quand la ville arrive déjà pleine d'indices ? Trois testeurs bêta répondent.",
         "intro_label": "Question du test",
-        "intro_title": "Une <em>chasse au trésor en direct</em> sans préparation, ça marche ?",
+        "intro_title": "Une <em>chasse au trésor en direct</em> sans préparation, ça tient ?",
         "intro_body": """
     <p>Nous avons testé les fonctions de chasse au trésor dans trois scénarios :</p>
     <ul>
-      <li><strong>Seul</strong> comme explorateur urbain (Aljoscha P.) — déposer des Échos, trouver des Échos.</li>
-      <li><strong>Avec chien</strong> en promenade normale (Ron C.) — indices comme sous-produit de la promenade.</li>
-      <li><strong>Scénario familial</strong> simulé — combien de temps adultes + enfants comprennent-ils la mécanique ?</li>
+      <li><strong>Seul</strong> comme explorateur urbain (Aljoscha P.) : déposer des Échos, en trouver.</li>
+      <li><strong>Avec chien</strong> en promenade normale (Ron C.) : indices comme sous-produit de la promenade.</li>
+      <li><strong>Scénario familial</strong> simulé : combien de temps adultes plus enfants mettent-ils à comprendre la mécanique ?</li>
     </ul>
         """,
         "internal_links": [
@@ -1643,20 +1644,20 @@ TWINS_DATA = [
     {
         "slug": "/fr/woog-alternative-avis.html",
         "breadcrumb": "Woog alternative avis",
-        "title": "Woog alternative avis — maîtres de chien testent MapRaiders",
-        "og_title": "Woog alternative — avis réels de maîtres",
-        "meta": "Avis sur alternative Woog : maîtres de chien bêta racontent comment MapRaiders comble le vide laissé depuis 2018 — territoire, Échos, communauté locale.",
+        "title": "Woog alternative avis : maîtres de chien testent MapRaiders",
+        "og_title": "Woog alternative : avis réels de maîtres",
+        "meta": "Avis sur alternative Woog : des maîtres de chien bêta racontent comment MapRaiders comble une partie du vide laissé depuis 2018.",
         "keywords": "woog alternative avis, woog application avis, alternative woog test, app promenade chien avis france",
-        "h1_html": 'Woog alternative — <em>avis</em> de maîtres de chien',
-        "lead": "Woog manquait à beaucoup depuis 2018. Comment ça fait de retrouver une carte sociale, une communauté de quartier — et en plus un jeu de territoire ? Maîtres bêta répondent.",
+        "h1_html": 'Woog alternative : <em>avis</em> de maîtres de chien',
+        "lead": "Woog manquait à pas mal de monde depuis 2018. Quel effet de retrouver une carte sociale, une communauté de quartier, et en plus un jeu de territoire ? Maîtres bêta répondent.",
         "intro_label": "Axes du test",
         "intro_title": "Ce qu'une <em>alternative Woog</em> doit respecter",
         "intro_body": """
     <p>Nous avons testé l'usage pet-friendly sur trois axes :</p>
     <ul>
-      <li><strong>Attention au chien.</strong> L'app distrait-elle du chien ?</li>
-      <li><strong>Rythme de l'animal.</strong> Fonctionne avec chien petit, âgé, lent ?</li>
-      <li><strong>Communauté locale.</strong> Les maîtres parviennent-ils à se connecter sans réseau social parallèle, comme Woog le permettait ?</li>
+      <li><strong>Attention au chien :</strong> est-ce que l'app détourne du chien ?</li>
+      <li><strong>Rythme de l'animal :</strong> est-ce que ça suit avec un chien petit, âgé ou lent ?</li>
+      <li><strong>Communauté locale :</strong> les maîtres arrivent-ils à se connecter sans réseau social parallèle, comme Woog le permettait ?</li>
     </ul>
         """,
         "internal_links": [
@@ -1676,28 +1677,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/fr/mapraiders-avis.html",
     "breadcrumb": "MapRaiders avis",
-    "title": "MapRaiders avis — bêta-tests, fondateur, toutes les pages",
-    "og_title": "MapRaiders avis — tout au même endroit",
-    "meta": "MapRaiders avis : 5,0 sur 5 étoiles dans trois bêta-tests vérifiés, statement du fondateur, toutes les pages Killer et rapports d'avis liés centralement. RGPD.",
+    "title": "MapRaiders avis : bêta-tests, fondateur, toutes les pages",
+    "og_title": "MapRaiders avis : tout au même endroit",
+    "meta": "MapRaiders avis : 5,0 sur 5 étoiles sur trois bêta-tests vérifiés, mot du fondateur, toutes les pages Killer et avis détaillés réunis. RGPD.",
     "keywords": "mapraiders avis, mapraiders avis france, mapraiders test, gps mmo avis france, alternative pokemon go avis",
-    "badge": "Hub & Vue d'ensemble",
-    "pricing_pill": "5,0 / 5 — 3 avis vérifiés de la bêta",
-    "h1_html": '<em>MapRaiders avis</em> — tout ce que tu dois savoir sur le GPS MMO',
-    "lead": "Trois testeurs bêta de Stuttgart, Hambourg et Berlin. Sept sujets Killer de la comparaison Pokémon GO à l'application chasse au trésor. Sept avis détaillés. Un hub.",
+    "badge": "Hub et vue d'ensemble",
+    "pricing_pill": "5,0 / 5 sur trois avis bêta vérifiés.",
+    "h1_html": '<em>MapRaiders avis</em> : tout ce qu\'il faut savoir sur le GPS MMO',
+    "lead": "Trois testeurs bêta à Stuttgart, Hambourg et Berlin. Sept sujets Killer, de la comparaison Pokémon GO à l'application de chasse au trésor. Sept avis détaillés. Un hub.",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
-        {"q": "Qu'est-ce que MapRaiders au juste ?",
-         "a": "MapRaiders est un GPS MMO pour Android. Les joueurs conquièrent des territoires réels par le mouvement, déposent des Échos, créent des quêtes et défendent leur terre avec des mini-jeux. Sans pub, RGPD-conforme, gratuit. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna pour les cosmétiques."},
-        {"q": "Combien de testeurs bêta sont-ils ?",
-         "a": "Actuellement trois personnes que nous rendons publiques — avec leur consentement et sous prénom + initiale par souci de protection de la vie privée. La bêta fermée dans son ensemble est plus large ; les trois cités représentent les personas principales."},
+        {"q": "Qu'est-ce que MapRaiders, exactement ?",
+         "a": "MapRaiders est un GPS MMO pour Android. Les joueurs conquièrent des territoires réels par le mouvement, déposent des Échos, créent des quêtes et défendent leur terrain via des mini-jeux. Sans pub, RGPD-conforme, gratuit. Paiement par CB, PayPal, Apple Pay, Google Pay ou Klarna pour les cosmétiques."},
+        {"q": "Combien y a-t-il de testeurs bêta ?",
+         "a": "Trois personnes rendues publiques pour l'instant, avec leur consentement, sous prénom et initiale pour la vie privée. La bêta fermée dans son ensemble est plus large ; les trois cités correspondent aux profils principaux."},
         {"q": "Les avis sont-ils réels ?",
-         "a": "Oui. Les trois testeurs sont des personnes réelles de la bêta fermée en Allemagne. Ils n'ont pas été payés ; leurs citations ont été initialement écrites en allemand et traduites en français. Dans le markup Schema.org elles sont marquées avec date, langue et référence à l'original allemand (translationOfWork)."},
-        {"q": "Où puis-je être testeur bêta en France ?",
-         "a": "Inscris-toi sur la page d'accueil française avec ton e-mail. Des places de bêta françaises seront libérées par vagues après le lancement principal — priorité aux maîtres de chien, coureurs et explorateurs urbains de villes françaises avec faible densité Pokémon GO."},
+         "a": "Oui. Les trois testeurs sont des personnes réelles de la bêta fermée en Allemagne. Ils n'ont pas été payés. Les citations ont été écrites à l'origine en allemand et traduites en français. Dans le balisage Schema.org, elles portent la date, la langue et une référence à l'original allemand (translationOfWork)."},
+        {"q": "Comment devenir testeur bêta en France ?",
+         "a": "Inscris-toi sur la page d'accueil française avec ton e-mail. Des places de bêta françaises seront libérées par vagues après le lancement principal, en priorité pour les maîtres de chien, coureurs et explorateurs urbains de villes françaises à faible densité Pokémon GO."},
         {"q": "Quand l'app sort-elle officiellement en France ?",
-         "a": "MapRaiders est en bêta fermée sur Google Play (Allemagne). Lancement FR officiel prévu pour l'été 2026 (juillet-août). iOS au Q3 2026. Mentions légales conformes CNIL, hébergement européen, RGPD strict."},
+         "a": "MapRaiders est actuellement en bêta fermée sur Google Play (Allemagne). Lancement FR officiel prévu pour l'été 2026 (juillet-août). iOS au Q3 2026. Mentions légales conformes CNIL, hébergement européen, RGPD strict."},
     ],
     "internal_links": [],
 }

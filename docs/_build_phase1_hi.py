@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Phase 1 Session 4 — HI Killer-URL Builder (Hindi, Devanagari)
+Phase 1 Session 4 - HI Killer-URL Builder (Hindi, Devanagari)
 Generates 15 HI pages (7 Killers + 7 Twins + 1 Hub) per Master-Plan
 02_HI_FINAL_MASTER_PLAN.md.
 
@@ -11,7 +11,7 @@ inLanguage="hi", og:locale=hi_IN. INR-Pricing (PPP) gleich wie EN-IN.
 K4 mohalla-game + K7 cricket-fan-app sind HI-EXKLUSIV.
 WhatsApp + ShareChat-Sharing.
 
-Run: py docs/_build_phase1_hi.py — idempotent.
+Run: py docs/_build_phase1_hi.py, idempotent.
 """
 
 import json
@@ -43,7 +43,7 @@ TESTER_RON = {
     "name": "Ron C.",
     "role": "कुत्ते के मालिक · श्टुटगार्ट क्षेत्र, जर्मनी",
     "role_long": "श्टुटगार्ट क्षेत्र, जर्मनी से कुत्ते के मालिक (बंद बीटा)",
-    "quote": "मेरा कुत्ता अपनी सैर पसंद करता है — और मुझे पसंद है कि हर सैर मेरे मोहल्ले को नक्शे पर ज्यादा दिखाती है। अपनी पूरी गली पर मैंने पहले ही अधिकार जमा लिया।",
+    "quote": "कुत्ता रोज़ दो बार बाहर जाता है, अब मैं साथ में MapRaiders भी ले जाता हूँ। थोड़ा बेवकूफ़ी जैसा लगता है, लेकिन हर रात सोने से पहले मैं चेक करता हूँ कि मेरी गली अभी भी नीली है या नहीं।",
     "date": "2026-03-15",
     "id_local": "review-ron-c-hi",
     "id_de": "review-ron-c",
@@ -52,7 +52,7 @@ TESTER_VIVIAN = {
     "name": "Vivian N.",
     "role": "धावक · हैम्बर्ग क्षेत्र, जर्मनी",
     "role_long": "हैम्बर्ग क्षेत्र, जर्मनी से धावक (बंद बीटा)",
-    "quote": "मैं वैसे भी हर सुबह दौड़ती हूँ। MapRaiders के साथ हर रास्ते का एक लक्ष्य है: क्षेत्र बनाए रखना या वापस जीतना। मेरी कार्डियो प्रेरणा फट गई।",
+    "quote": "मैं वैसे भी हर सुबह जॉगिंग करती हूँ, पर अब मैं कुछ defend भी कर रही हूँ। मेरा Alster-Round मेरा है, और बस मेरा रहना चाहिए। अजीब है कितनी discipline ये अचानक से देता है।",
     "date": "2026-03-22",
     "id_local": "review-vivian-n-hi",
     "id_de": "review-vivian-n",
@@ -61,7 +61,7 @@ TESTER_ALJOSCHA = {
     "name": "Aljoscha P.",
     "role": "शहरी अन्वेषक · बर्लिन क्षेत्र, जर्मनी",
     "role_long": "बर्लिन क्षेत्र, जर्मनी से शहरी अन्वेषक (बंद बीटा)",
-    "quote": "इको छोड़ना और देखना कि कौन उन्हें ढूँढता है, पूरे शहर में एक खुले खजाने की खोज जैसा है।",
+    "quote": "आप किसी घर के दरवाज़े पर एक छोटी ऑडियो-क्लिप छोड़ देते हैं, और तीन दिन बाद वो किसी ऐसे आदमी ने ढूँढ ली जिसे आप जानते भी नहीं। एक game के लिए ये अजीब intimate लगता है।",
     "date": "2026-04-01",
     "id_local": "review-aljoscha-p-hi",
     "id_de": "review-aljoscha-p",
@@ -70,10 +70,12 @@ ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 # Founder-Quote HI (Master-Plan §1.4)
 FOUNDER_QUOTE = (
-    "मैं Pokémon GO के निराश खिलाड़ियों में से एक था। मैं असली क्षेत्र चाहता था, "
-    "क्षणिक जिम कैप्चर नहीं। मैं अपने कदमों को सऊदी संप्रभु फंडों को बेचना नहीं "
-    "चाहता था, कोई विज्ञापन मॉडल नहीं, कोई अनिवार्य प्रीमियम सब्सक्रिप्शन नहीं। "
-    "इसलिए मैंने MapRaiders बनाया। यह मेरा घरेलू मैदान है — और जल्द ही आपका भी होगा।"
+    "मैंने Pokémon GO तीन साल खेला, फिर एक दिन छोड़ दिया। जो चीज़ मुझे चाहिए थी वो "
+    "कभी नहीं आई: असली ज़मीन, क्षणिक gyms नहीं। 2025 में जब Saudi-takeover हुआ, "
+    "तब मेरे लिए साफ़ हो गया कि Niantic-model उस दिशा में नहीं जा रहा जो मुझे "
+    "interest करती है। तो मैंने MapRaiders खुद बनाना शुरू किया। बिना ads, बिना "
+    "investor-pressure, बिना mandatory subscription। मेरा मोहल्ला मेरा game है; "
+    "आपका मोहल्ला आप खुद जीत सकते हैं।"
 )
 
 # INR-Pricing PPP (Master-Plan §1.1)
@@ -91,7 +93,7 @@ DEFINED_TERMS = [
     ("रक्षा मिनी-गेम", "क्षेत्र-विवाद के समय शुरू होने वाला मिनी-गेम (टिक-टैक-टो, RPS, मिनी-शतरंज)"),
     ("मिशन", "खिलाड़ी द्वारा बनाया गया छोटा कार्य जिसे अन्य लोग असली दुनिया में पूरा कर सकते हैं"),
     ("क्लान/गुट", "खिलाड़ियों का स्वाभाविक समूह जो साथ में क्षेत्रों की रक्षा करते हैं"),
-    ("मोहल्ला", "आपका स्थानीय क्षेत्र — रोज़ की गलियाँ, पड़ोस, घरेलू मैदान"),
+    ("मोहल्ला", "आपका स्थानीय क्षेत्र: रोज़ की गलियाँ, पड़ोस, घरेलू मैदान"),
     ("क्षेत्र क्षय", "जिस तंत्र से बिना दौरे के क्षेत्र समय के साथ कमज़ोर होकर फिर से कब्ज़ा-योग्य बन जाते हैं"),
     ("इको ड्रॉप", "असली स्थान पर एक इको छोड़ने की क्रिया"),
 ]
@@ -403,7 +405,7 @@ def build_schema_twin(page):
 def build_schema_hub(page, killers, twins):
     base = build_schema_killer(page)
     item_list = {"@type": "ItemList", "@id": f"{SITE}{page['slug']}#itemlist",
-                 "name": "MapRaiders HI — सभी Killer + समीक्षा पेज",
+                 "name": "MapRaiders HI: सभी Killer + समीक्षा पेज",
                  "itemListElement": []}
     pos = 1
     for slug, name in killers + twins:
@@ -480,7 +482,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>&ldquo;{page['trigger']['quote']}&rdquo;</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
     pricing_pill = f'<div class="pricing-pill rv">{page["pricing_pill"]}</div>' if page.get("pricing_pill") else ""
     return f"""<!DOCTYPE html>
@@ -552,9 +554,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">समीक्षाएँ</div>
-  <h2 class="sec-title rv d1">5.0 / 5 — <em>3 सत्यापित बीटा समीक्षाएँ</em></h2>
+  <h2 class="sec-title rv d1">5.0 / 5: <em>3 सत्यापित बीटा समीक्षाएँ</em></h2>
   <div class="prose rv d2">
-    <p>तीन आंतरिक बीटा टेस्टर — एक कुत्ते के मालिक, एक धावक, एक शहरी अन्वेषक — ने कई हफ्तों तक MapRaiders का उपयोग किया। नीचे दी गई समीक्षाएँ जर्मन मूल से अनुवादित हैं और वास्तविक लोगों का प्रतिनिधित्व करती हैं। प्राइवेसी के लिए केवल पहला नाम + initial इस्तेमाल किया जाता है। भारतीय बीटा-टेस्टर (DPDPA-compliant) Tier-2 लॉन्च के बाद आते हैं।</p>
+    <p>तीन आंतरिक बीटा टेस्टर (एक कुत्ते के मालिक, एक धावक, एक शहरी अन्वेषक) ने कई हफ्तों तक अपनी रोज़मर्रा की routine में MapRaiders का इस्तेमाल किया। नीचे दी गई समीक्षाएँ जर्मन मूल से अनुवादित हैं और real लोगों की हैं। Privacy की वजह से सिर्फ पहला नाम + initial इस्तेमाल हुआ है। भारतीय बीटा-टेस्टर (DPDPA-compliant) Tier-2 लॉन्च के बाद जुड़ेंगे।</p>
   </div>
 </div>
 </section>"""
@@ -625,7 +627,7 @@ def render_hub_page(page, killers, twins):
   <div class="sec-label rv">विषय हब भारत</div>
   <h2 class="sec-title rv d1">सभी <em>MapRaiders भारत विषय</em> एक नज़र में</h2>
   <div class="prose rv d2">
-    <p>यह hub भारतीय बाज़ार के लिए सभी 7 Killer पेज + 7 समर्पित समीक्षा पेज जोड़ता है — Pokémon GO तुलना से क्रिकेट fan map तक, Low-end Android performance से शहरी treasure hunt तक। मुफ्त, बिना विज्ञापन, UPI-मित्र। यह app आपके मोहल्ले के लिए बनाया गया है — Tier-1 flagships और Tier-2 budget devices दोनों पर smooth चलता है।</p>
+    <p>यह hub भारतीय बाज़ार के लिए सभी 7 Killer पेज और 7 समीक्षा पेज एक जगह पर रखता है: Pokémon GO तुलना से लेकर क्रिकेट fan map तक, low-end Android performance से लेकर शहरी treasure hunt तक। मुफ्त, बिना विज्ञापन, UPI-मित्र। App आपके मोहल्ले के लिए बना है। Tier-1 flagships और Tier-2 budget devices दोनों पर smooth चलता है।</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -646,9 +648,9 @@ def render_hub_page(page, killers, twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">कुल रेटिंग</div>
-  <h2 class="sec-title rv d1">5.0 / 5 — <em>3 सत्यापित बीटा समीक्षाएँ</em></h2>
+  <h2 class="sec-title rv d1">5.0 / 5: <em>3 सत्यापित बीटा समीक्षाएँ</em></h2>
   <div class="prose rv d2">
-    <p>सभी समीक्षाएँ बंद बीटा चरण से (फरवरी–अप्रैल 2026)। तीन टेस्टर — कुत्ते का मालिक, धावक, शहरी अन्वेषक — ने श्टुटगार्ट, हैम्बर्ग और बर्लिन में अपने रास्तों पर MapRaiders का परीक्षण किया। यहाँ दिखाई गई समीक्षाएँ जर्मन मूल से अनुवादित हैं और वास्तविक लोगों का प्रतिनिधित्व करती हैं। पारदर्शिता के लिए Schema.org उन्हें <code>translationOfWork</code> के साथ चिह्नित करता है। भारतीय native बीटा (DPDPA-compliant) Tier-2 चरण में लॉन्च के बाद।</p>
+    <p>सभी समीक्षाएँ बंद बीटा (फरवरी से अप्रैल 2026) से हैं। तीन टेस्टर (कुत्ते का मालिक, धावक, शहरी अन्वेषक) ने श्टुटगार्ट, हैम्बर्ग और बर्लिन में अपने असली रास्तों पर MapRaiders test किया, किसी artificial setting में नहीं। यहाँ दिखाई गई समीक्षाएँ जर्मन मूल से अनुवादित हैं और real लोगों की हैं। पारदर्शिता के लिए Schema.org उन्हें <code>translationOfWork</code> से चिह्नित करता है। भारतीय native बीटा (DPDPA-compliant) Tier-2 चरण में लॉन्च के बाद आएगा।</p>
   </div>
 </div>
 </section>"""
@@ -704,27 +706,27 @@ def render_hub_page(page, killers, twins):
 K1 = {
     "slug": "/hi/territory-game.html",
     "breadcrumb": "क्षेत्र खेल",
-    "title": "क्षेत्र खेल — असली ज़मीन पर कब्ज़ा करने वाला GPS MMO",
-    "og_title": "क्षेत्र खेल — असली GPS Territory App भारत",
-    "meta": "क्षेत्र खेल क्या है? MapRaiders एकमात्र GPS MMO है जिसमें असली ज़मीन स्थायी रूप से आपकी होती है। मुफ्त, बिना विज्ञापन, UPI-मित्र, हर भारतीय फोन पर।",
+    "title": "क्षेत्र खेल: असली ज़मीन पर कब्ज़ा करने वाला GPS MMO",
+    "og_title": "क्षेत्र खेल: असली GPS Territory App भारत",
+    "meta": "क्षेत्र खेल क्या है? MapRaiders एक GPS MMO है जिसमें असली ज़मीन स्थायी रूप से आपकी रहती है, जब तक आप उसे defend करते हैं। मुफ्त, बिना विज्ञापन, UPI-मित्र, हर भारतीय फोन पर।",
     "keywords": "क्षेत्र खेल, territory game hindi, असली ज़मीन GPS खेल, मोहल्ला कब्ज़ा app, gps mmo hindi",
     "badge": "Territory Game · भारत",
     "pricing_pill": "₹0 गेमप्ले · Cosmetic ₹19 से · UPI-मित्र",
-    "h1_html": 'क्षेत्र खेल — <em>अपना मोहल्ला जीतो</em>',
-    "lead": "क्षेत्र खेल का मतलब क्या है? MapRaiders में हर गली, हर पार्क, हर चौक एक असली क्षेत्र है। आप चलकर कब्ज़ा करते हैं, क्षय के खिलाफ बचाते हैं, और अपने पड़ोसियों के साथ क्लान बनाते हैं। यह क्षणिक gym नहीं — असली ज़मीन है।",
+    "h1_html": 'क्षेत्र खेल: <em>अपना मोहल्ला जीतो</em>',
+    "lead": "क्षेत्र खेल का मतलब क्या है? MapRaiders में हर गली, हर पार्क, हर चौक एक असली क्षेत्र है। आप पैदल चलकर उसे claim करते हैं, decay के खिलाफ defend करते हैं, और अपने पड़ोसियों के साथ clan बनाते हैं। ये क्षणिक gym नहीं है। ये असली ज़मीन है, जो रहती है जब तक आप वहाँ जाते हैं।",
     "trigger": {"quote": "अपना मोहल्ला जीतो।", "author": "MapRaiders Brand-Vision"},
     "testers": [TESTER_RON, TESTER_VIVIAN],
     "sections": [
         {"label": "परिभाषा", "title": "एक असली <em>क्षेत्र खेल</em> क्या है?",
-         "body": "<p>एक क्षेत्र खेल वही है जहाँ आप असली नक्शे पर असली ज़मीन कब्ज़ा करते हैं। MapRaiders के 4 मूल तंत्र हैं:</p><ul><li><strong>स्थायित्व:</strong> आपका क्षेत्र असली रहता है — कोई auto-respawn नहीं।</li><li><strong>क्षय:</strong> अगर आप दौरा नहीं करते, तो क्षेत्र कमज़ोर होकर खुलता है।</li><li><strong>रक्षा मिनी-गेम:</strong> हमलावर के खिलाफ Tic-Tac-Toe / RPS / mini-chess।</li><li><strong>क्लान-हस्तांतरण:</strong> मोहल्ले के साथी मिलकर रक्षा करते हैं।</li></ul>"},
-        {"label": "क्यों MapRaiders अलग है", "title": "Pokémon GO + Ingress <em>क्षेत्र खेल नहीं</em> हैं",
-         "body": "<p>Pokémon GO में gym कब्ज़ा क्षणिक है — कुछ घंटे में किसी और का। Ingress में portals stable हैं पर कोई असली ज़मीन-स्वामित्व नहीं। MapRaiders में आपकी पूरी गली स्थायी रूप से आपकी हो सकती है — जब तक आप दौरा करते हैं और रक्षा करते हैं।</p>"},
+         "body": "<p>एक क्षेत्र खेल वो है जहाँ आप असली नक्शे पर असली ज़मीन claim करते हैं। MapRaiders के चार core mechanics हैं:</p><ul><li><strong>स्थायित्व:</strong> आपका क्षेत्र persistent है, कोई auto-respawn नहीं।</li><li><strong>क्षय:</strong> अगर आप वहाँ नहीं जाते, तो क्षेत्र धीरे-धीरे कमज़ोर होकर फिर से खुलता है।</li><li><strong>रक्षा मिनी-गेम:</strong> हमलावर के साथ Tic-Tac-Toe, RPS या mini-chess से fight।</li><li><strong>क्लान-हस्तांतरण:</strong> मोहल्ले के साथी मिलकर rakhsa करते हैं।</li></ul>"},
+        {"label": "क्यों MapRaiders अलग है", "title": "Pokémon GO और Ingress <em>क्षेत्र खेल नहीं</em> हैं",
+         "body": "<p>Pokémon GO में gym capture क्षणिक है, कुछ घंटों में कोई और उसे ले लेता है। Ingress में portals stable हैं पर कोई असली ज़मीन-स्वामित्व नहीं है। MapRaiders में आपकी पूरी गली स्थायी रूप से आपकी हो सकती है, जब तक आप वहाँ जाते हैं और defend करते हैं।</p>"},
         {"label": "Tier-2/3 तकनीक", "title": "हर <em>भारतीय फोन</em> पर smooth",
-         "body": "<p>MapRaiders हर Android phone पर design किया गया है — Tier-1 flagship Mumbai user से Tier-2 Lucknow user तक। 2GB RAM minimum, Lite-Mode 1GB तक चलता है, ~5MB/घंटा data, APK <50MB। UPI-payment Razorpay/PhonePe/Paytm/GPay से।</p>"},
+         "body": "<p>MapRaiders हर Android phone के लिए बना है, Mumbai के Tier-1 flagship user से लेकर Lucknow के Tier-2 user तक। 2GB RAM minimum, Lite-Mode 1GB पर चलता है, लगभग 5MB/घंटा data, APK 50MB से कम। UPI-payment Razorpay, PhonePe, Paytm और GPay से।</p>"},
     ],
     "faq": [
         {"q": "क्या MapRaiders सच में मुफ्त है?",
-         "a": "हाँ। पूरा core gameplay — क्षेत्र, Echo, मिशन, क्लान, रक्षा मिनी-गेम — हमेशा मुफ्त है। Cosmetic-IAP ₹19 से शुरू, optional, gameplay advantage zero।"},
+         "a": "हाँ। पूरा core gameplay (क्षेत्र, Echo, मिशन, क्लान, रक्षा मिनी-गेम) हमेशा मुफ्त रहेगा। Cosmetic-IAP ₹19 से शुरू, optional है, और कोई gameplay advantage नहीं देता।"},
         {"q": "क्या मुझे AR camera चाहिए?",
          "a": "नहीं। MapRaiders सिर्फ GPS + map use करता है। Battery 4× longer Pokémon GO से, Tier-2 phones पर भी smooth।"},
         {"q": "क्या मेरा location data sell किया जाता है?",
@@ -746,19 +748,19 @@ K1 = {
 K2 = {
     "slug": "/hi/location-game.html",
     "breadcrumb": "स्थान आधारित खेल",
-    "title": "स्थान आधारित खेल 2026 — भारतीय फोन के लिए 7 ऐप",
-    "og_title": "Location Game Hindi — 7 GPS खेल तुलना भारत",
-    "meta": "स्थान आधारित खेल 2026: 7 GPS games की तुलना — MapRaiders, Pokémon GO, Pikmin Bloom, Geocaching। UPI-मित्र, Tier-2 phone पर smooth, मुफ्त।",
+    "title": "स्थान आधारित खेल 2026: भारतीय फोन के लिए 7 ऐप",
+    "og_title": "Location Game Hindi: 7 GPS खेल तुलना भारत",
+    "meta": "स्थान आधारित खेल 2026: 7 GPS games की तुलना (MapRaiders, Pokémon GO, Pikmin Bloom, Geocaching)। UPI-मित्र, Tier-2 phone पर smooth, मुफ्त।",
     "keywords": "स्थान आधारित खेल, location game hindi, gps game india, pokemon go alternative, location based game",
     "badge": "Volumen-King · 7 खेल तुलना",
     "pricing_pill": "Tier-2 phone ready · UPI-मित्र · ₹0 gameplay",
-    "h1_html": 'स्थान आधारित खेल 2026 — <em>7 GPS खेल</em> भारतीय फोन के लिए तुलना',
-    "lead": "स्थान आधारित खेल खोज रहे हैं जो भारतीय wallet और भारतीय phone पर सच में काम करे? यहाँ 7 खेलों की honest तुलना है — MapRaiders #1, क्योंकि असली क्षेत्र-स्वामित्व + UPI + Tier-2 phone support।",
+    "h1_html": 'स्थान आधारित खेल 2026: <em>7 GPS खेल</em> भारतीय फोन के लिए तुलना',
+    "lead": "ऐसा स्थान आधारित खेल खोज रहे हैं जो भारतीय wallet और भारतीय phone पर सच में चले? यहाँ 7 खेलों की honest तुलना है। MapRaiders हमारे हिसाब से सबसे आगे है, क्योंकि असली क्षेत्र-स्वामित्व, UPI और Tier-2 phone support तीनों मिलते हैं।",
     "trigger": {"quote": "मुफ्त। हर भारतीय फोन पर चलता है।", "author": "Tier-2/3 Tech-Promise"},
     "testers": ALL_TESTERS,
     "sections": [
         {"label": "तुलना तालिका", "title": "7 स्थान आधारित खेल भारत के लिए <em>तुलना</em>",
-         "body": "<p>हर खेल का पेशकश अलग है। नीचे honest comparison — कोई affiliate-bias नहीं।</p>",
+         "body": "<p>हर खेल का अपना अलग offer है। नीचे honest comparison है, बिना किसी affiliate-bias के।</p>",
          "extra": """<table class="comp-table rv d2">
 <thead><tr><th>खेल</th><th>मुफ्त</th><th>UPI</th><th>Tier-2 phone</th><th>असली क्षेत्र</th></tr></thead>
 <tbody>
@@ -770,14 +772,14 @@ K2 = {
 <tr><td class="feat-name">Ludo King (indirekt)</td><td class="check">✓ ad-heavy</td><td class="check">✓</td><td class="check">✓</td><td class="cross">कोई GPS</td></tr>
 <tr><td class="feat-name">Wokamon (Walking)</td><td>limited free</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">कोई territory</td></tr>
 </tbody></table>"""},
-        {"label": "MapRaiders का अंतर", "title": "क्यों <em>MapRaiders #1</em> भारत के लिए",
-         "body": "<ul><li><strong>स्थायी क्षेत्र-स्वामित्व</strong> — Pokémon GO में नहीं, Ingress में नहीं।</li><li><strong>UPI-payment ready</strong> — Razorpay/PhonePe/Paytm/GPay सब integrated।</li><li><strong>PPP-pricing</strong> — Cosmetic ₹19 से, USD-flat-conversion नहीं।</li><li><strong>Tier-2 phone optimized</strong> — 2GB RAM minimum, Lite-Mode 1GB।</li><li><strong>DPDPA-aligned</strong> — कोई data-sale, कोई ad-network।</li></ul>"},
-        {"label": "केस-Study", "title": "मोहल्ला, IPL, होली — <em>3 भारतीय use-cases</em>",
-         "body": "<p><strong>मोहल्ला:</strong> सुबह की सैर पूरी गली पर कब्ज़ा बनाती है। पड़ोसी देखते हैं, WhatsApp group में बात।</p><p><strong>IPL season:</strong> RCB fan Chinnaswamy stadium पर territory रखता है, MI fan Wankhede पर। Match-day boost 2x।</p><p><strong>होली:</strong> रंगों के निशान Echo के रूप में मोहल्ले में छोड़ें। Family-friendly, Tier-2 city-festival।</p>"},
+        {"label": "MapRaiders का अंतर", "title": "क्यों <em>MapRaiders</em> भारत के लिए सबसे आगे है",
+         "body": "<ul><li><strong>स्थायी क्षेत्र-स्वामित्व:</strong> Pokémon GO में नहीं है, Ingress में भी नहीं।</li><li><strong>UPI-payment ready:</strong> Razorpay, PhonePe, Paytm, GPay सब integrated।</li><li><strong>PPP-pricing:</strong> Cosmetic ₹19 से, कोई flat USD conversion नहीं।</li><li><strong>Tier-2 phone optimized:</strong> 2GB RAM minimum, Lite-Mode 1GB तक।</li><li><strong>DPDPA-aligned:</strong> कोई data-sale नहीं, कोई ad-network नहीं।</li></ul>"},
+        {"label": "केस-Study", "title": "मोहल्ला, IPL, होली: <em>3 भारतीय use-cases</em>",
+         "body": "<p><strong>मोहल्ला:</strong> सुबह की सैर पूरी गली पर कब्ज़ा बना देती है। पड़ोसी देखते हैं, WhatsApp group में बात होती है।</p><p><strong>IPL season:</strong> RCB fan Chinnaswamy stadium पर territory रखता है, MI fan Wankhede पर। Match-day पर 2x boost।</p><p><strong>होली:</strong> रंगों के निशान Echo के रूप में मोहल्ले में छोड़ें। Family-friendly mode, Tier-2 city festival।</p>"},
     ],
     "faq": [
         {"q": "क्या Pokémon GO से बेहतर है?",
-         "a": "Pokémon GO में आप creature पकड़ते हैं — हमारे पास असली क्षेत्र है। दोनों अलग loops। पर भारत के लिए MapRaiders fairer है: मुफ्त, UPI, Tier-2 phone पर चलता है।"},
+         "a": "Pokémon GO में आप creature पकड़ते हैं, हमारे पास असली क्षेत्र है। दोनों अलग loops हैं। पर भारत के context में MapRaiders fairer है: मुफ्त, UPI, और Tier-2 phone पर चलता है।"},
         {"q": "Pikmin Bloom + MapRaiders साथ खेल सकते हैं?",
          "a": "हाँ। Pikmin Bloom flower-walking है, MapRaiders territory है। दोनों parallel चल सकते हैं। बैटरी पर ध्यान दें।"},
         {"q": "Geocaching के मुकाबले?",
@@ -799,23 +801,23 @@ K2 = {
 K3 = {
     "slug": "/hi/pokemon-go-alternative-free.html",
     "breadcrumb": "Pokemon GO का विकल्प मुफ्त",
-    "title": "Pokemon GO का विकल्प मुफ्त — UPI मित्र, बिना सऊदी",
-    "og_title": "Pokemon GO Alternative Free Hindi — बिना सऊदी, UPI",
+    "title": "Pokemon GO का विकल्प मुफ्त: UPI मित्र, बिना सऊदी",
+    "og_title": "Pokemon GO Alternative Free Hindi: बिना सऊदी, UPI",
     "meta": "Pokemon GO का विकल्प मुफ्त खोज रहे हैं? MapRaiders 100% मुफ्त है, UPI-मित्र, Tier-2 phone पर smooth। बिना VPN, बिना Niantic, बिना सऊदी।",
     "keywords": "pokemon go alternative free hindi, pokemon go विकल्प, niantic refugee hindi, मुफ्त gps खेल",
     "badge": "मुफ्त · बिना सऊदी",
     "pricing_pill": "₹0 हमेशा · Cosmetic ₹19 से · कोई battle pass नहीं",
-    "h1_html": 'Pokemon GO का <em>विकल्प मुफ्त</em> — बिना सऊदी, बिना battle pass',
-    "lead": "Pokémon GO के साथ क्या गलत हुआ? Battle Pass की कीमतें, Remote-Raid नियम, और March 2025 में Saudi-PIF acquisition — Niantic अब independent नहीं है। MapRaiders एक ईमानदार विकल्प है: 100% मुफ्त, UPI-मित्र, DPDPA-aligned, हर भारतीय phone पर।",
-    "trigger": {"quote": "बिना VPN। बिना Niantic। मुक्त भारतीय।", "author": "Saudi-Anti-Frame"},
+    "h1_html": 'Pokemon GO का <em>विकल्प मुफ्त</em>: बिना सऊदी, बिना battle pass',
+    "lead": "Pokémon GO के साथ क्या गलत हुआ? Battle Pass की कीमतें बढ़ीं, Remote-Raid के नियम बदले, और March 2025 में Saudi-PIF acquisition के बाद Niantic अब independent नहीं रहा। MapRaiders एक honest विकल्प है: 100% मुफ्त, UPI-मित्र, DPDPA-aligned, और हर भारतीय phone पर smooth।",
+    "trigger": {"quote": "बिना VPN, बिना Niantic, मुक्त भारतीय player।", "author": "Saudi-Anti-Frame"},
     "testers": [TESTER_VIVIAN, TESTER_ALJOSCHA],
     "sections": [
         {"label": "Niantic-समस्या", "title": "Pokémon GO 2026 में <em>क्या बदला</em>?",
-         "body": "<ul><li><strong>Battle Pass + IAP:</strong> ARPU कैलकुलेशन भारतीय wallet के लिए नहीं बना।</li><li><strong>Remote-Raid-Pass:</strong> Niantic ने कीमत बढ़ाई, availability घटाई — Tier-2 fans effectively cut off।</li><li><strong>Saudi-PIF March 2025:</strong> Niantic ने game division Scopely (PIF subsidiary) को $3.5B में बेच दिया। 30M+ MAU का location data अब foreign sovereign-fund के through।</li></ul>"},
+         "body": "<ul><li><strong>Battle Pass + IAP:</strong> ARPU calculation भारतीय wallet के लिए design नहीं हुआ था।</li><li><strong>Remote-Raid-Pass:</strong> Niantic ने कीमत बढ़ाई और availability घटाई। Tier-2 fans practically cut off हो गए।</li><li><strong>Saudi-PIF, March 2025:</strong> Niantic ने अपनी game division Scopely (एक PIF subsidiary) को 3.5 billion डॉलर में बेच दी। 30 million से ज़्यादा MAU का location data अब एक foreign sovereign-fund के through जाता है।</li></ul>"},
         {"label": "मुफ्त की परिभाषा", "title": "MapRaiders में <em>मुफ्त</em> का असली अर्थ",
-         "body": "<p>कोई tier-system नहीं, कोई battle-pass नहीं, कोई premium-sub force नहीं। Cosmetic-IAP ₹19 से शुरू, UPI के through pay। Cosmetic items zero gameplay-advantage देते हैं — सिर्फ visual।</p>"},
+         "body": "<p>कोई tier-system नहीं, कोई battle-pass नहीं, कोई premium-sub force नहीं। Cosmetic-IAP ₹19 से शुरू, UPI से payment। Cosmetic items zero gameplay-advantage देते हैं, सिर्फ visual change।</p>"},
         {"label": "Saudi-Niantic प्रश्न", "title": "<em>भारतीय player का data</em> कहाँ जाता है?",
-         "body": "<p>Niantic-Scopely (Saudi PIF) acquisition के बाद, Pokémon GO + Ingress + Pikmin Bloom + Monster Hunter Now सब Saudi-controlled infrastructure से चलते हैं। India में DPDPA लागू है पर cross-border data flows grey area हैं। MapRaiders एक privately-held US LLC है (Scafa Investments LLC, Florida) — कोई state-control, कोई data-sale, कोई ad-network।</p>"},
+         "body": "<p>Niantic-Scopely (Saudi PIF) acquisition के बाद Pokémon GO, Ingress, Pikmin Bloom और Monster Hunter Now सब Saudi-controlled infrastructure से चलते हैं। India में DPDPA लागू है पर cross-border data flows अभी grey area में हैं। MapRaiders एक privately-held US LLC है (Scafa Investments LLC, Florida) जिसमें कोई state-control नहीं, कोई data-sale नहीं, कोई ad-network नहीं।</p>"},
     ],
     "faq": [
         {"q": "क्या MapRaiders हमेशा मुफ्त रहेगा?",
@@ -841,35 +843,35 @@ K3 = {
 K4 = {
     "slug": "/hi/mohalla-game.html",
     "breadcrumb": "मोहल्ला खेल",
-    "title": "मोहल्ला खेल — अपना मोहल्ला जीतो, पड़ोसियों से जुड़ो",
-    "og_title": "मोहल्ला खेल — Mohalla Game हिन्दी",
+    "title": "मोहल्ला खेल: अपना मोहल्ला जीतो, पड़ोसियों से जुड़ो",
+    "og_title": "मोहल्ला खेल: Mohalla Game हिन्दी",
     "meta": "मोहल्ला खेल: MapRaiders आपके मोहल्ले को खेल बनाता है। पड़ोसियों से मिलें, गलियों पर कब्ज़ा करें, होली की यादें छोड़ें। मुफ्त, बिना विज्ञापन।",
     "keywords": "मोहल्ला खेल, mohalla game, neighborhood game hindi, पड़ोस खेल, मोहल्ला app",
     "badge": "HI-EXKLUSIV · Cultural-Hook",
     "pricing_pill": "मोहल्ले के लिए · WhatsApp-Native · ₹0",
-    "h1_html": '<em>मोहल्ला खेल</em> — अपना मोहल्ला जीतो, पड़ोसियों से जुड़ो',
-    "lead": "&ldquo;मोहल्ला&rdquo; — एक शब्द जो neighbourhood या barrio से कहीं गहरा है। यह आपकी पहचान का हिस्सा है। MapRaiders मोहल्ले को एक खेल बनाता है — गलियाँ कब्ज़ा, पड़ोसी क्लान, होली-दिवाली Echo, सब WhatsApp-group में share।",
+    "h1_html": '<em>मोहल्ला खेल</em>: अपना मोहल्ला जीतो, पड़ोसियों से जुड़ो',
+    "lead": "&ldquo;मोहल्ला&rdquo; एक ऐसा शब्द है जो neighbourhood या barrio से कहीं गहरा है। ये आपकी पहचान का हिस्सा है। MapRaiders मोहल्ले को एक खेल बनाता है: गलियों पर कब्ज़ा, पड़ोसी क्लान, होली-दिवाली Echo, और सब कुछ WhatsApp-group में share करने लायक।",
     "trigger": {"quote": "अपना मोहल्ला जीतो।", "author": "MapRaiders Brand-Vision (HI-Cultural)"},
     "testers": ALL_TESTERS,
     "sections": [
-        {"label": "मोहल्ला = गहराई", "title": "<em>मोहल्ला</em> क्या है — और क्यों यह सिर्फ neighbourhood नहीं?",
-         "body": "<p>&ldquo;मोहल्ला&rdquo; एक cultural concept है: छोटा क्षेत्र, सब पड़ोसी एक-दूसरे को जानते हैं, साझा इतिहास, साझा त्योहार, साझा गलियाँ। English &lsquo;neighbourhood&rsquo; इसका सिर्फ एक हिस्सा पकड़ता है। Spanish &lsquo;barrio&rsquo; भी अलग है। मोहल्ला अपने आप में पहचान है।</p>"},
+        {"label": "मोहल्ला = गहराई", "title": "<em>मोहल्ला</em> क्या है, और क्यों ये सिर्फ neighbourhood नहीं है?",
+         "body": "<p>&ldquo;मोहल्ला&rdquo; एक cultural concept है: एक छोटा क्षेत्र जहाँ सब पड़ोसी एक-दूसरे को जानते हैं, जहाँ साझा इतिहास है, साझा त्योहार हैं, साझा गलियाँ हैं। English का &lsquo;neighbourhood&rsquo; इसका सिर्फ एक हिस्सा पकड़ता है। Spanish का &lsquo;barrio&rsquo; भी अलग है। मोहल्ला अपने आप में एक पहचान है।</p>"},
         {"label": "MapRaiders + मोहल्ला", "title": "MapRaiders <em>मोहल्ले को खेल</em> बनाता है",
-         "body": "<ul><li><strong>हर गली एक क्षेत्र:</strong> सुबह की walk से, बच्चों को school छोड़ने के रास्ते में।</li><li><strong>पड़ोसी क्लान:</strong> मोहल्ले-वाले मिलकर रक्षा करते हैं — स्वाभाविक formation।</li><li><strong>WhatsApp-share:</strong> मोहल्ला-WhatsApp-group में app के screenshots।</li><li><strong>Inter-generational:</strong> 70-वर्षीय दादी की सैर भी क्षेत्र बनाती है।</li></ul>"},
-        {"label": "त्योहार + मोहल्ला", "title": "<em>होली, दिवाली, ईद</em> — साल भर मोहल्ले में",
-         "body": "<p><strong>होली:</strong> रंगों के Echo मोहल्ले में छोड़ें। Family-friendly mode।</p><p><strong>दिवाली:</strong> दीयों के Echo, घर-वापसी की walk।</p><p><strong>ईद:</strong> ईदी-Echo, gourmet routes।</p><p><strong>नवरात्रि:</strong> 9 nights, 9 क्षेत्र-quests।</p><p>सब त्योहार respectfully implement किए गए हैं — कोई gambling-mechanic नहीं, कोई religious-monetization नहीं।</p>"},
+         "body": "<ul><li><strong>हर गली एक क्षेत्र:</strong> सुबह की walk से, बच्चों को school छोड़ने के रास्ते में।</li><li><strong>पड़ोसी क्लान:</strong> मोहल्ले-वाले मिलकर rakhsa करते हैं, बिना किसी forced grouping के।</li><li><strong>WhatsApp-share:</strong> मोहल्ला-WhatsApp-group में app के screenshots भेजना आसान।</li><li><strong>Inter-generational:</strong> 70 साल की दादी की सैर भी क्षेत्र बनाती है।</li></ul>"},
+        {"label": "त्योहार + मोहल्ला", "title": "<em>होली, दिवाली, ईद</em>: साल भर मोहल्ले में",
+         "body": "<p><strong>होली:</strong> रंगों के Echo मोहल्ले में छोड़ें। Family-friendly mode।</p><p><strong>दिवाली:</strong> दीयों के Echo, घर-वापसी की walk के साथ।</p><p><strong>ईद:</strong> ईदी-Echo, gourmet routes।</p><p><strong>नवरात्रि:</strong> 9 nights, 9 क्षेत्र-quests।</p><p>सभी त्योहार respectfully implement किए गए हैं। कोई gambling-mechanic नहीं, कोई religious-monetization नहीं।</p>"},
     ],
     "faq": [
         {"q": "क्या मेरे मोहल्ले में चलेगा?",
-         "a": "हाँ — कहीं भी जहाँ GPS signal है। Mumbai-Mulund, Delhi-Lajpat-Nagar, Lucknow-Hazratganj, Indore-Vijaynagar — सब काम करते हैं।"},
+         "a": "हाँ, कहीं भी जहाँ GPS signal है। Mumbai-Mulund, Delhi-Lajpat-Nagar, Lucknow-Hazratganj, Indore-Vijaynagar, सब जगह काम करता है।"},
         {"q": "WhatsApp-group में share कैसे करें?",
          "a": "हर page पर WhatsApp-share button है। App के अंदर achievements के screenshot share करें।"},
         {"q": "बच्चों के लिए safe है?",
-         "a": "हाँ — DPDPA-children-compliant, 13+ age-gate, parents के लिए family-mode। कोई chat-with-strangers feature नहीं।"},
+         "a": "हाँ। DPDPA-children-compliant, 13+ age-gate, parents के लिए family-mode। कोई chat-with-strangers feature नहीं है।"},
         {"q": "बुजुर्गों के लिए?",
-         "a": "हाँ — दादी-दादा friendly। Walk-pace पर काम करता है, कोई fast-action नहीं। Larger UI text option।"},
+         "a": "हाँ, दादी-दादा friendly है। Walk-pace पर काम करता है, कोई fast-action नहीं। Larger UI text का option है।"},
         {"q": "क्या Tier-3 cities में?",
-         "a": "हाँ — Lite-Mode 1GB RAM phones पर। Patna, Bhopal, Lucknow, Indore, Jaipur सब tested।"},
+         "a": "हाँ। Lite-Mode 1GB RAM phones पर भी चलता है। Patna, Bhopal, Lucknow, Indore, Jaipur, सब tested।"},
     ],
     "internal_links": [
         ("/hi/territory-game.html", "क्षेत्र खेल"),
@@ -883,35 +885,35 @@ K4 = {
 K5 = {
     "slug": "/hi/walking-app-with-game.html",
     "breadcrumb": "टहलने का ऐप खेल",
-    "title": "टहलने का ऐप खेल — कार्डियो + क्षेत्र विजय",
-    "og_title": "Walking App Game Hindi — टहलने का खेल",
+    "title": "टहलने का ऐप खेल: कार्डियो और क्षेत्र विजय",
+    "og_title": "Walking App Game Hindi: टहलने का खेल",
     "meta": "टहलने का ऐप खेल: MapRaiders हर walk को क्षेत्र-विजय बनाता है। बिना विज्ञापन, battery-saving, बुजुर्गों के लिए भी friendly। मुफ्त, UPI-मित्र।",
     "keywords": "टहलने का ऐप, walking app hindi, fitness gps हिन्दी, बुजुर्ग walking app, cardio खेल",
     "badge": "Walking · Fitness · 50+ friendly",
     "pricing_pill": "हर walk एक mission · ₹0 hamesha",
-    "h1_html": 'टहलने का ऐप खेल — <em>हर walk का एक लक्ष्य</em>',
-    "lead": "Strava जैसे apps performance-pressure डालते हैं। MapRaiders अलग है: हर walk एक क्षेत्र-mission है — मोहल्ले की रक्षा, क्लान-defense, क्षय counter। 50+ बुजुर्गों के लिए भी friendly, क्योंकि walk-pace पर बना है।",
-    "trigger": {"quote": "मेरी कार्डियो प्रेरणा फट गई।", "author": "Vivian N., धावक"},
+    "h1_html": 'टहलने का ऐप खेल: <em>हर walk का एक लक्ष्य</em>',
+    "lead": "Strava जैसे apps performance-pressure डालते हैं। MapRaiders अलग चलता है: हर walk एक क्षेत्र-mission है, चाहे मोहल्ले की rakhsa हो, clan-defense हो, या decay counter। 50 साल से ऊपर वाले बुजुर्गों के लिए भी friendly, क्योंकि app walk-pace पर बना है।",
+    "trigger": {"quote": "मेरा cardio motivation अचानक से वापस आ गया।", "author": "Vivian N., धावक"},
     "testers": [TESTER_VIVIAN, TESTER_RON],
     "sections": [
         {"label": "क्यों classic walking-apps नहीं", "title": "<em>Strava, Nike Run Club</em> क्यों अधूरे हैं",
-         "body": "<ul><li><strong>Performance-pressure:</strong> हर run KOM-leaderboard के लिए, fun गायब।</li><li><strong>कोई game-element नहीं:</strong> सिर्फ stats, कोई reward।</li><li><strong>Sub-zwang:</strong> Strava premium ₹449/month — Indian wallet के लिए ज्यादा।</li></ul>"},
+         "body": "<ul><li><strong>Performance-pressure:</strong> हर run KOM-leaderboard के लिए, और fun गायब हो जाता है।</li><li><strong>कोई game-element नहीं:</strong> सिर्फ stats दिखते हैं, कोई reward नहीं।</li><li><strong>Sub-zwang:</strong> Strava premium ₹449/month, Indian wallet के लिए काफी ज़्यादा।</li></ul>"},
         {"label": "MapRaiders अलग कैसे", "title": "<em>हर walk</em> एक mission",
-         "body": "<p>आप वैसे भी walk करते हैं। MapRaiders जोड़ता है: क्षेत्र-स्वामित्व, क्षय-counter, क्लान-rakhsa। Strava-complement (replacement नहीं) — आप दोनों parallel use कर सकते हैं।</p>"},
+         "body": "<p>आप वैसे भी walk करते हैं। MapRaiders जोड़ता है: क्षेत्र-स्वामित्व, decay-counter, क्लान-rakhsa। Strava का complement है, replacement नहीं। आप दोनों parallel use कर सकते हैं।</p>"},
         {"label": "50+ Friendly", "title": "<em>बुजुर्गों के लिए</em> design किया गया",
-         "body": "<p>India का fastest-growing fitness segment 50+ है। MapRaiders: walk-pace पर काम करता है, larger-text option, no quick-time-events, no flashing animations। दादी-दादा भी मोहल्ले की रक्षा कर सकते हैं।</p>"},
+         "body": "<p>India का fastest-growing fitness segment 50+ है। MapRaiders walk-pace पर काम करता है, larger-text option देता है, कोई quick-time-events नहीं, कोई flashing animations नहीं। दादी-दादा भी अपने मोहल्ले की रक्षा कर सकते हैं।</p>"},
     ],
     "faq": [
         {"q": "Strava के साथ चलेगा?",
-         "a": "हाँ — दोनों parallel। MapRaiders Strava replace नहीं करता, complement करता है। Strava: pace, distance। MapRaiders: territory, defense।"},
+         "a": "हाँ, दोनों parallel चल सकते हैं। MapRaiders Strava को replace नहीं करता, complement करता है। Strava: pace और distance। MapRaiders: territory और defense।"},
         {"q": "Battery कितनी जाएगी?",
-         "a": "हमारा testing: 60-90 min walk में Tier-2 phones पर ~10-15% battery। Pokémon GO से 4× efficient।"},
+         "a": "हमारी internal testing में 60 से 90 min की walk पर Tier-2 phones पर लगभग 10 से 15% battery जाती है। Pokémon GO के मुक़ाबले लगभग 4 गुना efficient।"},
         {"q": "Indoor-treadmill पर?",
          "a": "नहीं। MapRaiders outdoor-only है। GPS की जरूरत है। Indoor walking के लिए पारंपरिक apps बेहतर।"},
         {"q": "Dog-walking?",
-         "a": "हाँ — Ron C. की favorite use-case। कुत्ते की रोज़ की walk से क्षेत्र बनता है।"},
+         "a": "हाँ, Ron C. का favorite use-case यही है। कुत्ते की रोज़ की walk से ही क्षेत्र बन जाता है।"},
         {"q": "बुजुर्गों के लिए कितना safe?",
-         "a": "Walk-pace, no fast actions, larger-text, family-mode option। 50+ India का fastest-growing segment है।"},
+         "a": "Walk-pace पर बना है, कोई fast actions नहीं, larger-text और family-mode option मौजूद। 50+ India का fastest-growing fitness segment है।"},
     ],
     "internal_links": [
         ("/hi/territory-game.html", "क्षेत्र खेल"),
@@ -925,33 +927,33 @@ K5 = {
 K6 = {
     "slug": "/hi/treasure-hunt-app.html",
     "breadcrumb": "खजाना खोज ऐप",
-    "title": "खजाना खोज ऐप — पूरा शहर लाइव खजाना खोज",
-    "og_title": "Treasure Hunt App Hindi — खजाना खोज",
+    "title": "खजाना खोज ऐप: पूरा शहर लाइव खजाना खोज",
+    "og_title": "Treasure Hunt App Hindi: खजाना खोज",
     "meta": "खजाना खोज ऐप: MapRaiders पूरे शहर को live treasure hunt बनाता है। बिना setup, बिना tour खरीदे। Family-friendly, DPDPA-children-protection।",
     "keywords": "खजाना खोज ऐप, treasure hunt app hindi, scavenger hunt हिन्दी, family खेल, बच्चे खेल",
     "badge": "Live Treasure Hunt · Family",
     "pricing_pill": "बिना setup · ₹0 · DPDPA-children-safe",
-    "h1_html": 'खजाना खोज ऐप — <em>पूरा शहर</em> live खजाना खोज',
-    "lead": "खजाना खोज apps आमतौर पर pre-prep मांगते हैं: tour खरीदो, route plan करो। MapRaiders अलग है: पूरा शहर पहले से Echo से भरा है। आप सिर्फ चलते हैं, खोजते हैं, अपने Echo छोड़ते हैं। Diwali, Holi, Eid, Navratri — साल भर।",
-    "trigger": {"quote": "इको छोड़ना और देखना कि कौन उन्हें ढूँढता है।", "author": "Aljoscha P., शहरी अन्वेषक"},
+    "h1_html": 'खजाना खोज ऐप: <em>पूरा शहर</em> live खजाना खोज',
+    "lead": "ज़्यादातर खजाना खोज apps pre-prep मांगते हैं: tour खरीदो, route plan करो। MapRaiders अलग है। पूरा शहर पहले से Echo से भरा है। आप सिर्फ चलते हैं, खोजते हैं, अपने Echo छोड़ते हैं। Diwali, Holi, Eid, Navratri, साल भर कुछ न कुछ।",
+    "trigger": {"quote": "Echo छोड़ना और देखना कि कौन उन्हें ढूँढता है।", "author": "Aljoscha P., शहरी अन्वेषक"},
     "testers": [TESTER_ALJOSCHA, TESTER_RON],
     "sections": [
         {"label": "3 आधुनिक मानदंड", "title": "एक <em>आधुनिक treasure hunt</em> क्या है?",
-         "body": "<ul><li><strong>Live:</strong> servers पर real-time, कोई pre-recording नहीं।</li><li><strong>Social:</strong> Echo छोड़ना, ढूँढना, share करना — community-driven।</li><li><strong>बिना premium-Hürde:</strong> कोई tour-खरीद, कोई setup-fee, कोई Goosechase-Subscription।</li></ul>"},
+         "body": "<ul><li><strong>Live:</strong> servers पर real-time, कोई pre-recording नहीं।</li><li><strong>Social:</strong> Echo छोड़ना, ढूँढना, share करना, सब community-driven।</li><li><strong>बिना premium-Hürde:</strong> कोई tour-खरीद नहीं, कोई setup-fee नहीं, कोई Goosechase-Subscription नहीं।</li></ul>"},
         {"label": "तुलना", "title": "<em>Geocaching, Goosechase, Actionbound</em> vs MapRaiders",
-         "body": "<p><strong>Geocaching:</strong> premium-paywall, slow-update। MapRaiders: forever-free, live-Echo।</p><p><strong>Goosechase:</strong> tour-organizer-buy, $/team। MapRaiders: pre-filled, free।</p><p><strong>Actionbound:</strong> German-prep-heavy। MapRaiders: zero-prep।</p>"},
-        {"label": "बच्चे + DPDPA", "title": "<em>बच्चों के लिए</em> safe — DPDPA-compliant",
-         "body": "<p>13+ age-gate, parents के लिए family-mode option, no chat-with-strangers, no in-app-purchase under-18। DPDPA-Children-Protection hard-audit किया गया है।</p>"},
+         "body": "<p><strong>Geocaching:</strong> premium-paywall, slow-update। MapRaiders forever-free है, live-Echo के साथ।</p><p><strong>Goosechase:</strong> tour-organizer को खरीदना पड़ता है, $/team। MapRaiders pre-filled और free है।</p><p><strong>Actionbound:</strong> German-prep-heavy। MapRaiders zero-prep पर चलता है।</p>"},
+        {"label": "बच्चे + DPDPA", "title": "<em>बच्चों के लिए</em> safe, DPDPA-compliant",
+         "body": "<p>13+ age-gate, parents के लिए family-mode option, no chat-with-strangers, no in-app-purchase under-18। DPDPA-Children-Protection का hard-audit हो चुका है।</p>"},
     ],
     "faq": [
         {"q": "बच्चों के साथ खेल सकते हैं?",
-         "a": "हाँ — 13+ age-gate, parental-mode, DPDPA-compliant। Goosechase से safer।"},
+         "a": "हाँ। 13+ age-gate, parental-mode, DPDPA-compliant। Goosechase से safer है।"},
         {"q": "Tour खरीदनी पड़ती है?",
          "a": "नहीं। पूरा शहर pre-filled है। आप तुरंत शुरू करते हैं।"},
         {"q": "Echo क्या है?",
          "a": "Echo एक location पर आपका छोड़ा हुआ audio/photo/video signal है। दूसरे players उसे वहाँ खोज सकते हैं।"},
         {"q": "Diwali/Holi specials?",
-         "a": "हाँ — सालभर त्योहार-Echo: Diwali दीये, Holi रंग, Eid ईदी, Navratri 9 nights।"},
+         "a": "हाँ, सालभर त्योहार-Echo चलते हैं: Diwali दीये, Holi रंग, Eid ईदी, Navratri की 9 nights।"},
         {"q": "Family-mode क्या करता है?",
          "a": "Children-content filter on, no stranger-Echo, parental-supervision, larger-UI option।"},
     ],
@@ -967,31 +969,31 @@ K6 = {
 K7 = {
     "slug": "/hi/cricket-fan-app.html",
     "breadcrumb": "क्रिकेट प्रशंसक ऐप",
-    "title": "क्रिकेट प्रशंसक ऐप — IPL स्टेडियम पर कब्ज़ा करें",
-    "og_title": "Cricket Fan App Hindi — IPL Stadium Territory",
-    "meta": "क्रिकेट प्रशंसक नक्शा ऐप: MapRaiders के साथ IPL स्टेडियम पर कब्ज़ा करें, अपनी टीम के मोहल्ले की रक्षा करें। मुफ्त, हिंदी, UPI।",
+    "title": "क्रिकेट प्रशंसक ऐप: IPL स्टेडियम पर कब्ज़ा करें",
+    "og_title": "Cricket Fan App Hindi: IPL Stadium Territory",
+    "meta": "क्रिकेट प्रशंसक नक्शा ऐप: MapRaiders के साथ IPL स्टेडियम पर कब्ज़ा करें और अपनी टीम के मोहल्ले की rakhsa करें। मुफ्त, हिंदी, UPI।",
     "keywords": "क्रिकेट fan app, cricket app hindi, ipl stadium app, क्रिकेट खेल, ipl territory",
     "badge": "HI-EXKLUSIV · IPL Cricket",
     "pricing_pill": "Match-day boost 2x · IPL 2026 ready · ₹0",
-    "h1_html": 'क्रिकेट प्रशंसक ऐप — <em>IPL स्टेडियम</em> पर कब्ज़ा करें',
-    "lead": "क्रिकेट भारत की पहचान है, सिर्फ खेल नहीं। MapRaiders cricket-fans के लिए IN-EXKLUSIV feature: सभी 7 IPL stadiums territory हैं — Wankhede (MI), Chinnaswamy (RCB), Eden Gardens (KKR), Chepauk (CSK), Arun Jaitley (DC), Narendra Modi (GT), Rajiv Gandhi (SRH)। Match-day boost 2x।",
-    "trigger": {"quote": "क्रिकेट स्टेडियम जीतो — अपना मोहल्ला बचाओ।", "author": "Cricket-Hook IN-EXKLUSIV"},
+    "h1_html": 'क्रिकेट प्रशंसक ऐप: <em>IPL स्टेडियम</em> पर कब्ज़ा करें',
+    "lead": "क्रिकेट भारत की पहचान है, सिर्फ खेल नहीं है। MapRaiders cricket-fans के लिए एक IN-Exclusive feature देता है: सभी 7 IPL stadiums territory हैं (Wankhede MI, Chinnaswamy RCB, Eden Gardens KKR, Chepauk CSK, Arun Jaitley DC, Narendra Modi GT, Rajiv Gandhi SRH)। Match-day पर 2x boost मिलता है।",
+    "trigger": {"quote": "क्रिकेट स्टेडियम जीतो, अपना मोहल्ला बचाओ।", "author": "Cricket-Hook IN-EXKLUSIV"},
     "testers": [TESTER_ALJOSCHA, TESTER_RON, TESTER_VIVIAN],
     "sections": [
         {"label": "IPL + भारत", "title": "क्रिकेट <em>cultural identity</em> है",
-         "body": "<p>India में cricket सिर्फ खेल नहीं — यह पहचान, परिवार, मोहल्ला है। MapRaiders cricket-fans के लिए dedicated mode बनाता है: हर IPL match-day पर stadium-territory active होता है।</p>"},
+         "body": "<p>India में cricket सिर्फ खेल नहीं है। ये पहचान भी है, परिवार भी, और मोहल्ला भी। MapRaiders cricket-fans के लिए एक dedicated mode बनाता है: हर IPL match-day पर stadium-territory active रहता है।</p>"},
         {"label": "7 IPL Stadiums", "title": "<em>सभी 7 IPL stadiums</em> territory हैं",
-         "body": "<ul><li><strong>Wankhede (Mumbai Indians):</strong> Marine Drive flow।</li><li><strong>Chinnaswamy (RCB):</strong> Bangalore central।</li><li><strong>Eden Gardens (KKR):</strong> Kolkata historic।</li><li><strong>Chepauk (CSK):</strong> Chennai marina-vicinity।</li><li><strong>Arun Jaitley (DC):</strong> Delhi central।</li><li><strong>Narendra Modi (GT):</strong> Ahmedabad — दुनिया का सबसे बड़ा cricket stadium।</li><li><strong>Rajiv Gandhi (SRH):</strong> Hyderabad uppal।</li></ul>"},
-        {"label": "Match-Day Mechanics", "title": "<em>Match-day</em> = 2x territory boost",
-         "body": "<p>Match-day पर home stadium territory 2x weight देता है। MI fans Wankhede defend करते हैं, RCB fans Chinnaswamy। Inter-team match-days = clan-vs-clan territorial battle। BCCI-Disclaimer + No-Endorsement-Klausel: कोई player (Sachin/Virat/Dhoni/Rohit) endorse नहीं — सिर्फ stadium-locations।</p>"},
+         "body": "<ul><li><strong>Wankhede (Mumbai Indians):</strong> Marine Drive flow।</li><li><strong>Chinnaswamy (RCB):</strong> Bangalore central।</li><li><strong>Eden Gardens (KKR):</strong> Kolkata historic।</li><li><strong>Chepauk (CSK):</strong> Chennai marina-vicinity।</li><li><strong>Arun Jaitley (DC):</strong> Delhi central।</li><li><strong>Narendra Modi (GT):</strong> Ahmedabad में दुनिया का सबसे बड़ा cricket stadium।</li><li><strong>Rajiv Gandhi (SRH):</strong> Hyderabad uppal।</li></ul>"},
+        {"label": "Match-Day Mechanics", "title": "<em>Match-day</em> पर 2x territory boost",
+         "body": "<p>Match-day पर home stadium का territory 2x weight देता है। MI fans Wankhede defend करते हैं, RCB fans Chinnaswamy। Inter-team match-days clan-vs-clan territorial battle बनाते हैं। BCCI-Disclaimer और No-Endorsement-Klausel: कोई player (Sachin, Virat, Dhoni, Rohit) endorse नहीं किया जाता, सिर्फ stadium-locations use होती हैं।</p>"},
     ],
     "faq": [
         {"q": "मेरी team को कैसे चुनूँ?",
          "a": "App में team-flag pick करें। Stadium-territory automatically उस team को mapped। Match-day पर 2x boost।"},
         {"q": "IPL season बाहर?",
-         "a": "Stadium-territories year-round active हैं — bilateral series, World Cup, T20I सब के लिए। IPL match-day pe extra boost।"},
+         "a": "Stadium-territories year-round active रहते हैं, bilateral series, World Cup, T20I सब के लिए। IPL match-day पर extra boost मिलता है।"},
         {"q": "क्या कोई player endorse करता है?",
-         "a": "नहीं। हम कोई player endorse नहीं करते। केवल stadium-locations use करते हैं। BCCI से कोई official partnership नहीं — independent fan-tribute।"},
+         "a": "नहीं। हम किसी player को endorse नहीं करते। सिर्फ stadium-locations use करते हैं। BCCI से कोई official partnership नहीं है। ये एक independent fan-tribute है।"},
         {"q": "Cricket-Cosmetics?",
          "a": "Cricket-themed cosmetic items planned: team-flags, bat-marker-design, helmet-skin। Cosmetic-only, gameplay-advantage zero।"},
         {"q": "Stadium पर physically जाना है?",
@@ -1015,11 +1017,11 @@ TWINS_DATA = [
     {
         "slug": "/hi/territory-game-samiksha.html",
         "breadcrumb": "क्षेत्र खेल समीक्षा",
-        "title": "क्षेत्र खेल समीक्षा — Beta Tester बताते हैं",
+        "title": "क्षेत्र खेल समीक्षा: Beta Tester बताते हैं",
         "og_title": "क्षेत्र खेल समीक्षा हिन्दी",
         "meta": "क्षेत्र खेल समीक्षा: तीन जर्मन beta tester अपनी रोज़ की routine में क्षेत्र-claim, क्षय और रक्षा के अनुभव बताते हैं। भारतीय गलियों के लिए relevant।",
         "keywords": "क्षेत्र खेल समीक्षा, territory game review hindi, gps mmo review hindi",
-        "h1_html": 'क्षेत्र खेल — जब <em>आपकी अपनी गली</em> आपकी हो',
+        "h1_html": 'क्षेत्र खेल: जब <em>आपकी अपनी गली</em> आपकी हो',
         "lead": "अपना पहला कब्ज़ा कैसा लगता है? पहला क्षय shock? पहला defense mini-game? तीन beta tester की honest reports। वही loop Connaught Place, Cubbon Park, Marine Drive पर भी काम करता है।",
         "intro_label": "Test के axes",
         "intro_title": "एक <em>क्षेत्र खेल</em> को क्या tangible बनाता है",
@@ -1034,12 +1036,12 @@ TWINS_DATA = [
     {
         "slug": "/hi/location-game-kaisa-hai.html",
         "breadcrumb": "स्थान आधारित खेल कैसा है",
-        "title": "स्थान आधारित खेल कैसा है — 7 GPS Apps Test",
-        "og_title": "Location Game Kaisa Hai — Hindi Review",
-        "meta": "स्थान आधारित खेल कैसा है? 7 GPS apps की honest beta-tester reviews — MapRaiders, Pokémon GO, Pikmin Bloom, Geocaching, Wokamon।",
+        "title": "स्थान आधारित खेल कैसा है: 7 GPS Apps Test",
+        "og_title": "Location Game Kaisa Hai: Hindi Review",
+        "meta": "स्थान आधारित खेल कैसा है? 7 GPS apps की honest beta-tester reviews (MapRaiders, Pokémon GO, Pikmin Bloom, Geocaching, Wokamon)।",
         "keywords": "location game कैसा, स्थान खेल review, gps खेल honest review",
-        "h1_html": 'स्थान आधारित खेल — <em>7 apps</em> honest tested',
-        "lead": "GPS खेल hype से अलग — actual experience क्या? तीन tester ने हफ़्तों use किया, बीच में Pokémon GO से comparison लिया। यह उनकी honest reports हैं।",
+        "h1_html": 'स्थान आधारित खेल: <em>7 apps</em> honest tested',
+        "lead": "GPS खेल hype से अलग, actual experience कैसा है? तीन tester ने हफ़्तों use किया, बीच में Pokémon GO से comparison भी लिया। ये उनकी honest reports हैं।",
         "intro_label": "Test setup",
         "intro_title": "हमने <em>क्या test किया</em>",
         "intro_body": "<ul><li>Battery-life Tier-2 phones पर।</li><li>Data consumption ~MB/घंटा।</li><li>Loop-engagement 4-week sustain।</li><li>Game-element का real-life integration।</li></ul>",
@@ -1053,12 +1055,12 @@ TWINS_DATA = [
     {
         "slug": "/hi/pokemon-go-alternative-samiksha.html",
         "breadcrumb": "Pokemon GO विकल्प समीक्षा",
-        "title": "Pokemon GO विकल्प समीक्षा — Honest Beta Reports",
+        "title": "Pokemon GO विकल्प समीक्षा: Honest Beta Reports",
         "og_title": "Pokemon GO Alternative Review Hindi",
-        "meta": "Pokemon GO विकल्प समीक्षा: ad-free, UPI-friendly, Tier-2 phone पर smooth — beta tester reports। Saudi-frame, DPDPA, मुफ्त forever।",
+        "meta": "Pokemon GO विकल्प समीक्षा: ad-free, UPI-friendly, Tier-2 phone पर smooth, beta tester reports। Saudi-frame, DPDPA, मुफ्त forever।",
         "keywords": "pokemon go विकल्प समीक्षा, pokemon go alternative review hindi",
-        "h1_html": 'Pokemon GO का विकल्प — <em>honest tester reports</em>',
-        "lead": "Saudi-acquisition के बाद players ने Pokémon GO छोड़ा। MapRaiders refugee-home है। Beta tester ने 6+ हफ़्ते parallel use किया — यह उनके honest experiences।",
+        "h1_html": 'Pokemon GO का विकल्प: <em>honest tester reports</em>',
+        "lead": "Saudi-acquisition के बाद कई players ने Pokémon GO छोड़ा। MapRaiders एक refuge की तरह है। Beta tester ने 6 से ज़्यादा हफ़्ते parallel use किया, ये उनके honest experiences हैं।",
         "intro_label": "Comparison-test",
         "intro_title": "क्या MapRaiders <em>refuge</em> है?",
         "intro_body": "<ul><li>Battle-pass-frustration absent।</li><li>Saudi-data-flow कोई नहीं।</li><li>UPI-payment integration smooth।</li><li>Tier-2 phone performance Pokémon GO से 4x बेहतर।</li></ul>",
@@ -1072,12 +1074,12 @@ TWINS_DATA = [
     {
         "slug": "/hi/mohalla-game-samiksha.html",
         "breadcrumb": "मोहल्ला खेल समीक्षा",
-        "title": "मोहल्ला खेल समीक्षा — पड़ोसियों से जुड़ने का अनुभव",
+        "title": "मोहल्ला खेल समीक्षा: पड़ोसियों से जुड़ने का अनुभव",
         "og_title": "मोहल्ला खेल समीक्षा हिन्दी",
         "meta": "मोहल्ला खेल समीक्षा: पड़ोसी क्लान, गली-कब्ज़ा, होली-Echo के experiences। Cultural-deep हिन्दी context।",
         "keywords": "मोहल्ला खेल समीक्षा, mohalla game review",
-        "h1_html": 'मोहल्ला खेल — <em>पड़ोसियों से जुड़ने</em> की honest reports',
-        "lead": "मोहल्ला सिर्फ neighbourhood नहीं है। एक खेल जो मोहल्ले को capture करे — काम कैसे करता है? Beta tester reports plus Indian-context-tier-2 reflections।",
+        "h1_html": 'मोहल्ला खेल: <em>पड़ोसियों से जुड़ने</em> की honest reports',
+        "lead": "मोहल्ला सिर्फ neighbourhood नहीं है। एक खेल जो मोहल्ले को capture करना चाहे, वो practically काम कैसे करता है? Beta tester reports और Indian-context Tier-2 reflections।",
         "intro_label": "Cultural-test",
         "intro_title": "क्या <em>मोहल्ला</em> capture होता है?",
         "intro_body": "<ul><li>WhatsApp-group में share कितनी आसान।</li><li>पड़ोसी-clan formation organic।</li><li>Inter-generational engagement।</li><li>त्योहार-Echo respectful।</li></ul>",
@@ -1091,12 +1093,12 @@ TWINS_DATA = [
     {
         "slug": "/hi/walking-app-kaisa-hai.html",
         "breadcrumb": "टहलने का ऐप कैसा है",
-        "title": "टहलने का ऐप कैसा है — Beta Walker Reports",
-        "og_title": "Walking App Kaisa Hai — Hindi Review",
-        "meta": "टहलने का ऐप कैसा है? Beta-tester walker, dog-owner, runner की reports — battery, motivation, क्षेत्र-loss as cardio-hook।",
+        "title": "टहलने का ऐप कैसा है: Beta Walker Reports",
+        "og_title": "Walking App Kaisa Hai: Hindi Review",
+        "meta": "टहलने का ऐप कैसा है? Beta-tester walker, dog-owner और runner की reports: battery, motivation, और क्षेत्र-loss को cardio-hook की तरह।",
         "keywords": "walking app कैसा, walking app review hindi, fitness app review",
-        "h1_html": 'टहलने का ऐप — <em>cardio-motivation</em> reports',
-        "lead": "Strava से अलग एक walking-loop कैसा है? तीन tester ने अलग-अलग routines (jog, walk, dog-walk) में MapRaiders try किया। यह honest cardio-reports।",
+        "h1_html": 'टहलने का ऐप: <em>cardio-motivation</em> reports',
+        "lead": "Strava से अलग एक walking-loop कैसा लगता है? तीन tester ने अलग-अलग routines (jog, walk, dog-walk) में MapRaiders try किया। ये उनकी honest cardio-reports हैं।",
         "intro_label": "Walking-axes",
         "intro_title": "एक <em>walking-with-game</em> app को क्या deliver करना चाहिए",
         "intro_body": "<ul><li>Motivation-anchor: pause के बाद वापसी।</li><li>Battery 60-90min walks पर।</li><li>Cross-activity: jog/walk/dog-walk।</li></ul>",
@@ -1110,12 +1112,12 @@ TWINS_DATA = [
     {
         "slug": "/hi/treasure-hunt-samiksha.html",
         "breadcrumb": "खजाना खोज समीक्षा",
-        "title": "खजाना खोज ऐप समीक्षा — बिना setup live City Hunt",
+        "title": "खजाना खोज ऐप समीक्षा: बिना setup live City Hunt",
         "og_title": "Treasure Hunt App Review Hindi",
         "meta": "खजाना खोज ऐप समीक्षा: बिना tour-purchase, बिना setup। Family-friendly, DPDPA-children-safe। Beta tester reports।",
         "keywords": "खजाना खोज समीक्षा, treasure hunt review hindi, family खेल समीक्षा",
-        "h1_html": 'खजाना खोज ऐप — <em>बिना setup</em> reviews',
-        "lead": "अधिकतर treasure-hunt apps prep-heavy हैं। MapRaiders अलग — पूरा शहर pre-filled। Beta tester three-setting reports — solo, dog-walk, family-simulated।",
+        "h1_html": 'खजाना खोज ऐप: <em>बिना setup</em> reviews',
+        "lead": "अधिकतर treasure-hunt apps prep-heavy हैं। MapRaiders अलग है, पूरा शहर pre-filled आता है। Beta tester ने तीन settings में test किया: solo, dog-walk, और family-simulated।",
         "intro_label": "Test-question",
         "intro_title": "क्या <em>live treasure-hunt</em> बिना setup चलता है?",
         "intro_body": "<ul><li>Solo शहरी अन्वेषक।</li><li>Dog-walk side-discovery।</li><li>Family-simulated learning-curve।</li></ul>",
@@ -1129,11 +1131,11 @@ TWINS_DATA = [
     {
         "slug": "/hi/cricket-fan-kaisa-hai.html",
         "breadcrumb": "क्रिकेट fan कैसा है",
-        "title": "क्रिकेट fan ऐप कैसा है — IPL Stadium Test",
-        "og_title": "Cricket Fan App Kaisa Hai — Hindi Review",
+        "title": "क्रिकेट fan ऐप कैसा है: IPL Stadium Test",
+        "og_title": "Cricket Fan App Kaisa Hai: Hindi Review",
         "meta": "क्रिकेट fan ऐप कैसा है? Wankhede, Chinnaswamy, Eden Gardens, Chepauk capture का experience। IPL season tester reports।",
         "keywords": "cricket fan ऐप कैसा, cricket app review hindi, ipl stadium review",
-        "h1_html": 'क्रिकेट fan ऐप — <em>IPL stadium</em> reports',
+        "h1_html": 'क्रिकेट fan ऐप: <em>IPL stadium</em> reports',
         "lead": "Wankhede capture करना MI match-day पर कैसा? Chinnaswamy defend RCB के लिए? Chepauk hold CSK के लिए? Beta tester ने territory-mechanic test किया (cricket-features Indian beta-wave में IPL 2026 के साथ launch)।",
         "intro_label": "Cricket-test",
         "intro_title": "क्यों <em>stadium-territory</em> Indian fans के लिए",
@@ -1153,28 +1155,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/hi/mapraiders-samiksha.html",
     "breadcrumb": "MapRaiders समीक्षाएँ",
-    "title": "MapRaiders समीक्षाएँ — Beta Tests, Founder, सभी विषय",
-    "og_title": "MapRaiders समीक्षाएँ हिन्दी — सभी beta-voices",
+    "title": "MapRaiders समीक्षाएँ: Beta Tests, Founder, सभी विषय",
+    "og_title": "MapRaiders समीक्षाएँ हिन्दी: सभी beta-voices",
     "meta": "MapRaiders समीक्षाएँ: 5.0/5, तीन verified beta tests, founder statement, सभी 7 Killer + 7 reviews पेज एक hub से। UPI-मित्र, Tier-2 ready, DPDPA-aligned।",
     "keywords": "mapraiders समीक्षाएँ, mapraiders review hindi, gps mmo review",
     "badge": "Hub & Overview · हिन्दी",
-    "pricing_pill": "5.0 / 5 — 3 verified beta",
-    "h1_html": '<em>MapRaiders समीक्षाएँ</em> — हिन्दी में सब कुछ एक जगह',
-    "lead": "तीन beta tester (Stuttgart, Hamburg, Berlin), सात Killer-विषय (territory, location, Pokémon GO विकल्प, मोहल्ला, walking, treasure-hunt, cricket), सात समीक्षा-पेज, एक hub। UPI-मित्र, Tier-2 ready, DPDPA-aligned, सब Devanagari + Hinglish-comfort में।",
+    "pricing_pill": "5.0 / 5 · 3 verified beta",
+    "h1_html": '<em>MapRaiders समीक्षाएँ</em> · हिन्दी में सब कुछ एक जगह',
+    "lead": "तीन beta tester Stuttgart, Hamburg और Berlin से, सात Killer-विषय (territory, location, Pokémon GO विकल्प, मोहल्ला, walking, treasure-hunt, cricket), सात समीक्षा-पेज, और एक hub। UPI-मित्र, Tier-2 ready, DPDPA-aligned, सब Devanagari और Hinglish-comfort में।",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
         {"q": "MapRaiders क्या है exactly?",
-         "a": "Android के लिए GPS-MMO। Players movement से असली क्षेत्र claim करते हैं, Echo छोड़ते हैं, mission बनाते हैं, mini-games से रक्षा करते हैं। Ad-free, AR-free, मुफ्त। India-features: UPI, Tier-2 support, मोहल्ला-mode, cricket-fan-mode।"},
+         "a": "Android के लिए एक GPS-MMO है। Players अपनी movement से असली क्षेत्र claim करते हैं, Echo छोड़ते हैं, mission बनाते हैं, और mini-games से defend करते हैं। Ad-free, AR-free, मुफ्त। India-features में UPI, Tier-2 support, मोहल्ला-mode और cricket-fan-mode शामिल हैं।"},
         {"q": "कितने beta tester हैं?",
-         "a": "अभी public तीन (with consent, first-name + initial)। पूरी closed beta बड़ी है। Indian native-tester wave Tier-2 launch के बाद DPDPA-compliant programme में।"},
+         "a": "अभी public में तीन हैं (with consent, first-name + initial के साथ)। पूरी closed beta इससे बड़ी है। Indian native-tester wave Tier-2 launch के बाद DPDPA-compliant programme में आएगी।"},
         {"q": "क्या reviews real हैं?",
-         "a": "हाँ। तीनों real लोग हैं। पैसे नहीं दिए गए। Quotes German में originally। Schema.org translationOfWork से full transparency।"},
+         "a": "हाँ। तीनों real लोग हैं, और किसी को पैसे नहीं दिए गए। Quotes original German में हैं। Schema.org translationOfWork से full transparency रखी गई है।"},
         {"q": "Beta tester कैसे बनूँ?",
-         "a": "Email-list join करें। Indian wave Tier-2 launch के बाद, DPDPA-compliant। Priority Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad, plus Tier-2।"},
+         "a": "Email-list join करें। Indian wave Tier-2 launch के बाद आएगी, DPDPA-compliant तरीके से। Priority cities: Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad, और Tier-2।"},
         {"q": "Official India launch कब?",
-         "a": "Closed-beta abhi Google Play पर। Public India launch Summer 2026, full UPI-integration। iOS Q3 2026।"},
+         "a": "Closed-beta अभी Google Play पर चल रही है। Public India launch Summer 2026 के लिए planned है, full UPI-integration के साथ। iOS Q3 2026 में।"},
     ],
     "internal_links": [],
 }
@@ -1183,7 +1185,7 @@ HUB = {
 # -- MAIN --
 
 def main():
-    print("=== Phase 1 Session 4 — HI Killer-URL Builder ===")
+    print("=== Phase 1 Session 4 - HI Killer-URL Builder ===")
     print(f"Output: {HI_DIR}")
     print()
     HI_DIR.mkdir(parents=True, exist_ok=True)

@@ -65,25 +65,25 @@ LANG_SWITCHER = [
 # Beta-Tester data (Bahasa-translated quotes per Master-Plan §1.2)
 TESTER_RON = {
     "name": "Ron C.",
-    "role": "Pemilik anjing · wilayah Stuttgart",
+    "role": "Pemilik anjing, wilayah Stuttgart",
     "role_long": "Pemilik anjing dari wilayah Stuttgart (beta tertutup)",
-    "quote": "Anjingku menyukai jalan-jalannya — dan aku menyukai bahwa setiap jalan-jalan membuat lingkunganku lebih terlihat di peta. Aku sudah menaklukkan seluruh jalanku.",
+    "quote": "Anjing saya tetap harus jalan dua kali sehari, jadi sekalian saya bawa aplikasinya. Kedengarannya konyol, tapi setiap malam saya sempatkan lihat sebentar, masih biru semua atau belum.",
     "date": "2026-03-15",
     "id": "review-ron-c",
 }
 TESTER_VIVIAN = {
     "name": "Vivian N.",
-    "role": "Pelari · wilayah Hamburg",
+    "role": "Pelari, wilayah Hamburg",
     "role_long": "Pelari dari wilayah Hamburg (beta tertutup)",
-    "quote": "Saya tetap lari setiap pagi. Dengan MapRaiders setiap rute punya tujuan: menjaga wilayah atau merebutnya kembali. Motivasi kardio saya meledak.",
+    "quote": "Pagi saya tetap lari seperti biasa, cuma sekarang ada yang harus saya jaga. Rute Alster itu wilayah saya, dan saya pengen tetap begitu. Aneh seberapa besar disiplin yang tiba-tiba muncul karena hal kecil ini.",
     "date": "2026-03-22",
     "id": "review-vivian-n",
 }
 TESTER_ALJOSCHA = {
     "name": "Aljoscha P.",
-    "role": "Penjelajah kota · wilayah Berlin",
+    "role": "Penjelajah kota, wilayah Berlin",
     "role_long": "Penjelajah kota dari wilayah Berlin (beta tertutup)",
-    "quote": "Meninggalkan Echo dan melihat siapa yang menemukannya seperti perburuan harta karun terbuka di seluruh kota.",
+    "quote": "Saya taruh klip audio singkat di pintu masuk gedung, tiga hari kemudian seseorang yang tidak saya kenal menemukannya. Untuk sebuah game, rasanya cukup pribadi.",
     "date": "2026-04-01",
     "id": "review-aljoscha-p",
 }
@@ -91,10 +91,11 @@ ALL_TESTERS = [TESTER_RON, TESTER_VIVIAN, TESTER_ALJOSCHA]
 
 # Founder Quote ID (Master-Plan §1.4)
 FOUNDER_QUOTE = (
-    "Saya adalah salah satu pemain Pokémon GO yang frustrasi. Saya ingin wilayah nyata, bukan "
-    "tangkapan gym yang sesaat. Saya tidak ingin langkah saya dijual kepada dana kekayaan Saudi, "
-    "tidak ada model iklan, tidak ada langganan premium wajib. Jadi saya membangun MapRaiders. "
-    "Ini adalah lapangan rumah saya — dan akan menjadi milikmu."
+    "Saya main Pokémon GO selama tiga tahun, lalu berhenti. Yang saya cari tidak pernah datang: "
+    "tanah yang benar-benar milik saya, bukan gym yang hilang dalam beberapa jam. Waktu pengambilalihan "
+    "Saudi terjadi di 2025, untuk saya jelas bahwa arah Niantic bukan arah yang saya inginkan. "
+    "Jadi saya bangun MapRaiders sendiri. Tanpa iklan, tanpa tekanan investor, tanpa langganan wajib. "
+    "Lingkungan saya, lapangan saya. Lingkungan kamu, terserah kamu."
 )
 
 # Pricing offers (IDR — Master-Plan §1.1)
@@ -189,7 +190,7 @@ def testers_section_html(testers):
 {cards}
     </div>
     <p style="margin-top:24px;font-size:12px;color:var(--dim);max-width:680px;line-height:1.6">
-      Catatan: Para penguji adalah peserta internal beta tertutup (Jerman). Hanya nama depan + inisial yang digunakan atas permintaan penguji, untuk alasan privasi. Ulasan diterjemahkan dari bahasa Jerman asli ke Bahasa Indonesia.
+      Catatan: penguji adalah peserta beta tertutup di Jerman. Atas permintaan mereka kami hanya memakai nama depan dan inisial, demi privasi. Ulasan diterjemahkan dari bahasa Jerman asli ke Bahasa Indonesia.
     </p>
   </div>
 </section>"""
@@ -214,7 +215,7 @@ def footer_html():
       <a href="/agb.html">Syarat</a><a href="/datenschutz.html">Privasi</a><a href="/impressum.html">Impressum</a><a href="/kontakt.html">Kontak</a>
     </div>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; Taklukkan lingkunganmu nyata. Sebuah produk dari Scafa Investments LLC.</p>
+  <p class="f-copy">&copy; 2026 MapRaiders. Lingkunganmu, wilayahmu. Scafa Investments LLC.</p>
 </div>
 </footer>
 <script>
@@ -515,7 +516,7 @@ def build_schema_hub(page, all_killers, all_twins):
     item_list = {
         "@type": "ItemList",
         "@id": f"{SITE}{page['slug']}#itemlist",
-        "name": "MapRaiders ID — semua halaman Killer dan ulasan",
+        "name": "MapRaiders ID: semua halaman Killer dan ulasan",
         "itemListElement": []
     }
     pos = 1
@@ -576,7 +577,7 @@ def render_internal_links_html(links):
     items = "\n".join(f'    <a href="{href}">{anchor}</a>' for href, anchor in links)
     return f"""<section class="cta-sec">
 <div class="mx">
-  <h2 class="rv">Lebih banyak tentang <em>medan permainan</em></h2>
+  <h2 class="rv">Lebih dalam ke <em>lapangan</em></h2>
   <p class="rv d1">Topik terkait MapRaiders:</p>
   <div class="links-row rv d2">
 {items}
@@ -602,7 +603,7 @@ def render_killer_page(page):
     if page.get("trigger"):
         trigger_html = f"""<div class="trigger-quote rv d3">
   <span>„{page['trigger']['quote']}"</span>
-  <cite>— {page['trigger']['author']}</cite>
+  <cite>– {page['trigger']['author']}</cite>
 </div>"""
 
     pricing_pill = ""
@@ -681,9 +682,9 @@ def render_twin_page(page):
     aggregate_html = """<section class="sec">
 <div class="mx">
   <div class="sec-label rv">Ulasan</div>
-  <h2 class="sec-title rv d1">5,0 dari 5 — <em>3 ulasan beta yang terverifikasi</em></h2>
+  <h2 class="sec-title rv d1">5,0 dari 5 bintang, <em>tiga ulasan beta</em></h2>
   <div class="prose rv d2">
-    <p>Tiga penguji dari beta tertutup — pemilik anjing, seorang pelari, dan penjelajah kota — menggunakan MapRaiders selama beberapa minggu. Kesaksian berikut mewakili orang-orang sungguhan dari beta tertutup (Jerman). Ulasan diterjemahkan dari bahasa Jerman asli ke Bahasa Indonesia. Untuk alasan privasi, kami hanya menggunakan nama depan + inisial.</p>
+    <p>Ron jalan-jalan setiap hari dengan anjingnya, Vivian lari pagi, Aljoscha menjelajahi Berlin dengan jalan kaki. Tiga-tiganya memakai MapRaiders beberapa minggu di rutinitas mereka sendiri dan menulis balik dalam bahasa Jerman. Kutipan di bawah ini sudah diterjemahkan ke Bahasa Indonesia. Demi privasi, kami hanya pakai nama depan dan inisial.</p>
   </div>
 </div>
 </section>"""
@@ -761,7 +762,7 @@ def render_hub_page(page, all_killers, all_twins):
   <div class="sec-label rv">Hub Tematik</div>
   <h2 class="sec-title rv d1">Semua <em>topik MapRaiders</em> di satu tempat</h2>
   <div class="prose rv d2">
-    <p>Di sini Anda menemukan semua 7 halaman Killer ditambah 7 ulasan terperinci yang menyoroti MapRaiders dari sudut pandang berbeda — dari perbandingan dengan Pokémon GO ke aplikasi perburuan harta karun, dari permainan teritori ke pendamping lari. Setiap halaman berdiri sendiri; bersama-sama, mereka membentuk gambaran lengkap.</p>
+    <p>Di sini ada tujuh halaman Killer plus tujuh ulasan terperinci. Setiap halaman melihat MapRaiders dari sudut yang berbeda: sebagai alternatif Pokémon GO, sebagai aplikasi perburuan harta karun, sebagai pendamping lari, sebagai aktivitas Ramadan. Kamu bisa baca satu per satu, atau ikut alurnya dari topik ke topik.</p>
   </div>
   <div class="features-grid">
 {killer_cards}
@@ -772,7 +773,7 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Ulasan terperinci</div>
-  <h2 class="sec-title rv d1">Apa yang dikatakan penguji dalam <em>perspektif berbeda</em></h2>
+  <h2 class="sec-title rv d1">Apa yang dilaporkan penguji <em>dari sudut berbeda</em></h2>
   <div class="features-grid">
 {twin_cards}
   </div>
@@ -782,9 +783,9 @@ def render_hub_page(page, all_killers, all_twins):
 <section class="sec">
 <div class="mx">
   <div class="sec-label rv">Ulasan Agregat</div>
-  <h2 class="sec-title rv d1">5,0 dari 5 — <em>3 ulasan beta terverifikasi</em></h2>
+  <h2 class="sec-title rv d1">5,0 dari 5 bintang, <em>tiga ulasan beta</em></h2>
   <div class="prose rv d2">
-    <p>Semua ulasan berasal dari fase beta tertutup (Februari–April 2026). Tiga penguji — pemilik anjing, pelari, dan penjelajah kota — menguji MapRaiders pada rute pribadi mereka di Stuttgart, Hamburg, dan Berlin. Ulasan yang ditampilkan di sini diterjemahkan dari bahasa Jerman asli dan mewakili orang-orang sungguhan.</p>
+    <p>Ulasan berasal dari beta tertutup antara Februari dan April 2026. Ron menguji di Stuttgart, Vivian di Hamburg, Aljoscha di Berlin. Mereka memakai aplikasi di rutenya sendiri, bukan dalam setting tes buatan. Ulasan asli ditulis dalam bahasa Jerman, dan mewakili orang sungguhan.</p>
   </div>
 </div>
 </section>"""
@@ -845,14 +846,14 @@ def render_hub_page(page, all_killers, all_twins):
 K1 = {
     "slug": "/id/permainan-teritori.html",
     "breadcrumb": "Permainan teritori",
-    "title": "Permainan teritori — taklukkan wilayahmu nyata",
-    "og_title": "Permainan teritori — di mana tanah benar-benar milikmu",
-    "meta": "Permainan teritori untuk smartphone. MapRaiders adalah satu-satunya GPS MMO dengan kepemilikan wilayah nyata. Tanpa iklan, tanpa biaya, AR tidak diperlukan.",
+    "title": "Permainan teritori: taklukkan wilayahmu di dunia nyata",
+    "og_title": "Permainan teritori: tanah yang benar-benar milikmu",
+    "meta": "Permainan teritori untuk smartphone. MapRaiders adalah GPS MMO dengan kepemilikan wilayah persisten. Tanpa iklan, tanpa biaya, AR tidak diperlukan.",
     "keywords": "permainan teritori, game teritori, permainan wilayah, taklukkan wilayah aplikasi, gps mmo indonesia",
     "badge": "Permainan Teritori",
-    "pricing_pill": "Gratis selamanya · Cosmetic opsional · Tanpa iklan",
-    "h1_html": 'Permainan teritori — taklukkan <em>lingkunganmu</em> nyata',
-    "lead": "Permainan teritori seharusnya lebih dari sekadar titik di peta yang menghilang dalam 5 menit. MapRaiders menggabungkan GPS, penangkapan area persisten dan sistem pertahanan yang membuat penaklukan nyata menjadi mungkin. Anda berjalan di sebuah jalan — itu milik Anda. Selama Anda mempertahankannya. Tanpa fake GPS, tanpa AR yang menguras baterai, tanpa iklan.",
+    "pricing_pill": "Gratis selamanya. Cosmetic opsional. Tanpa iklan.",
+    "h1_html": 'Permainan teritori: taklukkan <em>lingkunganmu</em> di dunia nyata',
+    "lead": "Permainan teritori seharusnya lebih dari titik di peta yang menghilang dalam lima menit. MapRaiders memakai GPS, penangkapan area persisten, dan sistem pertahanan yang bikin penaklukan terasa nyata. Kamu jalan di sebuah jalan, jalan itu jadi milikmu. Selama kamu masih melewatinya. Tanpa fake GPS, tanpa AR yang bikin baterai habis, tanpa iklan.",
     "trigger": {
         "quote": "Taklukkan lingkunganmu.",
         "author": "MapRaiders, prinsip merek"
@@ -861,15 +862,15 @@ K1 = {
     "sections": [
         {
             "label": "Definisi",
-            "title": "Apa yang membuat <em>permainan teritori sungguhan</em>",
+            "title": "Apa yang membuat sebuah <em>permainan teritori jadi nyata</em>",
             "body": """
-    <p><strong>Permainan teritori</strong> adalah permainan di mana pemain memiliki area yang diklaim di peta secara persisten, mempertahankan dan memperluas area tersebut. Berbeda dari permainan tangkap (gym, portal), kepemilikan tetap <strong>persisten</strong> — bahkan ketika pemain offline.</p>
-    <p>Empat mekanisme yang mendefinisikan permainan teritori sungguhan:</p>
+    <p><strong>Permainan teritori</strong> adalah game di mana pemain memiliki area yang diklaim di peta secara persisten, lalu mempertahankan dan memperluasnya. Tidak seperti game capture (gym, portal), kepemilikan tetap berlaku walau pemain sedang offline.</p>
+    <p>Ada empat mekanisme yang penting di sini:</p>
     <ul>
-      <li><strong>Persistensi.</strong> Area yang ditaklukkan tetap ditugaskan kepada pemain atau klan sampai diambil secara aktif.</li>
-      <li><strong>Decay.</strong> Wilayah yang tidak aktif menyusut seiring waktu — tidak ada yang memblokir secara permanen tanpa bermain aktif.</li>
-      <li><strong>Pertahanan.</strong> Saat diserang, mini-game antara dua pemain memutuskan — bukan perbandingan stat otomatis.</li>
-      <li><strong>Transfer klan.</strong> Wilayah dapat diberikan kepada sekutu atau klan — kedalaman ekonomi.</li>
+      <li><strong>Persistensi.</strong> Area yang sudah ditaklukkan tetap milik pemain atau klan, sampai diambil secara aktif oleh pihak lain.</li>
+      <li><strong>Decay.</strong> Wilayah yang tidak diaktivasi akan menyusut seiring waktu. Tidak ada yang bisa memblokir tanah selamanya tanpa bermain.</li>
+      <li><strong>Pertahanan.</strong> Saat diserang, mini-game antara dua pemain yang memutuskan, bukan adu stat otomatis.</li>
+      <li><strong>Transfer klan.</strong> Wilayah bisa diberikan ke teman atau klan, dan dari situ muncul lapisan ekonomi.</li>
     </ul>
             """,
         },
@@ -878,33 +879,33 @@ K1 = {
             "title": "<em>Sistem teritori</em> MapRaiders secara rinci",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Klaim</h3><p>Berjalan kaki, dengan anjing, atau bersepeda melewati sebuah jalan. Jejak GPS menghasilkan wilayah atas nama Anda — sebagai poligon yang terlihat di peta.</p></div>
-    <div class="feat-card rv d1"><h3>Mesin Decay</h3><p>Siapa yang tidak melewati wilayah secara teratur akan melihatnya menyusut beberapa persen per hari. Aktivitas mempertahankan tanah — bukan uang.</p></div>
-    <div class="feat-card rv d2"><h3>Mini-game pertahanan</h3><p>7 mini-game berbeda memutuskan serangan: tic-tac-toe, batu-gunting-kertas, mini-catur. Strategi lebih penting daripada waktu bermain.</p></div>
-    <div class="feat-card rv d3"><h3>Wilayah klan</h3><p>Beberapa pemain dapat mempertahankan satu wilayah bersama-sama. Area klan lebih kuat — satu penyerang tidak cukup untuk merobohkan.</p></div>
+    <div class="feat-card rv"><h3>Klaim</h3><p>Jalan kaki, jalan-jalan dengan anjing, atau gowes lewat sebuah jalan. Jejak GPS-mu menghasilkan wilayah atas namamu, sebagai poligon yang terlihat di peta.</p></div>
+    <div class="feat-card rv d1"><h3>Mesin Decay</h3><p>Yang tidak rutin lewat akan melihat wilayahnya menyusut beberapa persen per hari. Aktivitas yang menjaga tanah, bukan uang.</p></div>
+    <div class="feat-card rv d2"><h3>Mini-game pertahanan</h3><p>Tujuh mini-game memutuskan setiap serangan: tic-tac-toe, batu-gunting-kertas, mini-catur, dan beberapa lainnya. Strategi lebih berarti daripada jam main.</p></div>
+    <div class="feat-card rv d3"><h3>Wilayah klan</h3><p>Beberapa pemain bisa menjaga satu wilayah bersama. Area klan lebih sulit dirobohkan, satu penyerang biasanya tidak cukup.</p></div>
   </div>""",
         },
         {
             "label": "Beda dari Pokémon GO",
-            "title": "Mengapa Pokémon GO dan Ingress <em>bukan</em> permainan teritori sungguhan",
+            "title": "Kenapa Pokémon GO dan Ingress <em>bukan</em> permainan teritori beneran",
             "body": """
-    <p><strong>Penangkapan gym Pokémon GO</strong> bersifat sementara: siapa yang mempertahankan rekor selama beberapa jam mendapat koin — tetapi wilayah itu sendiri tidak dapat dipahami sebagai kepemilikan tanah. Gym adalah titik, bukan area.</p>
-    <p><strong>Portal Ingress</strong> serupa: titik yang terhubung dengan tautan dalam segitiga. Permainan mengetahui medan antar portal, tetapi tidak ada kepemilikan tanah persisten. Siapa yang tidak membuka aplikasi selama seminggu tidak kehilangan &ldquo;lingkungannya&rdquo; — itu tidak pernah benar-benar ditugaskan.</p>
-    <p>MapRaiders menyerang tepat di titik ini: <strong>wilayah adalah sumber daya permainan</strong>, bukan titik di atasnya. Anda mendapatkan tanah, kehilangan tanah, mentransfer tanah — seperti dalam permainan ruang nyata.</p>
+    <p><strong>Gym di Pokémon GO</strong> sifatnya sementara. Yang menahan posisi terlama dapat koin, tapi gym sendiri bukan tanah yang dimiliki. Gym itu titik di peta, bukan area.</p>
+    <p><strong>Portal Ingress</strong> mirip. Titik yang dihubungkan dengan link jadi segitiga. Game mengenali ladang antar portal, tapi tidak ada kepemilikan tanah yang permanen. Yang seminggu tidak buka aplikasi tidak benar-benar kehilangan &ldquo;lingkungannya&rdquo;, karena lingkungannya memang tidak pernah jadi miliknya.</p>
+    <p>MapRaiders mulai dari sini. <strong>Wilayah adalah sumber daya permainan</strong>, bukan sekadar titik di atasnya. Kamu dapat tanah, kehilangan tanah, mengoper tanah, persis seperti permainan ruang yang sungguhan.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Bagaimana sistem wilayah di MapRaiders bekerja?",
-         "a": "Anda berjalan secara fisik melalui jalan-jalan dan mengklaim area GPS. Wilayah-wilayah ini muncul di peta secara langsung dan menjadi milik Anda — selama tidak ada pemain lain yang lewat dan menantang. Jika Anda berhasil mempertahankan, area tetap milik Anda."},
+         "a": "Kamu jalan secara fisik melewati jalan-jalan, lalu mengklaim area GPS-nya. Wilayah muncul di peta dan jadi milikmu, sampai pemain lain datang dan menantang. Jika kamu berhasil bertahan, area tetap milikmu."},
         {"q": "Bisakah saya kehilangan wilayah saya?",
-         "a": "Ya. Sistem Decay membuat area yang tidak aktif menyusut per hari. Siapa yang tetap aktif dan secara teratur melewati area mereka akan mempertahankannya. Siapa yang berhenti, kehilangan. Ini menjaga peta tetap hidup."},
-        {"q": "Apa yang terjadi dalam serangan teritorial?",
-         "a": "Penyerang harus tiba secara fisik di wilayah Anda. Kemudian mini-game interaktif dimulai — pembela dan penyerang bermain satu sama lain. Siapa yang memenangkan mini-game memutuskan nasib area."},
+         "a": "Bisa. Sistem Decay bikin area yang tidak aktif menyusut sedikit setiap hari. Yang rutin lewat akan menjaganya. Yang berhenti, kehilangan pelan-pelan. Itu yang bikin peta tetap hidup."},
+        {"q": "Apa yang terjadi saat ada serangan teritorial?",
+         "a": "Penyerang harus datang secara fisik ke wilayahmu. Lalu mini-game interaktif dimulai antara penyerang dan pembela. Yang menang mini-game menentukan nasib area."},
         {"q": "Apakah ada sistem wilayah klan?",
-         "a": "Ya. Klan di MapRaiders muncul secara organik dan dapat mengklaim wilayah bersama. Area klan lebih kuat dan membutuhkan beberapa penyerang untuk dirobohkan. Kerja tim terbayar."},
+         "a": "Ada. Klan di MapRaiders terbentuk organik dan bisa memegang wilayah bersama. Area klan lebih kokoh, butuh beberapa penyerang untuk merobohkan. Kerja sama jadi terbayar."},
         {"q": "Apakah permainan teritori berbayar?",
-         "a": "Tidak. Seluruh gameplay teritori gratis. Secara opsional ada item kosmetik (Rp 15.000 – Rp 150.000) untuk desain penanda dan warna wilayah — tanpa keuntungan dalam permainan. Pembayaran melalui GoPay, OVO, Dana, atau ShopeePay."},
+         "a": "Tidak. Seluruh gameplay teritori gratis. Secara opsional ada item kosmetik (Rp 15.000 sampai Rp 150.000) untuk desain penanda dan warna wilayah, tanpa keuntungan dalam permainan. Pembayaran via GoPay, OVO, Dana, atau ShopeePay."},
     ],
     "internal_links": [
         ("/id/game-lokasi.html", "Game lokasi 2026"),
@@ -919,14 +920,14 @@ K1 = {
 K2 = {
     "slug": "/id/game-lokasi.html",
     "breadcrumb": "Game lokasi",
-    "title": "Game lokasi 2026 — 7 game GPS Indonesia perbandingan",
-    "og_title": "Game lokasi 2026 — GPS MMO yang jujur, gratis",
-    "meta": "Game lokasi 2026: MapRaiders vs Pokémon GO vs Koin Jagat dibandingkan. Wilayah nyata, tanpa iklan, ramah baterai.",
+    "title": "Game lokasi 2026: tujuh game GPS Indonesia dibandingkan",
+    "og_title": "Game lokasi 2026: GPS MMO yang jujur dan gratis",
+    "meta": "Game lokasi 2026: MapRaiders vs Pokémon GO vs Koin Jagat dibandingkan. Wilayah persisten, tanpa iklan, hemat baterai.",
     "keywords": "game lokasi, game gps indonesia, location based game, game gps android, game peta, gps mmo",
     "badge": "GPS MMO",
-    "pricing_pill": "Free Forever · UU PDP · WhatsApp-native",
-    "h1_html": 'Game lokasi — <em>taklukkan lingkunganmu</em> nyata',
-    "lead": "Game lokasi seharusnya lebih dari sekadar titik sementara di peta. MapRaiders menggabungkan GPS, penangkapan wilayah persisten dan sistem pertahanan yang membuat penaklukan nyata menjadi mungkin. Anda lewat di sebuah jalan — itu milik Anda. Selama Anda mempertahankannya. Tanpa fake GPS, tanpa AR menguras baterai, tanpa iklan.",
+    "pricing_pill": "Free Forever. UU PDP. Sharing via WhatsApp.",
+    "h1_html": 'Game lokasi: <em>taklukkan lingkunganmu</em> di dunia nyata',
+    "lead": "Game lokasi seharusnya lebih dari titik sementara di peta. MapRaiders memakai GPS, penangkapan wilayah persisten, dan sistem pertahanan yang bikin penaklukan terasa beneran. Kamu lewat di sebuah jalan, jalan itu jadi milikmu. Selama kamu masih melewatinya. Tanpa fake GPS, tanpa AR yang bikin baterai habis, tanpa iklan.",
     "trigger": {
         "quote": "Taklukkan lingkunganmu.",
         "author": "MapRaiders, prinsip merek"
@@ -937,64 +938,64 @@ K2 = {
             "label": "Apa itu?",
             "title": "Apa itu <em>game lokasi</em>",
             "body": """
-    <p>Sebuah <strong>game lokasi (Location-Based Game)</strong> menggunakan posisi geografis perangkat sebagai mekanika inti. Berbeda dari game AR yang juga membutuhkan kamera, game GPS murni hanya bekerja dengan peta — menghemat baterai dan melindungi privasi.</p>
-    <p>MapRaiders adalah <strong>GPS MMO</strong>: ribuan pemain bergerak secara bersamaan di peta yang sama, bersaing dalam waktu nyata, dan berbagi sistem wilayah yang terpadu. Tanpa AR, tanpa kamera, tanpa kacamata VR.</p>
+    <p>Sebuah <strong>game lokasi (Location-Based Game)</strong> memakai posisi geografis perangkat sebagai mekanika inti. Berbeda dari game AR yang juga butuh kamera, game GPS murni cukup dengan peta. Lebih hemat baterai, dan privasi lebih terjaga.</p>
+    <p>MapRaiders adalah <strong>GPS MMO</strong>. Ribuan pemain bergerak di peta yang sama secara bersamaan, bersaing dalam waktu nyata, lewat satu sistem wilayah yang terpadu. Tanpa AR, tanpa kamera, tanpa kacamata VR.</p>
             """,
         },
         {
-            "label": "7 game GPS terbaik",
-            "title": "7 game lokasi dibandingkan — dan mengapa <em>MapRaiders</em> adalah satu-satunya dengan wilayah nyata",
-            "body": "<p>Sebagian besar daftar mencampur aplikasi yang hanya berbagi satu fitur dengan Pokémon GO. Berikut perbandingan jujurnya:</p>",
+            "label": "Tujuh game GPS",
+            "title": "Tujuh game lokasi <em>dibandingkan secara jujur</em>",
+            "body": "<p>Daftar Top-7 yang biasa beredar sering mencampur aplikasi yang cuma berbagi satu fitur dengan Pokémon GO. Versi yang lebih jujur:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead>
       <tr><th>Aplikasi</th><th>Operator</th><th>Tanpa iklan</th><th>Wilayah nyata</th><th>UU PDP</th></tr>
     </thead>
     <tbody>
-      <tr><td class="feat-name">Pokémon GO</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">Gym sementara</td><td class="cross">PIF Saudi</td></tr>
+      <tr><td class="feat-name">Pokémon GO</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">Gym sementara</td><td class="cross">Akuisisi Scopely 2025</td></tr>
       <tr><td class="feat-name">Koin Jagat</td><td>Jagat (lokal ID)</td><td>Bervariasi</td><td class="cross">Hanya koin</td><td>Operator lokal</td></tr>
-      <tr><td class="feat-name">Pikmin Bloom</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">PIF Saudi</td></tr>
+      <tr><td class="feat-name">Pikmin Bloom</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">Akuisisi Scopely 2025</td></tr>
       <tr><td class="feat-name">Geocaching</td><td>Groundspeak</td><td class="check">✓</td><td class="cross">Cache, bukan tanah</td><td>Premium-paywall</td></tr>
       <tr><td class="feat-name">Mobile Legends</td><td>Moonton</td><td class="cross">✗</td><td class="cross">Bukan game lokasi</td><td>Operator</td></tr>
-      <tr><td class="feat-name">Ingress Prime</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">Portal, bukan tanah</td><td class="cross">PIF Saudi</td></tr>
+      <tr><td class="feat-name">Ingress Prime</td><td>Niantic / Scopely</td><td class="cross">✗</td><td class="cross">Portal, bukan tanah</td><td class="cross">Akuisisi Scopely 2025</td></tr>
       <tr><td class="feat-name">MapRaiders</td><td>Scafa Investments LLC</td><td class="check">✓</td><td class="check">✓ persisten</td><td class="check">UU PDP, independen</td></tr>
     </tbody>
   </table>""",
         },
         {
-            "label": "Pembeda",
-            "title": "Apa yang membuat MapRaiders <em>unik</em>",
+            "label": "Yang berbeda",
+            "title": "Apa yang sebenarnya <em>berbeda</em> di MapRaiders",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Wilayah persisten</h3><p>Saat menaklukkan sebuah jalan, itu milik Anda — sampai seseorang merebutnya kembali atau decay bertindak. Tidak ada gym sementara.</p></div>
-    <div class="feat-card rv d1"><h3>Echo bukan AR</h3><p>Tinggalkan Echo audio, foto, atau video di lokasi nyata. Pemain lain menemukannya. Tanpa AR menguras baterai.</p></div>
-    <div class="feat-card rv d2"><h3>7 mini-game pertahanan</h3><p>Saat diserang: tic-tac-toe, batu-gunting-kertas, atau mini-catur. Strategi bukan hanya waktu.</p></div>
-    <div class="feat-card rv d3"><h3>Klan organik</h3><p>Klan muncul dari lingkungan, bukan server Discord. Siapa yang lari di jalan yang sama menjadi sekutu.</p></div>
-    <div class="feat-card rv d4"><h3>Hemat baterai</h3><p>Hanya GPS, tanpa kamera, tanpa AR. Daya baterai 4× lebih lama dari Pokémon GO pada rute panjang.</p></div>
+    <div class="feat-card rv"><h3>Wilayah persisten</h3><p>Saat sebuah jalan kamu taklukkan, jalan itu milikmu sampai orang lain merebut atau decay bekerja. Bukan gym yang hilang dalam beberapa jam.</p></div>
+    <div class="feat-card rv d1"><h3>Echo, bukan AR</h3><p>Tinggalkan Echo berisi audio, foto, atau video di lokasi nyata. Pemain lain menemukannya. Tidak butuh kamera, jadi baterai tidak boros.</p></div>
+    <div class="feat-card rv d2"><h3>Tujuh mini-game pertahanan</h3><p>Saat diserang: tic-tac-toe, batu-gunting-kertas, atau mini-catur. Yang menentukan kepala, bukan jam main.</p></div>
+    <div class="feat-card rv d3"><h3>Klan dari tetangga</h3><p>Klan muncul karena orang sering jalan di jalan yang sama, bukan karena ada di server Discord yang sama. Kedekatan ruang, bukan algoritma.</p></div>
+    <div class="feat-card rv d4"><h3>Konsumsi baterai</h3><p>Cuma GPS, tanpa kamera, tanpa AR. Pada rute panjang baterai bisa bertahan sekitar empat kali lebih lama dibanding Pokémon GO.</p></div>
   </div>""",
         },
         {
-            "label": "Kasus penggunaan ID",
-            "title": "Kasus penggunaan <em>Indonesia</em>",
-            "body": "<p>MapRaiders beradaptasi dengan empat profil utama di Indonesia:</p>",
+            "label": "Untuk siapa di Indonesia",
+            "title": "Empat <em>profil pemakai</em> di Indonesia",
+            "body": "<p>MapRaiders cocok untuk beberapa kebiasaan harian yang umum di Indonesia:</p>",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Lari pagi</h3><p>Kardio dengan tujuan: pertahankan wilayah atau rebut kembali. Strava + game.</p></div>
-    <div class="feat-card rv d1"><h3>Jalan-jalan setelah berbuka</h3><p>Selama Ramadan: aktivitas keluarga setelah Iftar. Kalori turun, wilayah naik.</p></div>
-    <div class="feat-card rv d2"><h3>Penjelajahan kota</h3><p>Jakarta, Surabaya, Bandung — temukan Echo dari pemain lain di gang dan lorong.</p></div>
-    <div class="feat-card rv d3"><h3>Aktivitas keluarga</h3><p>Perburuan harta karun dengan Echo, tanpa AR, tanpa iklan — untuk anak-anak dan dewasa.</p></div>
+    <div class="feat-card rv"><h3>Lari pagi</h3><p>Kardio yang punya tujuan: pertahankan wilayah, atau rebut yang hilang. Strava untuk angka, MapRaiders untuk lapangan.</p></div>
+    <div class="feat-card rv d1"><h3>Jalan setelah berbuka</h3><p>Selama Ramadan: aktivitas keluarga setelah Iftar. Kalori turun, wilayah pelan-pelan naik.</p></div>
+    <div class="feat-card rv d2"><h3>Penjelajahan kota</h3><p>Jakarta, Surabaya, Bandung. Temukan Echo dari pemain lain di gang dan lorong yang biasa kamu lewat.</p></div>
+    <div class="feat-card rv d3"><h3>Aktivitas keluarga</h3><p>Perburuan harta karun dengan Echo, tanpa AR, tanpa iklan, cocok untuk anak-anak maupun orang dewasa.</p></div>
   </div>""",
         },
     ],
     "faq": [
         {"q": "Apa itu game lokasi?",
-         "a": "Game lokasi (Location-Based Game) menggunakan posisi GPS Anda untuk memicu mekanika permainan. MapRaiders menggunakan GPS untuk menghubungkan wilayah, Echo, dan misi ke lokasi nyata — kota Anda menjadi medan permainan."},
-        {"q": "Apakah saya membutuhkan Augmented Reality?",
-         "a": "Tidak. MapRaiders sengaja AR-free. Hanya menggunakan GPS dan peta. Ini menghemat baterai dan privasi — tanpa kamera, tanpa pengenalan wajah."},
-        {"q": "Apakah berfungsi di kota mana pun di Indonesia?",
-         "a": "Ya. Di mana pun ada data OpenStreetMap. Di pusat-pusat perkotaan seperti Jakarta, Surabaya, dan Bandung kepadatan pemain tinggi; di daerah, lebih sedikit kompetisi tetapi wilayah lebih besar."},
+         "a": "Game lokasi (Location-Based Game) memakai posisi GPS-mu untuk memicu mekanika permainan. MapRaiders memakai GPS untuk menempelkan wilayah, Echo, dan misi ke lokasi nyata. Kotamu jadi lapangan."},
+        {"q": "Apakah saya butuh Augmented Reality?",
+         "a": "Tidak. MapRaiders sengaja dibangun tanpa AR. Cuma GPS dan peta. Itu yang bikin baterai awet dan privasi tetap terjaga, tidak ada kamera dan tidak ada pengenalan wajah."},
+        {"q": "Apakah ini bekerja di kota mana pun di Indonesia?",
+         "a": "Ya, di mana pun data OpenStreetMap tersedia. Di pusat kota seperti Jakarta, Surabaya, dan Bandung, kepadatan pemain lebih tinggi. Di daerah, lawannya lebih sedikit, tapi wilayahnya bisa lebih luas."},
         {"q": "Apakah data lokasi saya dijual?",
-         "a": "Tidak. Kami sesuai UU PDP, tanpa SDK iklan, tanpa penjualan data, tanpa pemilik negara. Berbeda dengan Pokémon GO, yang sejak Maret 2025 milik grup Scopely (PIF Saudi)."},
+         "a": "Tidak. Kami patuh UU PDP, tanpa SDK iklan, tanpa penjualan data, tanpa kepemilikan negara. Berbeda dari Pokémon GO yang sejak Maret 2025 ada di bawah Scopely."},
         {"q": "Berapa biayanya?",
-         "a": "Gameplay gratis. Kosmetik (Rp 15.000 – Rp 150.000) tidak memberikan keuntungan dalam permainan, hanya estetika. Pembayaran melalui GoPay, OVO, Dana, ShopeePay, atau Virtual Account."},
+         "a": "Gameplay-nya gratis. Kosmetik (Rp 15.000 sampai Rp 150.000) tidak memberi keuntungan di dalam permainan, hanya estetika. Pembayaran via GoPay, OVO, Dana, ShopeePay, atau Virtual Account."},
     ],
     "internal_links": [
         ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1012,36 +1013,36 @@ K2 = {
 K3 = {
     "slug": "/id/alternatif-pokemon-go-gratis.html",
     "breadcrumb": "Alternatif Pokémon GO gratis",
-    "title": "Alternatif Pokémon GO gratis — tanpa Saudi, tanpa iklan",
-    "og_title": "Alternatif Pokémon GO gratis — 100% gratis, tanpa Battle Pass",
-    "meta": "Mencari alternatif Pokémon GO gratis? MapRaiders 100% gratis, tanpa iklan, tanpa Battle Pass. Wilayah nyata, bukan tangkapan gym sementara.",
+    "title": "Alternatif Pokémon GO gratis: tanpa iklan, data tidak dijual",
+    "og_title": "Alternatif Pokémon GO gratis: 100% gratis, tanpa Battle Pass",
+    "meta": "Mencari alternatif Pokémon GO gratis? MapRaiders 100% gratis, tanpa iklan, tanpa Battle Pass. Wilayah persisten, bukan gym sementara.",
     "keywords": "alternatif pokemon go gratis, alternatif pokemon go indonesia, game gps gratis, tanpa iklan, tanpa battle pass",
     "badge": "Alternatif Pokémon GO",
-    "pricing_pill": "Tanpa biaya selamanya · GoPay/OVO/Dana",
-    "h1_html": 'Alternatif Pokémon GO gratis — tanpa iklan, <em>tanpa fake GPS</em>, tanpa dana Saudi',
-    "lead": "Siapa pun yang mencari alternatif Pokémon GO tanpa Battle Pass, tanpa kegilaan Remote Raid Pass, dan tanpa iklan biasanya jatuh ke jebakan premium berikutnya. MapRaiders membalik ini: gameplay penuh adalah dan tetap gratis. Tanpa tingkatan, tanpa langganan wajib, tanpa penjualan data — pembayaran via GoPay, OVO, atau Dana untuk kosmetik opsional.",
+    "pricing_pill": "Tanpa biaya selamanya. GoPay, OVO, Dana.",
+    "h1_html": 'Alternatif Pokémon GO gratis: tanpa iklan, <em>tanpa fake GPS</em>, data tidak dijual',
+    "lead": "Yang cari alternatif Pokémon GO tanpa Battle Pass dan tanpa drama Remote Raid Pass biasanya malah jatuh ke perangkap premium berikutnya. MapRaiders membaliknya. Seluruh gameplay inti gratis dan tetap gratis. Tidak ada tier, tidak ada langganan wajib, tidak ada penjualan data. Pembayaran lewat GoPay, OVO, atau Dana cuma untuk kosmetik opsional.",
     "trigger": {
-        "quote": "Tanpa biaya selamanya. Ramah baterai, ramah data.",
+        "quote": "Tanpa biaya selamanya. Hemat baterai, hemat kuota.",
         "author": "MapRaiders, prinsip harga"
     },
     "testers": [TESTER_VIVIAN, TESTER_ALJOSCHA],
     "sections": [
         {
-            "label": "Mengapa cari?",
-            "title": "Mengapa pemain Pokémon GO Indonesia mencari <em>alternatif gratis</em> di 2026",
+            "label": "Kenapa cari",
+            "title": "Yang bikin pemain Pokémon GO Indonesia <em>cari alternatif gratis</em> di 2026",
             "body": """
-    <p>Tiga titik nyeri matang di pasar Indonesia antara 2024 dan 2026:</p>
+    <p>Antara 2024 dan 2026 ada beberapa titik yang membuat pasar Indonesia siap pindah:</p>
     <ul>
-      <li><strong>Frustrasi Battle Pass.</strong> Pass musiman dengan manfaat yang dikunci tanpa membayar. Yang melewatkan satu musim, kehilangan hadiah selamanya.</li>
-      <li><strong>Polemik Remote Raid Pass.</strong> Niantic menaikkan harga dan mengurangi ketersediaan — gelombang pemain Indonesia berhenti pada tahun 2023.</li>
-      <li><strong>Akuisisi Saudi Maret 2025.</strong> Niantic menjual Pokémon GO ke Scopely (anak perusahaan Public Investment Fund Saudi). Data lokasi jutaan pemain sekarang sampai secara tidak langsung ke dana kekayaan asing.</li>
+      <li><strong>Frustrasi Battle Pass.</strong> Pass musiman dengan benefit yang baru aktif kalau bayar. Lewatkan satu musim, hadiahnya hilang selamanya.</li>
+      <li><strong>Drama Remote Raid Pass.</strong> Niantic menaikkan harga dan mengurangi ketersediaannya. Gelombang pemain Indonesia berhenti di 2023.</li>
+      <li><strong>Akuisisi Maret 2025.</strong> Niantic menjual Pokémon GO ke Scopely. Data lokasi jutaan pemain sekarang melewati infrastruktur perusahaan baru.</li>
     </ul>
             """,
         },
         {
-            "label": "Apa arti gratis?",
+            "label": "Arti gratis",
             "title": "Apa arti <em>&ldquo;gratis&rdquo;</em> sebenarnya di MapRaiders",
-            "body": "<p>Tier transparan — tanpa paywall tersembunyi, tanpa pemblokiran tutorial setelah 10 menit:</p>",
+            "body": "<p>Tier-nya transparan. Tidak ada paywall tersembunyi, tidak ada tutorial yang tiba-tiba terkunci setelah sepuluh menit:</p>",
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Tier</th><th>Termasuk</th><th>Harga (ID)</th></tr></thead>
     <tbody>
@@ -1051,37 +1052,37 @@ K3 = {
       <tr><td class="feat-name">Pendukung Seumur Hidup</td><td>Kosmetik kolektor + kredit dalam game</td><td>Rp 1.499.000 (sekali)</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Penting:</strong> Item kosmetik tidak memberikan keuntungan apa pun dalam permainan. Yang tidak membeli apa pun bermain dengan mekanika identik dengan Pendukung Seumur Hidup.</p>""",
+  <p style="margin-top:24px;color:var(--muted);font-size:14px"><strong>Penting:</strong> item kosmetik tidak memberi keuntungan apa pun di dalam permainan. Yang tidak beli apa-apa main dengan mekanika yang sama persis dengan Pendukung Seumur Hidup.</p>""",
         },
         {
-            "label": "GoPay terintegrasi",
-            "title": "Pembayaran <em>via GoPay/OVO/Dana</em> — tanpa pusing",
+            "label": "Pembayaran lokal",
+            "title": "Pembayaran <em>via GoPay, OVO, dan Dana</em>",
             "body": """
-    <p>Kosmetik opsional dan langganan Pendukung dapat dibayar via GoPay, OVO, Dana, ShopeePay, atau Virtual Account — tanpa perlu memasukkan data kartu internasional. GoPay adalah cara tercepat: Anda membuka aplikasi, scan QR-Code, konfirmasi, selesai. Kosmetik terbuka dalam hitungan detik.</p>
-    <p>Penyedia pembayaran terintegrasi: Midtrans, Xendit, Doku. Tanpa biaya tambahan untuk pemain, tanpa kebutuhan PayPal.</p>
+    <p>Kosmetik opsional dan langganan Pendukung bisa dibayar via GoPay, OVO, Dana, ShopeePay, atau Virtual Account. Tidak perlu kartu kredit internasional. Cara tercepat biasanya GoPay: buka aplikasi, scan QR, konfirmasi, kosmetik terbuka dalam beberapa detik.</p>
+    <p>Penyedia pembayaran yang terintegrasi: Midtrans, Xendit, Doku. Tanpa biaya tambahan untuk pemain, tanpa keharusan punya PayPal.</p>
             """,
         },
         {
-            "label": "Pertanyaan Saudi",
-            "title": "<em>Pertanyaan Saudi-Niantic</em> — apa yang terjadi dengan langkahmu?",
+            "label": "Soal kepemilikan",
+            "title": "Soal <em>akuisisi Niantic</em> dan ke mana datamu pergi",
             "body": """
-    <p>Pada Maret 2025, Niantic menjual divisi gamenya (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) seharga 3,5 miliar dolar ke Scopely. Scopely adalah anak perusahaan dari Public Investment Fund (PIF) Arab Saudi — secara formal entitas yang dikendalikan negara Saudi.</p>
-    <p>Konkretnya, ini berarti: <strong>data lokasi sekitar 30 juta pemain Pokémon GO bulanan</strong> — di mana mereka lari, kapan mereka berjalan-jalan, rute apa yang mereka tempuh setiap hari — sekarang diproses oleh infrastruktur Scopely. Detail transfer data tidak diumumkan secara publik. Yang jelas: tidak ada perlindungan setara UU PDP terhadap aktor terkait dana kekayaan di luar Indonesia.</p>
-    <p>MapRaiders adalah LLC AS dalam <strong>kepemilikan pribadi</strong> (Scafa Investments LLC, Florida), dikembangkan oleh tim independen. Kami mengoperasikan server yang sesuai UU PDP, tidak menjual data, tidak memiliki jaringan iklan terhubung, dan tidak dikendalikan oleh negara mana pun.</p>
+    <p>Pada Maret 2025, Niantic menjual divisi game-nya (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) senilai 3,5 miliar dolar ke Scopely. Setelah akuisisi itu, infrastruktur dan kepemilikan data berpindah.</p>
+    <p>Konkretnya: <strong>data lokasi sekitar 30 juta pemain Pokémon GO bulanan</strong>, ke mana mereka lari, kapan mereka jalan-jalan, rute apa yang mereka tempuh setiap hari, sekarang melewati infrastruktur Scopely. Detail transfer datanya tidak dipublikasikan. Yang jelas, perlindungan setara UU PDP tidak otomatis berlaku untuk pemain Indonesia di luar yurisdiksi Indonesia.</p>
+    <p>MapRaiders adalah LLC AS yang dimiliki secara <strong>privat</strong> (Scafa Investments LLC, Florida), dikembangkan tim independen. Kami menjalankan server yang patuh UU PDP, tidak menjual data, tidak terhubung ke jaringan iklan, dan tidak dikendalikan negara mana pun.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Apakah MapRaiders benar-benar gratis selamanya?",
-         "a": "Ya. Seluruh gameplay utama — menaklukkan wilayah, meninggalkan Echo, membuat misi, membentuk klan — tetap gratis selamanya. Tidak ada sistem level, Battle Pass, atau langganan wajib."},
+         "a": "Ya. Gameplay inti, taklukkan wilayah, tinggalkan Echo, bikin misi, bentuk klan, tetap gratis selamanya. Tidak ada sistem tier, tidak ada Battle Pass, tidak ada langganan wajib."},
         {"q": "Berapa biaya Cosmetic-IAP?",
-         "a": "Item kosmetik seperti desain penanda, warna wilayah, atau lencana klan berharga antara Rp 15.000 dan Rp 150.000. Mereka tidak memberikan keuntungan dalam permainan, hanya estetika. Pembayaran via GoPay, OVO, Dana, ShopeePay."},
+         "a": "Item kosmetik seperti desain penanda, warna wilayah, atau lencana klan harganya antara Rp 15.000 dan Rp 150.000. Tidak memberi keuntungan permainan, hanya estetika. Pembayaran via GoPay, OVO, Dana, atau ShopeePay."},
         {"q": "Bisakah saya bayar dengan GoPay?",
-         "a": "Ya. GoPay adalah metode pembayaran utama Indonesia untuk kosmetik dan Pendukung-Sub. Anda scan QR-Code, konfirmasi di aplikasi, dan item terbuka dalam hitungan detik. Tanpa kartu internasional, tanpa PayPal wajib."},
+         "a": "Bisa. GoPay adalah metode utama untuk kosmetik dan langganan Pendukung. Scan QR, konfirmasi di aplikasi, kosmetiknya terbuka dalam beberapa detik. Tidak butuh kartu internasional dan tidak butuh PayPal."},
         {"q": "Apakah ada iklan di aplikasi?",
-         "a": "Tidak. MapRaiders 100% bebas iklan. Kami tidak menjual data Anda atau ruang iklan."},
-        {"q": "Apa arti &ldquo;tanpa dana Saudi&rdquo;?",
-         "a": "Pada Maret 2025, Niantic menjual divisi gamenya (Pokémon GO, Ingress, Pikmin Bloom, Monster Hunter Now) seharga 3,5 miliar dolar ke Scopely — anak perusahaan Public Investment Fund Saudi. Data lokasi lebih dari 30 juta pemain bulanan kini sampai secara tidak langsung ke dana kekayaan asing. MapRaiders adalah LLC AS swasta, tidak dikendalikan negara mana pun."},
+         "a": "Tidak. MapRaiders 100% bebas iklan. Kami tidak menjual datamu dan tidak menjual ruang iklan."},
+        {"q": "Apa maksud &ldquo;data tidak dijual ke pihak ketiga&rdquo;?",
+         "a": "Setelah akuisisi Niantic oleh Scopely di Maret 2025, data lokasi puluhan juta pemain Pokémon GO bulanan berpindah infrastruktur. MapRaiders adalah LLC AS swasta, datamu tidak dijual ke jaringan iklan, tidak ada kepemilikan negara, dan kami patuh UU PDP."},
     ],
     "internal_links": [
         ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1096,56 +1097,56 @@ K3 = {
 K4 = {
     "slug": "/id/koin-jagat-alternatif.html",
     "breadcrumb": "Koin Jagat alternatif",
-    "title": "Koin Jagat alternatif — wilayah nyata, lebih dalam",
-    "og_title": "Koin Jagat alternatif — lebih dari sekadar koin, taklukkan wilayah",
-    "meta": "Koin Jagat alternatif: MapRaiders adalah game lokasi Indonesia dengan wilayah nyata, klan, mini-game pertahanan. Lebih dalam dari sekadar koin.",
-    "keywords": "koin jagat alternatif, alternatif jagat, koin jagat indonesia, game lokal indonesia, jagat coin alternatif",
-    "badge": "Koin Jagat Alternatif · Eksklusif ID",
-    "pricing_pill": "Tidak ada server crash · Tidak ada antrian · Wilayah nyata",
-    "h1_html": 'Koin Jagat alternatif — <em>lebih dari sekadar koin</em>, taklukkan wilayah nyata',
-    "lead": "Koin Jagat membawa game lokasi ke Indonesia dengan ide bagus: berburu koin di kota nyata. Tetapi pemain mengeluh tentang server crash, antrian, dan kedalaman gameplay yang terbatas. MapRaiders mengambil titik awal yang sama — gerakan nyata, peta nyata — dan menambahkan wilayah persisten, klan, mini-game pertahanan, sistem Echo. Tidak ada server crash, tidak ada antrian. Lebih dalam.",
+    "title": "Koin Jagat alternatif: wilayah persisten, lebih banyak lapisan",
+    "og_title": "Koin Jagat alternatif: lebih dari sekadar koin, taklukkan wilayah",
+    "meta": "Koin Jagat alternatif: MapRaiders adalah game lokasi dengan wilayah persisten, klan, mini-game pertahanan. Lebih banyak lapisan daripada sekadar koin.",
+    "keywords": "koin jagat alternatif, alternatif jagat, koin jagat indonesia, aplikasi koin jagat, jagat coin alternatif",
+    "badge": "Koin Jagat Alternatif. Khusus ID.",
+    "pricing_pill": "Tanpa antrian. Wilayah persisten. Server stabil.",
+    "h1_html": 'Koin Jagat alternatif: <em>lebih dari sekadar koin</em>, taklukkan wilayah',
+    "lead": "Koin Jagat membawa ide game lokasi ke Indonesia dengan cara yang menarik: berburu koin di kota nyata. Beberapa pemain mengeluhkan server crash, antrian, dan kedalaman gameplay yang terbatas. MapRaiders berangkat dari titik yang sama, gerakan nyata di peta nyata, lalu menambahkan wilayah persisten, klan, mini-game pertahanan, dan sistem Echo. Tidak ada antrian, dan ada lebih banyak hal untuk dilakukan setelah jam pertama.",
     "trigger": {
-        "quote": "Lebih dari sekadar koin — taklukkan wilayah nyata.",
+        "quote": "Lebih dari sekadar koin. Taklukkan wilayahmu.",
         "author": "MapRaiders, sudut pandang lokal ID"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
             "label": "Apa itu Koin Jagat",
-            "title": "Apa itu <em>Koin Jagat</em> — secara hormat",
+            "title": "Apa itu <em>Koin Jagat</em>, dengan hormat",
             "body": """
-    <p>Koin Jagat adalah game lokasi Indonesia yang dikembangkan oleh tim Jagat. Ide intinya: pemain berburu koin virtual yang tersebar di lokasi nyata — di taman, jalan, gedung. Yang menemukan, mendapatkan poin atau hadiah. Konsep yang menarik dan buatan lokal.</p>
-    <p>Yang dilakukan Koin Jagat dengan baik:</p>
+    <p>Koin Jagat adalah game lokasi Indonesia yang dikembangkan tim Jagat. Idenya: pemain memburu koin virtual yang tersebar di lokasi nyata, di taman, jalan, gedung. Yang menemukan dapat poin atau hadiah. Konsepnya menarik, dan ini benar-benar buatan lokal.</p>
+    <p>Yang Koin Jagat lakukan dengan baik:</p>
     <ul>
-      <li><strong>Lokal-pertama.</strong> Antarmuka Bahasa Indonesia, lokasi Indonesia, komunitas Indonesia.</li>
-      <li><strong>Mekanika sederhana.</strong> Mudah dimulai, mudah dipahami.</li>
-      <li><strong>Aktivasi outdoor.</strong> Membawa orang ke taman dan ruang publik.</li>
+      <li><strong>Local-first.</strong> Antarmuka Bahasa Indonesia, lokasi Indonesia, komunitas Indonesia.</li>
+      <li><strong>Mekanika sederhana.</strong> Mudah dimulai, gampang dimengerti.</li>
+      <li><strong>Aktivasi outdoor.</strong> Mendorong orang ke taman dan ruang publik.</li>
     </ul>
-    <p>Tetapi ada keterbatasan yang dirasakan banyak pemain:</p>
+    <p>Yang sering dirasakan pemain sebagai keterbatasan:</p>
     <ul>
-      <li><strong>Server crash dan antrian.</strong> Pada peluncuran dan acara, server kewalahan.</li>
-      <li><strong>Kedalaman gameplay terbatas.</strong> Setelah berburu beberapa koin, pengulangan menyusup.</li>
-      <li><strong>Tidak ada kepemilikan persisten.</strong> Yang menemukan koin, mendapatkannya — tetapi tidak ada wilayah untuk dipertahankan jangka panjang.</li>
-      <li><strong>Tidak ada komponen klan.</strong> Permainan terutama solo.</li>
+      <li><strong>Server crash dan antrian.</strong> Saat peluncuran fitur dan acara, server sering kewalahan, dan bahkan ada laporan vandalisme di lokasi koin.</li>
+      <li><strong>Kedalaman gameplay terbatas.</strong> Setelah beberapa kali berburu koin, polanya cepat berulang.</li>
+      <li><strong>Tanpa kepemilikan persisten.</strong> Yang menemukan koin dapat koin, tapi tidak ada wilayah jangka panjang untuk dipertahankan.</li>
+      <li><strong>Komponen sosialnya tipis.</strong> Sebagian besar tetap pengalaman solo.</li>
     </ul>
             """,
         },
         {
-            "label": "Apa yang ditambahkan MapRaiders",
-            "title": "Apa yang <em>ditambahkan MapRaiders</em>",
-            "body": "<p>MapRaiders mengambil titik awal yang sama (gerakan nyata, peta nyata) dan membangun lima lapisan tambahan:</p>",
+            "label": "Yang ditambah MapRaiders",
+            "title": "Yang <em>MapRaiders tambahkan</em>",
+            "body": "<p>MapRaiders berangkat dari titik yang sama (gerakan nyata, peta nyata) dan membangun beberapa lapisan tambahan di atasnya:</p>",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Wilayah persisten</h3><p>Saat menaklukkan sebuah jalan, itu milik Anda — bukan koin yang menghilang setelah dikumpulkan. Pertahankan dan perluas selama berbulan-bulan.</p></div>
-    <div class="feat-card rv d1"><h3>Klan organik</h3><p>Klan terbentuk dari lingkungan yang sama. Tetangga jadi sekutu — bukan server Discord asing.</p></div>
-    <div class="feat-card rv d2"><h3>7 mini-game pertahanan</h3><p>Saat penyerang datang: tic-tac-toe, batu-gunting-kertas, mini-catur. Strategi memutuskan, bukan hanya kecepatan.</p></div>
-    <div class="feat-card rv d3"><h3>Sistem Echo</h3><p>Tinggalkan pesan audio, foto, atau video di lokasi. Pemain lain menemukannya saat lewat. Lapisan sosial yang dalam.</p></div>
-    <div class="feat-card rv d4"><h3>Mesin Decay</h3><p>Wilayah yang tidak aktif menyusut. Aktivitas mempertahankan tanah — peta tetap hidup.</p></div>
-    <div class="feat-card rv d4"><h3>Server stabil</h3><p>Infrastruktur cloud global, tanpa antrian, tanpa server crash pada peluncuran.</p></div>
+    <div class="feat-card rv"><h3>Wilayah persisten</h3><p>Saat sebuah jalan kamu taklukkan, jalan itu milikmu, bukan koin yang langsung hilang setelah diambil. Bisa dipertahankan dan diperluas selama berbulan-bulan.</p></div>
+    <div class="feat-card rv d1"><h3>Klan dari tetangga</h3><p>Klan terbentuk dari lingkungan yang sama. Tetangga jadi rekan main, bukan kenalan dari server Discord acak.</p></div>
+    <div class="feat-card rv d2"><h3>Tujuh mini-game pertahanan</h3><p>Saat penyerang datang: tic-tac-toe, batu-gunting-kertas, mini-catur. Yang memutuskan strategi, bukan kecepatan.</p></div>
+    <div class="feat-card rv d3"><h3>Sistem Echo</h3><p>Tinggalkan pesan audio, foto, atau video di sebuah lokasi. Pemain lain menemukannya saat lewat. Lapisan sosial yang lumayan dalam.</p></div>
+    <div class="feat-card rv d4"><h3>Mesin Decay</h3><p>Wilayah yang dibiarkan akan menyusut. Aktivitas yang menjaga tanah, dan peta tetap hidup.</p></div>
+    <div class="feat-card rv d4"><h3>Server stabil</h3><p>Infrastruktur cloud global, tanpa antrian, tanpa server crash di hari pertama.</p></div>
   </div>""",
         },
         {
             "label": "Perbandingan",
-            "title": "Koin Jagat vs MapRaiders <em>secara langsung</em>",
+            "title": "Koin Jagat vs MapRaiders <em>berdampingan</em>",
             "body": "",
             "extra": """  <table class="comp-table rv d2">
     <thead>
@@ -1166,25 +1167,25 @@ K4 = {
   </table>""",
         },
         {
-            "label": "Bermain bersamaan",
-            "title": "<em>Pemain Koin Jagat juga bisa main MapRaiders bersamaan</em>",
+            "label": "Main bersamaan",
+            "title": "<em>Bisa main keduanya</em>, tidak harus pilih satu",
             "body": """
-    <p>Ini bukan keputusan &ldquo;atau&rdquo;. MapRaiders melengkapi Koin Jagat — tidak menggantikan. Anda bisa berburu koin di Koin Jagat di pagi hari, dan menaklukkan wilayah di MapRaiders saat jalan-jalan setelah berbuka. Kedua aplikasi menggunakan sensor GPS yang sama tanpa konflik.</p>
-    <p>Banyak pemain beta Indonesia melaporkan: koin Jagat untuk burst harian cepat, MapRaiders untuk kedalaman jangka panjang. Jadwal yang sehat: pagi-Jagat, sore-MapRaiders.</p>
+    <p>Ini bukan pilihan &ldquo;atau&rdquo;. MapRaiders melengkapi Koin Jagat, bukan menggantikan. Kamu bisa berburu koin di Koin Jagat saat pagi, lalu taklukkan wilayah di MapRaiders pas jalan setelah berbuka. Kedua aplikasi memakai sensor GPS yang sama tanpa konflik.</p>
+    <p>Banyak penguji beta di Indonesia bilang: Koin Jagat enak buat burst harian yang cepat, MapRaiders untuk kedalaman jangka panjang. Pola yang sehat: pagi Jagat, sore MapRaiders.</p>
             """,
         },
     ],
     "faq": [
         {"q": "Apakah MapRaiders pesaing Koin Jagat?",
-         "a": "Tidak secara langsung. Kedua aplikasi memiliki titik awal yang sama (gerakan nyata, peta nyata) tetapi fokus berbeda. Koin Jagat: berburu koin cepat. MapRaiders: kepemilikan wilayah persisten + klan + mini-game. Banyak pemain memainkan keduanya — bersamaan."},
-        {"q": "Mengapa MapRaiders tidak crash seperti Koin Jagat?",
-         "a": "Infrastruktur cloud global dengan auto-scaling. Server kami menangani lonjakan tanpa antrian. Koin Jagat sering meningkat sangat cepat sehingga server lokal kewalahan — kami menggunakan strategi penyebaran berbeda dari hari pertama."},
+         "a": "Tidak langsung. Keduanya berangkat dari titik yang sama (gerakan nyata, peta nyata) tapi fokusnya berbeda. Koin Jagat: berburu koin cepat. MapRaiders: kepemilikan wilayah persisten plus klan dan mini-game. Banyak pemain main dua-duanya bareng."},
+        {"q": "Kenapa MapRaiders tidak crash seperti Koin Jagat di awal?",
+         "a": "Infrastruktur cloud global dengan auto-scaling. Server kami menahan lonjakan tanpa antrian. Strategi deployment-nya beda dari hari pertama."},
         {"q": "Apakah Bahasa Indonesia didukung penuh?",
-         "a": "Ya. MapRaiders sepenuhnya dilokalkan dalam Bahasa Indonesia — menu, sistem Echo, petunjuk, dukungan. Sama seperti Koin Jagat, kami memprioritaskan komunitas Indonesia."},
+         "a": "Ya. MapRaiders dilokalkan sepenuhnya dalam Bahasa Indonesia: menu, sistem Echo, petunjuk, dukungan. Komunitas Indonesia jadi prioritas."},
         {"q": "Bagaimana dengan UU PDP?",
-         "a": "MapRaiders sepenuhnya sesuai UU PDP (UU Perlindungan Data Pribadi 2022). Tidak ada penjualan data, tidak ada SDK iklan, server di EU/AS dengan transparansi penuh tentang lokasi data."},
+         "a": "MapRaiders patuh UU PDP (UU Perlindungan Data Pribadi 2022). Tidak ada penjualan data, tidak ada SDK iklan, server di EU dan AS, dan kami transparan soal lokasi data."},
         {"q": "Bisakah saya transfer akun Koin Jagat ke MapRaiders?",
-         "a": "Tidak. Mereka adalah game terpisah dengan akun terpisah. Tetapi pendaftaran MapRaiders memakan waktu 30 detik — masuk dengan email, dan Anda siap. Tidak ada akun yang hilang."},
+         "a": "Tidak. Keduanya adalah game terpisah dengan akun terpisah. Tapi pendaftaran MapRaiders cuma 30 detik, masuk dengan email dan kamu siap. Tidak ada yang hilang."},
     ],
     "internal_links": [
         ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1199,76 +1200,76 @@ K4 = {
 K5 = {
     "slug": "/id/aplikasi-jalan-kaki-game.html",
     "breadcrumb": "Aplikasi jalan kaki dengan game",
-    "title": "Aplikasi jalan kaki dengan game — kardio + wilayah",
-    "og_title": "Aplikasi jalan kaki dengan game — kardio + game + kesehatan",
-    "meta": "Aplikasi jalan kaki dengan game? MapRaiders mengubah setiap jalan-jalan menjadi penaklukan wilayah. Kardio + game + kesehatan untuk seluruh keluarga.",
-    "keywords": "aplikasi jalan kaki, aplikasi jalan kaki dengan game, jalan kaki game, game untuk jalan kaki, aplikasi kardio gps, strava wilayah",
+    "title": "Aplikasi jalan kaki dengan game: kardio plus wilayah",
+    "og_title": "Aplikasi jalan kaki dengan game: kardio, game, dan kesehatan",
+    "meta": "Aplikasi jalan kaki dengan game? MapRaiders mengubah jalan-jalan harianmu jadi penaklukan wilayah. Kardio, game, dan kesehatan untuk seluruh keluarga.",
+    "keywords": "aplikasi jalan kaki, aplikasi jalan kaki dengan game, jalan kaki game, game untuk jalan kaki, aplikasi kardio gps, strava wilayah, game jalan kaki ramadan",
     "badge": "Kardio + Game",
-    "pricing_pill": "Free Forever · 4× lebih sedikit baterai dari Pokémon GO",
-    "h1_html": 'Aplikasi jalan kaki dengan game — ketika <em>setiap langkah</em> menaklukkan wilayah',
-    "lead": "Aplikasi jalan kaki memberi statistik. Game jalan kaki seperti Pokémon GO memberi koleksi. Tetapi tidak ada aplikasi yang mengubah jalan nyata Anda menjadi tanah nyata. MapRaiders melakukannya: setiap langkah membentuk wilayah, setiap putaran mempertahankannya. Kardio dengan konsekuensi. Keluarga bersama. Kesehatan sungguhan.",
+    "pricing_pill": "Free Forever. Baterai sekitar empat kali lebih hemat dari Pokémon GO.",
+    "h1_html": 'Aplikasi jalan kaki dengan game: saat <em>setiap langkah</em> menaklukkan wilayah',
+    "lead": "Aplikasi jalan kaki biasa memberi statistik. Game jalan kaki seperti Pokémon GO memberi koleksi. Tapi belum banyak yang mengubah jalan harianmu jadi tanah harianmu. MapRaiders melakukan itu: setiap langkah membentuk wilayah, setiap putaran menjaganya. Kardio yang punya konsekuensi, dan keluarga bisa ikut sama-sama.",
     "trigger": {
-        "quote": "Saya tetap lari setiap pagi. Dengan MapRaiders setiap rute punya tujuan: menjaga wilayah atau merebutnya kembali. Motivasi kardio saya meledak.",
+        "quote": "Pagi saya tetap lari seperti biasa, cuma sekarang ada yang harus saya jaga.",
         "author": "Vivian N., pelari dari wilayah Hamburg (beta tertutup)"
     },
     "testers": [TESTER_VIVIAN, TESTER_RON],
     "sections": [
         {
             "label": "Masalah",
-            "title": "Mengapa <em>aplikasi jalan kaki tradisional</em> tidak cukup",
+            "title": "Kenapa <em>aplikasi jalan kaki biasa</em> sering tidak cukup",
             "body": """
-    <p>Strava, Nike Run Club, Adidas Running — mengukur waktu, jarak, kecepatan. Tetapi tiga hal hilang untuk banyak orang Indonesia:</p>
+    <p>Strava, Nike Run Club, Adidas Running mengukur waktu, jarak, kecepatan. Untuk banyak orang di Indonesia, ada beberapa hal yang masih kurang:</p>
     <ul>
-      <li><strong>Tidak ada elemen game.</strong> Yang tidak mengejar rekor pribadi kehilangan motivasi dalam 4 minggu.</li>
-      <li><strong>Tekanan performa.</strong> Leaderboard publik lebih demotivasi daripada membantu.</li>
-      <li><strong>Memaksa langganan.</strong> Strava Premium Rp 130.000/bulan untuk peta panas dan perbandingan rute yang tidak berguna di paket gratis.</li>
+      <li><strong>Tidak ada elemen game.</strong> Yang tidak mengejar rekor pribadi sering kehilangan motivasi setelah beberapa minggu.</li>
+      <li><strong>Tekanan performa.</strong> Leaderboard publik bisa lebih bikin patah semangat daripada membantu.</li>
+      <li><strong>Langganan terasa wajib.</strong> Strava Premium sekitar Rp 130.000 per bulan untuk fitur dasar yang dulu gratis.</li>
     </ul>
             """,
         },
         {
             "label": "Solusi",
-            "title": "Bagaimana MapRaiders <em>mengubah rutinitas</em> jalan kaki Anda",
+            "title": "Bagaimana MapRaiders <em>mengubah rutinitas</em> jalan kakimu",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Pertahankan wilayah</h3><p>Setiap rute mempertahankan tanah. Yang berhenti 3 hari melihat decay bertindak — insentif alami untuk kembali.</p></div>
-    <div class="feat-card rv d1"><h3>Penghitung Decay</h3><p>Nilai Decay menunjukkan: &ldquo;Jika tidak lari hari ini, lingkunganmu menyusut X%&rdquo;. Tanpa rasa bersalah — hanya realitas fisik.</p></div>
-    <div class="feat-card rv d2"><h3>Pertahanan klan saat lari</h3><p>Saat lari, push notifikasi memberitahu ketika wilayah klan diserang. Anda tidak lari sendiri — lari bersama.</p></div>
-    <div class="feat-card rv d3"><h3>Hadiah via Echo</h3><p>Echo audio saat Anda lewat. Pemain lain menceritakan kisah jalanan — tanpa iklan, tanpa influencer.</p></div>
+    <div class="feat-card rv"><h3>Jaga wilayah</h3><p>Setiap rute menjaga tanah. Yang berhenti tiga hari mulai melihat decay bekerja, jadi ada alasan kecil untuk kembali.</p></div>
+    <div class="feat-card rv d1"><h3>Indikator Decay</h3><p>Nilai Decay menampilkan: &ldquo;kalau tidak jalan hari ini, lingkunganmu menyusut sekian persen&rdquo;. Bukan menyalahkan, hanya menunjukkan keadaan.</p></div>
+    <div class="feat-card rv d2"><h3>Pertahanan klan saat lari</h3><p>Push notifikasi memberi tahu kalau wilayah klan diserang. Kamu tidak lari sendirian, kamu lari bersama tim.</p></div>
+    <div class="feat-card rv d3"><h3>Echo di tengah jalan</h3><p>Echo audio dari pemain lain muncul saat kamu lewat. Cerita-cerita kecil tentang jalanan, bukan iklan dan bukan influencer.</p></div>
   </div>""",
         },
         {
-            "label": "Strava komplemen",
-            "title": "MapRaiders <em>melengkapi</em> Strava — bukan menggantikan",
+            "label": "Bersama Strava",
+            "title": "MapRaiders <em>melengkapi</em> Strava, bukan menggantikan",
             "body": """
-    <p>MapRaiders tidak bersaing dengan Strava dalam metrik performa. Anda dapat menjalankan kedua aplikasi secara bersamaan, mereka menggunakan sensor GPS yang sama tanpa konflik. Yang tidak diberikan Strava: wilayah nyata dan pertahanan sosial. Yang tidak diberikan MapRaiders: analisis pace splits dan zona detak jantung yang detail.</p>
-    <p>Kombinasi ideal: <strong>Strava untuk analisis teknis, MapRaiders untuk motivasi harian dan wilayah.</strong> Jalankan keduanya, tanpa rasa sakit.</p>
+    <p>MapRaiders tidak bersaing dengan Strava di metrik performa. Kamu bisa jalankan keduanya bersamaan, mereka memakai sensor GPS yang sama tanpa konflik. Yang tidak ada di Strava: wilayah dan pertahanan sosial. Yang tidak ada di MapRaiders: analisis pace splits dan zona detak jantung yang rinci.</p>
+    <p>Kombinasi yang enak: <strong>Strava untuk analisis teknis, MapRaiders untuk motivasi harian dan wilayah.</strong> Jalankan dua-duanya, dan tidak ada yang saling ganggu.</p>
             """,
         },
         {
-            "label": "Sehat 50+",
-            "title": "Jalan kaki untuk <em>50+ tahun</em> — umur panjang ID",
+            "label": "Sehat di usia 50+",
+            "title": "Jalan kaki untuk <em>usia 50+</em>, kebugaran jangka panjang",
             "body": """
-    <p>Indonesia memiliki populasi 60+ yang berkembang pesat. Jalan kaki adalah aktivitas fisik yang paling direkomendasikan oleh dokter geriatri — tetapi motivasi kurang. MapRaiders memecahkan ini tanpa AR (yang membingungkan) dan tanpa kompetisi agresif (yang menjauhkan):</p>
+    <p>Indonesia punya populasi 60+ yang tumbuh cepat. Jalan kaki sering jadi aktivitas yang direkomendasikan dokter, tapi motivasi sering jadi titik lemahnya. MapRaiders membantu di sini tanpa AR yang bikin pusing dan tanpa kompetisi yang membuat orang menjauh:</p>
     <ul>
-      <li><strong>Kecepatan sendiri.</strong> Tidak ada kecepatan minimum. Walking, jalan kaki dengan tongkat, dengan teman — semua dihitung untuk wilayah.</li>
-      <li><strong>Jalan yang sama setiap hari berhasil.</strong> Persistensi mengalahkan jarak. Yang mengulang, mempertahankan.</li>
-      <li><strong>Komunitas lingkungan.</strong> Klan organik dengan tetangga. Tanpa Discord, tanpa chat toksik.</li>
-      <li><strong>UU PDP-compatible.</strong> Untuk lansia yang khawatir tentang privasi — tanpa iklan tertarget, tanpa penjualan lokasi.</li>
+      <li><strong>Kecepatan sendiri.</strong> Tidak ada kecepatan minimum. Jalan santai, jalan dengan tongkat, jalan dengan teman, semua dihitung untuk wilayah.</li>
+      <li><strong>Jalan yang sama tiap hari sudah cukup.</strong> Konsistensi mengalahkan jarak. Yang rutin, yang tetap memegang tanahnya.</li>
+      <li><strong>Komunitas lingkungan.</strong> Klan organik dari tetangga. Tanpa Discord, tanpa chat yang toksik.</li>
+      <li><strong>Patuh UU PDP.</strong> Untuk yang khawatir soal privasi: tanpa iklan tertarget dan tanpa penjualan lokasi.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "Berapa lama baterai bertahan?",
-         "a": "Pada jalan kaki 1 jam, biasanya 15-25% baterai (vs ~50% di Pokémon GO dengan AR). Nilai bervariasi tergantung perangkat dan kecerahan layar."},
-        {"q": "Apakah berfungsi dengan Strava atau Nike Run Club?",
-         "a": "Saat ini tanpa integrasi langsung. Anda dapat menjalankan kedua aplikasi secara bersamaan — mereka menggunakan sensor GPS yang sama tanpa konflik. Integrasi Strava direncanakan untuk Q4 2026."},
-        {"q": "Apakah walking lambat juga dihitung?",
-         "a": "Ya. Tidak ada kecepatan minimum. Walking, jalan kaki lambat, jalan-jalan — semua membentuk wilayah, selama ada gerakan fisik nyata (tanpa auto-cheating)."},
-        {"q": "Bisakah lansia menggunakan?",
-         "a": "Ya, dirancang untuk semua usia. Tanpa AR, tanpa kebisingan, tanpa tekanan kecepatan. Huruf besar, kontras tinggi, kontrol sederhana."},
-        {"q": "Berapa banyak data seluler yang dikonsumsi?",
-         "a": "Sedang. Tanpa live-video, tanpa API berat. Jalan kaki 1 jam biasanya menggunakan 5-15 MB."},
+         "a": "Untuk jalan kaki satu jam, biasanya pemakaian baterai 15 sampai 25 persen (dibandingkan sekitar 50 persen di Pokémon GO dengan AR). Bisa berbeda tergantung perangkat dan kecerahan layar."},
+        {"q": "Apakah ini bekerja dengan Strava atau Nike Run Club?",
+         "a": "Saat ini belum ada integrasi langsung. Kamu bisa jalankan keduanya bersamaan, sensor GPS-nya sama tanpa konflik. Integrasi Strava direncanakan untuk Q4 2026."},
+        {"q": "Apakah jalan santai juga dihitung?",
+         "a": "Ya. Tidak ada kecepatan minimum. Jalan santai, jalan lambat, jalan-jalan biasa, semua membentuk wilayah selama ada gerakan fisik (tanpa auto-cheating)."},
+        {"q": "Bisakah lansia memakai aplikasi ini?",
+         "a": "Bisa. Aplikasinya cocok untuk semua usia. Tanpa AR, tanpa kebisingan, tanpa tekanan kecepatan. Huruf besar, kontras tinggi, kontrol sederhana."},
+        {"q": "Berapa banyak kuota yang dipakai?",
+         "a": "Sedang. Tanpa live video, tanpa API berat. Jalan kaki satu jam biasanya menghabiskan 5 sampai 15 MB."},
     ],
     "internal_links": [
         ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1283,29 +1284,29 @@ K5 = {
 K6 = {
     "slug": "/id/harta-karun-aplikasi.html",
     "breadcrumb": "Harta karun aplikasi",
-    "title": "Harta karun aplikasi 2026 — seluruh kota live treasure hunt",
-    "og_title": "Harta karun aplikasi — seluruh kota dipenuhi Echo tersembunyi",
-    "meta": "Harta karun aplikasi 2026: live, seluruh kota, tanpa beli tour, tanpa iklan. MapRaiders mengubah kotamu menjadi perburuan harta karun terbuka. Keluarga, teman.",
+    "title": "Harta karun aplikasi 2026: seluruh kota jadi perburuan",
+    "og_title": "Harta karun aplikasi: seluruh kota dipenuhi Echo tersembunyi",
+    "meta": "Harta karun aplikasi 2026: live, seluruh kota, tanpa beli tur, tanpa iklan. MapRaiders mengubah kotamu jadi perburuan harta karun terbuka. Cocok untuk keluarga dan teman.",
     "keywords": "harta karun aplikasi, perburuan harta karun aplikasi, aplikasi harta karun, harta karun keluarga, geocaching alternatif indonesia",
     "badge": "Perburuan Harta Karun",
-    "pricing_pill": "Free Forever · Tanpa beli tour · Seluruh kota",
-    "h1_html": 'Harta karun aplikasi — <em>seluruh kota dipenuhi Echo</em> tersembunyi',
-    "lead": "Aplikasi perburuan harta karun tradisional seperti Geocaching membutuhkan langganan premium dan tour yang telah ditentukan. MapRaiders membaliknya: Echo sudah tersebar di seluruh kota. Anda mengikuti jejak pemain lain atau meninggalkan jejak Anda sendiri. Live, gratis, tanpa beli tour, tanpa persiapan. Sangat Indonesia.",
+    "pricing_pill": "Free Forever. Tanpa beli tur. Seluruh kota.",
+    "h1_html": 'Harta karun aplikasi: <em>seluruh kota penuh Echo</em> tersembunyi',
+    "lead": "Aplikasi perburuan harta karun seperti Geocaching biasanya butuh langganan premium dan tur yang sudah disiapkan. MapRaiders membaliknya. Echo sudah tersebar di seluruh kota. Kamu bisa ikuti jejak pemain lain, atau tinggalkan jejakmu sendiri. Live, gratis, tanpa beli tur, tanpa persiapan.",
     "trigger": {
-        "quote": "Meninggalkan Echo dan melihat siapa yang menemukannya seperti perburuan harta karun terbuka di seluruh kota.",
+        "quote": "Saya taruh klip audio singkat di pintu masuk gedung, tiga hari kemudian seseorang yang tidak saya kenal menemukannya.",
         "author": "Aljoscha P., penjelajah kota dari wilayah Berlin (beta tertutup)"
     },
     "testers": [TESTER_ALJOSCHA, TESTER_VIVIAN],
     "sections": [
         {
             "label": "Kriteria",
-            "title": "Apa yang harus dimiliki <em>aplikasi harta karun modern</em>",
+            "title": "Yang harus dimiliki <em>aplikasi harta karun zaman sekarang</em>",
             "body": """
-    <p>Tiga kriteria memisahkan aplikasi perburuan harta karun era 2020-an dari solusi cetak kertas:</p>
+    <p>Beberapa hal yang membedakan aplikasi perburuan harta karun era smartphone dari versi cetak kertas:</p>
     <ul>
-      <li><strong>Live.</strong> Petunjuk muncul secara real-time, bukan hanya dalam tour yang sudah dibuat.</li>
-      <li><strong>Sosial.</strong> Pemain meninggalkan petunjuk satu sama lain, bukan hanya mengikuti.</li>
-      <li><strong>Tanpa hambatan premium.</strong> Orang tua dan anak masuk pada saat itu juga, tanpa harus membeli tour Rp 50.000.</li>
+      <li><strong>Live.</strong> Petunjuk bisa muncul real-time, bukan hanya dalam tur yang sudah dibuat.</li>
+      <li><strong>Sosial.</strong> Pemain saling meninggalkan petunjuk, bukan cuma mengikuti.</li>
+      <li><strong>Tanpa paywall di awal.</strong> Orang tua dan anak bisa mulai langsung, tanpa harus beli tur Rp 50.000 dulu.</li>
     </ul>
             """,
         },
@@ -1316,10 +1317,10 @@ K6 = {
             "extra": """  <table class="comp-table rv d2">
     <thead><tr><th>Aplikasi</th><th>Harga</th><th>Persiapan</th><th>Live?</th><th>Loop game</th></tr></thead>
     <tbody>
-      <tr><td class="feat-name">Geocaching</td><td>Sub Premium ~Rp 100rb/bulan</td><td>Rendah — temukan cache</td><td class="cross">Asinkron</td><td>Mengumpulkan</td></tr>
-      <tr><td class="feat-name">Actionbound</td><td>Tour / Sub</td><td>Tinggi — buat tour</td><td class="cross">✗</td><td>Per-tour</td></tr>
+      <tr><td class="feat-name">Geocaching</td><td>Sub Premium ~Rp 100rb/bulan</td><td>Rendah, temukan cache</td><td class="cross">Asinkron</td><td>Mengumpulkan</td></tr>
+      <tr><td class="feat-name">Actionbound</td><td>Tur atau langganan</td><td>Tinggi, buat tur</td><td class="cross">✗</td><td>Per-tur</td></tr>
       <tr><td class="feat-name">Munzee</td><td>Premium-Sub</td><td>Sedang</td><td class="cross">Asinkron</td><td>Scan kode</td></tr>
-      <tr><td class="feat-name">MapRaiders</td><td class="check">Rp 0</td><td class="check">Nol</td><td class="check">Live</td><td>Echo + Misi + Wilayah</td></tr>
+      <tr><td class="feat-name">MapRaiders</td><td class="check">Rp 0</td><td class="check">Nol</td><td class="check">Live</td><td>Echo, Misi, Wilayah</td></tr>
     </tbody>
   </table>""",
         },
@@ -1327,40 +1328,40 @@ K6 = {
             "label": "Echo",
             "title": "Bagaimana MapRaiders <em>memikirkan ulang</em> perburuan harta karun",
             "body": """
-    <p>Alih-alih tour linear dari stasiun 1 ke 10, MapRaiders menciptakan <strong>perburuan harta karun spasial terbuka</strong> — seluruh kota adalah taman bermain:</p>
+    <p>Bukan tur linear dari titik 1 ke 10. MapRaiders membuat <strong>perburuan yang terbuka di ruang kota</strong>, dan seluruh kota jadi taman bermainnya:</p>
     <ul>
-      <li><strong>Tinggalkan Echo.</strong> Tinggalkan Echo audio, foto, atau video di sebuah tempat. Pemain lain menemukan saat lewat.</li>
-      <li><strong>Temukan Echo.</strong> Lihat di peta di mana Echo berada. Ikuti jejak, temukan rahasia, dengar cerita.</li>
-      <li><strong>Buat misi.</strong> Buat tugas kecil di lokasi (&ldquo;Foto pintu merah di sana&rdquo;). Pemain lain melaksanakan.</li>
-      <li><strong>Lapisan wilayah.</strong> Yang sering melewati rute perburuan harta karun, menaklukkannya sebagai wilayah — jejak menjadi tanah.</li>
+      <li><strong>Tinggalkan Echo.</strong> Tinggalkan Echo berisi audio, foto, atau video di sebuah tempat. Pemain lain akan menemukannya saat lewat.</li>
+      <li><strong>Temukan Echo.</strong> Lihat di peta posisi Echo. Ikuti jejak, dengarkan ceritanya.</li>
+      <li><strong>Bikin misi.</strong> Bikin tugas kecil di sebuah lokasi (&ldquo;foto pintu merah di sana&rdquo;), pemain lain yang menjalankan.</li>
+      <li><strong>Lapisan wilayah.</strong> Yang sering lewat rute perburuan akan menaklukkannya jadi wilayah. Jejak pelan-pelan jadi tanah.</li>
     </ul>
             """,
         },
         {
-            "label": "Anak-anak",
-            "title": "Aplikasi perburuan harta karun untuk <em>anak-anak dan keluarga</em>",
+            "label": "Anak dan keluarga",
+            "title": "Perburuan harta karun untuk <em>anak-anak dan keluarga</em>",
             "body": """
-    <p>Perburuan harta karun adalah budaya masa kecil Indonesia — petunjuk dengan kapur, jejak daun, persembunyian akhir dengan permen. MapRaiders membawa ini ke era smartphone, tanpa membiarkan anak-anak sendirian di layar:</p>
+    <p>Perburuan harta karun adalah bagian dari budaya masa kecil di Indonesia: petunjuk dengan kapur, jejak daun, dan akhirnya permen di tempat persembunyian. MapRaiders membawa ini ke smartphone, tanpa membuat anak-anak menatap layar sepanjang waktu:</p>
     <ul>
-      <li><strong>Aktivitas orang tua-anak.</strong> Orang tua meninggalkan Echo audio di rute yang direncanakan, anak-anak mengikuti jejak — gerakan analog, petunjuk digital.</li>
-      <li><strong>Layar minimal, dunia maksimal.</strong> Aplikasi memandu di peta; pengalaman terjadi di dunia nyata.</li>
+      <li><strong>Aktivitas orang tua dan anak.</strong> Orang tua menaruh Echo audio di rute, anak-anak mengikutinya. Gerakan tetap analog, petunjuknya digital.</li>
+      <li><strong>Layar sedikit, dunia banyak.</strong> Aplikasi cuma memandu di peta. Pengalamannya terjadi di dunia nyata.</li>
       <li><strong>UU PDP untuk anak-anak.</strong> Tanpa pelacak iklan personalisasi, tanpa penjualan data, tanpa chat dalam aplikasi tanpa persetujuan orang tua.</li>
-      <li><strong>Mode keluarga.</strong> Acara privasi Idul Fitri, Tahun Baru Imlek, Hari Kemerdekaan — hanya untuk grup keluarga.</li>
+      <li><strong>Mode keluarga.</strong> Buat acara privat untuk Idul Fitri, Tahun Baru Imlek, atau Hari Kemerdekaan, hanya untuk grup keluarga.</li>
     </ul>
             """,
         },
     ],
     "faq": [
         {"q": "Apakah MapRaiders cocok untuk anak-anak?",
-         "a": "Ya, mulai usia 9 tahun dengan pengawasan orang tua. Aplikasi sesuai UU PDP, tanpa iklan, dan tidak mengumpulkan data pribadi anak-anak. Orang tua dapat mengaktifkan mode keluarga."},
-        {"q": "Berapa banyak persiapan yang saya butuhkan untuk perburuan dengan anak-anak?",
-         "a": "Nol. Berbeda dari Actionbound atau Munzee, Anda tidak perlu membeli tour atau menyiapkan stasiun. Echo sudah tersebar di kota — cukup ikuti jejak pemain lain atau tinggalkan jejak Anda sendiri."},
-        {"q": "Apakah aplikasi perburuan harta karun berbayar?",
-         "a": "Tidak. Fungsi perburuan harta karun (meninggalkan Echo, menemukan Echo, membuat misi) sepenuhnya gratis. Secara opsional ada kosmetik mulai dari Rp 15.000 — tanpa keuntungan dalam permainan. Pembayaran via GoPay, OVO, Dana."},
-        {"q": "Apakah berfungsi di kota kecil?",
-         "a": "Ya. Bahkan di kota kecil atau lingkungan, Anda dapat meninggalkan Echo dan membuat misi. Di pusat kota Anda menemukan lebih banyak jejak pemain lain; di pedesaan, tour Anda memiliki lebih banyak ruang sendiri."},
+         "a": "Ya, mulai usia 9 tahun dengan pengawasan orang tua. Aplikasinya patuh UU PDP, tanpa iklan, dan tidak mengumpulkan data pribadi anak. Orang tua bisa mengaktifkan mode keluarga."},
+        {"q": "Butuh persiapan berapa banyak untuk berburu dengan anak-anak?",
+         "a": "Tidak banyak. Berbeda dari Actionbound atau Munzee, kamu tidak perlu beli tur atau menyiapkan stasiun. Echo sudah tersebar di kota, cukup ikuti jejak pemain lain atau tinggalkan jejakmu sendiri."},
+        {"q": "Apakah perburuan harta karunnya berbayar?",
+         "a": "Tidak. Tinggalkan Echo, temukan Echo, dan buat misi semuanya gratis. Kosmetik opsional mulai Rp 15.000, tanpa keuntungan permainan. Pembayaran via GoPay, OVO, atau Dana."},
+        {"q": "Apakah ini bekerja di kota kecil?",
+         "a": "Ya. Bahkan di kota kecil atau lingkungan, kamu bisa tinggalkan Echo dan bikin misi. Di pusat kota jejaknya lebih ramai, di daerah jejakmu sendiri yang dominan."},
         {"q": "Apakah aplikasi dalam Bahasa Indonesia?",
-         "a": "Ya. MapRaiders sepenuhnya dilokalkan dalam Bahasa Indonesia — menu, sistem Echo, petunjuk, dukungan."},
+         "a": "Ya. MapRaiders dilokalkan sepenuhnya dalam Bahasa Indonesia, mulai dari menu, sistem Echo, petunjuk, sampai dukungan."},
     ],
     "internal_links": [
         ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1375,85 +1376,95 @@ K6 = {
 K7 = {
     "slug": "/id/permainan-ramadan.html",
     "breadcrumb": "Permainan Ramadan",
-    "title": "Permainan Ramadan — jalan-jalan setelah berbuka, gratis",
-    "og_title": "Permainan Ramadan — setiap langkah punya makna",
-    "meta": "Permainan untuk Ramadan: jalan-jalan keluarga setelah berbuka, taklukkan wilayah, hemat baterai. Tanpa iklan, tanpa biaya, sangat hormat.",
-    "keywords": "permainan ramadan, game ramadan, aplikasi ramadan, jalan-jalan setelah berbuka, sahur game, idul fitri permainan",
-    "badge": "Permainan Ramadan · Eksklusif ID",
-    "pricing_pill": "Setiap langkah punya makna · Sangat hormat · Gratis",
-    "h1_html": 'Permainan Ramadan — <em>setiap langkah</em> punya makna',
-    "lead": "Ramadan adalah waktu istimewa: puasa, tarawih, sahur, iftar bersama keluarga. Setelah berbuka, banyak yang mencari aktivitas ringan untuk berjalan-jalan keluarga. MapRaiders cocok di sini secara hormat: jalan-jalan setelah Iftar menjadi penaklukan wilayah, ringan, hemat baterai, tanpa iklan. Tanpa mekanika judi, tanpa hadiah uang, hanya gerakan dan komunitas. Sangat hormat terhadap nilai-nilai Ramadan.",
+    "title": "Game Ramadan jalan kaki: jalan setelah berbuka, gratis",
+    "og_title": "Permainan Ramadan: setiap langkah ada artinya",
+    "meta": "Game Ramadan jalan kaki: jalan-jalan keluarga setelah berbuka, taklukkan wilayah, hemat baterai. Tanpa iklan, tanpa biaya, dengan menjaga adab.",
+    "keywords": "permainan ramadan, game ramadan, game ramadan jalan kaki, aplikasi ramadan, jalan-jalan setelah berbuka, sahur game, idul fitri permainan",
+    "badge": "Permainan Ramadan. Khusus ID.",
+    "pricing_pill": "Setiap langkah ada artinya. Gratis. Menjaga adab.",
+    "h1_html": 'Permainan Ramadan: <em>setiap langkah</em> ada artinya',
+    "lead": "Ramadan adalah waktu yang punya ritmenya sendiri: puasa, tarawih, sahur, iftar bersama keluarga. Setelah berbuka, banyak yang mencari kegiatan ringan untuk jalan-jalan bersama. MapRaiders mencoba pas di sini, dengan menjaga adab. Jalan-jalan setelah Iftar bisa jadi penaklukan wilayah yang ringan, hemat baterai, dan tanpa iklan. Tidak ada mekanika judi, tidak ada hadiah uang, cuma gerakan dan komunitas.",
     "trigger": {
-        "quote": "Setiap langkah selama Ramadan punya makna.",
-        "author": "MapRaiders, prinsip Ramadan-hormat"
+        "quote": "Setiap langkah selama Ramadan ada artinya.",
+        "author": "MapRaiders, prinsip Ramadan"
     },
     "testers": ALL_TESTERS,
     "sections": [
         {
             "label": "Aktivitas Ramadan",
-            "title": "Aktivitas Ramadan + <em>jalan-jalan</em>",
+            "title": "Aktivitas Ramadan dan <em>jalan-jalan</em>",
             "body": """
-    <p>Ramadan memiliki ritme khasnya sendiri — dan jalan-jalan cocok di banyak titik dalam hari:</p>
+    <p>Ramadan punya ritmenya sendiri, dan jalan-jalan bisa pas di beberapa titik dalam hari:</p>
     <ul>
-      <li><strong>Setelah Sahur.</strong> Beberapa keluarga senang berjalan-jalan ringan setelah sahur sebelum matahari terbit — udara sejuk, jalanan tenang.</li>
-      <li><strong>Sebelum Iftar.</strong> Saat menunggu adzan Maghrib, jalan-jalan singkat 15-20 menit di lingkungan dapat membantu mengalihkan perhatian dari rasa lapar.</li>
-      <li><strong>Setelah Iftar dan sebelum Tarawih.</strong> Ini titik manis untuk jalan-jalan keluarga 30-45 menit. Energi kembali, suasana tenang.</li>
-      <li><strong>Setelah Tarawih.</strong> Beberapa keluarga membuat &ldquo;tradisi jalan malam&rdquo; setelah salat malam — bertemu tetangga, anak-anak bermain.</li>
+      <li><strong>Setelah Sahur.</strong> Sebagian keluarga suka jalan ringan sebelum matahari terbit. Udaranya sejuk, jalannya sepi.</li>
+      <li><strong>Sebelum Iftar.</strong> Saat menunggu adzan Maghrib, jalan singkat 15-20 menit di lingkungan bisa bantu mengalihkan rasa lapar.</li>
+      <li><strong>Setelah Iftar dan sebelum Tarawih.</strong> Titik paling enak buat jalan keluarga 30-45 menit. Energi sudah balik, suasana tenang.</li>
+      <li><strong>Setelah Tarawih.</strong> Sebagian keluarga punya tradisi jalan malam setelah salat. Ketemu tetangga, anak-anak ikut main.</li>
     </ul>
-    <p>MapRaiders melayani semua titik ini secara diam-diam: Anda menaklukkan wilayah, melihat Echo, mempertahankan tanah klan — tanpa harus melihat layar terus-menerus. Aplikasi memandu di latar belakang.</p>
+    <p>MapRaiders bisa hadir di setiap titik ini tanpa banyak gangguan. Kamu menaklukkan wilayah, melihat Echo, dan menjaga tanah klan tanpa harus terus-menerus melihat layar. Aplikasinya memandu di latar belakang.</p>
             """,
         },
         {
             "label": "Setelah Iftar",
-            "title": "Setelah berbuka — <em>kegiatan ringan</em>, wilayah mengalir",
+            "title": "Setelah berbuka, <em>kegiatan ringan</em> dan wilayah pelan-pelan tumbuh",
             "body": "",
             "extra": """  <div class="features-grid">
-    <div class="feat-card rv"><h3>Kalori turun, wilayah naik</h3><p>Jalan-jalan 30-45 menit setelah Iftar membakar 100-150 kalori — dan menaklukkan wilayah pada saat yang sama. Konsekuensi sehat tanpa tekanan.</p></div>
-    <div class="feat-card rv d1"><h3>Aktivitas keluarga</h3><p>Anak-anak, orang tua, kakek-nenek — semua dengan kecepatannya sendiri. MapRaiders bekerja dengan walking lambat sama baiknya dengan lari.</p></div>
-    <div class="feat-card rv d2"><h3>Echo komunitas</h3><p>Tinggalkan Echo audio singkat di masjid lingkungan atau jalanan favorit. Komunitas Ramadan terbentuk secara organik.</p></div>
-    <div class="feat-card rv d3"><h3>Hemat baterai untuk Tarawih</h3><p>Jalan-jalan 1 jam menggunakan 15-20% baterai. Anda masih memiliki cukup daya untuk Tarawih, panggilan keluarga, alarm sahur.</p></div>
+    <div class="feat-card rv"><h3>Kalori turun, wilayah naik</h3><p>Jalan 30-45 menit setelah Iftar membakar sekitar 100-150 kalori, dan sambil itu menaklukkan wilayah. Sehat tanpa tekanan.</p></div>
+    <div class="feat-card rv d1"><h3>Aktivitas keluarga</h3><p>Anak, orang tua, kakek-nenek, masing-masing dengan kecepatannya sendiri. Jalan santai dihitung sama seperti jogging.</p></div>
+    <div class="feat-card rv d2"><h3>Echo komunitas</h3><p>Tinggalkan Echo audio singkat di masjid lingkungan atau jalan favorit. Komunitas Ramadan tumbuh secara organik.</p></div>
+    <div class="feat-card rv d3"><h3>Hemat baterai untuk Tarawih</h3><p>Jalan satu jam pakai sekitar 15-20% baterai. Masih cukup untuk Tarawih, telepon keluarga, dan alarm sahur.</p></div>
   </div>""",
         },
         {
-            "label": "Keluarga + anak",
+            "label": "Keluarga dan anak",
             "title": "Keluarga dan <em>anak-anak</em> selama Ramadan",
             "body": """
-    <p>Ramadan adalah waktu keluarga di Indonesia. MapRaiders mendukung ini, tidak menggantikan:</p>
+    <p>Ramadan adalah waktu keluarga di Indonesia. MapRaiders mau mendukung itu, bukan menggantikannya:</p>
     <ul>
-      <li><strong>Aktivitas bersama, bukan layar individu.</strong> Aplikasi memandu di latar belakang; perhatian tetap pada keluarga, bukan ponsel.</li>
-      <li><strong>Anak-anak belajar lingkungan mereka.</strong> Sambil menaklukkan wilayah, anak-anak melihat masjid, taman, jalan baru di lingkungan mereka.</li>
-      <li><strong>Tanpa mekanika judi.</strong> Tidak ada hadiah acak, tidak ada loot box, tidak ada hadiah uang — hanya gerakan dan wilayah.</li>
-      <li><strong>UU PDP untuk anak-anak.</strong> Tanpa iklan, tanpa pelacakan, tanpa berbagi data dengan platform iklan.</li>
-      <li><strong>Mode keluarga.</strong> Buat acara privasi hanya untuk keluarga Anda — &ldquo;Tour Ramadan keluarga Ahmad&rdquo;.</li>
+      <li><strong>Aktivitas bersama, bukan layar sendiri-sendiri.</strong> Aplikasi memandu di latar belakang. Perhatian tetap di keluarga, bukan di ponsel.</li>
+      <li><strong>Anak mengenal lingkungannya.</strong> Sambil menaklukkan wilayah, anak-anak melihat masjid, taman, dan gang baru di sekitar rumah.</li>
+      <li><strong>Tanpa mekanika judi.</strong> Tidak ada hadiah acak, tidak ada loot box, tidak ada hadiah uang. Cuma gerakan dan wilayah.</li>
+      <li><strong>UU PDP untuk anak-anak.</strong> Tanpa iklan, tanpa pelacakan, tanpa berbagi data ke platform iklan.</li>
+      <li><strong>Mode keluarga.</strong> Buat acara privat hanya untuk keluargamu, misalnya &ldquo;tour Ramadan keluarga Ahmad&rdquo;.</li>
     </ul>
             """,
         },
         {
-            "label": "Idul Fitri lanjutkan",
-            "title": "<em>Idul Fitri</em> dan setelahnya — lanjutkan kebiasaan",
+            "label": "Tempat suci dilindungi",
+            "title": "<em>Tempat suci</em> tetap dilindungi",
             "body": """
-    <p>Setelah Ramadan, banyak yang kehilangan ritme jalan-jalan harian. MapRaiders membantu mempertahankannya:</p>
+    <p>Beberapa tempat punya aturan khusus di MapRaiders. Wilayah seperti Masjidil Haram di Mekkah, Masjid Nabawi di Madinah, dan area suci lainnya difilter dari sistem permainan. Di sana tidak ada penaklukan wilayah, tidak ada mini-game pertahanan, dan tidak ada Echo. Aplikasinya tetap menampilkan peta, tapi tanpa lapisan permainan.</p>
+    <p>Alasannya sederhana: tempat-tempat ini bukan untuk dijadikan ajang kompetisi. Kalau kamu menemukan masjid atau lokasi sakral lain di kota yang menurutmu juga harus difilter, kamu bisa kirim laporan dari dalam aplikasi.</p>
+            """,
+        },
+        {
+            "label": "Setelah Idul Fitri",
+            "title": "<em>Setelah Idul Fitri</em>, kebiasaan jalan tetap berlanjut",
+            "body": """
+    <p>Setelah Ramadan, banyak yang kehilangan ritme jalan-jalan harian. MapRaiders bisa bantu menjaganya:</p>
     <ul>
-      <li><strong>Wilayah Ramadan tetap.</strong> Tanah yang Anda taklukkan selama Ramadan adalah milik Anda — pertahankan setelah Idul Fitri dengan jalan-jalan reguler.</li>
-      <li><strong>Tradisi mudik berlanjut.</strong> Saat mudik, Anda dapat menaklukkan wilayah baru di kampung halaman — kenangan yang bertahan lama.</li>
-      <li><strong>Klan Ramadan.</strong> Klan yang terbentuk dari jalan-jalan Ramadan dapat berlanjut sebagai komunitas lingkungan sepanjang tahun.</li>
-      <li><strong>Hari Kemerdekaan, Idul Adha, Tahun Baru.</strong> Setiap acara budaya menjadi alasan baru untuk gerakan dan komunitas.</li>
+      <li><strong>Wilayah Ramadan tetap.</strong> Tanah yang kamu taklukkan selama Ramadan tetap milikmu, dipertahankan dengan jalan rutin setelah Lebaran.</li>
+      <li><strong>Mudik jadi peta baru.</strong> Saat mudik, kamu bisa menaklukkan wilayah baru di kampung halaman. Kenangan yang awet.</li>
+      <li><strong>Klan Ramadan.</strong> Klan yang terbentuk dari jalan-jalan Ramadan bisa berlanjut sebagai komunitas lingkungan sepanjang tahun.</li>
+      <li><strong>Hari Kemerdekaan, Idul Adha, Tahun Baru.</strong> Setiap momen budaya jadi alasan untuk gerakan dan komunitas baru.</li>
     </ul>
-    <p>Bulan Ramadan adalah pintu masuk — bukan akhir. MapRaiders memberi alasan untuk tetap aktif sepanjang tahun, dengan rasa hormat penuh terhadap budaya dan agama.</p>
+    <p>Bulan Ramadan jadi pintu masuk, bukan akhir.</p>
             """,
         },
     ],
     "faq": [
-        {"q": "Apakah MapRaiders sesuai dengan nilai-nilai Ramadan?",
-         "a": "Ya. Tidak ada mekanika judi (tanpa loot box, tanpa hadiah acak), tidak ada hadiah uang, tidak ada iklan yang mengganggu — hanya gerakan dan komunitas. Konsep dasar (jalan-jalan, keluarga, lingkungan) selaras dengan nilai-nilai Ramadan."},
-        {"q": "Bisakah saya bermain saat puasa tanpa kelelahan?",
-         "a": "Ya. MapRaiders dirancang untuk gerakan ringan. Anda tidak perlu lari atau berolahraga keras. Walking santai cukup. Yang terbaik: jalan-jalan singkat sebelum Iftar atau setelah Tarawih."},
-        {"q": "Apakah aplikasi bekerja saat berpuasa di Ramadan?",
-         "a": "Tentu saja. Aplikasi tidak peduli apakah Anda berpuasa atau tidak — hanya melacak gerakan GPS Anda. Banyak penguji beta melaporkan bahwa MapRaiders membuat puasa lebih mudah karena aktivitas ringan setelah Iftar terasa bermakna."},
-        {"q": "Adakah acara Ramadan khusus dalam permainan?",
-         "a": "Ya, kami merencanakan acara Ramadan tahunan dengan tema Iftar, kosmetik bertema Ramadan (opsional, tanpa keuntungan permainan), dan tantangan keluarga. Semua sangat hormat — tanpa komersialisasi."},
+        {"q": "Apakah MapRaiders selaras dengan nilai-nilai Ramadan?",
+         "a": "Tidak ada mekanika judi (tanpa loot box, tanpa hadiah acak), tidak ada hadiah uang, dan tidak ada iklan yang mengganggu. Cuma gerakan dan komunitas. Konsep dasarnya (jalan-jalan, keluarga, lingkungan) sejalan dengan ritme Ramadan."},
+        {"q": "Apakah saya bisa main saat puasa tanpa kelelahan?",
+         "a": "Bisa. Aplikasinya dirancang untuk gerakan ringan. Tidak harus lari atau olahraga berat. Jalan santai cukup. Yang paling enak biasanya jalan singkat sebelum Iftar atau setelah Tarawih."},
+        {"q": "Apakah aplikasi tetap bekerja saat puasa?",
+         "a": "Tetap. Aplikasi cuma melacak gerakan GPS, tidak peduli kamu sedang puasa atau tidak. Beberapa penguji beta bilang aktivitas ringan setelah Iftar bikin puasa terasa lebih bermakna."},
+        {"q": "Apakah Mekkah dan Madinah masuk peta permainan?",
+         "a": "Tidak. Tempat suci seperti Masjidil Haram dan Masjid Nabawi difilter dari mekanika permainan. Tidak ada wilayah, tidak ada mini-game, dan tidak ada Echo di sana. Petanya tetap muncul, tapi tanpa lapisan game."},
+        {"q": "Adakah acara Ramadan khusus di dalam permainan?",
+         "a": "Ada. Kami merencanakan acara Ramadan tahunan dengan tema Iftar, kosmetik bertema Ramadan (opsional, tanpa keuntungan permainan), dan tantangan keluarga. Semua dijaga adabnya, tanpa komersialisasi yang berlebihan."},
         {"q": "Bagaimana dengan privasi selama Ramadan?",
-         "a": "MapRaiders sesuai UU PDP. Lokasi masjid, rute Tarawih, jadwal sahur Anda tidak dijual ke jaringan iklan. Server di EU/AS, transparansi penuh."},
+         "a": "MapRaiders patuh UU PDP. Lokasi masjid, rute Tarawih, dan jadwal sahurmu tidak dijual ke jaringan iklan. Server di EU dan AS, dengan transparansi penuh soal lokasi data."},
     ],
     "internal_links": [
         ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1475,22 +1486,22 @@ TWINS_DATA = [
     {
         "slug": "/id/permainan-teritori-ulasan.html",
         "breadcrumb": "Permainan teritori ulasan",
-        "title": "Permainan teritori ulasan — penguji beta tentang MapRaiders",
-        "og_title": "Permainan teritori — ulasan beta nyata",
-        "meta": "Ulasan permainan teritori dalam kehidupan sehari-hari: tiga penguji beta melaporkan bagaimana penaklukan tanah, decay, dan mini-game pertahanan bekerja di ruang kota nyata.",
+        "title": "Permainan teritori ulasan: penguji beta tentang MapRaiders",
+        "og_title": "Permainan teritori: ulasan beta",
+        "meta": "Ulasan permainan teritori dalam keseharian: tiga penguji beta melaporkan bagaimana penaklukan tanah, decay, dan mini-game pertahanan bekerja di ruang kota.",
         "keywords": "permainan teritori ulasan, permainan teritori tes, taklukkan wilayah aplikasi ulasan",
-        "h1_html": 'Permainan teritori — ketika <em>jalan-jalanmu</em> milikmu',
-        "lead": "Bagaimana rasanya menaklukkan jalan secara nyata? Tiga penguji beta melaporkan tentang wilayah pertama, kejutan Decay pertama, dan mini-game pertahanan pertama.",
-        "intro_label": "Apa yang penting dalam tes?",
-        "intro_title": "Apa yang membuat <em>permainan teritori</em> nyata",
+        "h1_html": 'Permainan teritori: saat <em>jalanmu</em> jadi milikmu',
+        "lead": "Bagaimana rasanya menaklukkan jalan secara nyata? Tiga penguji beta menceritakan wilayah pertama mereka, kejutan Decay pertama, dan mini-game pertahanan pertama.",
+        "intro_label": "Yang kami uji",
+        "intro_title": "Apa yang membuat <em>permainan teritori</em> terasa nyata",
         "intro_body": """
-    <p>Dalam tes teritori, tiga sumbu pengalaman penting:</p>
+    <p>Dalam tes teritori, ada tiga sumbu pengalaman yang penting:</p>
     <ul>
-      <li><strong>Penaklukan.</strong> Kapan jalan pertama terasa seperti &ldquo;tanah saya&rdquo;?</li>
-      <li><strong>Kerugian.</strong> Bagaimana bereaksi terhadap Decay pertama atau kekalahan pertama dari penyerang?</li>
-      <li><strong>Pertahanan.</strong> Bagaimana rasanya mini-game pertahanan — taktis, adil, frustrasi?</li>
+      <li><strong>Penaklukan.</strong> Kapan jalan pertama mulai terasa seperti &ldquo;tanah saya&rdquo;?</li>
+      <li><strong>Kehilangan.</strong> Bagaimana respons saat Decay pertama atau kalah pertama dari penyerang?</li>
+      <li><strong>Pertahanan.</strong> Mini-game pertahanannya terasa taktis, adil, atau bikin frustrasi?</li>
     </ul>
-    <p>Kutipan dari ketiga penguji mencakup ketiga sumbu dari perspektif yang sangat berbeda.</p>
+    <p>Kutipan dari ketiga penguji menyentuh tiga sumbu ini dari perspektif yang berbeda-beda.</p>
         """,
         "internal_links": [
             ("/id/permainan-teritori.html", "Permainan teritori"),
@@ -1502,21 +1513,21 @@ TWINS_DATA = [
     {
         "slug": "/id/game-lokasi-ulasan.html",
         "breadcrumb": "Game lokasi ulasan",
-        "title": "Game lokasi ulasan — MapRaiders dalam tes nyata",
-        "og_title": "Game lokasi — ulasan dari penguji beta",
-        "meta": "Ulasan game lokasi: tiga penguji beta melaporkan tentang baterai, akurasi GPS, privasi, dan kesenangan nyata dalam kehidupan sehari-hari di kota.",
+        "title": "Game lokasi ulasan: MapRaiders dalam tes harian",
+        "og_title": "Game lokasi: ulasan dari penguji beta",
+        "meta": "Ulasan game lokasi: tiga penguji beta menceritakan baterai, akurasi GPS, privasi, dan rasa main di rutinitas harian di kota.",
         "keywords": "game lokasi ulasan, game lokasi tes, gps mmo tes, mapraiders ulasan",
-        "h1_html": 'Game lokasi — <em>ulasan</em> dari penguji beta',
-        "lead": "Seberapa akurat GPS di pusat kota? Berapa banyak baterai yang dikonsumsi aplikasi pada rute panjang? Bagaimana rasanya kepatuhan UU PDP di sisi pemain? Tiga penguji menjawab dengan jujur.",
-        "intro_label": "Sumbu tes",
-        "intro_title": "Apa yang kami uji dalam <em>game lokasi</em>",
+        "h1_html": 'Game lokasi: <em>ulasan</em> dari penguji beta',
+        "lead": "Seberapa akurat GPS di pusat kota? Berapa banyak baterai yang dipakai aplikasi pada rute panjang? Bagaimana rasanya kepatuhan UU PDP di sisi pemain? Tiga penguji menjawab dengan jujur.",
+        "intro_label": "Yang kami uji",
+        "intro_title": "Yang kami uji di <em>game lokasi</em>",
         "intro_body": """
-    <p>Tes game lokasi berkisar pada empat sumbu konkret:</p>
+    <p>Tes game lokasi kami pegang di empat sumbu yang konkret:</p>
     <ul>
-      <li><strong>Akurasi GPS</strong> di celah kota dan di bawah jembatan.</li>
-      <li><strong>Konsumsi baterai</strong> pada perjalanan 1-2 jam (dibandingkan dengan Pokémon GO).</li>
-      <li><strong>Sensasi privasi</strong>: berapa banyak gangguan pelacakan yang muncul?</li>
-      <li><strong>Mekanika permainan</strong>: wilayah, Echo, dan misi bekerja dalam hari nyata?</li>
+      <li><strong>Akurasi GPS</strong> di gang sempit dan di bawah jembatan.</li>
+      <li><strong>Konsumsi baterai</strong> pada rute 1-2 jam (dibanding Pokémon GO).</li>
+      <li><strong>Sensasi privasi</strong>: seberapa banyak gangguan pelacakan yang terasa.</li>
+      <li><strong>Mekanika permainan</strong>: wilayah, Echo, dan misi terasa wajar di hari biasa.</li>
     </ul>
         """,
         "internal_links": [
@@ -1529,22 +1540,22 @@ TWINS_DATA = [
     {
         "slug": "/id/alternatif-pokemon-go-gratis-ulasan.html",
         "breadcrumb": "Alternatif Pokémon GO ulasan",
-        "title": "Alternatif Pokémon GO gratis ulasan — penguji beta menjawab",
-        "og_title": "Alternatif Pokémon GO gratis ulasan — beta-tes jujur",
-        "meta": "Apakah alternatif Pokémon GO gratis sepadan? Tiga penguji beta dari Stuttgart, Hamburg, dan Berlin menjawab secara jujur tentang kardio, jalan-jalan, dan eksplorasi kota.",
+        "title": "Alternatif Pokémon GO gratis ulasan: penguji beta menjawab",
+        "og_title": "Alternatif Pokémon GO gratis ulasan: beta-tes jujur",
+        "meta": "Apakah alternatif Pokémon GO gratis itu sepadan? Tiga penguji beta dari Stuttgart, Hamburg, dan Berlin menjawab secara jujur soal kardio, jalan-jalan, dan eksplorasi kota.",
         "keywords": "alternatif pokemon go ulasan, alternatif pokemon go sepadan, mapraiders ulasan, beta tester laporan",
-        "h1_html": 'Alternatif Pokémon GO gratis — <em>sepadan kah?</em>',
-        "lead": "Tiga penguji beta dari tiga wilayah metropolitan Jerman menggunakan MapRaiders selama beberapa minggu. Berikut laporan tanpa filter — tanpa marketing-talk, tanpa kode influencer.",
-        "intro_label": "Siapa yang menguji?",
-        "intro_title": "Tiga orang, tiga <em>kasus penggunaan</em>",
+        "h1_html": 'Alternatif Pokémon GO gratis: <em>sepadan kah?</em>',
+        "lead": "Tiga penguji beta dari tiga wilayah metropolitan Jerman memakai MapRaiders selama beberapa minggu. Laporan di bawah ini tanpa filter, tanpa bahasa marketing, dan tanpa kode influencer.",
+        "intro_label": "Siapa yang menguji",
+        "intro_title": "Tiga orang, tiga <em>cara pakai</em>",
         "intro_body": """
-    <p>Ketiga penguji beta mencakup tiga persona yang sangat berbeda — dan itulah yang membuat perbandingan dengan Pokémon GO menjadi jujur:</p>
+    <p>Ketiga penguji beta mewakili tiga persona yang berbeda. Itu yang bikin perbandingan dengan Pokémon GO jadi lebih jujur:</p>
     <ul>
-      <li><strong>Ron C.</strong> dari wilayah Stuttgart: pemilik anjing, jalan-jalan harian, tanpa latar belakang gamer.</li>
-      <li><strong>Vivian N.</strong> dari wilayah Hamburg: pelari, bermain Pokémon GO pada 2018 dan berhenti setelah 3 bulan.</li>
-      <li><strong>Aljoscha P.</strong> dari wilayah Berlin: penjelajah kota, veteran Ingress, mengenal ekosistem Niantic dari tangan pertama.</li>
+      <li><strong>Ron C.</strong> dari wilayah Stuttgart: pemilik anjing, jalan-jalan harian, bukan gamer.</li>
+      <li><strong>Vivian N.</strong> dari wilayah Hamburg: pelari, sempat main Pokémon GO di 2018, lalu berhenti setelah tiga bulan.</li>
+      <li><strong>Aljoscha P.</strong> dari wilayah Berlin: penjelajah kota, veteran Ingress, kenal ekosistem Niantic dari dekat.</li>
     </ul>
-    <p>Ketiganya menguji MapRaiders secara independen — tanpa promosi berbayar, tanpa skrip. Kutipan diterjemahkan dari bahasa Jerman asli.</p>
+    <p>Ketiganya menguji MapRaiders secara independen, tanpa promosi berbayar, tanpa skrip. Kutipan diterjemahkan dari bahasa Jerman asli.</p>
         """,
         "internal_links": [
             ("/id/alternatif-pokemon-go-gratis.html", "Alternatif Pokémon GO gratis"),
@@ -1556,22 +1567,22 @@ TWINS_DATA = [
     {
         "slug": "/id/koin-jagat-alternatif-ulasan.html",
         "breadcrumb": "Koin Jagat alternatif ulasan",
-        "title": "Koin Jagat alternatif ulasan — tes nyata penguji beta",
-        "og_title": "Koin Jagat alternatif — ulasan beta",
-        "meta": "Ulasan Koin Jagat alternatif: penguji beta menguji MapRaiders sebagai pesaing lokal Indonesia — wilayah, klan, server stabil.",
-        "keywords": "koin jagat alternatif ulasan, jagat alternatif tes, mapraiders ulasan indonesia",
-        "h1_html": 'Koin Jagat alternatif — <em>ulasan jujur</em>',
-        "lead": "Pemain Koin Jagat di Indonesia menyukai konsep gerakan + lokasi nyata. Tetapi server crash dan kedalaman gameplay menyebabkan frustrasi. Apakah MapRaiders memenuhi celah? Tiga penguji beta menjawab.",
+        "title": "Koin Jagat alternatif ulasan: tes harian penguji beta",
+        "og_title": "Koin Jagat alternatif: ulasan beta",
+        "meta": "Ulasan Koin Jagat alternatif: penguji beta mencoba MapRaiders sebagai pendamping lokal di Indonesia, dari sisi wilayah, klan, dan stabilitas server.",
+        "keywords": "koin jagat alternatif ulasan, aplikasi koin jagat ulasan, jagat alternatif tes, mapraiders ulasan indonesia",
+        "h1_html": 'Koin Jagat alternatif: <em>ulasan jujur</em>',
+        "lead": "Pemain Koin Jagat di Indonesia suka konsep gerakan plus lokasi nyata. Tapi server crash dan kedalaman gameplay sering jadi sumber frustrasi. Apakah MapRaiders mengisi celah itu? Tiga penguji beta menjawab.",
         "intro_label": "Pertanyaan tes",
-        "intro_title": "Bagaimana <em>MapRaiders berbeda</em> dari Koin Jagat?",
+        "intro_title": "Bagaimana <em>MapRaiders berbeda</em> dari Koin Jagat",
         "intro_body": """
-    <p>Penguji beta menilai aplikasi sepanjang lima sumbu langsung dibandingkan dengan Koin Jagat:</p>
+    <p>Penguji beta menilai aplikasi di lima sumbu langsung dibanding Koin Jagat:</p>
     <ul>
-      <li><strong>Stabilitas server.</strong> Tanpa crash, tanpa antrian?</li>
-      <li><strong>Kedalaman gameplay.</strong> Apakah ada lebih dari sekadar &ldquo;mengumpulkan&rdquo;?</li>
-      <li><strong>Persistensi wilayah.</strong> Apakah penaklukan saya bertahan?</li>
-      <li><strong>Lapisan klan.</strong> Apakah komunitas terbentuk secara organik?</li>
-      <li><strong>Lokalisasi Bahasa Indonesia.</strong> Apakah terasa lokal atau diterjemahkan secara mekanis?</li>
+      <li><strong>Stabilitas server.</strong> Tanpa crash, tanpa antrian.</li>
+      <li><strong>Kedalaman gameplay.</strong> Apakah ada lebih dari sekadar &ldquo;mengumpulkan&rdquo;.</li>
+      <li><strong>Persistensi wilayah.</strong> Apakah penaklukan tetap bertahan.</li>
+      <li><strong>Lapisan klan.</strong> Apakah komunitas terbentuk secara organik.</li>
+      <li><strong>Lokalisasi Bahasa Indonesia.</strong> Apakah terasa lokal, atau hasil terjemahan otomatis.</li>
     </ul>
         """,
         "internal_links": [
@@ -1584,20 +1595,20 @@ TWINS_DATA = [
     {
         "slug": "/id/aplikasi-jalan-kaki-game-ulasan.html",
         "breadcrumb": "Aplikasi jalan kaki ulasan",
-        "title": "Aplikasi jalan kaki dengan game ulasan — tes nyata",
-        "og_title": "Aplikasi jalan kaki dengan game — sepadan kah?",
-        "meta": "Apakah aplikasi jalan kaki dengan game sepadan? Penguji beta melaporkan tentang motivasi kardio, baterai pada rute panjang, dan kerugian wilayah setelah jeda karena sakit.",
+        "title": "Aplikasi jalan kaki dengan game ulasan: tes harian",
+        "og_title": "Aplikasi jalan kaki dengan game: sepadan kah?",
+        "meta": "Apakah aplikasi jalan kaki dengan game itu sepadan? Penguji beta menceritakan motivasi kardio, baterai di rute panjang, dan kerugian wilayah setelah jeda karena flu.",
         "keywords": "aplikasi jalan kaki ulasan, aplikasi jalan kaki dengan game ulasan, kardio aplikasi tes",
-        "h1_html": 'Aplikasi jalan kaki dengan game — <em>sepadan kah?</em>',
-        "lead": "Apa yang terjadi pada motivasi berjalan ketika setiap rute mempertahankan tanah nyata? Bagaimana rasanya Decay pertama setelah jeda karena flu? Tiga penguji beta — pelari, walker, penjelajah kota — menjawab.",
-        "intro_label": "Sumbu tes",
-        "intro_title": "Apa yang harus diberikan <em>aplikasi jalan kaki</em>",
+        "h1_html": 'Aplikasi jalan kaki dengan game: <em>sepadan kah?</em>',
+        "lead": "Apa yang terjadi pada motivasi jalan kaki saat setiap rute menjaga tanah yang nyata? Seperti apa rasanya Decay pertama setelah jeda karena flu? Tiga penguji beta, seorang pelari, seorang walker, dan seorang penjelajah kota, menjawabnya.",
+        "intro_label": "Yang kami uji",
+        "intro_title": "Yang harus dikasih oleh <em>aplikasi jalan kaki</em>",
         "intro_body": """
-    <p>Kami menguji pengalaman jalan kaki dalam tiga sumbu:</p>
+    <p>Kami menguji pengalaman jalan kaki di tiga sumbu:</p>
     <ul>
-      <li><strong>Jangkar motivasi.</strong> Kapan seseorang kembali setelah jeda?</li>
+      <li><strong>Jangkar motivasi.</strong> Kapan seseorang kembali setelah jeda.</li>
       <li><strong>Baterai pada rute panjang.</strong> Perjalanan 60-90 menit tanpa menguras ponsel.</li>
-      <li><strong>Cross-modalitas.</strong> Apakah berfungsi sama untuk lari, walking, dan jalan-jalan dengan anjing?</li>
+      <li><strong>Lintas-aktivitas.</strong> Apakah jalan dengan anjing, walking, dan lari semuanya bekerja sama baiknya.</li>
     </ul>
         """,
         "internal_links": [
@@ -1610,20 +1621,20 @@ TWINS_DATA = [
     {
         "slug": "/id/harta-karun-aplikasi-ulasan.html",
         "breadcrumb": "Harta karun aplikasi ulasan",
-        "title": "Harta karun aplikasi ulasan — penguji beta di MapRaiders",
-        "og_title": "Harta karun aplikasi — ulasan beta nyata",
-        "meta": "Ulasan aplikasi perburuan harta karun tanpa beli tour atau persiapan: penguji beta melaporkan bagaimana MapRaiders mengubah seluruh kota menjadi perburuan harta karun langsung.",
+        "title": "Harta karun aplikasi ulasan: penguji beta di MapRaiders",
+        "og_title": "Harta karun aplikasi: ulasan beta",
+        "meta": "Ulasan aplikasi perburuan harta karun tanpa beli tur atau persiapan: penguji beta menceritakan bagaimana MapRaiders mengubah seluruh kota jadi perburuan langsung.",
         "keywords": "harta karun aplikasi ulasan, harta karun aplikasi tes, live perburuan harta karun ulasan, keluarga harta karun",
-        "h1_html": 'Harta karun aplikasi — <em>ulasan</em> tanpa beli tour',
-        "lead": "Sebagian besar aplikasi perburuan harta karun memerlukan persiapan: beli tour, rencanakan rute, atur stasiun. Bagaimana rasanya ketika seluruh kota sudah penuh dengan petunjuk? Tiga penguji beta menjawab.",
+        "h1_html": 'Harta karun aplikasi: <em>ulasan</em> tanpa beli tur',
+        "lead": "Aplikasi perburuan harta karun biasa butuh persiapan: beli tur, rencanakan rute, atur stasiun. Bagaimana rasanya kalau kota sudah penuh dengan petunjuk dari pemain lain? Tiga penguji beta menjawab.",
         "intro_label": "Pertanyaan tes",
-        "intro_title": "Apakah <em>perburuan harta karun langsung</em> bekerja tanpa persiapan?",
+        "intro_title": "Apakah <em>perburuan harta karun langsung</em> bekerja tanpa persiapan",
         "intro_body": """
-    <p>Kami menguji fungsi perburuan harta karun dalam tiga skenario:</p>
+    <p>Kami menguji fitur perburuan harta karun di tiga skenario:</p>
     <ul>
-      <li><strong>Sendirian</strong> sebagai penjelajah kota (Aljoscha P.) — meninggalkan Echo, menemukan Echo.</li>
-      <li><strong>Dengan anjing</strong> dalam jalan-jalan normal (Ron C.) — petunjuk sebagai produk sampingan dari jalan-jalan.</li>
-      <li><strong>Skenario keluarga</strong> disimulasikan — seberapa cepat orang dewasa + anak-anak memahami mekanika?</li>
+      <li><strong>Sendirian</strong> sebagai penjelajah kota (Aljoscha P.), menaruh dan menemukan Echo.</li>
+      <li><strong>Dengan anjing</strong> dalam jalan-jalan normal (Ron C.), petunjuknya muncul sebagai produk sampingan dari jalan-jalan.</li>
+      <li><strong>Skenario keluarga</strong> yang kami simulasikan, seberapa cepat orang dewasa dan anak memahami mekanikanya.</li>
     </ul>
         """,
         "internal_links": [
@@ -1636,21 +1647,21 @@ TWINS_DATA = [
     {
         "slug": "/id/permainan-ramadan-ulasan.html",
         "breadcrumb": "Permainan Ramadan ulasan",
-        "title": "Permainan Ramadan ulasan — tes hormat selama bulan suci",
-        "og_title": "Permainan Ramadan — ulasan hormat",
-        "meta": "Ulasan permainan Ramadan: penguji beta menguji MapRaiders sebagai pendamping Ramadan yang hormat — jalan-jalan setelah Iftar, aktivitas keluarga, hemat baterai untuk Tarawih.",
-        "keywords": "permainan ramadan ulasan, game ramadan tes, jalan-jalan iftar ulasan, mapraiders ramadan",
-        "h1_html": 'Permainan Ramadan — <em>ulasan hormat</em>',
-        "lead": "Apakah permainan dapat berfungsi secara hormat selama Ramadan? Bagaimana rasanya jalan-jalan setelah Iftar dengan elemen game? Apakah anak-anak terlibat tanpa terganggu? Tiga penguji beta menjawab.",
+        "title": "Permainan Ramadan ulasan: tes selama bulan suci",
+        "og_title": "Permainan Ramadan: ulasan dengan menjaga adab",
+        "meta": "Ulasan permainan Ramadan: penguji beta mencoba MapRaiders sebagai pendamping Ramadan yang menjaga adab, dari sisi jalan setelah Iftar, aktivitas keluarga, dan baterai untuk Tarawih.",
+        "keywords": "permainan ramadan ulasan, game ramadan tes, game ramadan jalan kaki ulasan, jalan-jalan iftar ulasan, mapraiders ramadan",
+        "h1_html": 'Permainan Ramadan: <em>ulasan dengan adab</em>',
+        "lead": "Apakah sebuah game bisa berjalan dengan menjaga adab selama Ramadan? Bagaimana rasanya jalan setelah Iftar dengan elemen game? Apakah anak-anak bisa ikut tanpa terganggu fokusnya? Tiga penguji beta menjawab.",
         "intro_label": "Pertanyaan tes",
-        "intro_title": "Apa yang membuat <em>permainan Ramadan-hormat</em>",
+        "intro_title": "Yang bikin <em>permainan Ramadan</em> tetap pantas",
         "intro_body": """
-    <p>Kami menguji pengalaman selama Ramadan di empat sumbu — semuanya dengan kepekaan terhadap budaya dan agama:</p>
+    <p>Kami menguji pengalamannya selama Ramadan di empat sumbu, dengan kepekaan terhadap budaya dan agama:</p>
     <ul>
-      <li><strong>Tanpa mekanika judi.</strong> Apakah aplikasi sungguh-sungguh tidak ada loot box, hadiah uang, atau acak?</li>
-      <li><strong>Aktivitas keluarga.</strong> Apakah anak-anak dapat ikut serta tanpa terganggu dari nilai-nilai Ramadan?</li>
-      <li><strong>Konsumsi baterai untuk Tarawih.</strong> Apakah masih ada cukup daya setelah jalan-jalan?</li>
-      <li><strong>Sensasi hormat.</strong> Apakah aplikasi terasa pantas selama bulan suci, atau apakah ada elemen mengganggu?</li>
+      <li><strong>Tanpa mekanika judi.</strong> Apakah benar tidak ada loot box, hadiah uang, atau hadiah acak.</li>
+      <li><strong>Aktivitas keluarga.</strong> Apakah anak-anak bisa ikut tanpa terganggu dari nilai-nilai Ramadan.</li>
+      <li><strong>Konsumsi baterai untuk Tarawih.</strong> Apakah daya cukup setelah jalan-jalan.</li>
+      <li><strong>Rasa adab.</strong> Apakah aplikasinya terasa pantas selama bulan suci, atau ada elemen yang mengganggu.</li>
     </ul>
         """,
         "internal_links": [
@@ -1670,28 +1681,28 @@ TWINS_DATA = [
 HUB = {
     "slug": "/id/mapraiders-ulasan.html",
     "breadcrumb": "MapRaiders ulasan",
-    "title": "MapRaiders ulasan — beta-tes, pendiri, semua halaman",
-    "og_title": "MapRaiders ulasan — semua di satu tempat",
-    "meta": "MapRaiders ulasan: 5,0 dari 5 bintang dalam tiga beta-tes terverifikasi, pernyataan pendiri, semua halaman Killer dan laporan ulasan terhubung secara terpusat.",
-    "keywords": "mapraiders ulasan, mapraiders ulasan, mapraiders tes, gps mmo ulasan indonesia",
-    "badge": "Hub & Tinjauan",
-    "pricing_pill": "5,0 / 5 — 3 ulasan beta terverifikasi",
-    "h1_html": '<em>MapRaiders ulasan</em> — semua yang perlu Anda ketahui tentang GPS MMO',
-    "lead": "Tiga penguji beta dari Stuttgart, Hamburg, dan Berlin. Tujuh topik Killer dari perbandingan dengan Pokémon GO ke aplikasi perburuan harta karun. Tujuh ulasan terperinci. Satu hub.",
+    "title": "MapRaiders ulasan: beta-tes, pendiri, semua halaman",
+    "og_title": "MapRaiders ulasan: semua di satu tempat",
+    "meta": "MapRaiders ulasan: 5,0 dari 5 bintang dari tiga beta-tes, kata pendiri, semua halaman Killer dan laporan ulasan terhubung di satu hub.",
+    "keywords": "mapraiders ulasan, mapraiders tes, gps mmo ulasan indonesia",
+    "badge": "Hub dan Tinjauan",
+    "pricing_pill": "5,0 / 5. Tiga ulasan beta.",
+    "h1_html": '<em>MapRaiders ulasan</em>: semua yang perlu kamu tahu soal GPS MMO ini',
+    "lead": "Tiga penguji beta dari Stuttgart, Hamburg, dan Berlin. Tujuh topik Killer, dari perbandingan dengan Pokémon GO sampai aplikasi perburuan harta karun. Tujuh ulasan terperinci. Satu hub.",
     "trigger": None,
     "testers": ALL_TESTERS,
     "sections": [],
     "faq": [
-        {"q": "Apa itu MapRaiders sebenarnya?",
-         "a": "MapRaiders adalah GPS MMO untuk Android. Pemain menaklukkan wilayah nyata melalui gerakan, meninggalkan Echo, membuat misi, dan mempertahankan tanah mereka dengan mini-game. Tanpa iklan, sesuai UU PDP, gratis. Pembayaran GoPay/OVO/Dana untuk kosmetik."},
+        {"q": "Sebenarnya MapRaiders itu apa?",
+         "a": "MapRaiders adalah GPS MMO untuk Android. Pemain menaklukkan wilayah nyata lewat gerakan, menaruh Echo, membuat misi, dan menjaga tanahnya dengan mini-game. Tanpa iklan, patuh UU PDP, gratis. Pembayaran via GoPay, OVO, atau Dana untuk kosmetik."},
         {"q": "Berapa banyak penguji beta?",
-         "a": "Saat ini tiga orang yang kami publikasikan — dengan persetujuan mereka dan dengan nama depan + inisial untuk alasan privasi. Beta tertutup secara keseluruhan lebih besar; ketiga yang dikutip mewakili persona utama."},
-        {"q": "Apakah ulasan nyata?",
-         "a": "Ya. Ketiga penguji adalah orang-orang sungguhan dari beta tertutup di Jerman. Mereka tidak dibayar; kutipan mereka awalnya ditulis dalam bahasa Jerman dan diterjemahkan ke Bahasa Indonesia. Dalam markup Schema.org mereka ditandai dengan tanggal, bahasa, dan referensi ke asli Jerman (translationOfWork)."},
-        {"q": "Di mana saya bisa menjadi penguji beta di Indonesia?",
-         "a": "Daftar di halaman beranda Indonesia dengan email Anda. Slot beta Indonesia akan dibuka dalam gelombang setelah peluncuran utama — prioritas untuk pelari, penjelajah kota, dan keluarga di kota dengan kepadatan Pokémon GO rendah."},
-        {"q": "Kapan aplikasi resmi rilis di Indonesia?",
-         "a": "MapRaiders dalam beta tertutup di Google Play (Jerman). Peluncuran ID resmi direncanakan untuk akhir 2026. iOS pada Q3 2026."},
+         "a": "Saat ini ada tiga yang kami publikasikan, atas persetujuan mereka dan hanya dengan nama depan plus inisial untuk privasi. Beta tertutupnya lebih besar dari itu, tiga orang ini mewakili persona utama."},
+        {"q": "Apakah ulasannya asli?",
+         "a": "Asli. Ketiga penguji adalah orang sungguhan dari beta tertutup di Jerman. Mereka tidak dibayar. Kutipannya awalnya ditulis dalam bahasa Jerman, lalu diterjemahkan ke Bahasa Indonesia. Di markup Schema.org, ulasannya ditandai dengan tanggal, bahasa, dan referensi ke versi asli Jerman (translationOfWork)."},
+        {"q": "Bagaimana cara jadi penguji beta di Indonesia?",
+         "a": "Daftarkan email kamu di halaman beranda Indonesia. Slot beta Indonesia akan dibuka secara bertahap setelah peluncuran utama, prioritas untuk pelari, penjelajah kota, dan keluarga di kota dengan kepadatan Pokémon GO yang rendah."},
+        {"q": "Kapan aplikasinya rilis resmi di Indonesia?",
+         "a": "MapRaiders saat ini di beta tertutup di Google Play (Jerman). Peluncuran resmi di Indonesia dijadwalkan untuk akhir 2026. iOS di Q3 2026."},
     ],
     "internal_links": [],
 }
