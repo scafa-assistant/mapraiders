@@ -57,8 +57,17 @@ jobs:
             for dir in docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi; do
               echo "$dir: $(ls "$dir" 2>/dev/null | wc -l) entries"
             done
-            echo "→ JA sample em-dash count"
+            echo "→ JA sample em-dash count at \$DEPLOY_PATH"
             grep -c "—" "docs/ja/位置情報ゲーム.html" 2>&1 || true
+            echo "→ pwd + realpath"
+            pwd
+            realpath "docs/ja/位置情報ゲーム.html" 2>&1 || true
+            wc -c "docs/ja/位置情報ゲーム.html" 2>&1 || true
+            echo "→ all instances of the JA file on disk"
+            find / -name "位置情報ゲーム.html" 2>/dev/null
+            echo "→ nginx mapraiders config"
+            grep -rl "mapraiders" /etc/nginx/ 2>/dev/null | head -3
+            grep -hE "root |alias " /etc/nginx/sites-enabled/* 2>/dev/null | head -10 || true
             echo "→ nginx reload (graceful, kein Downtime)"
             systemctl reload nginx || true
             echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
