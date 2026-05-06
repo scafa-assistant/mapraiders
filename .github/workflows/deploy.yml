@@ -59,17 +59,18 @@ jobs:
             done
             echo "→ JA sample em-dash count at \$DEPLOY_PATH"
             grep -c "—" "docs/ja/位置情報ゲーム.html" 2>&1 || true
-            echo "→ pwd + realpath"
-            pwd
-            realpath "docs/ja/位置情報ゲーム.html" 2>&1 || true
+            echo "→ wc -c at git-checkout-path"
             wc -c "docs/ja/位置情報ゲーム.html" 2>&1 || true
-            echo "→ all instances of the JA file on disk"
-            find / -name "位置情報ゲーム.html" 2>/dev/null
-            echo "→ nginx mapraiders config"
-            grep -rl "mapraiders" /etc/nginx/ 2>/dev/null | head -3
-            grep -hE "root |alias " /etc/nginx/sites-enabled/* 2>/dev/null | head -10 || true
-            echo "→ nginx reload (graceful, kein Downtime)"
-            systemctl reload nginx || true
+            echo "→ find ALL files of size 62757 (the stale-served size)"
+            find / -type f -size 62757c -name "*.html" 2>/dev/null | head -10
+            echo "→ find via wildcard match on filename"
+            find / -name "*位置情報*" 2>/dev/null | head -10
+            echo "→ ls byte-level docs/ja"
+            ls docs/ja/ | xxd | head -30 || true
+            echo "→ nginx config root for mapraiders"
+            grep -h -E "^\\s*(root|alias)" /etc/nginx/sites-enabled/* 2>/dev/null | head -20 || true
+            echo "→ nginx RESTART (full FD reset, kills open_file_cache)"
+            systemctl restart nginx || systemctl reload nginx || true
             echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
 
       - name: Verify deployment
