@@ -32,45 +32,21 @@ jobs:
             set -e
             cd "$DEPLOY_PATH"
             # UTF-8 locale + git config for non-ASCII filenames (CJK/Hangul/Devanagari).
+            # Without these, NFC/NFD normalization mismatch between Windows commit and
+            # Linux checkout makes git see CJK-named files as "unchanged" even when
+            # content differs.
             export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
             git config core.quotepath false
             git config core.precomposeunicode true
-            echo "→ git fetch"
             git fetch --all --prune
             git reset --hard origin/master
-            # NUCLEAR: delete everything in non-ASCII subdirs + all *.html in them
-            # then explicitly checkout from HEAD. find -delete handles unicode-named
-            # files better than rm -rf when there are encoding-collision duplicates.
-            echo "→ pre-state of docs/ja"
-            ls -la docs/ja/ 2>&1 | head -20 || true
-            echo "→ wiping non-ASCII subdirs (find -delete handles unicode dupes)"
+            # Belt-and-suspenders: wipe + explicit checkout for non-ASCII-named subdirs
+            # so the bytes from HEAD are guaranteed to land on disk.
             for dir in docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi; do
-              if [ -d "$dir" ]; then
-                find "$dir" -mindepth 1 -delete || true
-              fi
+              [ -d "$dir" ] && find "$dir" -mindepth 1 -delete || true
             done
-            echo "→ post-wipe state of docs/ja (should be empty or sparse)"
-            ls -la docs/ja/ 2>&1 | head -10 || true
-            echo "→ git checkout HEAD -- docs/{ja,ko,zh-cn,zh-tw,hi}"
             git checkout HEAD -- docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi
-            echo "→ post-checkout file count"
-            for dir in docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi; do
-              echo "$dir: $(ls "$dir" 2>/dev/null | wc -l) entries"
-            done
-            echo "→ JA sample em-dash count at \$DEPLOY_PATH"
-            grep -c "—" "docs/ja/位置情報ゲーム.html" 2>&1 || true
-            echo "→ wc -c at git-checkout-path"
-            wc -c "docs/ja/位置情報ゲーム.html" 2>&1 || true
-            echo "→ find ALL files of size 62757 (the stale-served size)"
-            find / -type f -size 62757c -name "*.html" 2>/dev/null | head -10
-            echo "→ find via wildcard match on filename"
-            find / -name "*位置情報*" 2>/dev/null | head -10
-            echo "→ ls byte-level docs/ja"
-            ls docs/ja/ | xxd | head -30 || true
-            echo "→ nginx config root for mapraiders"
-            grep -h -E "^\\s*(root|alias)" /etc/nginx/sites-enabled/* 2>/dev/null | head -20 || true
-            echo "→ nginx RESTART (full FD reset, kills open_file_cache)"
-            systemctl restart nginx || systemctl reload nginx || true
+            systemctl reload nginx || true
             echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
 
       - name: Verify deployment
