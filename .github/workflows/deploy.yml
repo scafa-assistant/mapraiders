@@ -38,17 +38,27 @@ jobs:
             echo "→ git fetch"
             git fetch --all --prune
             git reset --hard origin/master
-            # Hard rebuild of CJK/Hangul-named subdirs because NFC/NFD encoding
-            # mismatch between Windows commit and Linux checkout makes git see
-            # those files as "unchanged" even when content differs. Delete + re-checkout
-            # forces the bytes from HEAD onto disk.
-            echo "→ force-rebuild non-ASCII-filename subdirs"
+            # NUCLEAR: delete everything in non-ASCII subdirs + all *.html in them
+            # then explicitly checkout from HEAD. find -delete handles unicode-named
+            # files better than rm -rf when there are encoding-collision duplicates.
+            echo "→ pre-state of docs/ja"
+            ls -la docs/ja/ 2>&1 | head -20 || true
+            echo "→ wiping non-ASCII subdirs (find -delete handles unicode dupes)"
             for dir in docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi; do
               if [ -d "$dir" ]; then
-                rm -rf "$dir"
+                find "$dir" -mindepth 1 -delete || true
               fi
             done
+            echo "→ post-wipe state of docs/ja (should be empty or sparse)"
+            ls -la docs/ja/ 2>&1 | head -10 || true
+            echo "→ git checkout HEAD -- docs/{ja,ko,zh-cn,zh-tw,hi}"
             git checkout HEAD -- docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi
+            echo "→ post-checkout file count"
+            for dir in docs/ja docs/ko docs/zh-cn docs/zh-tw docs/hi; do
+              echo "$dir: $(ls "$dir" 2>/dev/null | wc -l) entries"
+            done
+            echo "→ JA sample em-dash count"
+            grep -c "—" "docs/ja/位置情報ゲーム.html" 2>&1 || true
             echo "→ nginx reload (graceful, kein Downtime)"
             systemctl reload nginx || true
             echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
