@@ -31,9 +31,19 @@ jobs:
           script: |
             set -e
             cd "$DEPLOY_PATH"
-            echo "→ git fetch + pull"
+            # UTF-8 locale + git config for non-ASCII filenames (CJK/Hangul/Devanagari).
+            # Without this, git reset --hard skips files with non-ASCII names because of
+            # NFC/NFD normalization mismatch between Windows commit and Linux checkout.
+            export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+            git config core.quotepath false
+            git config core.precomposeunicode true
+            echo "→ git fetch"
             git fetch --all --prune
+            echo "→ force checkout docs/ (handles CJK filenames)"
             git reset --hard origin/master
+            # Force-rewrite docs/ to ensure non-ASCII files actually get updated.
+            git checkout -- docs/
+            git clean -fd docs/
             echo "→ nginx reload (graceful, kein Downtime)"
             systemctl reload nginx || true
             echo "✓ Deploy fertig: $(git rev-parse --short HEAD)"
