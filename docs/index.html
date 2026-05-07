@@ -270,7 +270,7 @@ body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
 .hero-right{position:relative;overflow:hidden;background:var(--bg-alt)}
 @media(max-width:860px){.hero-right{height:300px}}
 .map-grid{display:grid;gap:2px;position:absolute;inset:0}
-.mc{border-radius:2px;background:var(--accent);opacity:.055;transition:opacity .6s ease}
+.mc{border-radius:2px;background:var(--accent);opacity:.055;transition:opacity .6s ease;cursor:pointer}
 .mc.on{opacity:.72}
 .mc.soft{opacity:.2}
 .map-fade{position:absolute;inset:0;pointer-events:none;z-index:2;
@@ -1047,6 +1047,61 @@ document.querySelectorAll('[data-c]').forEach(function(el){co.observe(el);});
   window.addEventListener('resize',function(){
     clearTimeout(rt);
     rt=setTimeout(build,200);
+  });
+
+  /* ── Interactive hover: cells turn blue on mouse ── */
+  let isDrawing=false;
+  wrap.addEventListener('mousedown',function(e){
+    isDrawing=true;
+    const t=e.target;
+    if(t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.add('on');
+      t.style.transition='opacity .15s ease';
+    }
+  });
+  wrap.addEventListener('mousemove',function(e){
+    if(!isDrawing)return;
+    const t=e.target;
+    if(t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.add('on');
+      t.style.transition='opacity .15s ease';
+    }
+  });
+  document.addEventListener('mouseup',function(){isDrawing=false;});
+
+  /* Touch support for mobile */
+  wrap.addEventListener('touchstart',function(e){
+    isDrawing=true;
+    var touch=e.touches[0];
+    var t=document.elementFromPoint(touch.clientX,touch.clientY);
+    if(t&&t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.add('on');
+      t.style.transition='opacity .15s ease';
+    }
+  },{passive:true});
+  wrap.addEventListener('touchmove',function(e){
+    if(!isDrawing)return;
+    var touch=e.touches[0];
+    var t=document.elementFromPoint(touch.clientX,touch.clientY);
+    if(t&&t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.add('on');
+      t.style.transition='opacity .15s ease';
+    }
+  },{passive:true});
+  wrap.addEventListener('touchend',function(){isDrawing=false;});
+
+  /* Hover glow effect (subtle preview without click) */
+  wrap.addEventListener('mouseover',function(e){
+    const t=e.target;
+    if(t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.add('soft');
+    }
+  });
+  wrap.addEventListener('mouseout',function(e){
+    const t=e.target;
+    if(t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.remove('soft');
+    }
   });
 })();
 
