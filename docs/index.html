@@ -275,8 +275,8 @@ body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
 @media(max-width:860px){.hero-right{height:300px}}
 .map-grid{display:grid;gap:2px;position:absolute;inset:0}
 .mc{border-radius:2px;background:var(--accent);opacity:.055;transition:opacity .6s ease;cursor:pointer}
-.mc.on{opacity:.72}
 .mc.soft{opacity:.2}
+.mc.on{opacity:.72}
 .map-fade{position:absolute;inset:0;pointer-events:none;z-index:2;
   background:linear-gradient(to right,var(--bg-alt) 0%,transparent 18%,transparent 82%,var(--bg-alt) 100%)}
 @media(max-width:860px){.map-fade{background:linear-gradient(to bottom,transparent 0%,var(--bg-alt) 100%)}}
@@ -1059,6 +1059,7 @@ document.querySelectorAll('[data-c]').forEach(function(el){co.observe(el);});
     isDrawing=true;
     const t=e.target;
     if(t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.remove('soft');
       t.classList.add('on');
       t.style.transition='opacity .15s ease';
     }
@@ -1067,6 +1068,7 @@ document.querySelectorAll('[data-c]').forEach(function(el){co.observe(el);});
     if(!isDrawing)return;
     const t=e.target;
     if(t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.remove('soft');
       t.classList.add('on');
       t.style.transition='opacity .15s ease';
     }
@@ -1079,6 +1081,7 @@ document.querySelectorAll('[data-c]').forEach(function(el){co.observe(el);});
     var touch=e.touches[0];
     var t=document.elementFromPoint(touch.clientX,touch.clientY);
     if(t&&t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.remove('soft');
       t.classList.add('on');
       t.style.transition='opacity .15s ease';
     }
@@ -1088,6 +1091,7 @@ document.querySelectorAll('[data-c]').forEach(function(el){co.observe(el);});
     var touch=e.touches[0];
     var t=document.elementFromPoint(touch.clientX,touch.clientY);
     if(t&&t.classList.contains('mc')&&!t.classList.contains('on')){
+      t.classList.remove('soft');
       t.classList.add('on');
       t.style.transition='opacity .15s ease';
     }
