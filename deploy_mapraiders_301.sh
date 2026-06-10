@@ -12,10 +12,17 @@ SNIPPET_DST="/etc/nginx/snippets/mapraiders_301_migration.conf"
 SITE="/etc/nginx/sites-available/mapraiders"
 STAMP=$(date +%Y%m%d_%H%M%S)
 
-echo "== 1) Duplikat-Check gegen aktive Conf (sites-enabled sind SYMLINKS -> grep -R) =="
+echo "== 1) Duplikat-Check NUR gegen den mapraiders-Serverblock =="
+# Relevant sind ausschliesslich: sites-available/mapraiders + dort inkludierte Snippets.
+# (Locations in anderen vhosts wie dopaspeak_master.conf kollidieren NICHT.)
+SCOPE_FILES="$SITE"
+while read -r inc; do
+  [ -f "$inc" ] && [ "$inc" != "$SNIPPET_DST" ] && SCOPE_FILES="$SCOPE_FILES $inc"
+done < <(grep -oP '(?<=include )\S+(?=;)' "$SITE" 2>/dev/null)
+echo "Pruefe gegen: $SCOPE_FILES"
 DUPES=0
 while read -r loc; do
-  if grep -RF "location = ${loc} " /etc/nginx/sites-available/ /etc/nginx/snippets/ 2>/dev/null | grep -v mapraiders_301_migration; then
+  if grep -HF "location = ${loc} " $SCOPE_FILES 2>/dev/null; then
     DUPES=$((DUPES+1))
   fi
 done < <(grep -oP '(?<=location = )\S+' "$SNIPPET_SRC")
@@ -67,8 +74,4 @@ check "/ko/dog-walking"               "/ko/강아지산책게임/"
 check "/zh/尋寶遊戲/"                  "/zh-tw/尋寶遊戲/"
 check "/en-in/privacy-policy/"        "/en-in/privacy.html"
 check "/features/"                    "/"
-# Encoded-Variante derselben Quelle (nginx dekodiert vor dem Match -> muss identisch greifen):
-check "/zh/%E5%B0%8B%E5%AF%B6%E9%81%8A%E6%88%B2/"  "/zh-tw/尋寶遊戲/"
-
-echo "== FERTIG. Danach: Stubs im Repo nach docs/_retired/ verschieben, =="
-echo "== GSC-noindex-Validierung startet René manuell. =="
+# Encoded-V
