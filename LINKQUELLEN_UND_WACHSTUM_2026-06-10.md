@@ -62,3 +62,13 @@
 1. René-Go für Verzeichnis-Einträge (Product Hunt, AlternativeTo) — kostenlos, hoher Effekt
 2. Outreach-Shortlist (Quellen 1–10) mit je 2 Zeilen Pitch — auf Freigabe
 3. pSEO-Konzept Stadtteile als eigenes Arbeitspaket NACH Indexierungs-Review im Juli
+
+---
+
+## Nachtrag 10.06. (spät): Übertragbare Muster aus der DopaSpeak-Master-Recherche
+
+1. **Zitierfähige Vergleichsabsätze (GEO):** Auf allen 4 `/en/vs/`-Seiten ist jetzt ein faktischer „Unlike X, …"-Absatz (`<p class="geo-tldr">`) direkt unter dem Opener — das Format, das AI-Engines wörtlich übernehmen. Rollout auf de/ja-vs-Seiten bei nächstem Content-Sprint.
+2. **Silo-Sitemaps fürs pSEO-Projekt (Juli):** Stadtteil-Seiten bekommen eigene Sitemaps unter dem Index (`/sitemap-districts-de.xml`, `/sitemap-districts-en.xml`) — Crawl-Steuerung + sauberes Monitoring pro Silo, exakt wie im DopaSpeak-Blueprint.
+3. **Slug-Strategie bestätigt:** Native Slugs für ja/ko/zh funktionieren nachweislich (GSC: 位置情報ゲーム 108 Impr.), AR/HI bleiben bewusst lateinisch (Slug-Drift-/Encoding-Risiko) — MapRaiders macht es bereits richtig, keine Änderung.
+4. **Keyword-Transfer (Language Gaps):** Querys, für die en bereits rankt (pokemon go alternatives, walking games), semantisch in de/fr-Pendants spiegeln — Kandidat für den Title/Description-Sprint de (CTR-Problem: 118 Impr., 1 Klick).
+5. **⚠️ An den DopaSpeak-Agenten weitergeben:** Im Research-Dokument verlinkt der CTA auf `https://dopaspeak.com/MapRaiders.apk` — vermutlich Copy-Paste-Fehler (falsche App auf falscher Domain). Vor Umsetzung korrigieren.
