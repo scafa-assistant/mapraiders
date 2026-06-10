@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S, t } from '../i18n';
 import { getClassColor } from '../utils/colors';
 import { formatDistance, formatRating } from '../utils/formatters';
 import ClassBadge from './ClassBadge';
@@ -23,6 +24,7 @@ interface QuestCardProps {
  */
 const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
   const classColor = getClassColor(quest.movementClass);
+  const weatherLabels: Record<string, string> = S.components.questCard.weather;
 
   const renderDifficultyStars = () => {
     const stars = [];
@@ -87,7 +89,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
               size={10}
               color="#00D4FF"
             />
-            <Text style={styles.weatherBadgeText}>{(quest as any).weather_condition}</Text>
+            <Text style={styles.weatherBadgeText}>{weatherLabels[(quest as any).weather_condition] ?? (quest as any).weather_condition}</Text>
           </View>
         )}
 
@@ -102,7 +104,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
         {/* Step count */}
         <View style={styles.metaItem}>
           <Ionicons name="footsteps-outline" size={12} color={THEME.textSecondary} />
-          <Text style={styles.metaText}>{quest.stepCount} steps</Text>
+          <Text style={styles.metaText}>{t(S.components.questCard.stepsCount, { count: quest.stepCount })}</Text>
         </View>
 
         {/* Completions */}
@@ -120,7 +122,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
             <Text style={styles.distanceText}>{formatDistance(distance)}</Text>
           </View>
         )}
-        <Text style={styles.creatorText}>by {quest.creatorUsername}</Text>
+        <Text style={styles.creatorText}>{t(S.components.questCard.by, { username: quest.creatorUsername })}</Text>
       </View>
     </TouchableOpacity>
   );

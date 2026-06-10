@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S, t } from '../i18n';
 import { formatArea, formatXP } from '../utils/formatters';
 import type { ClaimResult as ClaimResultType } from '../utils/types';
 
@@ -74,7 +75,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
   const calc = result.calculation;
 
   const renderMultiplier = (label: string, value: number, icon: keyof typeof Ionicons.glyphMap) => {
-    if (value <= 1.0 && label !== 'Base Area') return null;
+    if (value <= 1.0 && label !== S.components.claimResult.baseArea) return null;
     return (
       <View style={styles.multiplierRow} key={label}>
         <View style={styles.multiplierLeft}>
@@ -82,7 +83,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
           <Text style={styles.multiplierLabel}>{label}</Text>
         </View>
         <Text style={styles.multiplierValue}>
-          {label === 'Base Area' ? formatArea(value) : `x${value.toFixed(2)}`}
+          {label === S.components.claimResult.baseArea ? formatArea(value) : `x${value.toFixed(2)}`}
         </Text>
       </View>
     );
@@ -132,13 +133,13 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
             <Ionicons name="flag" size={32} color={THEME.accent} />
           </View>
 
-          <Text style={styles.title}>Territory Claimed!</Text>
+          <Text style={styles.title}>{S.components.claimResult.title}</Text>
         </View>
 
         {/* XP earned */}
         <View style={styles.xpContainer}>
           <Ionicons name="star" size={20} color={THEME.warning} />
-          <Text style={styles.xpValue}>+{formatXP(result.xp)} XP</Text>
+          <Text style={styles.xpValue}>{t(S.components.claimResult.xpEarned, { xp: formatXP(result.xp) })}</Text>
         </View>
 
         {/* Area claimed */}
@@ -151,16 +152,16 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
 
         {/* Multiplier breakdown */}
         <View style={styles.breakdownContainer}>
-          <Text style={styles.breakdownTitle}>Breakdown</Text>
-          {renderMultiplier('Base Area', calc.baseArea, 'map-outline')}
-          {renderMultiplier('Class Bonus', calc.classMultiplier, 'footsteps-outline')}
-          {renderMultiplier('Weather Bonus', calc.weatherMultiplier, 'cloudy-outline')}
-          {renderMultiplier('Streak Bonus', calc.streakMultiplier, 'flame-outline')}
+          <Text style={styles.breakdownTitle}>{S.components.claimResult.breakdown}</Text>
+          {renderMultiplier(S.components.claimResult.baseArea, calc.baseArea, 'map-outline')}
+          {renderMultiplier(S.components.claimResult.classBonus, calc.classMultiplier, 'footsteps-outline')}
+          {renderMultiplier(S.components.claimResult.weatherBonus, calc.weatherMultiplier, 'cloudy-outline')}
+          {renderMultiplier(S.components.claimResult.streakBonus, calc.streakMultiplier, 'flame-outline')}
           {calc.contestedBonus > 0 && (
             <View style={styles.multiplierRow}>
               <View style={styles.multiplierLeft}>
                 <Ionicons name="flash-outline" size={14} color={THEME.danger} />
-                <Text style={styles.multiplierLabel}>Contested Bonus</Text>
+                <Text style={styles.multiplierLabel}>{S.components.claimResult.contestedBonus}</Text>
               </View>
               <Text style={[styles.multiplierValue, { color: THEME.danger }]}>
                 +{calc.contestedBonus.toFixed(0)}
@@ -178,7 +179,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
               activeOpacity={0.8}
             >
               <Ionicons name="eye-outline" size={18} color={THEME.bg} />
-              <Text style={styles.viewButtonText}>View Territory</Text>
+              <Text style={styles.viewButtonText}>{S.components.claimResult.viewTerritory}</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -186,7 +187,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
             onPress={onDismiss}
             activeOpacity={0.7}
           >
-            <Text style={styles.dismissButtonText}>Done</Text>
+            <Text style={styles.dismissButtonText}>{S.common.done}</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>

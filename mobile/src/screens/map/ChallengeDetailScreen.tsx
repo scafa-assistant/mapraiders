@@ -18,6 +18,7 @@ import { useLocationStore } from '../../store/locationStore';
 import { challengeApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { ChallengeDetailScreenProps, Challenge } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -33,9 +34,9 @@ const VERIFICATION_INFO: Record<
   Challenge['verificationLevel'],
   { icon: keyof typeof Ionicons.glyphMap; label: string; color: string }
 > = {
-  honor: { icon: 'hand-left-outline', label: 'Honor System', color: THEME.accent },
-  sensor: { icon: 'hardware-chip-outline', label: 'Sensor Verified', color: THEME.danger },
-  video: { icon: 'videocam-outline', label: 'Video Proof', color: THEME.warning },
+  honor: { icon: 'hand-left-outline', label: S.map.challengeDetail.honorSystem, color: THEME.accent },
+  sensor: { icon: 'hardware-chip-outline', label: S.map.challengeDetail.sensorVerified, color: THEME.danger },
+  video: { icon: 'videocam-outline', label: S.map.challengeDetail.videoProof, color: THEME.warning },
 };
 
 function formatParameters(params: Record<string, number>): { label: string; value: string }[] {
@@ -120,7 +121,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
       await challengeApi.submit(challengeId, formData);
       setPhase('completed');
     } catch (_err) {
-      Alert.alert('Error', 'Failed to submit completion. Please try again.');
+      Alert.alert(S.common.error, S.map.challengeDetail.submitFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -145,7 +146,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
       await challengeApi.submit(challengeId, formData);
       setPhase('completed');
     } catch (_err) {
-      Alert.alert('Error', 'Failed to submit sensor data. Please try again.');
+      Alert.alert(S.common.error, S.map.challengeDetail.sensorSubmitFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -175,7 +176,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
       await challengeApi.submit(challengeId, formData);
       setPhase('completed');
     } catch (_err) {
-      Alert.alert('Error', 'Failed to upload video proof. Please try again.');
+      Alert.alert(S.common.error, S.map.challengeDetail.videoUploadFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -192,7 +193,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={THEME.primary} />
-        <Text style={styles.loadingText}>Loading challenge...</Text>
+        <Text style={styles.loadingText}>{S.map.challengeDetail.loadingChallenge}</Text>
       </SafeAreaView>
     );
   }
@@ -208,14 +209,14 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
           <View style={styles.trophyCircle}>
             <Ionicons name="trophy" size={56} color={THEME.warning} />
           </View>
-          <Text style={styles.completedTitle}>CHALLENGE COMPLETE!</Text>
+          <Text style={styles.completedTitle}>{S.map.challengeDetail.completedTitle}</Text>
           <Text style={styles.completedSubtitle}>{challenge.template}</Text>
           <TouchableOpacity
             style={styles.doneButton}
             onPress={() => navigation.goBack()}
             activeOpacity={0.8}
           >
-            <Text style={styles.doneButtonText}>DONE</Text>
+            <Text style={styles.doneButtonText}>{S.map.challengeDetail.doneBtn}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -229,7 +230,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
         return (
           <View style={styles.activeSection}>
             <Text style={styles.activeInstruction}>
-              Complete the challenge and tap the button below when done.
+              {S.map.challengeDetail.honorInstruction}
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: THEME.accent }]}
@@ -242,7 +243,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
               ) : (
                 <>
                   <Ionicons name="checkmark-circle" size={22} color={THEME.bg} />
-                  <Text style={styles.actionButtonText}>COMPLETE</Text>
+                  <Text style={styles.actionButtonText}>{S.map.challengeDetail.completeBtn}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -253,22 +254,22 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
         return (
           <View style={styles.activeSection}>
             <Text style={styles.activeInstruction}>
-              GPS tracking active. Meet the target metrics to complete.
+              {S.map.challengeDetail.sensorInstruction}
             </Text>
             <View style={styles.sensorStats}>
               <View style={styles.sensorStatItem}>
                 <Text style={styles.sensorStatValue}>{trackedDistance.toFixed(0)}m</Text>
-                <Text style={styles.sensorStatLabel}>Distance</Text>
+                <Text style={styles.sensorStatLabel}>{S.map.challengeDetail.statDistance}</Text>
               </View>
               <View style={styles.sensorDivider} />
               <View style={styles.sensorStatItem}>
                 <Text style={styles.sensorStatValue}>{trackedSteps}</Text>
-                <Text style={styles.sensorStatLabel}>Steps</Text>
+                <Text style={styles.sensorStatLabel}>{S.map.challengeDetail.statSteps}</Text>
               </View>
               <View style={styles.sensorDivider} />
               <View style={styles.sensorStatItem}>
                 <Text style={styles.sensorStatValue}>{formatTime(trackedTime)}</Text>
-                <Text style={styles.sensorStatLabel}>Time</Text>
+                <Text style={styles.sensorStatLabel}>{S.map.challengeDetail.statTime}</Text>
               </View>
             </View>
             <TouchableOpacity
@@ -282,7 +283,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
               ) : (
                 <>
                   <Ionicons name="stop-circle" size={22} color={THEME.bg} />
-                  <Text style={styles.actionButtonText}>FINISH &amp; SUBMIT</Text>
+                  <Text style={styles.actionButtonText}>{S.map.challengeDetail.finishSubmitBtn}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -293,7 +294,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
         return (
           <View style={styles.activeSection}>
             <Text style={styles.activeInstruction}>
-              Record a video showing your challenge completion as proof.
+              {S.map.challengeDetail.videoInstruction}
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: THEME.warning }]}
@@ -306,7 +307,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
               ) : (
                 <>
                   <Ionicons name="videocam" size={22} color={THEME.bg} />
-                  <Text style={styles.actionButtonText}>RECORD VIDEO</Text>
+                  <Text style={styles.actionButtonText}>{S.map.challengeDetail.recordVideoBtn}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -367,7 +368,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
             </View>
             <View style={styles.templateInfo}>
               <Text style={styles.templateName}>{challenge.template}</Text>
-              <Text style={styles.creatorText}>by {challenge.creatorUsername}</Text>
+              <Text style={styles.creatorText}>{t(S.map.challengeDetail.byCreator, { username: challenge.creatorUsername })}</Text>
             </View>
           </View>
 
@@ -383,7 +384,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
         {/* Parameters */}
         {params.length > 0 && (
           <View style={styles.parametersSection}>
-            <Text style={styles.sectionTitle}>Parameters</Text>
+            <Text style={styles.sectionTitle}>{S.map.challengeDetail.parametersTitle}</Text>
             {params.map((param, index) => (
               <View key={index} style={styles.paramRow}>
                 <Text style={styles.paramLabel}>{param.label}</Text>
@@ -401,7 +402,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
             activeOpacity={0.8}
           >
             <Ionicons name="flash" size={22} color={THEME.bg} />
-            <Text style={styles.acceptButtonText}>ACCEPT CHALLENGE</Text>
+            <Text style={styles.acceptButtonText}>{S.map.challengeDetail.acceptChallengeBtn}</Text>
           </TouchableOpacity>
         ) : (
           renderActiveUI()
@@ -410,7 +411,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
         {/* Recent Completions */}
         {recentCompletions.length > 0 && (
           <View style={styles.completionsSection}>
-            <Text style={styles.sectionTitle}>Recent Completions</Text>
+            <Text style={styles.sectionTitle}>{S.map.challengeDetail.recentCompletions}</Text>
             {recentCompletions.map((sub) => (
               <View key={sub.id} style={styles.completionRow}>
                 <Ionicons name="checkmark-circle" size={16} color={THEME.accent} />

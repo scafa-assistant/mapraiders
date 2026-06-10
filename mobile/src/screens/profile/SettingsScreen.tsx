@@ -21,6 +21,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { userApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { useTheme } from '../../hooks/useTheme';
+import { strings as S, t } from '../../i18n';
 import type { SettingsScreenProps } from '../../navigation/types';
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
@@ -50,9 +51,9 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     setIsExporting(true);
     try {
       const result = await userApi.exportData();
-      Alert.alert('Data Exported', 'Your data has been exported successfully.');
+      Alert.alert(S.profile.settings.dataExportedTitle, S.profile.settings.dataExportedMessage);
     } catch {
-      Alert.alert('Export Failed', 'Unable to export your data. Please try again later.');
+      Alert.alert(S.profile.settings.exportFailedTitle, S.profile.settings.exportFailedMessage);
     } finally {
       setIsExporting(false);
     }
@@ -60,12 +61,12 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Delete Account',
-      'This is PERMANENT. All territories, routes, and progress will be deleted forever.',
+      S.profile.settings.deleteAccount,
+      S.profile.settings.deleteAccountConfirmMessage,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: S.common.cancel, style: 'cancel' },
         {
-          text: 'Delete Account',
+          text: S.profile.settings.deleteAccount,
           style: 'destructive',
           onPress: async () => {
             setIsDeleting(true);
@@ -73,7 +74,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               await userApi.deleteAccount();
               logout();
             } catch {
-              Alert.alert('Error', 'Failed to delete account.');
+              Alert.alert(S.common.error, S.profile.settings.deleteAccountFailed);
             } finally {
               setIsDeleting(false);
             }
@@ -88,33 +89,33 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location access is needed to set your home zone.');
+        Alert.alert(S.profile.settings.permissionDeniedTitle, S.profile.settings.homeZonePermission);
         return;
       }
       const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
       await userApi.setHomeZone(location.coords.latitude, location.coords.longitude);
       setHomeZoneSet(true);
-      Alert.alert('Home Zone Set', 'Your claims within 200m of this location will be hidden from the public map.');
+      Alert.alert(S.profile.settings.homeZoneSetTitle, S.profile.settings.homeZoneSetMessage);
     } catch {
-      Alert.alert('Error', 'Failed to set home zone.');
+      Alert.alert(S.common.error, S.profile.settings.homeZoneSetFailed);
     } finally {
       setIsSettingHomeZone(false);
     }
   };
 
   const handleRemoveHomeZone = async () => {
-    Alert.alert('Remove Home Zone', 'Your territories near home will become visible again.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(S.profile.settings.removeHomeZone, S.profile.settings.removeHomeZoneConfirm, [
+      { text: S.common.cancel, style: 'cancel' },
       {
-        text: 'Remove',
+        text: S.common.remove,
         style: 'destructive',
         onPress: async () => {
           try {
             await userApi.removeHomeZone();
             setHomeZoneSet(false);
-            Alert.alert('Home Zone Removed');
+            Alert.alert(S.profile.settings.homeZoneRemoved);
           } catch {
-            Alert.alert('Error', 'Failed to remove home zone.');
+            Alert.alert(S.common.error, S.profile.settings.homeZoneRemoveFailed);
           }
         },
       },
@@ -122,9 +123,9 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   };
 
   const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', style: 'destructive', onPress: () => logout() },
+    Alert.alert(S.profile.settings.logout, S.profile.settings.logoutConfirm, [
+      { text: S.common.cancel, style: 'cancel' },
+      { text: S.profile.settings.logout, style: 'destructive', onPress: () => logout() },
     ]);
   };
 
@@ -184,13 +185,13 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         <TouchableOpacity style={[styles.backBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Settings</Text>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>{S.profile.settings.title}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Account Info + Username Change */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Account</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.account}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={[styles.row, { borderBottomColor: theme.border }]}>
             <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.15)' }]}>
@@ -198,7 +199,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             </View>
             <View style={styles.rowContent}>
               <Text style={[styles.rowLabel, { color: theme.text }]}>{user?.email || ''}</Text>
-              <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>E-Mail (nicht änderbar)</Text>
+              <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>{S.profile.settings.emailNotChangeable}</Text>
             </View>
           </View>
           <View style={[styles.row, { borderBottomWidth: 0 }]}>
@@ -206,7 +207,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               <Ionicons name="person" size={18} color="#00FF88" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.rowSubtitle, { color: theme.textSecondary, marginBottom: 6 }]}>Username</Text>
+              <Text style={[styles.rowSubtitle, { color: theme.textSecondary, marginBottom: 6 }]}>{S.profile.settings.usernameLabel}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <TextInput
                   style={{
@@ -224,7 +225,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                   value={editUsername}
                   onChangeText={setEditUsername}
                   maxLength={30}
-                  placeholder="Dein Username"
+                  placeholder={S.profile.settings.usernamePlaceholder}
                   placeholderTextColor={theme.textSecondary}
                 />
                 <TouchableOpacity
@@ -240,33 +241,33 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                     if (!newName || newName === user?.username) return;
                     // Client-side validation with clear messages
                     if (newName.length < 3) {
-                      Alert.alert('Zu kurz', 'Username muss mindestens 3 Zeichen haben.');
+                      Alert.alert(S.profile.settings.usernameTooShortTitle, S.profile.settings.usernameTooShort);
                       return;
                     }
                     if (newName.length > 30) {
-                      Alert.alert('Zu lang', 'Username darf maximal 30 Zeichen haben.');
+                      Alert.alert(S.profile.settings.usernameTooLongTitle, S.profile.settings.usernameTooLong);
                       return;
                     }
                     if (/\s/.test(newName)) {
-                      Alert.alert('Keine Leerzeichen', 'Username darf keine Leerzeichen enthalten. Verwende _ oder - stattdessen.');
+                      Alert.alert(S.profile.settings.usernameNoSpacesTitle, S.profile.settings.usernameNoSpaces);
                       return;
                     }
                     if (!/^[a-zA-Z0-9_.\-äöüÄÖÜß]+$/.test(newName)) {
-                      Alert.alert('Ungültige Zeichen', 'Username darf nur Buchstaben, Zahlen, _, . und - enthalten.');
+                      Alert.alert(S.profile.settings.usernameInvalidCharsTitle, S.profile.settings.usernameInvalidChars);
                       return;
                     }
                     try {
                       const { userApi: uApi } = await import('../../services/api');
                       await uApi.changeUsername(newName);
-                      Alert.alert('Fertig', `Username geändert zu "${newName}"`);
+                      Alert.alert(S.common.done, t(S.profile.settings.usernameChanged, { username: newName }));
                     } catch (err: any) {
                       const serverMsg = err?.response?.data?.message;
-                      Alert.alert('Fehler', serverMsg || 'Username konnte nicht geändert werden.');
+                      Alert.alert(S.common.error, serverMsg || S.profile.settings.usernameChangeFailed);
                     }
                   }}
                 >
                   <Text style={{ color: editUsername !== (user?.username || '') ? '#0A0E17' : theme.textSecondary, fontWeight: '700', fontSize: 13 }}>
-                    Speichern
+                    {S.common.save}
                   </Text>
                 </TouchableOpacity>
                 <Ionicons name="pencil" size={16} color={theme.textSecondary} />
@@ -276,20 +277,20 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         </View>
 
         {/* Display */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Display</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.display}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderToggleRow(
             'moon-outline',
-            'Dark Mode',
-            'Switch between dark and light theme',
+            S.profile.settings.darkMode,
+            S.profile.settings.darkModeSubtitle,
             settings.darkMapStyle,
             (val) => updateSetting('darkMapStyle', val),
             theme.secondary
           )}
           {renderToggleRow(
             'phone-portrait-outline',
-            'Haptic Feedback',
-            'Vibration bei Aktionen und Buttons',
+            S.profile.settings.hapticFeedback,
+            S.profile.settings.hapticFeedbackSubtitle,
             settings.hapticFeedback,
             (val) => updateSetting('hapticFeedback', val),
             theme.primary
@@ -313,17 +314,17 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             >
               <Ionicons name="pulse" size={18} color={theme.primary} />
               <Text style={{ color: theme.primary, fontSize: 13, fontWeight: '700' }}>
-                Haptic testen
+                {S.profile.settings.testHaptics}
               </Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Territory Color */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Territorium-Farbe</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.territoryColor}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border, padding: 16 }]}>
           <Text style={{ color: theme.textSecondary, fontSize: 12, marginBottom: 12 }}>
-            Wähle die Farbe deiner Territorien auf der Karte
+            {S.profile.settings.territoryColorHint}
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
             {['#00D4FF', '#7B61FF', '#00FF88', '#FFB800', '#FF4757', '#FF69B4', '#FF6B35', '#00BFFF',
@@ -349,42 +350,42 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 12, gap: 8 }}>
             <View style={{ width: 50, height: 30, borderRadius: 6, backgroundColor: territoryColor, opacity: 0.4 }} />
-            <Text style={{ color: theme.text, fontSize: 13, fontWeight: '600' }}>Vorschau</Text>
+            <Text style={{ color: theme.text, fontSize: 13, fontWeight: '600' }}>{S.profile.settings.preview}</Text>
             <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{territoryColor}</Text>
           </View>
         </View>
 
         {/* Notifications */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Notifications</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.notifications}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderToggleRow(
             'notifications-outline',
-            'Push Notifications',
-            'Receive push notifications',
+            S.profile.settings.pushNotifications,
+            S.profile.settings.pushNotificationsSubtitle,
             settings.pushNotifications,
             (val) => updateSetting('pushNotifications', val),
             theme.accent
           )}
           {renderToggleRow(
             'shield-outline',
-            'Territory Alerts',
-            'Alert when someone contests your territory',
+            S.profile.settings.territoryAlerts,
+            S.profile.settings.territoryAlertsSubtitle,
             settings.territoryAlerts,
             (val) => updateSetting('territoryAlerts', val),
             theme.warning
           )}
           {renderToggleRow(
             'compass-outline',
-            'Nearby Quests',
-            'Alert when a new quest appears nearby',
+            S.profile.settings.nearbyQuests,
+            S.profile.settings.nearbyQuestsSubtitle,
             settings.questNearby,
             (val) => updateSetting('questNearby', val),
             theme.primary
           )}
           {renderToggleRow(
             'time-outline',
-            'Quiet Hours',
-            'No notifications 22:00 - 08:00',
+            S.profile.settings.quietHours,
+            S.profile.settings.quietHoursSubtitle,
             settings.quietHours,
             (val) => updateSetting('quietHours', val),
             '#8892B0'
@@ -392,14 +393,14 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         </View>
 
         {/* Privacy */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Privacy</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.privacy}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderRow(
             'home-outline',
-            homeZoneSet ? 'Remove Home Zone' : 'Set Home Zone',
+            homeZoneSet ? S.profile.settings.removeHomeZone : S.profile.settings.setHomeZone,
             homeZoneSet
-              ? 'Claims near home are hidden from the map'
-              : 'Hide your claims within 200m of home',
+              ? S.profile.settings.homeZoneActiveSubtitle
+              : S.profile.settings.homeZoneInactiveSubtitle,
             homeZoneSet ? handleRemoveHomeZone : handleSetHomeZone,
             theme.primary,
             isSettingHomeZone
@@ -407,20 +408,20 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         </View>
 
         {/* Data */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Your Data</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.yourData}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderRow(
             'download-outline',
-            'Export My Data',
-            'Download all your personal data (GDPR)',
+            S.profile.settings.exportData,
+            S.profile.settings.exportDataSubtitle,
             handleExportData,
             theme.accent,
             isExporting
           )}
           {renderRow(
             'trash-outline',
-            'Delete Account',
-            'Permanently delete your account and all data',
+            S.profile.settings.deleteAccount,
+            S.profile.settings.deleteAccountSubtitle,
             handleDeleteAccount,
             theme.danger,
             isDeleting
@@ -428,26 +429,26 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         </View>
 
         {/* Legal */}
-        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>Rechtliches</Text>
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.legal}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderRow(
             'document-text-outline',
-            'AGB',
-            'Allgemeine Geschäftsbedingungen',
+            S.profile.settings.terms,
+            S.profile.settings.termsSubtitle,
             () => Linking.openURL('https://mapraiders.com/agb.html'),
             theme.accent
           )}
           {renderRow(
             'shield-checkmark-outline',
-            'Datenschutz',
-            'Datenschutzerklärung (DSGVO)',
+            S.profile.settings.privacyPolicy,
+            S.profile.settings.privacyPolicySubtitle,
             () => Linking.openURL('https://mapraiders.com/datenschutz.html'),
             theme.accent
           )}
           {renderRow(
             'information-circle-outline',
-            'Impressum',
-            'Angaben gemäß § 5 TMG',
+            S.profile.settings.imprint,
+            S.profile.settings.imprintSubtitle,
             () => Linking.openURL('https://mapraiders.com/impressum.html'),
             theme.accent
           )}
@@ -456,7 +457,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         {/* Logout */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.7}>
           <Ionicons name="log-out-outline" size={20} color={theme.danger} />
-          <Text style={[styles.logoutText, { color: theme.danger }]}>Logout</Text>
+          <Text style={[styles.logoutText, { color: theme.danger }]}>{S.profile.settings.logout}</Text>
         </TouchableOpacity>
 
         <Text style={styles.version}>MapRaiders v1.0.0</Text>

@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuestStore } from '../../store/questStore';
 import { useLocationStore } from '../../store/locationStore';
 import QuestCard from '../../components/QuestCard';
+import { strings as S, t, plural } from '../../i18n';
 import { QuestListScreenProps, Quest } from '../../navigation/types';
 import { useWeather } from '../../hooks/useWeather';
 
@@ -71,9 +72,9 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="compass-outline" size={64} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No quests nearby</Text>
+        <Text style={styles.emptyTitle}>{S.quests.list.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
-          Be the first to create a quest in this area!
+          {S.quests.list.emptySubtitle}
         </Text>
       </View>
     );
@@ -83,9 +84,9 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Quests</Text>
+        <Text style={styles.headerTitle}>{S.quests.list.title}</Text>
         <Text style={styles.headerSubtitle}>
-          {filteredQuests.length} found nearby
+          {t(S.quests.list.foundNearby, { count: filteredQuests.length })}
         </Text>
       </View>
 
@@ -95,12 +96,12 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
           horizontal
           showsHorizontalScrollIndicator={false}
           data={[
-            { label: 'All', value: 0 as FilterDifficulty },
-            { label: '1 Star', value: 1 as FilterDifficulty },
-            { label: '2 Stars', value: 2 as FilterDifficulty },
-            { label: '3 Stars', value: 3 as FilterDifficulty },
-            { label: '4 Stars', value: 4 as FilterDifficulty },
-            { label: '5 Stars', value: 5 as FilterDifficulty },
+            { label: S.quests.list.filterAll, value: 0 as FilterDifficulty },
+            { label: plural(1, S.quests.list.filterStarsOne, S.quests.list.filterStarsOther), value: 1 as FilterDifficulty },
+            { label: plural(2, S.quests.list.filterStarsOne, S.quests.list.filterStarsOther), value: 2 as FilterDifficulty },
+            { label: plural(3, S.quests.list.filterStarsOne, S.quests.list.filterStarsOther), value: 3 as FilterDifficulty },
+            { label: plural(4, S.quests.list.filterStarsOne, S.quests.list.filterStarsOther), value: 4 as FilterDifficulty },
+            { label: plural(5, S.quests.list.filterStarsOne, S.quests.list.filterStarsOther), value: 5 as FilterDifficulty },
           ]}
           keyExtractor={(item) => item.value.toString()}
           contentContainerStyle={styles.filterList}
@@ -129,10 +130,10 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
             horizontal
             showsHorizontalScrollIndicator={false}
             data={[
-              { label: 'Any distance', value: 'any' as FilterDistance },
-              { label: '< 500m', value: '500' as FilterDistance },
-              { label: '< 1km', value: '1000' as FilterDistance },
-              { label: '< 2km', value: '2000' as FilterDistance },
+              { label: S.quests.list.filterAnyDistance, value: 'any' as FilterDistance },
+              { label: S.quests.list.filterUnder500m, value: '500' as FilterDistance },
+              { label: S.quests.list.filterUnder1km, value: '1000' as FilterDistance },
+              { label: S.quests.list.filterUnder2km, value: '2000' as FilterDistance },
             ]}
             keyExtractor={(item) => item.value}
             contentContainerStyle={{ gap: 8 }}
@@ -175,7 +176,7 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
                   filterWeatherActive && styles.filterChipTextActive,
                 ]}
               >
-                Weather Active
+                {S.quests.list.filterWeatherActive}
               </Text>
             </TouchableOpacity>
           )}
@@ -186,7 +187,7 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
       {isLoading && nearbyQuests.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#00D4FF" />
-          <Text style={styles.loadingText}>Scanning for quests...</Text>
+          <Text style={styles.loadingText}>{S.quests.list.scanning}</Text>
         </View>
       ) : (
         <FlatList

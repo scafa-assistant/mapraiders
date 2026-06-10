@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { socialApi } from '../../services/api';
 import { formatRelativeTime } from '../../utils/formatters';
+import { strings as S } from '../../i18n';
 import type { FeedScreenProps } from '../../navigation/types';
 import type { FeedItem } from '../../utils/types';
 
@@ -20,11 +21,11 @@ const FEED_TYPE_CONFIG: Record<
   FeedItem['type'],
   { icon: keyof typeof Ionicons.glyphMap; color: string; verb: string }
 > = {
-  claim: { icon: 'map', color: THEME.primary, verb: 'claimed territory' },
-  quest_complete: { icon: 'flag', color: THEME.accent, verb: 'completed a quest' },
-  challenge_complete: { icon: 'trophy', color: THEME.warning, verb: 'completed a challenge' },
-  echo_created: { icon: 'mic', color: THEME.secondary, verb: 'left an echo' },
-  level_up: { icon: 'star', color: '#FFB800', verb: 'leveled up' },
+  claim: { icon: 'map', color: THEME.primary, verb: S.profile.feed.verbClaim },
+  quest_complete: { icon: 'flag', color: THEME.accent, verb: S.profile.feed.verbQuestComplete },
+  challenge_complete: { icon: 'trophy', color: THEME.warning, verb: S.profile.feed.verbChallengeComplete },
+  echo_created: { icon: 'mic', color: THEME.secondary, verb: S.profile.feed.verbEchoCreated },
+  level_up: { icon: 'star', color: '#FFB800', verb: S.profile.feed.verbLevelUp },
 };
 
 export default function FeedScreen({ navigation }: FeedScreenProps) {
@@ -105,9 +106,9 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="newspaper-outline" size={64} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No activity yet</Text>
+        <Text style={styles.emptyTitle}>{S.profile.feed.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
-          Start exploring to see activity from nearby players!
+          {S.profile.feed.emptySubtext}
         </Text>
       </View>
     );
@@ -132,7 +133,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
         >
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Activity Feed</Text>
+        <Text style={styles.headerTitle}>{S.profile.feed.title}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -140,7 +141,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Loading feed...</Text>
+          <Text style={styles.loadingText}>{S.profile.feed.loadingFeed}</Text>
         </View>
       ) : (
         <FlatList

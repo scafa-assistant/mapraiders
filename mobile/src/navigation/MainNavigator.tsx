@@ -10,6 +10,7 @@ import TravelStack from './TravelStack';
 import ProfileStack from './ProfileStack';
 import { useTheme } from '../hooks/useTheme';
 import { useSettingsStore } from '../store/settingsStore';
+import { strings as S } from '../i18n';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -82,16 +83,28 @@ export default function MainNavigator() {
       <Tab.Screen
         name="Map"
         component={MapStack}
-        options={{ freezeOnBlur: false }}
+        options={{ freezeOnBlur: false, tabBarLabel: S.nav.tabs.map }}
       />
-      <Tab.Screen name="Quests" component={QuestStack} />
+      <Tab.Screen
+        name="Quests"
+        component={QuestStack}
+        options={{ tabBarLabel: S.nav.tabs.quests }}
+      />
       <Tab.Screen
         name="Create"
         component={CreateStack}
         options={{ tabBarLabel: '' }}
       />
-      <Tab.Screen name="Travel" component={TravelStack} />
-      <Tab.Screen name="Profile" component={ProfileStack} />
+      <Tab.Screen
+        name="Travel"
+        component={TravelStack}
+        options={{ tabBarLabel: S.nav.tabs.travel }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{ tabBarLabel: S.nav.tabs.profile }}
+      />
     </Tab.Navigator>
   );
 }

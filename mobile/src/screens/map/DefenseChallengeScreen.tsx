@@ -15,6 +15,7 @@ import * as Location from 'expo-location';
 import { defenseApi, turnGameApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { DefenseChallengeScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 type RpsChoice = 'rock' | 'scissors' | 'paper';
 type CoinSide = 'heads' | 'tails';
@@ -73,7 +74,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             });
           }
         } catch (err: any) {
-          Alert.alert('Fehler', err.message || 'Spiel konnte nicht gestartet werden.');
+          Alert.alert(S.common.error, err.message || S.map.defenseChallenge.gameStartFailed);
           navigation.goBack();
         }
       };
@@ -135,12 +136,12 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
       });
       const res = data?.data ?? data;
       if (res.result === 'win') {
-        showResult('win', 'You won! Territory conquered!');
+        showResult('win', S.map.defenseChallenge.rpsWin);
       } else if (res.result === 'lose') {
-        showResult('lose', `You lost! ${ownerUsername}'s defense holds.`);
+        showResult('lose', t(S.map.defenseChallenge.rpsLose, { username: ownerUsername }));
       } else {
         // Draw — reset for retry
-        showResult('draw', 'Draw! Pick again!');
+        showResult('draw', S.map.defenseChallenge.rpsDraw);
         setTimeout(() => {
           setResult(null);
           setRpsChoice(null);
@@ -151,7 +152,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
         }, 1500);
       }
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to submit challenge.');
+      Alert.alert(S.common.error, err.message || S.map.defenseChallenge.submitChallengeFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -165,7 +166,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
   const startRace = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'GPS permission is needed for the sprint race.');
+      Alert.alert(S.map.defenseChallenge.permissionDeniedTitle, S.map.defenseChallenge.gpsNeededRace);
       return;
     }
 
@@ -227,12 +228,12 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
       });
       const res = data?.data ?? data;
       if (res.result === 'win') {
-        showResult('win', `You won! ${finalTime}s vs ${ownerTime}s`);
+        showResult('win', t(S.map.defenseChallenge.sprintWin, { time: finalTime, ownerTime }));
       } else {
-        showResult('lose', `You lost! ${finalTime}s vs ${ownerTime}s`);
+        showResult('lose', t(S.map.defenseChallenge.sprintLose, { time: finalTime, ownerTime }));
       }
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to submit race result.');
+      Alert.alert(S.common.error, err.message || S.map.defenseChallenge.raceSubmitFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -242,7 +243,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
   const submitTrivia = async () => {
     if (!triviaAnswer.trim()) {
-      Alert.alert('Enter Answer', 'Type your answer before submitting.');
+      Alert.alert(S.map.defenseChallenge.enterAnswerTitle, S.map.defenseChallenge.enterAnswerMsg);
       return;
     }
     setIsSubmitting(true);
@@ -252,12 +253,12 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
       });
       const res = data?.data ?? data;
       if (res.result === 'win') {
-        showResult('win', 'Correct! Territory conquered!');
+        showResult('win', S.map.defenseChallenge.triviaWin);
       } else {
-        showResult('lose', 'Wrong answer! Defense holds.');
+        showResult('lose', S.map.defenseChallenge.triviaLose);
       }
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to submit answer.');
+      Alert.alert(S.common.error, err.message || S.map.defenseChallenge.answerSubmitFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -278,12 +279,12 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
       const { data } = await defenseApi.submitChallenge(defenseId, { flip_result: side });
       const res = data?.data ?? data;
       if (res.result === 'won') {
-        showResult('win', 'Münzwurf gewonnen! Territorium erobert!');
+        showResult('win', S.map.defenseChallenge.coinWin);
       } else {
-        showResult('lose', `Falsch! ${ownerUsername} hat richtig gewettet.`);
+        showResult('lose', t(S.map.defenseChallenge.coinLose, { username: ownerUsername }));
       }
     } catch (err: any) {
-      Alert.alert('Fehler', err.message || 'Münzwurf fehlgeschlagen.');
+      Alert.alert(S.common.error, err.message || S.map.defenseChallenge.coinFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -297,12 +298,12 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
       const { data } = await defenseApi.submitChallenge(defenseId, { fingers: oeFingers });
       const res = data?.data ?? data;
       if (res.result === 'won') {
-        showResult('win', 'Finger-Poker gewonnen! Territorium deins!');
+        showResult('win', S.map.defenseChallenge.oddEvenWin);
       } else {
-        showResult('lose', `Verteidigung hält! ${ownerUsername} lag richtig.`);
+        showResult('lose', t(S.map.defenseChallenge.oddEvenLose, { username: ownerUsername }));
       }
     } catch (err: any) {
-      Alert.alert('Fehler', err.message || 'Finger-Poker fehlgeschlagen.');
+      Alert.alert(S.common.error, err.message || S.map.defenseChallenge.oddEvenFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -311,13 +312,13 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
   // ─── Game Type Labels & Colors ────────────────────────────────────────
 
   const gameLabels: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
-    rock_paper_scissors: { label: 'Schnick Schnack Schnuck', icon: 'hand-left-outline', color: '#7B61FF' },
-    sprint_race: { label: 'Sprint Race', icon: 'speedometer-outline', color: '#00FF88' },
-    trivia: { label: 'Trivia', icon: 'help-circle-outline', color: '#00D4FF' },
-    coin_flip: { label: 'Münzwurf', icon: 'ellipse-outline', color: '#FFB800' },
-    odd_even: { label: 'Gerade/Ungerade', icon: 'finger-print-outline', color: '#FF69B4' },
-    tic_tac_toe: { label: 'Tic Tac Toe', icon: 'grid-outline', color: '#00D4FF' },
-    mini_chess: { label: 'Mini-Schach', icon: 'trophy-outline', color: '#FFB800' },
+    rock_paper_scissors: { label: S.map.defenseChallenge.gameRps, icon: 'hand-left-outline', color: '#7B61FF' },
+    sprint_race: { label: S.map.defenseChallenge.gameSprintRace, icon: 'speedometer-outline', color: '#00FF88' },
+    trivia: { label: S.map.defenseChallenge.gameTrivia, icon: 'help-circle-outline', color: '#00D4FF' },
+    coin_flip: { label: S.map.defenseChallenge.gameCoinFlip, icon: 'ellipse-outline', color: '#FFB800' },
+    odd_even: { label: S.map.defenseChallenge.gameOddEven, icon: 'finger-print-outline', color: '#FF69B4' },
+    tic_tac_toe: { label: S.map.defenseChallenge.gameTicTacToe, icon: 'grid-outline', color: '#00D4FF' },
+    mini_chess: { label: S.map.defenseChallenge.gameMiniChess, icon: 'trophy-outline', color: '#FFB800' },
   };
 
   const gameInfo = gameLabels[gameType] || gameLabels.trivia;
@@ -360,19 +361,19 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
           color={isWin ? '#FFB800' : '#FF4757'}
         />
         <Text style={[styles.resultTitle, { color: isWin ? '#FFB800' : '#FF4757' }]}>
-          {isWin ? 'VICTORY!' : 'DEFEATED'}
+          {isWin ? S.map.defenseChallenge.victory : S.map.defenseChallenge.defeated}
         </Text>
         <Text style={styles.resultMsg}>{resultMessage}</Text>
         {isWin ? (
-          <Text style={styles.resultSubtext}>Territory conquered!</Text>
+          <Text style={styles.resultSubtext}>{S.map.defenseChallenge.territoryConquered}</Text>
         ) : (
-          <Text style={styles.resultSubtext}>Try again (10min cooldown)</Text>
+          <Text style={styles.resultSubtext}>{S.map.defenseChallenge.tryAgainCooldown}</Text>
         )}
         <TouchableOpacity
           style={[styles.resultBtn, { backgroundColor: isWin ? '#FFB800' : '#FF4757' }]}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.resultBtnText}>{isWin ? 'Celebrate!' : 'Back'}</Text>
+          <Text style={styles.resultBtnText}>{isWin ? S.map.defenseChallenge.celebrate : S.common.back}</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -382,16 +383,16 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
   const renderRpsGame = () => {
     const moves: { choice: RpsChoice; emoji: string; label: string; color: string; scale: Animated.Value }[] = [
-      { choice: 'rock', emoji: '🪨', label: 'Rock', color: '#8892B0', scale: rpsScaleRock },
-      { choice: 'scissors', emoji: '✂️', label: 'Scissors', color: '#FF4757', scale: rpsScaleScissors },
-      { choice: 'paper', emoji: '📄', label: 'Paper', color: '#00D4FF', scale: rpsScalePaper },
+      { choice: 'rock', emoji: '🪨', label: S.map.defenseChallenge.rock, color: '#8892B0', scale: rpsScaleRock },
+      { choice: 'scissors', emoji: '✂️', label: S.map.defenseChallenge.scissors, color: '#FF4757', scale: rpsScaleScissors },
+      { choice: 'paper', emoji: '📄', label: S.map.defenseChallenge.paper, color: '#00D4FF', scale: rpsScalePaper },
     ];
 
     return (
       <View style={styles.gameArea}>
-        <Text style={styles.gameInstruction}>Choose your move!</Text>
+        <Text style={styles.gameInstruction}>{S.map.defenseChallenge.chooseYourMove}</Text>
         {config?.rounds === 3 && (
-          <Text style={styles.gameSubInstruction}>Best of 3 rounds</Text>
+          <Text style={styles.gameSubInstruction}>{S.map.defenseChallenge.bestOf3Rounds}</Text>
         )}
 
         <View style={styles.rpsRow}>
@@ -436,7 +437,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             ) : (
               <>
                 <Ionicons name="flash" size={20} color="#0A0E17" />
-                <Text style={styles.submitBtnText}>THROW!</Text>
+                <Text style={styles.submitBtnText}>{S.map.defenseChallenge.throwBtn}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -455,7 +456,8 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
         <View style={styles.sprintInfoCard}>
           <Ionicons name="trophy-outline" size={20} color="#FFB800" />
           <Text style={styles.sprintInfoText}>
-            Beat {ownerUsername}'s time: <Text style={styles.sprintInfoHighlight}>{ownerTime}s</Text> over{' '}
+            {t(S.map.defenseChallenge.sprintBeatPrefix, { username: ownerUsername })}{' '}
+            <Text style={styles.sprintInfoHighlight}>{ownerTime}s</Text> {S.map.defenseChallenge.sprintOverWord}{' '}
             <Text style={styles.sprintInfoHighlight}>{targetDistance}m</Text>
           </Text>
         </View>
@@ -463,7 +465,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
         {!isRacing && raceTime === 0 && result === null && (
           <TouchableOpacity style={styles.startRaceBtn} onPress={startRace}>
             <Ionicons name="play" size={32} color="#0A0E17" />
-            <Text style={styles.startRaceText}>START</Text>
+            <Text style={styles.startRaceText}>{S.map.defenseChallenge.startBtn}</Text>
           </TouchableOpacity>
         )}
 
@@ -482,7 +484,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
               {Math.round(raceDistance)}m / {targetDistance}m
             </Text>
 
-            <Text style={styles.raceHint}>Keep running!</Text>
+            <Text style={styles.raceHint}>{S.map.defenseChallenge.keepRunning}</Text>
           </View>
         )}
       </View>
@@ -495,14 +497,14 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
     <View style={styles.gameArea}>
       <View style={styles.triviaQuestionCard}>
         <Ionicons name="help-circle" size={28} color="#00D4FF" />
-        <Text style={styles.triviaQuestionText}>{config?.question || 'No question provided'}</Text>
+        <Text style={styles.triviaQuestionText}>{config?.question || S.map.defenseChallenge.noQuestion}</Text>
       </View>
 
       {result !== 'win' && result !== 'lose' && (
         <>
           <TextInput
             style={styles.triviaInput}
-            placeholder="Type your answer..."
+            placeholder={S.map.defenseChallenge.answerPlaceholder}
             placeholderTextColor={THEME.textSecondary}
             value={triviaAnswer}
             onChangeText={setTriviaAnswer}
@@ -520,7 +522,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             ) : (
               <>
                 <Ionicons name="send" size={20} color="#0A0E17" />
-                <Text style={styles.submitBtnText}>SUBMIT</Text>
+                <Text style={styles.submitBtnText}>{S.map.defenseChallenge.submitBtn}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -533,14 +535,14 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
   const renderCoinFlipGame = () => {
     const sides: { side: CoinSide; emoji: string; label: string }[] = [
-      { side: 'heads', emoji: '👑', label: 'Kopf' },
-      { side: 'tails', emoji: '🔢', label: 'Zahl' },
+      { side: 'heads', emoji: '👑', label: S.map.defenseChallenge.heads },
+      { side: 'tails', emoji: '🔢', label: S.map.defenseChallenge.tails },
     ];
 
     return (
       <View style={styles.gameArea}>
-        <Text style={styles.gameInstruction}>Wirf die Münze!</Text>
-        <Text style={styles.gameSubInstruction}>Wähle das Ergebnis deines Wurfs</Text>
+        <Text style={styles.gameInstruction}>{S.map.defenseChallenge.coinFlipInstruction}</Text>
+        <Text style={styles.gameSubInstruction}>{S.map.defenseChallenge.coinFlipSub}</Text>
 
         <View style={styles.rpsRow}>
           {sides.map((s) => (
@@ -583,7 +585,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             ) : (
               <>
                 <Ionicons name="flash" size={20} color="#0A0E17" />
-                <Text style={styles.submitBtnText}>WERFEN!</Text>
+                <Text style={styles.submitBtnText}>{S.map.defenseChallenge.flipBtn}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -596,8 +598,8 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
   const renderOddEvenGame = () => (
     <View style={styles.gameArea}>
-      <Text style={styles.gameInstruction}>Zeig deine Finger!</Text>
-      <Text style={styles.gameSubInstruction}>Wähle 1-5 Finger. Die Summe entscheidet!</Text>
+      <Text style={styles.gameInstruction}>{S.map.defenseChallenge.oddEvenInstruction}</Text>
+      <Text style={styles.gameSubInstruction}>{S.map.defenseChallenge.oddEvenSub}</Text>
 
       <View style={[styles.rpsRow, { flexWrap: 'wrap', justifyContent: 'center' }]}>
         {[1, 2, 3, 4, 5].map((n) => (
@@ -634,7 +636,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
           ) : (
             <>
               <Ionicons name="hand-left" size={20} color="#0A0E17" />
-              <Text style={styles.submitBtnText}>ZEIGEN!</Text>
+              <Text style={styles.submitBtnText}>{S.map.defenseChallenge.showBtn}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -647,7 +649,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
   const renderTurnGameLoading = () => (
     <View style={styles.gameArea}>
       <ActivityIndicator size="large" color={THEME.primary} />
-      <Text style={styles.gameInstruction}>Spiel wird gestartet...</Text>
+      <Text style={styles.gameInstruction}>{S.map.defenseChallenge.startingGame}</Text>
     </View>
   );
 
@@ -665,7 +667,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             <Ionicons name={gameInfo.icon} size={16} color={gameInfo.color} />
             <Text style={[styles.headerGameLabel, { color: gameInfo.color }]}>{gameInfo.label}</Text>
           </View>
-          <Text style={styles.headerOwner}>vs {ownerUsername}</Text>
+          <Text style={styles.headerOwner}>{t(S.map.defenseChallenge.vsUsername, { username: ownerUsername })}</Text>
         </View>
         <View style={{ width: 40 }} />
       </View>

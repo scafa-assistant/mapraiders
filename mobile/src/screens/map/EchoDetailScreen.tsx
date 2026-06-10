@@ -17,6 +17,7 @@ import { echoApi } from '../../services/api';
 import { socialApi } from '../../services/api';
 import { audioService } from '../../services/audio';
 import { EchoDetailScreenProps } from '../../navigation/types';
+import { strings as S, t, plural } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -118,10 +119,10 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
 
   const handleReport = () => {
     if (!echo) return;
-    Alert.alert('Report Echo', 'Are you sure you want to report this echo?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(S.map.echoDetail.reportTitle, S.map.echoDetail.reportConfirm, [
+      { text: S.common.cancel, style: 'cancel' },
       {
-        text: 'Report',
+        text: S.map.echoDetail.reportAction,
         style: 'destructive',
         onPress: async () => {
           try {
@@ -130,9 +131,9 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
               target_id: echo.id,
               reason: 'inappropriate',
             });
-            Alert.alert('Reported', 'Thank you for your report. We will review it shortly.');
+            Alert.alert(S.map.echoDetail.reportedTitle, S.map.echoDetail.reportedMsg);
           } catch (_err) {
-            Alert.alert('Error', 'Failed to submit report.');
+            Alert.alert(S.common.error, S.map.echoDetail.reportFailed);
           }
         },
       },
@@ -143,12 +144,12 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
     const now = Date.now();
     const expiry = new Date(expiresAt || Date.now()).getTime();
     const diff = expiry - now;
-    if (diff <= 0) return 'Expired';
+    if (diff <= 0) return S.map.echoDetail.expired;
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (hours > 24) return `Expires in ${Math.floor(hours / 24)}d ${hours % 24}h`;
-    if (hours > 0) return `Expires in ${hours}h ${minutes}m`;
-    return `Expires in ${minutes}m`;
+    if (hours > 24) return t(S.map.echoDetail.expiresInDh, { days: Math.floor(hours / 24), hours: hours % 24 });
+    if (hours > 0) return t(S.map.echoDetail.expiresInHm, { hours, minutes });
+    return t(S.map.echoDetail.expiresInM, { minutes });
   };
 
   const formatDuration = (seconds: number): string => {
@@ -169,9 +170,9 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <Ionicons name="alert-circle" size={48} color="#FF4757" />
-        <Text style={styles.errorText}>Echo not found</Text>
+        <Text style={styles.errorText}>{S.map.echoDetail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
-          <Text style={styles.backLinkText}>Go back</Text>
+          <Text style={styles.backLinkText}>{S.map.echoDetail.goBack}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -185,7 +186,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#8892B0" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Echo</Text>
+          <Text style={styles.headerTitle}>{S.map.echoDetail.headerTitle}</Text>
           <TouchableOpacity onPress={handleReport}>
             <Ionicons name="flag-outline" size={22} color="#8892B0" />
           </TouchableOpacity>
@@ -293,7 +294,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
               color={echo.liked ? '#FF4757' : '#8892B0'}
             />
             <Text style={[styles.likeText, echo.liked && styles.likeTextActive]}>
-              {echo.likes} {echo.likes === 1 ? 'like' : 'likes'}
+              {plural(echo.likes, S.map.echoDetail.likeOne, S.map.echoDetail.likeOther)}
             </Text>
           </TouchableOpacity>
         </View>
@@ -306,7 +307,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
           </View>
           <View style={styles.infoRow}>
             <Ionicons name="radio-outline" size={18} color="#8892B0" />
-            <Text style={styles.infoText}>{echo.radius}m radius</Text>
+            <Text style={styles.infoText}>{t(S.map.echoDetail.radiusM, { radius: echo.radius })}</Text>
           </View>
         </View>
 

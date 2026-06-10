@@ -14,6 +14,7 @@ import { useLocationStore } from '../../store/locationStore';
 import { echoApi } from '../../services/api';
 import { audioService } from '../../services/audio';
 import { EchoListScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 interface EchoItem {
   id: string;
@@ -102,17 +103,17 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
     const now = Date.now();
     const expiry = new Date(expiresAt || Date.now()).getTime();
     const diff = expiry - now;
-    if (diff <= 0) return 'expired';
+    if (diff <= 0) return S.map.echoList.expired;
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (hours > 0) return `expires in ${hours}h`;
-    return `expires in ${minutes}m`;
+    if (hours > 0) return t(S.map.echoList.expiresInH, { hours });
+    return t(S.map.echoList.expiresInM, { minutes });
   };
 
   const formatDistance = (meters?: number): string => {
     if (!meters) return '';
-    if (meters < 1000) return `${Math.round(meters)}m away`;
-    return `${(meters / 1000).toFixed(1)}km away`;
+    if (meters < 1000) return t(S.map.echoList.metersAway, { distance: Math.round(meters) });
+    return t(S.map.echoList.kmAway, { distance: (meters / 1000).toFixed(1) });
   };
 
   const formatDuration = (seconds: number): string => {
@@ -190,9 +191,9 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="musical-notes-outline" size={64} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No echos nearby</Text>
+        <Text style={styles.emptyTitle}>{S.map.echoList.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
-          Drop an echo to leave your mark in this area!
+          {S.map.echoList.emptySubtext}
         </Text>
       </View>
     );
@@ -205,7 +206,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#8892B0" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Nearby Echos</Text>
+        <Text style={styles.headerTitle}>{S.map.echoList.headerTitle}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -213,7 +214,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
       {loading && echos.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#7B61FF" />
-          <Text style={styles.loadingText}>Scanning for echos...</Text>
+          <Text style={styles.loadingText}>{S.map.echoList.scanning}</Text>
         </View>
       ) : (
         <FlatList

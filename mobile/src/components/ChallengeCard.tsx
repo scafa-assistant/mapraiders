@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S, t } from '../i18n';
 import type { Challenge } from '../utils/types';
 
 interface ChallengeCardProps {
@@ -25,13 +26,13 @@ function getVerificationInfo(level: Challenge['verificationLevel']): {
 } {
   switch (level) {
     case 'honor':
-      return { icon: 'hand-left-outline', label: 'Honor', color: THEME.accent };
+      return { icon: 'hand-left-outline', label: S.components.challengeCard.verificationHonor, color: THEME.accent };
     case 'video':
-      return { icon: 'videocam-outline', label: 'Video', color: THEME.warning };
+      return { icon: 'videocam-outline', label: S.components.challengeCard.verificationVideo, color: THEME.warning };
     case 'sensor':
-      return { icon: 'hardware-chip-outline', label: 'Sensor', color: THEME.danger };
+      return { icon: 'hardware-chip-outline', label: S.components.challengeCard.verificationSensor, color: THEME.danger };
     default:
-      return { icon: 'shield-outline', label: 'Unknown', color: THEME.textSecondary };
+      return { icon: 'shield-outline', label: S.components.challengeCard.verificationUnknown, color: THEME.textSecondary };
   }
 }
 
@@ -75,7 +76,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
             {challenge.template}
           </Text>
           <Text style={styles.creatorText}>
-            by {challenge.creatorUsername}
+            {t(S.components.challengeCard.by, { username: challenge.creatorUsername })}
           </Text>
         </View>
       </View>
@@ -107,7 +108,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
         <View style={styles.completionsContainer}>
           <Ionicons name="checkmark-circle-outline" size={13} color={THEME.textSecondary} />
           <Text style={styles.completionsText}>
-            {completions} done
+            {t(S.components.challengeCard.completionsDone, { count: completions })}
           </Text>
         </View>
 

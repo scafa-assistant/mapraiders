@@ -16,6 +16,7 @@ import * as Location from 'expo-location';
 import { defenseApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { DefenseSetupScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 // ─── Game Type Definitions ──────────────────────────────────────────────────
 
@@ -33,57 +34,57 @@ interface GameTypeCard {
 const GAME_TYPES: GameTypeCard[] = [
   {
     id: 'rock_paper_scissors',
-    name: 'Schnick Schnack Schnuck',
+    name: S.map.defenseSetup.rpsName,
     icon: 'hand-left-outline',
-    description: 'Wähle einen geheimen Zug. Herausforderer wählt seinen — Klassiker!',
+    description: S.map.defenseSetup.rpsDesc,
     color: '#7B61FF',
     category: 'instant',
   },
   {
     id: 'coin_flip',
-    name: 'Münzwurf',
+    name: S.map.defenseSetup.coinFlipName,
     icon: 'ellipse-outline',
-    description: 'Setze auf Kopf oder Zahl. 50/50 Glücksspiel!',
+    description: S.map.defenseSetup.coinFlipDesc,
     color: '#FFB800',
     category: 'instant',
   },
   {
     id: 'odd_even',
-    name: 'Gerade oder Ungerade',
+    name: S.map.defenseSetup.oddEvenName,
     icon: 'finger-print-outline',
-    description: 'Finger-Poker! Zeig 1-5 Finger, die Summe entscheidet.',
+    description: S.map.defenseSetup.oddEvenDesc,
     color: '#FF69B4',
     category: 'instant',
   },
   {
     id: 'sprint_race',
-    name: 'Sprint Race',
+    name: S.map.defenseSetup.sprintName,
     icon: 'speedometer-outline',
-    description: 'Setze eine Benchmark-Zeit. Herausforderer muss schneller sein!',
+    description: S.map.defenseSetup.sprintDesc,
     color: '#00FF88',
     category: 'instant',
   },
   {
     id: 'trivia',
-    name: 'Trivia',
+    name: S.map.defenseSetup.triviaName,
     icon: 'help-circle-outline',
-    description: 'Stelle eine Frage. Herausforderer muss richtig antworten!',
+    description: S.map.defenseSetup.triviaDesc,
     color: '#00D4FF',
     category: 'instant',
   },
   {
     id: 'tic_tac_toe',
-    name: 'Tic Tac Toe',
+    name: S.map.defenseSetup.tttName,
     icon: 'grid-outline',
-    description: 'Klassisches 3×3 Strategiespiel. 2h pro Zug. Bei Unentschieden behältst du!',
+    description: S.map.defenseSetup.tttDesc,
     color: '#00D4FF',
     category: 'strategy',
   },
   {
     id: 'mini_chess',
-    name: 'Mini-Schach 5×5',
+    name: S.map.defenseSetup.chessName,
     icon: 'trophy-outline',
-    description: 'König, Turm, Läufer, 3 Bauern. 4h pro Zug. Das ultimative Duell!',
+    description: S.map.defenseSetup.chessDesc,
     color: '#FFB800',
     category: 'strategy',
   },
@@ -170,7 +171,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
   const startBenchmark = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'GPS permission is needed for the sprint benchmark.');
+      Alert.alert(S.map.defenseSetup.permissionDeniedTitle, S.map.defenseSetup.gpsNeededBenchmark);
       return;
     }
 
@@ -228,35 +229,35 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const handleActivate = async () => {
     if (!selectedGame) {
-      Alert.alert('Select a Game', 'Choose a defense game type first.');
+      Alert.alert(S.map.defenseSetup.selectGameTitle, S.map.defenseSetup.selectGameMsg);
       return;
     }
 
     // Validate per game type
     if (selectedGame === 'rock_paper_scissors' && !rpsChoice) {
-      Alert.alert('Choose Your Move', 'Select Rock, Scissors, or Paper as your secret move.');
+      Alert.alert(S.map.defenseSetup.chooseMoveTitle, S.map.defenseSetup.chooseMoveMsg);
       return;
     }
     if (selectedGame === 'sprint_race' && benchmarkTime === null) {
-      Alert.alert('Set Benchmark', 'Run the sprint to set your benchmark time first.');
+      Alert.alert(S.map.defenseSetup.setBenchmarkTitle, S.map.defenseSetup.setBenchmarkMsg);
       return;
     }
     if (selectedGame === 'trivia') {
       if (!triviaQuestion.trim()) {
-        Alert.alert('Missing Question', 'Enter a trivia question.');
+        Alert.alert(S.map.defenseSetup.missingQuestionTitle, S.map.defenseSetup.missingQuestionMsg);
         return;
       }
       if (!triviaAnswer.trim()) {
-        Alert.alert('Missing Answer', 'Enter the correct answer.');
+        Alert.alert(S.map.defenseSetup.missingAnswerTitle, S.map.defenseSetup.missingAnswerMsg);
         return;
       }
     }
     if (selectedGame === 'coin_flip' && !coinBet) {
-      Alert.alert('Wette fehlt', 'Wähle Kopf oder Zahl.');
+      Alert.alert(S.map.defenseSetup.missingBetTitle, S.map.defenseSetup.missingBetMsg);
       return;
     }
     if (selectedGame === 'odd_even' && !oddEvenPick) {
-      Alert.alert('Wahl fehlt', 'Wähle Gerade oder Ungerade.');
+      Alert.alert(S.map.defenseSetup.missingPickTitle, S.map.defenseSetup.missingPickMsg);
       return;
     }
 
@@ -295,11 +296,11 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         benchmark,
       });
 
-      Alert.alert('Defense Activated!', 'Your territory is now defended. Challengers beware!', [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      Alert.alert(S.map.defenseSetup.defenseActivatedTitle, S.map.defenseSetup.defenseActivatedMsg, [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to activate defense.');
+      Alert.alert(S.common.error, err.message || S.map.defenseSetup.activateFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -309,15 +310,15 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const renderRpsConfig = () => {
     const moves: { choice: RpsChoice; label: string; emoji: string; color: string; scale: Animated.Value }[] = [
-      { choice: 'rock', label: 'Rock', emoji: '🪨', color: '#8892B0', scale: rpsScaleRock },
-      { choice: 'scissors', label: 'Scissors', emoji: '✂️', color: '#FF4757', scale: rpsScaleScissors },
-      { choice: 'paper', label: 'Paper', emoji: '📄', color: '#00D4FF', scale: rpsScalePaper },
+      { choice: 'rock', label: S.map.defenseSetup.rock, emoji: '🪨', color: '#8892B0', scale: rpsScaleRock },
+      { choice: 'scissors', label: S.map.defenseSetup.scissors, emoji: '✂️', color: '#FF4757', scale: rpsScaleScissors },
+      { choice: 'paper', label: S.map.defenseSetup.paper, emoji: '📄', color: '#00D4FF', scale: rpsScalePaper },
     ];
 
     return (
       <View style={styles.configSection}>
-        <Text style={styles.configTitle}>Choose Your Secret Move</Text>
-        <Text style={styles.configHint}>Your move is secret — the challenger won't see it!</Text>
+        <Text style={styles.configTitle}>{S.map.defenseSetup.rpsConfigTitle}</Text>
+        <Text style={styles.configHint}>{S.map.defenseSetup.rpsConfigHint}</Text>
 
         <View style={styles.rpsRow}>
           {moves.map((m) => (
@@ -345,7 +346,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
           ))}
         </View>
 
-        <Text style={styles.configSubtitle}>Rounds</Text>
+        <Text style={styles.configSubtitle}>{S.map.defenseSetup.roundsTitle}</Text>
         <View style={styles.roundsRow}>
           {([1, 3] as const).map((r) => (
             <TouchableOpacity
@@ -362,7 +363,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
                   rpsRounds === r && styles.roundButtonTextActive,
                 ]}
               >
-                {r === 1 ? 'Single Round' : 'Best of 3'}
+                {r === 1 ? S.map.defenseSetup.singleRound : S.map.defenseSetup.bestOf3}
               </Text>
             </TouchableOpacity>
           ))}
@@ -377,7 +378,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
     return (
       <View style={styles.configSection}>
-        <Text style={styles.configTitle}>Sprint Distance</Text>
+        <Text style={styles.configTitle}>{S.map.defenseSetup.sprintDistanceTitle}</Text>
         <View style={styles.distanceRow}>
           {SPRINT_DISTANCES.map((d) => (
             <TouchableOpacity
@@ -402,14 +403,14 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
           ))}
         </View>
 
-        <Text style={styles.configSubtitle}>Your Benchmark</Text>
-        <Text style={styles.configHint}>Challengers must beat your time!</Text>
+        <Text style={styles.configSubtitle}>{S.map.defenseSetup.yourBenchmark}</Text>
+        <Text style={styles.configHint}>{S.map.defenseSetup.benchmarkHint}</Text>
 
         {benchmarkTime !== null ? (
           <View style={styles.benchmarkResult}>
             <Ionicons name="checkmark-circle" size={28} color="#00FF88" />
             <Text style={styles.benchmarkTimeText}>{benchmarkTime}s</Text>
-            <Text style={styles.benchmarkLabel}>over {sprintDistance}m</Text>
+            <Text style={styles.benchmarkLabel}>{t(S.map.defenseSetup.overDistance, { distance: sprintDistance })}</Text>
             <TouchableOpacity
               style={styles.rerunButton}
               onPress={() => {
@@ -418,7 +419,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
               }}
             >
               <Ionicons name="refresh" size={16} color={THEME.primary} />
-              <Text style={styles.rerunText}>Redo</Text>
+              <Text style={styles.rerunText}>{S.map.defenseSetup.redo}</Text>
             </TouchableOpacity>
           </View>
         ) : isBenchmarking ? (
@@ -439,13 +440,13 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
               {Math.round(benchmarkDistanceCovered)}m / {sprintDistance}m
             </Text>
             <TouchableOpacity style={styles.cancelBenchmarkBtn} onPress={cancelBenchmark}>
-              <Text style={styles.cancelBenchmarkText}>Cancel</Text>
+              <Text style={styles.cancelBenchmarkText}>{S.common.cancel}</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity style={styles.startBenchmarkBtn} onPress={startBenchmark}>
             <Ionicons name="play" size={22} color="#0A0E17" />
-            <Text style={styles.startBenchmarkText}>Set Your Benchmark</Text>
+            <Text style={styles.startBenchmarkText}>{S.map.defenseSetup.setYourBenchmark}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -454,12 +455,12 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const renderTriviaConfig = () => (
     <View style={styles.configSection}>
-      <Text style={styles.configTitle}>Deine Frage</Text>
-      <Text style={styles.configHint}>Herausforderer muss richtig antworten!</Text>
+      <Text style={styles.configTitle}>{S.map.defenseSetup.triviaConfigTitle}</Text>
+      <Text style={styles.configHint}>{S.map.defenseSetup.triviaConfigHint}</Text>
 
       <TextInput
         style={styles.triviaInput}
-        placeholder="Trivia-Frage eingeben..."
+        placeholder={S.map.defenseSetup.questionPlaceholder}
         placeholderTextColor={THEME.textSecondary}
         value={triviaQuestion}
         onChangeText={setTriviaQuestion}
@@ -467,10 +468,10 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         maxLength={200}
       />
 
-      <Text style={styles.configSubtitle}>Richtige Antwort</Text>
+      <Text style={styles.configSubtitle}>{S.map.defenseSetup.correctAnswerTitle}</Text>
       <TextInput
         style={[styles.triviaInput, { height: 48 }]}
-        placeholder="Korrekte Antwort eingeben..."
+        placeholder={S.map.defenseSetup.correctAnswerPlaceholder}
         placeholderTextColor={THEME.textSecondary}
         value={triviaAnswer}
         onChangeText={setTriviaAnswer}
@@ -481,8 +482,8 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const renderCoinFlipConfig = () => (
     <View style={styles.configSection}>
-      <Text style={styles.configTitle}>Deine Wette</Text>
-      <Text style={styles.configHint}>Setze auf Kopf oder Zahl. Der Herausforderer wirft!</Text>
+      <Text style={styles.configTitle}>{S.map.defenseSetup.coinConfigTitle}</Text>
+      <Text style={styles.configHint}>{S.map.defenseSetup.coinConfigHint}</Text>
 
       <View style={styles.rpsRow}>
         {(['heads', 'tails'] as const).map((bet) => (
@@ -499,7 +500,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
           >
             <Text style={styles.rpsEmoji}>{bet === 'heads' ? '👑' : '🔢'}</Text>
             <Text style={[styles.rpsLabel, coinBet === bet && { color: '#FFB800' }]}>
-              {bet === 'heads' ? 'Kopf' : 'Zahl'}
+              {bet === 'heads' ? S.map.defenseSetup.heads : S.map.defenseSetup.tails}
             </Text>
           </TouchableOpacity>
         ))}
@@ -509,9 +510,9 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const renderOddEvenConfig = () => (
     <View style={styles.configSection}>
-      <Text style={styles.configTitle}>Gerade oder Ungerade?</Text>
+      <Text style={styles.configTitle}>{S.map.defenseSetup.oddEvenConfigTitle}</Text>
       <Text style={styles.configHint}>
-        Wähle gerade/ungerade und deine Fingeranzahl. Die Summe beider Spieler entscheidet!
+        {S.map.defenseSetup.oddEvenConfigHint}
       </Text>
 
       <View style={styles.roundsRow}>
@@ -525,13 +526,13 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             onPress={() => setOddEvenPick(pick)}
           >
             <Text style={[styles.roundButtonText, oddEvenPick === pick && { color: '#FF69B4' }]}>
-              {pick === 'odd' ? 'Ungerade' : 'Gerade'}
+              {pick === 'odd' ? S.map.defenseSetup.odd : S.map.defenseSetup.even}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <Text style={styles.configSubtitle}>Deine Finger (1-5)</Text>
+      <Text style={styles.configSubtitle}>{S.map.defenseSetup.yourFingers}</Text>
       <View style={styles.distanceRow}>
         {[1, 2, 3, 4, 5].map((n) => (
           <TouchableOpacity
@@ -555,18 +556,16 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
     const isTTT = gameType === 'tic_tac_toe';
     return (
       <View style={styles.configSection}>
-        <Text style={styles.configTitle}>{isTTT ? 'Tic Tac Toe' : 'Mini-Schach 5×5'}</Text>
+        <Text style={styles.configTitle}>{isTTT ? S.map.defenseSetup.tttName : S.map.defenseSetup.chessName}</Text>
         <Text style={styles.configHint}>
-          {isTTT
-            ? 'Zugbasiertes Strategiespiel. Du spielst X (erster Zug). 2 Stunden pro Zug. Bei Unentschieden behältst du das Territorium!'
-            : 'König, Turm, Läufer und 3 Bauern auf einem 5×5 Brett. Du spielst Weiß (erster Zug). 4 Stunden pro Zug.'}
+          {isTTT ? S.map.defenseSetup.tttConfigHint : S.map.defenseSetup.chessConfigHint}
         </Text>
 
         <View style={[styles.rpsRow, { justifyContent: 'center' }]}>
           <View style={[styles.rpsButton, { width: 260, height: 80, borderColor: isTTT ? '#00D4FF' : '#FFB800', backgroundColor: isTTT ? 'rgba(0, 212, 255, 0.08)' : 'rgba(255, 184, 0, 0.08)' }]}>
             <Text style={[styles.rpsEmoji, { fontSize: 28 }]}>{isTTT ? '❌⭕' : '♔♚'}</Text>
             <Text style={[styles.rpsLabel, { color: isTTT ? '#00D4FF' : '#FFB800' }]}>
-              {isTTT ? '2h pro Zug · 5-9 Züge' : '4h pro Zug · 1-3 Tage'}
+              {isTTT ? S.map.defenseSetup.tttTiming : S.map.defenseSetup.chessTiming}
             </Text>
           </View>
         </View>
@@ -581,7 +580,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Defend Your Territory</Text>
+        <Text style={styles.headerTitle}>{S.map.defenseSetup.headerTitle}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -591,7 +590,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         contentContainerStyle={styles.scrollContent}
       >
         {/* Instant Games */}
-        <Text style={styles.sectionHeader}>Sofort-Spiele</Text>
+        <Text style={styles.sectionHeader}>{S.map.defenseSetup.instantGames}</Text>
         <View style={styles.gameGrid}>
           {GAME_TYPES.filter((g) => g.category === 'instant').map((game) => (
             <TouchableOpacity
@@ -637,7 +636,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         </View>
 
         {/* Strategy Games */}
-        <Text style={styles.sectionHeader}>Strategie-Spiele (Zugbasiert)</Text>
+        <Text style={styles.sectionHeader}>{S.map.defenseSetup.strategyGames}</Text>
         <View style={styles.gameGrid}>
           {GAME_TYPES.filter((g) => g.category === 'strategy').map((game) => (
             <TouchableOpacity
@@ -704,7 +703,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             ) : (
               <>
                 <Ionicons name="shield-checkmark" size={22} color="#0A0E17" />
-                <Text style={styles.activateBtnText}>ACTIVATE DEFENSE</Text>
+                <Text style={styles.activateBtnText}>{S.map.defenseSetup.activateDefenseBtn}</Text>
               </>
             )}
           </TouchableOpacity>

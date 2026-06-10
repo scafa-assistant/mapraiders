@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { artifactApi } from '../../services/api';
 import { ArtifactDetailScreenProps } from '../../navigation/types';
+import { strings as S, t, plural } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -27,10 +28,10 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 const RARITY_LABELS: Record<string, string> = {
-  common: 'Common',
-  rare: 'Rare',
-  epic: 'Epic',
-  legendary: 'Legendary',
+  common: S.map.artifactDetail.rarityCommon,
+  rare: S.map.artifactDetail.rarityRare,
+  epic: S.map.artifactDetail.rarityEpic,
+  legendary: S.map.artifactDetail.rarityLegendary,
 };
 
 const PERMANENCE_THRESHOLD = 50;
@@ -79,7 +80,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
         prev ? { ...prev, voted: true, votes: prev.votes + 1 } : prev
       );
     } catch (_err) {
-      Alert.alert('Error', 'Failed to vote. Please try again.');
+      Alert.alert(S.common.error, S.map.artifactDetail.voteFailed);
     } finally {
       setVoting(false);
     }
@@ -97,9 +98,9 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <Ionicons name="alert-circle" size={48} color="#FF4757" />
-        <Text style={styles.errorText}>Artifact not found</Text>
+        <Text style={styles.errorText}>{S.map.artifactDetail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
-          <Text style={styles.backLinkText}>Go back</Text>
+          <Text style={styles.backLinkText}>{S.map.artifactDetail.goBack}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -117,7 +118,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#8892B0" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Artifact</Text>
+          <Text style={styles.headerTitle}>{S.map.artifactDetail.headerTitle}</Text>
           <View style={{ width: 24 }} />
         </View>
 
@@ -154,7 +155,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
             {artifact.permanent && (
               <View style={styles.permanentBadge}>
                 <Ionicons name="shield-checkmark" size={14} color="#00FF88" />
-                <Text style={styles.permanentBadgeText}>Permanent</Text>
+                <Text style={styles.permanentBadgeText}>{S.map.artifactDetail.permanentBadge}</Text>
               </View>
             )}
           </View>
@@ -164,7 +165,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
           {/* Creator Info */}
           <View style={styles.creatorRow}>
             <Ionicons name="person-circle-outline" size={18} color="#8892B0" />
-            <Text style={styles.creatorText}>Created by {artifact.creatorUsername}</Text>
+            <Text style={styles.creatorText}>{t(S.map.artifactDetail.createdBy, { username: artifact.creatorUsername })}</Text>
           </View>
           <View style={styles.creatorRow}>
             <Ionicons name="calendar-outline" size={16} color="#8892B0" />
@@ -176,11 +177,11 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
 
         {/* Permanence Progress */}
         <View style={styles.permanenceSection}>
-          <Text style={styles.sectionTitle}>PERMANENCE</Text>
+          <Text style={styles.sectionTitle}>{S.map.artifactDetail.permanenceTitle}</Text>
           <View style={styles.permanenceCard}>
             <View style={styles.permanenceHeader}>
               <Text style={styles.permanenceVotes}>
-                {artifact.votes} / {PERMANENCE_THRESHOLD} votes
+                {t(S.map.artifactDetail.votesCount, { votes: artifact.votes, threshold: PERMANENCE_THRESHOLD })}
               </Text>
               <Text style={styles.permanencePercent}>
                 {Math.round(permanenceProgress * 100)}%
@@ -199,11 +200,15 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
             </View>
             {artifact.permanent ? (
               <Text style={styles.permanenceStatus}>
-                This artifact has been made permanent by the community!
+                {S.map.artifactDetail.madePermanent}
               </Text>
             ) : (
               <Text style={styles.permanenceStatus}>
-                {PERMANENCE_THRESHOLD - artifact.votes} more votes needed for permanence
+                {plural(
+                  PERMANENCE_THRESHOLD - artifact.votes,
+                  S.map.artifactDetail.votesNeededOne,
+                  S.map.artifactDetail.votesNeededOther
+                )}
               </Text>
             )}
           </View>
@@ -237,7 +242,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
                       artifact.voted && styles.voteButtonTextVoted,
                     ]}
                   >
-                    {artifact.voted ? 'VOTED' : 'VOTE FOR PERMANENCE'}
+                    {artifact.voted ? S.map.artifactDetail.voted : S.map.artifactDetail.voteForPermanence}
                   </Text>
                 </>
               )}
@@ -247,7 +252,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
 
         {/* Mini Map */}
         <View style={styles.mapSection}>
-          <Text style={styles.sectionTitle}>LOCATION</Text>
+          <Text style={styles.sectionTitle}>{S.map.artifactDetail.locationTitle}</Text>
           <View style={styles.mapContainer}>
             <MapView
               style={styles.mapPreview}

@@ -14,6 +14,7 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { travelApi } from '../../services/api';
+import { strings as S, t } from '../../i18n';
 import { TravelRouteDetailScreenProps } from '../../navigation/types';
 import { TravelRoute, TravelSpot } from '../../utils/types';
 
@@ -70,9 +71,9 @@ export default function TravelRouteDetailScreen({
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <Ionicons name="alert-circle" size={48} color="#FF4757" />
-        <Text style={styles.errorText}>Route not found</Text>
+        <Text style={styles.errorText}>{S.travel.detail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
-          <Text style={styles.backLinkText}>Go back</Text>
+          <Text style={styles.backLinkText}>{S.travel.detail.goBack}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -168,7 +169,7 @@ export default function TravelRouteDetailScreen({
             ))}
           </MapView>
           <View style={styles.mapOverlay}>
-            <Text style={styles.mapOverlayText}>{spots.length} spots</Text>
+            <Text style={styles.mapOverlayText}>{t(S.travel.detail.spotsCount, { count: spots.length })}</Text>
           </View>
         </View>
 
@@ -189,7 +190,7 @@ export default function TravelRouteDetailScreen({
           <View style={styles.routeStats}>
             <View style={styles.routeStat}>
               <Ionicons name="location" size={16} color="#8892B0" />
-              <Text style={styles.routeStatText}>{spots.length} spots</Text>
+              <Text style={styles.routeStatText}>{t(S.travel.detail.spotsCount, { count: spots.length })}</Text>
             </View>
             <View style={styles.routeStat}>
               <Ionicons name="navigate" size={16} color="#8892B0" />
@@ -200,7 +201,7 @@ export default function TravelRouteDetailScreen({
             <View style={styles.routeStat}>
               <Ionicons name="checkmark-done" size={16} color="#8892B0" />
               <Text style={styles.routeStatText}>
-                {travelRoute.completions ?? 0} done
+                {t(S.travel.detail.completionsDone, { count: travelRoute.completions ?? 0 })}
               </Text>
             </View>
           </View>
@@ -209,13 +210,13 @@ export default function TravelRouteDetailScreen({
 
           <View style={styles.creatorRow}>
             <Ionicons name="person-circle-outline" size={18} color="#8892B0" />
-            <Text style={styles.creatorText}>by {travelRoute.creatorUsername}</Text>
+            <Text style={styles.creatorText}>{t(S.travel.detail.by, { username: travelRoute.creatorUsername })}</Text>
           </View>
         </View>
 
         {/* Spots List */}
         <View style={styles.spotsSection}>
-          <Text style={styles.sectionTitle}>SPOTS</Text>
+          <Text style={styles.sectionTitle}>{S.travel.detail.spotsLabel}</Text>
           {spots.map((spot, index) => (
             <View key={spot.id} style={styles.spotCard}>
               <View style={styles.spotNumber}>
@@ -248,7 +249,7 @@ export default function TravelRouteDetailScreen({
           activeOpacity={0.8}
         >
           <Ionicons name="play" size={22} color="#0A0E17" />
-          <Text style={styles.startButtonText}>START ROUTE</Text>
+          <Text style={styles.startButtonText}>{S.travel.detail.startRoute}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

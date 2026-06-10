@@ -16,6 +16,7 @@ import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { clanApi } from '../../services/api';
 import { formatArea, formatNumber } from '../../utils/formatters';
 import { useAuthStore } from '../../store/authStore';
+import { strings as S, t } from '../../i18n';
 import type { ClanScreenProps } from '../../navigation/types';
 import type { Clan } from '../../utils/types';
 
@@ -112,55 +113,55 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
   // ─── Leader Actions ──────────────────────────────────────────
   const handleGearPress = () => {
     if (!manualClan) return;
-    Alert.alert('Clan Optionen', undefined, [
+    Alert.alert(S.profile.clan.optionsTitle, undefined, [
       {
-        text: 'Umbenennen',
+        text: S.profile.clan.rename,
         onPress: () => {
-          Alert.prompt?.('Neuer Name', 'Gib den neuen Clan-Namen ein', (newName: string) => {
+          Alert.prompt?.(S.profile.clan.renameTitle, S.profile.clan.renamePrompt, (newName: string) => {
             if (newName && newName.trim().length >= 3) {
               clanApi.update(manualClan.id, { name: newName.trim() }).then(fetchData).catch(() =>
-                Alert.alert('Fehler', 'Name konnte nicht geandert werden.')
+                Alert.alert(S.common.error, S.profile.clan.renameFailed)
               );
             }
           }) ??
-            Alert.alert('Info', 'Umbenennen ist auf diesem Gerat nicht verfugbar.');
+            Alert.alert(S.profile.clan.infoTitle, S.profile.clan.renameUnavailable);
         },
       },
       {
-        text: 'Beschreibung andern',
+        text: S.profile.clan.editDescription,
         onPress: () => {
-          Alert.prompt?.('Beschreibung', 'Neue Beschreibung', (desc: string) => {
+          Alert.prompt?.(S.profile.clan.descriptionTitle, S.profile.clan.descriptionPrompt, (desc: string) => {
             clanApi.update(manualClan.id, { description: desc.trim() }).then(fetchData).catch(() =>
-              Alert.alert('Fehler', 'Konnte nicht geandert werden.')
+              Alert.alert(S.common.error, S.profile.clan.updateFailed)
             );
           }) ??
-            Alert.alert('Info', 'Bearbeitung ist auf diesem Gerat nicht verfugbar.');
+            Alert.alert(S.profile.clan.infoTitle, S.profile.clan.editUnavailable);
         },
       },
       {
-        text: manualClan.privacy === 'private' ? 'Offentlich machen' : 'Privat machen',
+        text: manualClan.privacy === 'private' ? S.profile.clan.makePublic : S.profile.clan.makePrivate,
         onPress: () => {
           const newPrivacy = manualClan.privacy === 'private' ? 'public' : 'private';
           clanApi.update(manualClan.id, { privacy: newPrivacy }).then(fetchData).catch(() =>
-            Alert.alert('Fehler', 'Sichtbarkeit konnte nicht geandert werden.')
+            Alert.alert(S.common.error, S.profile.clan.privacyChangeFailed)
           );
         },
       },
       {
-        text: 'Clan auflosen',
+        text: S.profile.clan.disband,
         style: 'destructive',
         onPress: () => {
           Alert.alert(
-            'Clan auflosen?',
-            'Diese Aktion kann nicht ruckgangig gemacht werden!',
+            S.profile.clan.disbandConfirmTitle,
+            S.profile.clan.disbandConfirmMessage,
             [
-              { text: 'Abbrechen', style: 'cancel' },
+              { text: S.common.cancel, style: 'cancel' },
               {
-                text: 'Auflosen',
+                text: S.profile.clan.disbandConfirmButton,
                 style: 'destructive',
                 onPress: () => {
                   clanApi.disband(manualClan.id).then(fetchData).catch(() =>
-                    Alert.alert('Fehler', 'Clan konnte nicht aufgelost werden.')
+                    Alert.alert(S.common.error, S.profile.clan.disbandFailed)
                   );
                 },
               },
@@ -168,7 +169,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           );
         },
       },
-      { text: 'Abbrechen', style: 'cancel' },
+      { text: S.common.cancel, style: 'cancel' },
     ]);
   };
 
@@ -180,61 +181,61 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
 
     if (member.rank === 'member') {
       options.push({
-        text: 'Zum Officer befordern',
+        text: S.profile.clan.promoteToOfficer,
         onPress: () =>
           clanApi.setRole(manualClan.id, member.userId, 'officer').then(fetchData).catch(() =>
-            Alert.alert('Fehler', 'Rolle konnte nicht geandert werden.')
+            Alert.alert(S.common.error, S.profile.clan.roleChangeFailed)
           ),
       });
     }
     if (member.rank === 'officer') {
       options.push({
-        text: 'Zum Member degradieren',
+        text: S.profile.clan.demoteToMember,
         onPress: () =>
           clanApi.setRole(manualClan.id, member.userId, 'member').then(fetchData).catch(() =>
-            Alert.alert('Fehler', 'Rolle konnte nicht geandert werden.')
+            Alert.alert(S.common.error, S.profile.clan.roleChangeFailed)
           ),
       });
     }
     options.push({
-      text: 'Kicken',
+      text: S.profile.clan.kick,
       style: 'destructive',
       onPress: () => {
         Alert.alert(
-          'Spieler kicken?',
-          `${member.username} aus dem Clan entfernen?`,
+          S.profile.clan.kickConfirmTitle,
+          t(S.profile.clan.kickConfirmMessage, { username: member.username }),
           [
-            { text: 'Abbrechen', style: 'cancel' },
+            { text: S.common.cancel, style: 'cancel' },
             {
-              text: 'Kicken',
+              text: S.profile.clan.kick,
               style: 'destructive',
               onPress: () =>
                 clanApi.kickMember(manualClan.id, member.userId).then(fetchData).catch(() =>
-                  Alert.alert('Fehler', 'Spieler konnte nicht entfernt werden.')
+                  Alert.alert(S.common.error, S.profile.clan.kickFailed)
                 ),
             },
           ]
         );
       },
     });
-    options.push({ text: 'Abbrechen', style: 'cancel' });
+    options.push({ text: S.common.cancel, style: 'cancel' });
 
-    Alert.alert(member.username, 'Aktion wahlen', options);
+    Alert.alert(member.username, S.profile.clan.chooseAction, options);
   };
 
   const handleLeave = () => {
     if (!manualClan) return;
     Alert.alert(
-      'Clan verlassen?',
-      'Mochtest du diesen Clan wirklich verlassen?',
+      S.profile.clan.leaveConfirmTitle,
+      S.profile.clan.leaveConfirmMessage,
       [
-        { text: 'Abbrechen', style: 'cancel' },
+        { text: S.common.cancel, style: 'cancel' },
         {
-          text: 'Verlassen',
+          text: S.profile.clan.leaveConfirmButton,
           style: 'destructive',
           onPress: () => {
             clanApi.leave(manualClan.id).then(fetchData).catch(() =>
-              Alert.alert('Fehler', 'Clan konnte nicht verlassen werden.')
+              Alert.alert(S.common.error, S.profile.clan.leaveFailed)
             );
           },
         },
@@ -254,7 +255,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
     const avatarUrl = getAvatarUrl(item);
     const isMe = item.userId === user?.id;
     const rankLabel =
-      item.rank === 'leader' ? 'Leader' : item.rank === 'officer' ? 'Officer' : '';
+      item.rank === 'leader' ? S.profile.clan.rankLeader : item.rank === 'officer' ? S.profile.clan.rankOfficer : '';
     const rankColor =
       item.rank === 'leader' ? '#FFB800' : item.rank === 'officer' ? '#8892B0' : 'transparent';
     const rankIcon: keyof typeof Ionicons.glyphMap =
@@ -290,10 +291,10 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
         <View style={styles.memberInfo}>
           <Text style={styles.memberName} numberOfLines={1}>
             {item.username}
-            {isMe ? ' (Du)' : ''}
+            {isMe ? ` ${S.profile.clan.youSuffix}` : ''}
           </Text>
           {item.level != null && (
-            <Text style={styles.memberLevel}>Level {item.level}</Text>
+            <Text style={styles.memberLevel}>{t(S.profile.clan.levelLabel, { level: item.level })}</Text>
           )}
         </View>
 
@@ -314,9 +315,9 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
       <View style={styles.noClanIconCircle}>
         <Ionicons name="shield-outline" size={56} color="#1E293B" />
       </View>
-      <Text style={styles.noClanTitle}>Kein Clan</Text>
+      <Text style={styles.noClanTitle}>{S.profile.clan.noClanTitle}</Text>
       <Text style={styles.noClanSubtext}>
-        Erstelle deinen eigenen Clan oder tritt einem bestehenden bei.
+        {S.profile.clan.noClanSubtext}
       </Text>
 
       <TouchableOpacity
@@ -325,16 +326,16 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
         activeOpacity={0.8}
       >
         <Ionicons name="add-circle" size={22} color="#0A0E17" />
-        <Text style={styles.createClanBtnText}>Clan erstellen</Text>
+        <Text style={styles.createClanBtnText}>{S.profile.clan.createClan}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.searchClanBtn}
-        onPress={() => Alert.alert('Clan suchen', 'Diese Funktion kommt bald!')}
+        onPress={() => Alert.alert(S.profile.clan.searchClan, S.profile.clan.searchComingSoon)}
         activeOpacity={0.8}
       >
         <Ionicons name="search" size={20} color={THEME.primary} />
-        <Text style={styles.searchClanBtnText}>Clan suchen</Text>
+        <Text style={styles.searchClanBtnText}>{S.profile.clan.searchClan}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -373,7 +374,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
             <View style={styles.clanMetaItem}>
               <Ionicons name="people" size={14} color={THEME.textSecondary} />
               <Text style={styles.clanMetaText}>
-                {formatNumber(manualClan.memberCount ?? members.length)} Mitglieder
+                {t(S.profile.clan.membersCount, { count: formatNumber(manualClan.memberCount ?? members.length) })}
               </Text>
             </View>
             <View style={styles.clanMetaDot} />
@@ -384,7 +385,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
                 color={THEME.textSecondary}
               />
               <Text style={styles.clanMetaText}>
-                {isPrivate ? 'Privat' : 'Offentlich'}
+                {isPrivate ? S.profile.clan.private : S.profile.clan.public}
               </Text>
             </View>
           </View>
@@ -399,17 +400,17 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           <View style={styles.statBox}>
             <Ionicons name="people-outline" size={20} color={clanColor} />
             <Text style={styles.statValue}>{formatNumber(manualClan.memberCount ?? members.length)}</Text>
-            <Text style={styles.statLabel}>Mitglieder</Text>
+            <Text style={styles.statLabel}>{S.profile.clan.members}</Text>
           </View>
           <View style={styles.statBox}>
             <Ionicons name="resize-outline" size={20} color={THEME.accent} />
             <Text style={styles.statValue}>{formatArea(manualClan.totalArea)}</Text>
-            <Text style={styles.statLabel}>Gebiet</Text>
+            <Text style={styles.statLabel}>{S.profile.clan.territory}</Text>
           </View>
           <View style={styles.statBox}>
             <Ionicons name="trending-up-outline" size={20} color={THEME.warning} />
             <Text style={styles.statValue}>{manualClan.level}</Text>
-            <Text style={styles.statLabel}>Level</Text>
+            <Text style={styles.statLabel}>{S.profile.clan.level}</Text>
           </View>
         </View>
 
@@ -430,8 +431,8 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
               <Ionicons name="chatbubbles" size={20} color={THEME.primary} />
             </View>
             <View style={styles.actionBtnContent}>
-              <Text style={styles.actionBtnTitle}>Chat</Text>
-              <Text style={styles.actionBtnSubtitle}>Clan Nachrichten</Text>
+              <Text style={styles.actionBtnTitle}>{S.profile.clan.chat}</Text>
+              <Text style={styles.actionBtnSubtitle}>{S.profile.clan.chatSubtitle}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#1E293B" />
           </TouchableOpacity>
@@ -440,15 +441,15 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           {(isLeader || isOfficer) && (
             <TouchableOpacity
               style={styles.actionBtn}
-              onPress={() => Alert.alert('Einladung', 'Lade einen Freund per Link oder Suche ein.')}
+              onPress={() => Alert.alert(S.profile.clan.inviteTitle, S.profile.clan.inviteMessage)}
               activeOpacity={0.7}
             >
               <View style={[styles.actionIconCircle, { backgroundColor: `${THEME.accent}15` }]}>
                 <Ionicons name="person-add" size={20} color={THEME.accent} />
               </View>
               <View style={styles.actionBtnContent}>
-                <Text style={styles.actionBtnTitle}>Freund einladen</Text>
-                <Text style={styles.actionBtnSubtitle}>Spieler rekrutieren</Text>
+                <Text style={styles.actionBtnTitle}>{S.profile.clan.inviteFriend}</Text>
+                <Text style={styles.actionBtnSubtitle}>{S.profile.clan.inviteFriendSubtitle}</Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color="#1E293B" />
             </TouchableOpacity>
@@ -458,7 +459,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
         {/* Members Section Title */}
         <View style={styles.sectionHeaderRow}>
           <Ionicons name="people" size={18} color={clanColor} />
-          <Text style={styles.sectionTitle}>Mitglieder</Text>
+          <Text style={styles.sectionTitle}>{S.profile.clan.members}</Text>
           <Text style={styles.sectionCount}>{members.length}</Text>
         </View>
       </View>
@@ -472,10 +473,10 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
       <View style={styles.organicSection}>
         <View style={styles.sectionHeaderRow}>
           <Ionicons name="flash" size={18} color={THEME.warning} />
-          <Text style={styles.sectionTitle}>Organische Clans</Text>
+          <Text style={styles.sectionTitle}>{S.profile.clan.organicClans}</Text>
         </View>
         <Text style={styles.organicHint}>
-          Automatisch basierend auf deiner Aktivitat gebildet
+          {S.profile.clan.organicClansHint}
         </Text>
         {organicClans.map((clan) => (
           <TouchableOpacity
@@ -501,8 +502,8 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
               </View>
               <View style={styles.organicMeta}>
                 <Ionicons name="people-outline" size={12} color={THEME.textSecondary} />
-                <Text style={styles.organicMetaText}>{formatNumber(clan.memberCount)} Mitglieder</Text>
-                <Text style={styles.organicMetaText}>Lv.{clan.level}</Text>
+                <Text style={styles.organicMetaText}>{t(S.profile.clan.membersCount, { count: formatNumber(clan.memberCount) })}</Text>
+                <Text style={styles.organicMetaText}>{t(S.profile.clan.levelShort, { level: clan.level })}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#1E293B" />
@@ -519,14 +520,14 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
       {manualClan && !isLeader && (
         <TouchableOpacity style={styles.leaveBtn} onPress={handleLeave} activeOpacity={0.7}>
           <Ionicons name="exit-outline" size={18} color={THEME.danger} />
-          <Text style={styles.leaveBtnText}>Clan verlassen</Text>
+          <Text style={styles.leaveBtnText}>{S.profile.clan.leaveClan}</Text>
         </TouchableOpacity>
       )}
       {manualClan && isLeader && (
         <View style={styles.leaderHint}>
           <Ionicons name="information-circle-outline" size={14} color={THEME.textSecondary} />
           <Text style={styles.leaderHintText}>
-            Als Leader musst du den Clan auflosen oder die Fuhrung ubertragen.
+            {S.profile.clan.leaderHint}
           </Text>
         </View>
       )}
@@ -546,12 +547,12 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={THEME.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Mein Clan</Text>
+          <Text style={styles.headerTitle}>{S.profile.clan.title}</Text>
           <View style={styles.headerSpacer} />
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Lade Clan...</Text>
+          <Text style={styles.loadingText}>{S.profile.clan.loadingClan}</Text>
         </View>
       </SafeAreaView>
     );
@@ -565,7 +566,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Mein Clan</Text>
+        <Text style={styles.headerTitle}>{S.profile.clan.title}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -611,7 +612,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           ListEmptyComponent={
             <View style={styles.noMembersContainer}>
               <Ionicons name="people-outline" size={24} color="#1E293B" />
-              <Text style={styles.noMembersText}>Keine Mitglieder gefunden</Text>
+              <Text style={styles.noMembersText}>{S.profile.clan.noMembersFound}</Text>
             </View>
           }
         />

@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { playerApi, friendApi } from '../../services/api';
+import { strings as S, t, plural } from '../../i18n';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../../navigation/types';
 
@@ -149,7 +150,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
             </Text>
             <View style={styles.levelBadge}>
               <Ionicons name="star" size={10} color={THEME.warning} />
-              <Text style={styles.levelText}>Lv. {item.level ?? 1}</Text>
+              <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -162,7 +163,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
         ) : isSent ? (
           <View style={styles.sentBadge}>
             <Ionicons name="checkmark" size={14} color={THEME.textSecondary} />
-            <Text style={styles.sentText}>Angefragt</Text>
+            <Text style={styles.sentText}>{S.social.playerSearch.requested}</Text>
           </View>
         ) : (
           <TouchableOpacity
@@ -171,7 +172,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
             onPress={() => handleSendRequest(item)}
           >
             <Ionicons name="person-add" size={14} color="#0A0E17" />
-            <Text style={styles.addBtnText}>Hinzufugen</Text>
+            <Text style={styles.addBtnText}>{S.social.playerSearch.add}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -187,9 +188,9 @@ export default function PlayerSearchScreen({ navigation }: Props) {
           <View style={styles.emptyIconCircle}>
             <Ionicons name="search-outline" size={48} color={THEME.textSecondary} />
           </View>
-          <Text style={styles.emptyTitle}>Spieler suchen</Text>
+          <Text style={styles.emptyTitle}>{S.social.playerSearch.emptyInitialTitle}</Text>
           <Text style={styles.emptySubtitle}>
-            Gib einen Spielernamen ein{'\n'}(mindestens {MIN_CHARS} Zeichen)
+            {t(S.social.playerSearch.emptyInitialSubtitle, { count: MIN_CHARS })}
           </Text>
         </View>
       );
@@ -200,9 +201,9 @@ export default function PlayerSearchScreen({ navigation }: Props) {
         <View style={styles.emptyIconCircle}>
           <Ionicons name="sad-outline" size={48} color={THEME.textSecondary} />
         </View>
-        <Text style={styles.emptyTitle}>Keine Ergebnisse</Text>
+        <Text style={styles.emptyTitle}>{S.social.playerSearch.noResultsTitle}</Text>
         <Text style={styles.emptySubtitle}>
-          Kein Spieler mit "{query}" gefunden.{'\n'}Versuch einen anderen Namen.
+          {t(S.social.playerSearch.noResultsSubtitle, { query })}
         </Text>
       </View>
     );
@@ -218,7 +219,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
         >
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Spieler suchen</Text>
+        <Text style={styles.headerTitle}>{S.social.playerSearch.title}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -229,7 +230,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
           <TextInput
             ref={inputRef}
             style={styles.searchInput}
-            placeholder="Spielername eingeben..."
+            placeholder={S.social.playerSearch.placeholder}
             placeholderTextColor={THEME.textSecondary}
             value={query}
             onChangeText={handleChangeText}
@@ -253,7 +254,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
         </View>
         {query.length > 0 && query.length < MIN_CHARS && (
           <Text style={styles.hintText}>
-            Noch {MIN_CHARS - query.length} Zeichen...
+            {t(S.social.playerSearch.moreCharsHint, { count: MIN_CHARS - query.length })}
           </Text>
         )}
       </View>
@@ -261,7 +262,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
       {/* Results count */}
       {hasSearched && !loading && results.length > 0 && (
         <Text style={styles.countText}>
-          {results.length} {results.length === 1 ? 'Spieler' : 'Spieler'} gefunden
+          {plural(results.length, S.social.playerSearch.resultsCountOne, S.social.playerSearch.resultsCountOther)}
         </Text>
       )}
 
@@ -269,7 +270,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
       {loading && !hasSearched ? null : loading ? (
         <View style={styles.inlineLoading}>
           <ActivityIndicator size="small" color={THEME.primary} />
-          <Text style={styles.loadingText}>Suche...</Text>
+          <Text style={styles.loadingText}>{S.social.playerSearch.searching}</Text>
         </View>
       ) : null}
 

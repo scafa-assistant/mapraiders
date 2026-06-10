@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { LoginScreenProps } from '../../navigation/types';
 import { web3authService } from '../../services/web3auth';
+import { strings as S } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -29,11 +30,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   const handleLogin = async () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address.');
+      Alert.alert(S.common.error, S.auth.login.enterEmail);
       return;
     }
     if (!password) {
-      Alert.alert('Error', 'Please enter your password.');
+      Alert.alert(S.common.error, S.auth.login.enterPassword);
       return;
     }
     try {
@@ -53,7 +54,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         await web3Login(provider, result.idToken || 'google-native', result.userInfo);
       }
     } catch (err: any) {
-      Alert.alert('Login Error', err?.message || 'Social login failed');
+      Alert.alert(S.auth.login.loginErrorTitle, err?.message || S.auth.login.socialLoginFailed);
     } finally {
       setSocialLoading(null);
     }
@@ -61,7 +62,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   const handleEmailLink = async () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address first.');
+      Alert.alert(S.common.error, S.auth.login.enterEmailFirst);
       return;
     }
     setSocialLoading('email');
@@ -96,7 +97,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               <Ionicons name="grid" size={48} color="#00D4FF" />
             </View>
             <Text style={styles.title}>MAPRAIDERS</Text>
-            <Text style={styles.subtitle}>Claim the city. Own the grid.</Text>
+            <Text style={styles.subtitle}>{S.auth.login.tagline}</Text>
           </View>
 
           {/* Error Banner */}
@@ -123,7 +124,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               ) : (
                 <>
                   <Ionicons name="logo-google" size={20} color="#4285F4" style={styles.socialIcon} />
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                  <Text style={styles.googleButtonText}>{S.auth.login.continueWithGoogle}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -140,7 +141,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                 ) : (
                   <>
                     <Ionicons name="logo-apple" size={20} color="#FFFFFF" style={styles.socialIcon} />
-                    <Text style={styles.appleButtonText}>Continue with Apple</Text>
+                    <Text style={styles.appleButtonText}>{S.auth.login.continueWithApple}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -157,7 +158,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               ) : (
                 <>
                   <Ionicons name="mail-outline" size={20} color="#00D4FF" style={styles.socialIcon} />
-                  <Text style={styles.emailLinkButtonText}>Login with Email Link</Text>
+                  <Text style={styles.emailLinkButtonText}>{S.auth.login.loginWithEmailLink}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -166,7 +167,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           {/* OR Divider */}
           <View style={styles.dividerRow}>
             <View style={styles.divider} />
-            <Text style={styles.dividerText}>OR</Text>
+            <Text style={styles.dividerText}>{S.auth.login.or}</Text>
             <View style={styles.divider} />
           </View>
 
@@ -176,7 +177,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               <Ionicons name="mail-outline" size={20} color="#8892B0" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder={S.auth.login.emailPlaceholder}
                 placeholderTextColor="#555E78"
                 value={email}
                 onChangeText={setEmail}
@@ -196,7 +197,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Password"
+                placeholder={S.auth.login.passwordPlaceholder}
                 placeholderTextColor="#555E78"
                 value={password}
                 onChangeText={setPassword}
@@ -225,12 +226,12 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               {isLoading ? (
                 <ActivityIndicator color="#0A0E17" size="small" />
               ) : (
-                <Text style={styles.loginButtonText}>ENTER THE GRID</Text>
+                <Text style={styles.loginButtonText}>{S.auth.login.enterTheGrid}</Text>
               )}
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.forgotButton}>
-              <Text style={styles.forgotText}>Forgot password?</Text>
+              <Text style={styles.forgotText}>{S.auth.login.forgotPassword}</Text>
             </TouchableOpacity>
           </View>
 
@@ -238,7 +239,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           <View style={styles.footer}>
             <View style={styles.dividerRow}>
               <View style={styles.divider} />
-              <Text style={styles.dividerText}>NEW WALKER?</Text>
+              <Text style={styles.dividerText}>{S.auth.login.newWalker}</Text>
               <View style={styles.divider} />
             </View>
 
@@ -247,7 +248,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               onPress={() => navigation.navigate('Register')}
               activeOpacity={0.8}
             >
-              <Text style={styles.registerButtonText}>CREATE ACCOUNT</Text>
+              <Text style={styles.registerButtonText}>{S.auth.login.createAccount}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

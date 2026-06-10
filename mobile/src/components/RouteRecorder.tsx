@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE, CLASS_ICONS, CLASS_LABELS, CLASS_COLORS } from '../utils/constants';
+import { strings as S } from '../i18n';
 import { formatDistance, formatDuration } from '../utils/formatters';
 import type { MovementClass } from '../utils/types';
 
@@ -39,7 +40,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
 
   const classColor = CLASS_COLORS[detectedClass] ?? THEME.primary;
   const classIcon = (CLASS_ICONS[detectedClass] ?? 'walk-outline') as keyof typeof Ionicons.glyphMap;
-  const classLabel = CLASS_LABELS[detectedClass] ?? 'Unknown';
+  const classLabel = CLASS_LABELS[detectedClass] ?? S.components.classBadge.unknown;
 
   // Slide in animation
   useEffect(() => {
@@ -119,7 +120,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
           <Animated.View
             style={[styles.recordingDot, { opacity: recordingDotOpacity }]}
           />
-          <Text style={styles.recordingText}>RECORDING</Text>
+          <Text style={styles.recordingText}>{S.components.routeRecorder.recording}</Text>
         </View>
       )}
 
@@ -139,7 +140,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
           <View style={styles.statItem}>
             <Ionicons name="resize-outline" size={14} color={THEME.textSecondary} />
             <Text style={styles.statValue}>{formatDistance(distance)}</Text>
-            <Text style={styles.statLabel}>Distance</Text>
+            <Text style={styles.statLabel}>{S.components.routeRecorder.distance}</Text>
           </View>
 
           <View style={styles.statDivider} />
@@ -147,7 +148,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
           <View style={styles.statItem}>
             <Ionicons name="time-outline" size={14} color={THEME.textSecondary} />
             <Text style={styles.statValue}>{formatDuration(duration)}</Text>
-            <Text style={styles.statLabel}>Duration</Text>
+            <Text style={styles.statLabel}>{S.components.routeRecorder.duration}</Text>
           </View>
         </View>
 

@@ -28,6 +28,7 @@ import EchoMarker from '../../components/EchoMarker';
 import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
 import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
+import { strings as S, t, plural } from '../../i18n';
 
 const WEATHER_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   clear: 'sunny',
@@ -60,13 +61,13 @@ const CLASS_COLORS: Record<MovementClass, string> = {
 };
 
 const CLASS_LABELS: Record<MovementClass, string> = {
-  walker: 'Walker',
-  runner: 'Runner',
-  cyclist: 'Cyclist',
-  skater: 'Skater',
-  dog_walker: 'Dog Walker',
-  driver: 'Driver',
-  unknown: 'Detecting...',
+  walker: S.map.mapScreen.classWalker,
+  runner: S.map.mapScreen.classRunner,
+  cyclist: S.map.mapScreen.classCyclist,
+  skater: S.map.mapScreen.classSkater,
+  dog_walker: S.map.mapScreen.classDogWalker,
+  driver: S.map.mapScreen.classDriver,
+  unknown: S.map.mapScreen.classDetecting,
 };
 
 const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
@@ -459,10 +460,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         setShowSearch(false);
         setSearchQuery('');
       } else {
-        Alert.alert('Nicht gefunden', 'Kein Ort mit diesem Namen gefunden.');
+        Alert.alert(S.map.mapScreen.searchNotFoundTitle, S.map.mapScreen.searchNotFoundMsg);
       }
     } catch {
-      Alert.alert('Fehler', 'Suche fehlgeschlagen.');
+      Alert.alert(S.common.error, S.map.mapScreen.searchFailed);
     } finally {
       setIsSearching(false);
     }
@@ -499,9 +500,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             const count = blocked.reduce((sum, b) => sum + b.defense_count, 0);
             setTimeout(() => {
               Alert.alert(
-                'Verteidigtes Territorium!',
-                `${blocked.length} Territorium(e) mit ${count} Verteidigung(en) blockiert deinen Angriff!\n\nTippe auf das gegnerische Land auf der Karte und besiege die Verteidigungen um es zu erobern.`,
-                [{ text: 'Verstanden' }]
+                S.map.mapScreen.defendedTerritoryTitle,
+                t(S.map.mapScreen.defendedTerritoryMsg, { territories: blocked.length, defenses: count }),
+                [{ text: S.map.mapScreen.understood }]
               );
             }, 500);
           }
@@ -705,7 +706,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               >
                 <View style={styles.undefendedMarkerOwn}>
                   <Ionicons name="warning" size={14} color="#FF4757" />
-                  <Text style={styles.undefendedTextOwn}>UNGESCHÜTZT</Text>
+                  <Text style={styles.undefendedTextOwn}>{S.map.mapScreen.unprotectedBadge}</Text>
                 </View>
               </Marker>
             );
@@ -883,7 +884,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           // Countdown text
           let countdownText = '';
           if (isLive) {
-            countdownText = 'JETZT!';
+            countdownText = S.map.mapScreen.countdownNow;
           } else if (hoursUntil > 0 && hoursUntil < 1) {
             countdownText = `${Math.round(hoursUntil * 60)}min`;
           } else if (hoursUntil >= 1 && hoursUntil <= 24) {
@@ -1005,7 +1006,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {nightMode && (
         <View style={styles.nightBadge}>
           <Ionicons name="moon" size={14} color="#8B5CF6" />
-          <Text style={styles.nightBadgeText}>NIGHT MODE</Text>
+          <Text style={styles.nightBadgeText}>{S.map.mapScreen.nightMode}</Text>
         </View>
       )}
 
@@ -1031,7 +1032,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           {weatherQuestCount > 0 && (
             <View style={styles.weatherQuestBadge}>
               <Text style={styles.weatherQuestBadgeText}>
-                {weatherQuestCount} {weather.condition} quest{weatherQuestCount > 1 ? 's' : ''}
+                {t(
+                  plural(weatherQuestCount, S.map.mapScreen.weatherQuestsOne, S.map.mapScreen.weatherQuestsOther),
+                  { condition: weather.condition }
+                )}
               </Text>
             </View>
           )}
@@ -1070,7 +1074,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             <Ionicons name="search" size={20} color={theme.textSecondary} />
             <TextInput
               style={[styles.searchInput, { color: theme.text }]}
-              placeholder="Stadt oder Adresse suchen..."
+              placeholder={S.map.mapScreen.searchPlaceholder}
               placeholderTextColor={theme.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -1102,12 +1106,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           }
           if (isTracking && !canCloseClaim && safeRoute.length >= 10) {
             Alert.alert(
-              'Zu weit vom Start',
-              `Geh zurück zum Startpunkt (innerhalb ${CLOSE_THRESHOLD_M}m) um das Territorium zu beanspruchen.`,
+              S.map.mapScreen.tooFarTitle,
+              t(S.map.mapScreen.tooFarMsg, { threshold: CLOSE_THRESHOLD_M }),
               [
-                { text: 'OK', style: 'cancel' },
+                { text: S.common.ok, style: 'cancel' },
                 {
-                  text: 'Route abbrechen',
+                  text: S.map.mapScreen.cancelRoute,
                   style: 'destructive',
                   onPress: () => {
                     cancelTracking();
@@ -1164,12 +1168,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             style={styles.trackingCancelBtn}
             onPress={() => {
               Alert.alert(
-                'Route abbrechen?',
-                'Die aktuelle Route wird verworfen und nicht gespeichert.',
+                S.map.mapScreen.cancelRouteTitle,
+                S.map.mapScreen.cancelRouteMsg,
                 [
-                  { text: 'Weiter laufen', style: 'cancel' },
+                  { text: S.map.mapScreen.keepWalking, style: 'cancel' },
                   {
-                    text: 'Abbrechen',
+                    text: S.common.cancel,
                     style: 'destructive',
                     onPress: () => cancelTracking(),
                   },
@@ -1183,10 +1187,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           <View style={styles.trackingDot} />
           <Text style={[styles.trackingStatText, { color: theme.text }]}>{formatDuration()}</Text>
           <View style={styles.trackingDot} />
-          <Text style={[styles.trackingStatText, { color: theme.text }]}>{safeRoute.length} pts</Text>
+          <Text style={[styles.trackingStatText, { color: theme.text }]}>{t(S.map.mapScreen.ptsCount, { count: safeRoute.length })}</Text>
           <View style={styles.recBadge}>
             <View style={styles.recDotAnim} />
-            <Text style={styles.recText}>REC</Text>
+            <Text style={styles.recText}>{S.map.mapScreen.rec}</Text>
           </View>
         </View>
       )}
@@ -1196,15 +1200,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         <View style={styles.claimOverlay}>
           <View style={[styles.claimCard, { backgroundColor: theme.surface }]}>
             <Ionicons name="flag" size={36} color={theme.accent} />
-            <Text style={[styles.claimTitle, { color: theme.accent }]}>TERRITORIUM EROBERT!</Text>
+            <Text style={[styles.claimTitle, { color: theme.accent }]}>{S.map.mapScreen.territoryClaimed}</Text>
             <View style={styles.claimStats}>
               <View style={styles.claimStatItem}>
                 <Text style={[styles.claimStatValue, { color: theme.accent }]}>{claimResult.area} m²</Text>
-                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Fläche</Text>
+                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>{S.map.mapScreen.statArea}</Text>
               </View>
               <View style={styles.claimStatItem}>
                 <Text style={[styles.claimStatValue, { color: theme.primary }]}>+{claimResult.xp} XP</Text>
-                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>Verdient</Text>
+                <Text style={[styles.claimStatLabel, { color: theme.textSecondary }]}>{S.map.mapScreen.statEarned}</Text>
               </View>
             </View>
 
@@ -1212,7 +1216,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             <View style={styles.claimWarningBox}>
               <Ionicons name="warning" size={22} color="#FF4757" />
               <Text style={styles.claimWarningText}>
-                Dein Territorium ist ungeschützt! Andere Spieler können es sofort übernehmen.
+                {S.map.mapScreen.unprotectedWarning}
               </Text>
             </View>
 
@@ -1220,15 +1224,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             <View style={styles.claimStepsBox}>
               <View style={styles.claimStep}>
                 <View style={styles.claimStepNumber}><Text style={styles.claimStepNumberText}>1</Text></View>
-                <Text style={styles.claimStepText}>Tippe auf dein Territorium auf der Karte</Text>
+                <Text style={styles.claimStepText}>{S.map.mapScreen.claimStep1}</Text>
               </View>
               <View style={styles.claimStep}>
                 <View style={styles.claimStepNumber}><Text style={styles.claimStepNumberText}>2</Text></View>
-                <Text style={styles.claimStepText}>Wähle "Verteidigung hinzufügen"</Text>
+                <Text style={styles.claimStepText}>{S.map.mapScreen.claimStep2}</Text>
               </View>
               <View style={styles.claimStep}>
                 <View style={[styles.claimStepNumber, { backgroundColor: 'rgba(255, 184, 0, 0.2)' }]}><Text style={[styles.claimStepNumberText, { color: '#FFB800' }]}>3</Text></View>
-                <Text style={styles.claimStepText}>Wähle ein Spiel (Tic Tac Toe, Münzwurf, ...)</Text>
+                <Text style={styles.claimStepText}>{S.map.mapScreen.claimStep3}</Text>
               </View>
             </View>
 
@@ -1247,14 +1251,14 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               }}
             >
               <Ionicons name="shield-checkmark" size={20} color="#0A0E17" />
-              <Text style={styles.claimDefenseButtonText}>JETZT VERTEIDIGEN</Text>
+              <Text style={styles.claimDefenseButtonText}>{S.map.mapScreen.defendNow}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.claimDismissButton}
               onPress={() => setShowClaimResult(false)}
             >
-              <Text style={styles.claimDismissButtonText}>Später</Text>
+              <Text style={styles.claimDismissButtonText}>{S.map.mapScreen.later}</Text>
             </TouchableOpacity>
           </View>
         </View>

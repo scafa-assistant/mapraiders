@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { placeApi } from '../../services/api';
 import type { PlaceHistoryScreenProps } from '../../navigation/types';
+import { strings as S, t, plural } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -24,19 +25,19 @@ interface EventConfig {
 }
 
 const EVENT_CONFIG: Record<string, EventConfig> = {
-  claim: { icon: 'flag', color: '#00FF88', label: 'claimed territory' },
-  takeover: { icon: 'flash', color: '#FF4757', label: 'took over territory' },
-  quest_complete: { icon: 'compass', color: '#00D4FF', label: 'completed a quest' },
-  echo_created: { icon: 'musical-note', color: '#7B61FF', label: 'dropped an echo' },
-  echo_expired: { icon: 'musical-note', color: '#555E78', label: 'echo expired' },
-  challenge_complete: { icon: 'trophy', color: '#FFB800', label: 'completed a challenge' },
-  artifact_placed: { icon: 'diamond', color: '#7B61FF', label: 'placed an artifact' },
+  claim: { icon: 'flag', color: '#00FF88', label: S.map.placeHistory.eventClaim },
+  takeover: { icon: 'flash', color: '#FF4757', label: S.map.placeHistory.eventTakeover },
+  quest_complete: { icon: 'compass', color: '#00D4FF', label: S.map.placeHistory.eventQuestComplete },
+  echo_created: { icon: 'musical-note', color: '#7B61FF', label: S.map.placeHistory.eventEchoCreated },
+  echo_expired: { icon: 'musical-note', color: '#555E78', label: S.map.placeHistory.eventEchoExpired },
+  challenge_complete: { icon: 'trophy', color: '#FFB800', label: S.map.placeHistory.eventChallengeComplete },
+  artifact_placed: { icon: 'diamond', color: '#7B61FF', label: S.map.placeHistory.eventArtifactPlaced },
 };
 
 const DEFAULT_EVENT_CONFIG: EventConfig = {
   icon: 'ellipse',
   color: '#8892B0',
-  label: 'event',
+  label: S.map.placeHistory.eventDefault,
 };
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -65,14 +66,14 @@ interface PlaceStats {
 
 function timeAgo(dateStr: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateStr || Date.now()).getTime()) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return S.common.justNow;
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return t(S.common.minutesAgo, { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t(S.common.hoursAgo, { count: hours });
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return `${Math.floor(days / 30)}mo ago`;
+  if (days < 30) return plural(days, S.common.daysAgoOne, S.common.daysAgoOther);
+  return t(S.map.placeHistory.monthsAgo, { count: Math.floor(days / 30) });
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -109,30 +110,30 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
 
     return (
       <View style={styles.statsCard}>
-        <Text style={styles.statsTitle}>PLACE STATS</Text>
+        <Text style={styles.statsTitle}>{S.map.placeHistory.statsTitle}</Text>
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{stats.unique_visitors}</Text>
-            <Text style={styles.statLabel}>Visitors</Text>
+            <Text style={styles.statLabel}>{S.map.placeHistory.statVisitors}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{stats.total_claims}</Text>
-            <Text style={styles.statLabel}>Claims</Text>
+            <Text style={styles.statLabel}>{S.map.placeHistory.statClaims}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{stats.total_quests}</Text>
-            <Text style={styles.statLabel}>Quests</Text>
+            <Text style={styles.statLabel}>{S.map.placeHistory.statQuests}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{stats.total_echos}</Text>
-            <Text style={styles.statLabel}>Echos</Text>
+            <Text style={styles.statLabel}>{S.map.placeHistory.statEchos}</Text>
           </View>
         </View>
         {stats.most_active_user && (
           <View style={styles.topUserRow}>
             <Ionicons name="star" size={14} color="#FFB800" />
             <Text style={styles.topUserText}>
-              Most active: <Text style={styles.topUserName}>{stats.most_active_user}</Text>
+              {S.map.placeHistory.mostActivePrefix} <Text style={styles.topUserName}>{stats.most_active_user}</Text>
             </Text>
           </View>
         )}
@@ -140,7 +141,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
           <View style={styles.topUserRow}>
             <Ionicons name="time" size={14} color="#00D4FF" />
             <Text style={styles.topUserText}>
-              Busiest hour: <Text style={styles.topUserName}>{stats.busiest_hour}:00</Text>
+              {S.map.placeHistory.busiestHourPrefix} <Text style={styles.topUserName}>{stats.busiest_hour}:00</Text>
             </Text>
           </View>
         )}
@@ -150,7 +151,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
 
   const renderEvent = ({ item }: { item: PlaceEvent }) => {
     const config = EVENT_CONFIG[item.event_type] || DEFAULT_EVENT_CONFIG;
-    const displayName = item.username || 'Someone';
+    const displayName = item.username || S.map.placeHistory.someone;
 
     return (
       <View style={styles.eventRow}>
@@ -176,7 +177,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
           <Ionicons name="arrow-back" size={22} color="#8892B0" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Place Memory</Text>
+          <Text style={styles.headerTitle}>{S.map.placeHistory.headerTitle}</Text>
           <Text style={styles.headerCoords}>
             {lat.toFixed(4)}, {lng.toFixed(4)}
           </Text>
@@ -187,7 +188,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#00D4FF" />
-          <Text style={styles.loadingText}>Loading place history...</Text>
+          <Text style={styles.loadingText}>{S.map.placeHistory.loading}</Text>
         </View>
       ) : (
         <FlatList
@@ -199,16 +200,16 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
               {renderStatCard()}
               <View style={styles.timelineHeader}>
                 <Ionicons name="time-outline" size={14} color="#8892B0" />
-                <Text style={styles.timelineTitle}>LAST 30 DAYS AT THIS SPOT</Text>
+                <Text style={styles.timelineTitle}>{S.map.placeHistory.timelineTitle}</Text>
               </View>
             </>
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Ionicons name="location-outline" size={48} color="#2A3450" />
-              <Text style={styles.emptyText}>No history here yet</Text>
+              <Text style={styles.emptyText}>{S.map.placeHistory.emptyTitle}</Text>
               <Text style={styles.emptySubtext}>
-                Be the first to leave your mark at this location
+                {S.map.placeHistory.emptySubtext}
               </Text>
             </View>
           }

@@ -16,6 +16,7 @@ import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { clanApi } from '../../services/api';
 import { mapRaidersWs } from '../../services/websocket';
 import { useAuthStore } from '../../store/authStore';
+import { strings as S, t } from '../../i18n';
 import type { ClanChatScreenProps } from '../../navigation/types';
 
 interface ChatMessage {
@@ -34,9 +35,9 @@ function formatTimestamp(dateStr: string): string {
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffMins < 1) return S.common.justNow;
+  if (diffMins < 60) return t(S.common.minutesAgo, { count: diffMins });
+  if (diffHours < 24) return t(S.common.hoursAgo, { count: diffHours });
 
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
@@ -176,8 +177,8 @@ export default function ClanChatScreen({ navigation, route }: ClanChatScreenProp
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="chatbubbles-outline" size={48} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No messages yet</Text>
-        <Text style={styles.emptySubtext}>Start the conversation with your clan!</Text>
+        <Text style={styles.emptyTitle}>{S.profile.clanChat.emptyTitle}</Text>
+        <Text style={styles.emptySubtext}>{S.profile.clanChat.emptySubtext}</Text>
       </View>
     );
   };
@@ -203,7 +204,7 @@ export default function ClanChatScreen({ navigation, route }: ClanChatScreenProp
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle} numberOfLines={1}>{clanName}</Text>
-          <Text style={styles.headerSubtitle}>Clan Chat</Text>
+          <Text style={styles.headerSubtitle}>{S.profile.clanChat.subtitle}</Text>
         </View>
         <View style={styles.headerSpacer} />
       </View>
@@ -216,7 +217,7 @@ export default function ClanChatScreen({ navigation, route }: ClanChatScreenProp
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={THEME.primary} />
-            <Text style={styles.loadingText}>Loading messages...</Text>
+            <Text style={styles.loadingText}>{S.profile.clanChat.loadingMessages}</Text>
           </View>
         ) : (
           <FlatList
@@ -240,7 +241,7 @@ export default function ClanChatScreen({ navigation, route }: ClanChatScreenProp
             style={styles.textInput}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Type a message..."
+            placeholder={S.profile.clanChat.inputPlaceholder}
             placeholderTextColor={THEME.textSecondary}
             maxLength={500}
             multiline

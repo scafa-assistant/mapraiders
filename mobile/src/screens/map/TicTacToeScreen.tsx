@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { turnGameApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { TicTacToeGameScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -538,7 +539,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
 
     return (
       <View style={styles.historyContainer}>
-        <Text style={styles.historyTitle}>Move History</Text>
+        <Text style={styles.historyTitle}>{S.map.ticTacToe.moveHistory}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.historyRow}>
             {moves.map((m) => (
@@ -580,27 +581,27 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
     const config = {
       victory: {
         icon: 'trophy' as const,
-        title: 'VICTORY!',
-        subtitle: 'Territory defended!' ,
+        title: S.map.ticTacToe.victory,
+        subtitle: S.map.ticTacToe.victorySubtitle,
         color: COLOR_VICTORY,
         message:
           yourSymbol === 'X'
-            ? 'Your defense holds strong!'
-            : 'Territory conquered!',
+            ? S.map.ticTacToe.victoryMsgDefender
+            : S.map.ticTacToe.victoryMsgChallenger,
       },
       defeated: {
         icon: 'close-circle' as const,
-        title: 'DEFEATED',
-        subtitle: yourSymbol === 'X' ? 'Territory lost!' : 'Defense holds.',
+        title: S.map.ticTacToe.defeated,
+        subtitle: yourSymbol === 'X' ? S.map.ticTacToe.defeatedSubtitleDefender : S.map.ticTacToe.defeatedSubtitleChallenger,
         color: COLOR_DEFEATED,
-        message: `${opponentUsername} wins this battle.`,
+        message: t(S.map.ticTacToe.defeatedMsg, { username: opponentUsername }),
       },
       draw: {
         icon: 'shield-checkmark' as const,
-        title: 'DRAW',
-        subtitle: 'Defender keeps territory!',
+        title: S.map.ticTacToe.draw,
+        subtitle: S.map.ticTacToe.drawSubtitle,
         color: COLOR_DRAW,
-        message: 'A hard-fought stalemate.',
+        message: S.map.ticTacToe.drawMsg,
       },
     }[result];
 
@@ -626,14 +627,14 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
 
         <View style={styles.resultDivider} />
 
-        <Text style={styles.resultAutoNav}>Returning to map...</Text>
+        <Text style={styles.resultAutoNav}>{S.map.ticTacToe.returningToMap}</Text>
 
         <TouchableOpacity
           style={[styles.resultBtn, { backgroundColor: config.color }]}
           onPress={() => navigation.goBack()}
         >
           <Text style={styles.resultBtnText}>
-            {result === 'victory' ? 'Celebrate!' : 'Back'}
+            {result === 'victory' ? S.map.ticTacToe.celebrate : S.common.back}
           </Text>
         </TouchableOpacity>
       </Animated.View>
@@ -647,19 +648,19 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
       <View style={styles.infoRow}>
         <Ionicons name="information-circle-outline" size={16} color={THEME.textSecondary} />
         <Text style={styles.infoText}>
-          Defender plays X (first) | Challenger plays O
+          {S.map.ticTacToe.infoSymbols}
         </Text>
       </View>
       <View style={styles.infoRow}>
         <Ionicons name="shield-outline" size={16} color={THEME.textSecondary} />
         <Text style={styles.infoText}>
-          Draw = Defender keeps territory
+          {S.map.ticTacToe.infoDraw}
         </Text>
       </View>
       <View style={styles.infoRow}>
         <Ionicons name="timer-outline" size={16} color={THEME.textSecondary} />
         <Text style={styles.infoText}>
-          2h per turn | Timeout = forfeit
+          {S.map.ticTacToe.infoTimeout}
         </Text>
       </View>
     </View>
@@ -672,7 +673,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Loading battle...</Text>
+          <Text style={styles.loadingText}>{S.map.ticTacToe.loadingBattle}</Text>
         </View>
       </SafeAreaView>
     );
@@ -691,9 +692,9 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
         <View style={styles.headerCenter}>
           <View style={styles.headerGameBadge}>
             <Ionicons name="grid-outline" size={16} color={THEME.primary} />
-            <Text style={styles.headerGameLabel}>Tic Tac Toe</Text>
+            <Text style={styles.headerGameLabel}>{S.map.ticTacToe.headerTitle}</Text>
           </View>
-          <Text style={styles.headerOpponent}>vs {opponentUsername}</Text>
+          <Text style={styles.headerOpponent}>{t(S.map.ticTacToe.vsUsername, { username: opponentUsername })}</Text>
         </View>
 
         <View
@@ -746,7 +747,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
               !isYourTurn && !isGameOver && { color: COLOR_O },
             ]}
           >
-            {isGameOver ? 'Game Over' : countdown}
+            {isGameOver ? S.map.ticTacToe.gameOver : countdown}
           </Text>
         </View>
 
@@ -760,15 +761,15 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
           >
             <Text style={[styles.playerSymbol, { color: COLOR_X }]}>X</Text>
             <Text style={styles.playerLabel} numberOfLines={1}>
-              {game?.defender_username ?? 'Defender'}
+              {game?.defender_username ?? S.map.ticTacToe.defenderFallback}
             </Text>
             {yourSymbol === 'X' && (
-              <Text style={styles.playerYou}>(You)</Text>
+              <Text style={styles.playerYou}>{S.map.ticTacToe.youSuffix}</Text>
             )}
           </View>
 
           <View style={styles.vsContainer}>
-            <Text style={styles.vsText}>VS</Text>
+            <Text style={styles.vsText}>{S.map.ticTacToe.vsLabel}</Text>
           </View>
 
           <View
@@ -779,10 +780,10 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
           >
             <Text style={[styles.playerSymbol, { color: COLOR_O }]}>O</Text>
             <Text style={styles.playerLabel} numberOfLines={1}>
-              {game?.challenger_username ?? 'Challenger'}
+              {game?.challenger_username ?? S.map.ticTacToe.challengerFallback}
             </Text>
             {yourSymbol === 'O' && (
-              <Text style={styles.playerYou}>(You)</Text>
+              <Text style={styles.playerYou}>{S.map.ticTacToe.youSuffix}</Text>
             )}
           </View>
         </View>
@@ -792,13 +793,13 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
           {isGameOver ? (
             <View style={styles.turnIndicator}>
               <Ionicons name="flag" size={18} color={THEME.textSecondary} />
-              <Text style={styles.turnIndicatorText}>Game Complete</Text>
+              <Text style={styles.turnIndicatorText}>{S.map.ticTacToe.gameComplete}</Text>
             </View>
           ) : isYourTurn ? (
             <View style={[styles.turnIndicator, styles.turnIndicatorActive]}>
               <Ionicons name="hand-right" size={18} color={COLOR_X} />
               <Text style={[styles.turnIndicatorText, { color: COLOR_X }]}>
-                Your Turn — Make your move!
+                {S.map.ticTacToe.yourTurnMove}
               </Text>
             </View>
           ) : (
@@ -816,7 +817,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
         {game && (
           <View style={styles.moveNumberContainer}>
             <Text style={styles.moveNumberLabel}>
-              Turn {game.turn_number}
+              {t(S.map.ticTacToe.turnNumber, { number: game.turn_number })}
             </Text>
           </View>
         )}
@@ -855,7 +856,7 @@ function ThinkingText() {
 
   return (
     <Text style={[styles.turnIndicatorText, { color: COLOR_O }]}>
-      Waiting for opponent{dots}
+      {S.map.ticTacToe.waitingOpponent}{dots}
     </Text>
   );
 }

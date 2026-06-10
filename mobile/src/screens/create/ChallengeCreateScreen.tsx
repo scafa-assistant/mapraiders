@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { challengeApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { strings as S, t } from '../../i18n';
 import type { ChallengeCreateScreenProps } from '../../navigation/types';
 
 interface ChallengeTemplate {
@@ -27,29 +28,29 @@ interface ChallengeTemplate {
 const TEMPLATES: ChallengeTemplate[] = [
   {
     id: 'step_count',
-    name: 'Schritte-Challenge',
+    name: S.create.challenge.templateStepsName,
     icon: 'footsteps-outline',
-    description: 'Laufe eine bestimmte Anzahl Schritte',
+    description: S.create.challenge.templateStepsDesc,
     parameters: [
-      { key: 'steps', label: 'Schritte', unit: '', min: 1000, max: 50000, default: 10000 },
+      { key: 'steps', label: S.create.challenge.paramSteps, unit: '', min: 1000, max: 50000, default: 10000 },
     ],
   },
   {
     id: 'time_walk',
-    name: 'Zeitlauf',
+    name: S.create.challenge.templateTimeWalkName,
     icon: 'timer-outline',
-    description: 'Laufe durchgehend für eine bestimmte Dauer',
+    description: S.create.challenge.templateTimeWalkDesc,
     parameters: [
-      { key: 'duration', label: 'Dauer', unit: 'min', min: 5, max: 180, default: 30 },
+      { key: 'duration', label: S.create.challenge.paramDuration, unit: 'min', min: 5, max: 180, default: 30 },
     ],
   },
   {
     id: 'explore_new',
-    name: 'Entdecker',
+    name: S.create.challenge.templateExplorerName,
     icon: 'compass-outline',
-    description: 'Besuche neue, unbeanspruchte Gebiete',
+    description: S.create.challenge.templateExplorerDesc,
     parameters: [
-      { key: 'cells', label: 'Neue Zellen', unit: '', min: 5, max: 100, default: 20 },
+      { key: 'cells', label: S.create.challenge.paramNewCells, unit: '', min: 5, max: 100, default: 20 },
     ],
   },
 ];
@@ -83,7 +84,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
 
   const handleCreate = async () => {
     if (!selectedTemplate || !currentLocation) {
-      Alert.alert('Error', 'Please select a template and ensure GPS is available');
+      Alert.alert(S.common.error, S.create.challenge.missingDataMsg);
       return;
     }
 
@@ -100,20 +101,20 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
         weather_condition: weatherCondition || undefined,
         time_window: timeWindow,
       });
-      Alert.alert('Challenge Created!', 'Other MapRaiders nearby can now attempt your challenge.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      Alert.alert(S.create.challenge.createdTitle, S.create.challenge.createdMsg, [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to create challenge');
+      Alert.alert(S.common.error, err.message || S.create.challenge.createFailed);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const VERIFICATION_OPTIONS: { value: VerificationLevel; label: string; icon: keyof typeof Ionicons.glyphMap; desc: string }[] = [
-    { value: 'honor', label: 'Honor', icon: 'hand-left-outline', desc: 'Trust-based' },
-    { value: 'sensor', label: 'Sensor', icon: 'hardware-chip-outline', desc: 'GPS + motion verified' },
-    { value: 'video', label: 'Video', icon: 'videocam-outline', desc: 'Video proof required' },
+    { value: 'honor', label: S.create.challenge.verificationHonor, icon: 'hand-left-outline', desc: S.create.challenge.verificationHonorDesc },
+    { value: 'sensor', label: S.create.challenge.verificationSensor, icon: 'hardware-chip-outline', desc: S.create.challenge.verificationSensorDesc },
+    { value: 'video', label: S.create.challenge.verificationVideo, icon: 'videocam-outline', desc: S.create.challenge.verificationVideoDesc },
   ];
 
   return (
@@ -123,7 +124,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Challenge</Text>
+        <Text style={styles.headerTitle}>{S.create.challenge.title}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -132,7 +133,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
         keyboardShouldPersistTaps="handled"
       >
         {/* Step 1: Select Template */}
-        <Text style={styles.sectionHeader}>1. Choose Template</Text>
+        <Text style={styles.sectionHeader}>{S.create.challenge.sectionTemplate}</Text>
         <View style={styles.templateGrid}>
           {TEMPLATES.map((t) => (
             <TouchableOpacity
@@ -167,7 +168,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
         {/* Step 2: Configure Parameters */}
         {selectedTemplate && (
           <>
-            <Text style={styles.sectionHeader}>2. Set Parameters</Text>
+            <Text style={styles.sectionHeader}>{S.create.challenge.sectionParameters}</Text>
             <View style={styles.paramsCard}>
               {selectedTemplate.parameters.map((param) => (
                 <View key={param.key} style={styles.paramRow}>
@@ -212,7 +213,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
             </View>
 
             {/* Step 3: Verification Level */}
-            <Text style={styles.sectionHeader}>3. Verification</Text>
+            <Text style={styles.sectionHeader}>{S.create.challenge.sectionVerification}</Text>
             <View style={styles.verificationRow}>
               {VERIFICATION_OPTIONS.map((opt) => (
                 <TouchableOpacity
@@ -243,18 +244,18 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
             </View>
 
             {/* Step 4: Weather Condition (optional) */}
-            <Text style={styles.sectionHeader}>4. Weather Condition (Optional)</Text>
+            <Text style={styles.sectionHeader}>{S.create.challenge.sectionWeather}</Text>
             <View style={styles.weatherGrid}>
               {[
-                { value: null, label: 'Any', icon: 'partly-sunny' as keyof typeof Ionicons.glyphMap },
-                { value: 'rain', label: 'Rain', icon: 'rainy' as keyof typeof Ionicons.glyphMap },
-                { value: 'snow', label: 'Snow', icon: 'snow' as keyof typeof Ionicons.glyphMap },
-                { value: 'fog', label: 'Fog', icon: 'cloud' as keyof typeof Ionicons.glyphMap },
-                { value: 'wind', label: 'Wind', icon: 'flag' as keyof typeof Ionicons.glyphMap },
-                { value: 'storm', label: 'Storm', icon: 'thunderstorm' as keyof typeof Ionicons.glyphMap },
-                { value: 'clear', label: 'Clear', icon: 'sunny' as keyof typeof Ionicons.glyphMap },
-                { value: 'cold', label: '<5C', icon: 'thermometer-outline' as keyof typeof Ionicons.glyphMap },
-                { value: 'heat', label: '>30C', icon: 'flame' as keyof typeof Ionicons.glyphMap },
+                { value: null, label: S.create.challenge.weatherAny, icon: 'partly-sunny' as keyof typeof Ionicons.glyphMap },
+                { value: 'rain', label: S.create.challenge.weatherRain, icon: 'rainy' as keyof typeof Ionicons.glyphMap },
+                { value: 'snow', label: S.create.challenge.weatherSnow, icon: 'snow' as keyof typeof Ionicons.glyphMap },
+                { value: 'fog', label: S.create.challenge.weatherFog, icon: 'cloud' as keyof typeof Ionicons.glyphMap },
+                { value: 'wind', label: S.create.challenge.weatherWind, icon: 'flag' as keyof typeof Ionicons.glyphMap },
+                { value: 'storm', label: S.create.challenge.weatherStorm, icon: 'thunderstorm' as keyof typeof Ionicons.glyphMap },
+                { value: 'clear', label: S.create.challenge.weatherClear, icon: 'sunny' as keyof typeof Ionicons.glyphMap },
+                { value: 'cold', label: S.create.challenge.weatherCold, icon: 'thermometer-outline' as keyof typeof Ionicons.glyphMap },
+                { value: 'heat', label: S.create.challenge.weatherHeat, icon: 'flame' as keyof typeof Ionicons.glyphMap },
               ].map((opt) => (
                 <TouchableOpacity
                   key={opt.value ?? 'any'}
@@ -282,12 +283,12 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
             </View>
 
             {/* Time Window */}
-            <Text style={styles.sectionHeader}>4. Time Window</Text>
+            <Text style={styles.sectionHeader}>{S.create.challenge.sectionTimeWindow}</Text>
             <View style={styles.verificationRow}>
               {([
-                { value: 'any' as const, label: 'Any Time', icon: 'time-outline' as keyof typeof Ionicons.glyphMap, desc: 'Always visible' },
-                { value: 'day' as const, label: 'Day', icon: 'sunny-outline' as keyof typeof Ionicons.glyphMap, desc: '05:00-22:00' },
-                { value: 'night' as const, label: 'Night', icon: 'moon-outline' as keyof typeof Ionicons.glyphMap, desc: '22:00-05:00' },
+                { value: 'any' as const, label: S.create.challenge.timeAny, icon: 'time-outline' as keyof typeof Ionicons.glyphMap, desc: S.create.challenge.timeAnyDesc },
+                { value: 'day' as const, label: S.create.challenge.timeDay, icon: 'sunny-outline' as keyof typeof Ionicons.glyphMap, desc: S.create.challenge.timeDayDesc },
+                { value: 'night' as const, label: S.create.challenge.timeNight, icon: 'moon-outline' as keyof typeof Ionicons.glyphMap, desc: S.create.challenge.timeNightDesc },
               ]).map((opt) => (
                 <TouchableOpacity
                   key={opt.value}
@@ -323,8 +324,11 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
               <Ionicons name="location-outline" size={16} color={THEME.primary} />
               <Text style={styles.locationText}>
                 {currentLocation
-                  ? `Challenge at ${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`
-                  : 'Waiting for GPS...'}
+                  ? t(S.create.challenge.locationAt, {
+                      lat: currentLocation.latitude.toFixed(4),
+                      lng: currentLocation.longitude.toFixed(4),
+                    })
+                  : S.create.challenge.waitingForGps}
               </Text>
             </View>
 
@@ -340,7 +344,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
               ) : (
                 <>
                   <Ionicons name="flash" size={20} color="#0A0E17" />
-                  <Text style={styles.createBtnText}>Place Challenge</Text>
+                  <Text style={styles.createBtnText}>{S.create.challenge.placeChallenge}</Text>
                 </>
               )}
             </TouchableOpacity>

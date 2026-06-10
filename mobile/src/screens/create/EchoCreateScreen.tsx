@@ -21,6 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useLocationStore } from '../../store/locationStore';
 import { useTerritoryStore } from '../../store/territoryStore';
 import { echoApi, silentZoneApi } from '../../services/api';
+import { strings as S, t } from '../../i18n';
 import { EchoCreateScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -90,7 +91,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
     try {
       const permission = await Audio.requestPermissionsAsync();
       if (!permission.granted) {
-        Alert.alert('Permission Required', 'Microphone access is needed to record echoes.');
+        Alert.alert(S.create.echo.micPermissionTitle, S.create.echo.micPermissionMsg);
         return;
       }
 
@@ -118,7 +119,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         });
       }, 1000);
     } catch (err) {
-      Alert.alert('Error', 'Failed to start recording.');
+      Alert.alert(S.common.error, S.create.echo.recordStartFailed);
     }
   };
 
@@ -168,7 +169,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       soundRef.current = sound;
       setIsPlaying(true);
     } catch (_err) {
-      Alert.alert('Error', 'Failed to play recording.');
+      Alert.alert(S.common.error, S.create.echo.playFailed);
     }
   };
 
@@ -176,7 +177,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Camera access is required to take photos.');
+        Alert.alert(S.create.echo.cameraPermissionTitle, S.create.echo.cameraPermissionPhotoMsg);
         return;
       }
       const result = await ImagePicker.launchCameraAsync({
@@ -188,7 +189,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         setMediaUri(result.assets[0].uri);
       }
     } catch (err: any) {
-      Alert.alert('Camera Error', err?.message || 'Failed to open camera');
+      Alert.alert(S.create.echo.cameraErrorTitle, err?.message || S.create.echo.cameraOpenFailed);
     }
   };
 
@@ -196,7 +197,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Camera access is required.');
+        Alert.alert(S.create.echo.cameraPermissionTitle, S.create.echo.cameraPermissionMsg);
         return;
       }
       const result = await ImagePicker.launchCameraAsync({
@@ -210,7 +211,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         setMediaUri(result.assets[0].uri);
       }
     } catch (err: any) {
-      Alert.alert('Camera Error', err?.message || 'Failed to open camera');
+      Alert.alert(S.create.echo.cameraErrorTitle, err?.message || S.create.echo.cameraOpenFailed);
     }
   };
 
@@ -223,8 +224,8 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
 
     if (inSilentZone) {
       Alert.alert(
-        'Silent Zone',
-        'This location is in a Silent Zone. Echos are not allowed here, but you can place artifacts instead.'
+        S.create.echo.silentZoneTitle,
+        S.create.echo.silentZoneMsg
       );
       return;
     }
@@ -264,12 +265,12 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
 
       await echoApi.create(formData);
 
-      const typeLabel = mediaType === 'audio' ? 'audio echo' : mediaType === 'photo' ? 'photo graffiti' : 'video graffiti';
-      Alert.alert('Echo Dropped!', `Your ${typeLabel} is now live at this location.`, [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      const typeLabel = mediaType === 'audio' ? S.create.echo.typeAudio : mediaType === 'photo' ? S.create.echo.typePhoto : S.create.echo.typeVideo;
+      Alert.alert(S.create.echo.droppedTitle, t(S.create.echo.droppedMsg, { type: typeLabel }), [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
-      Alert.alert('Error', err?.message || 'Failed to drop echo. Please try again.');
+      Alert.alert(S.common.error, err?.message || S.create.echo.dropFailed);
     } finally {
       setIsDropping(false);
     }
@@ -298,7 +299,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#8892B0" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Drop Graffiti</Text>
+        <Text style={styles.headerTitle}>{S.create.echo.title}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -366,7 +367,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
         <View style={styles.silentZoneWarning}>
           <Ionicons name="leaf" size={16} color="#00C853" />
           <Text style={styles.silentZoneWarningText}>
-            You are in a Silent Zone. Echos cannot be dropped here. You can place artifacts instead.
+            {S.create.echo.silentZoneWarning}
           </Text>
         </View>
       )}
@@ -374,8 +375,8 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       {/* Media Type Selector */}
       <View style={styles.mediaTypeContainer}>
         {([
-          { value: 'audio' as const, label: 'Audio', icon: 'mic-outline' as const },
-          { value: 'photo' as const, label: 'Photo', icon: 'camera-outline' as const },
+          { value: 'audio' as const, label: S.create.echo.mediaAudio, icon: 'mic-outline' as const },
+          { value: 'photo' as const, label: S.create.echo.mediaPhoto, icon: 'camera-outline' as const },
           // Video temporarily disabled to save server storage
         ]).map((opt) => (
           <TouchableOpacity
@@ -447,7 +448,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                 </View>
               ) : (
                 <Text style={styles.waveformPlaceholder}>
-                  Tap the microphone to start recording
+                  {S.create.echo.tapToRecord}
                 </Text>
               )}
             </View>
@@ -480,7 +481,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
                   <Ionicons name="refresh" size={20} color="#FF4757" />
-                  <Text style={styles.retakeText}>Retake</Text>
+                  <Text style={styles.retakeText}>{S.create.echo.retake}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -498,8 +499,8 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
               ) : (
                 <Text style={styles.waveformPlaceholder}>
                   {mediaType === 'photo'
-                    ? 'Tap below to take a photo'
-                    : 'Tap below to record a video (15s max)'}
+                    ? S.create.echo.tapToPhoto
+                    : S.create.echo.tapToVideo}
                 </Text>
               )}
             </View>
@@ -520,7 +521,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
               <View style={styles.previewControls}>
                 <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
                   <Ionicons name="refresh" size={20} color="#FF4757" />
-                  <Text style={styles.retakeText}>Retake</Text>
+                  <Text style={styles.retakeText}>{S.create.echo.retake}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -528,7 +529,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
             {/* Caption input for photo/video */}
             <TextInput
               style={styles.captionInput}
-              placeholder="Add a caption..."
+              placeholder={S.create.echo.captionPlaceholder}
               placeholderTextColor="#555E78"
               value={caption}
               onChangeText={setCaption}
@@ -539,7 +540,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
 
         {/* Radius Slider */}
         <View style={styles.radiusSection}>
-          <Text style={styles.radiusLabel}>ECHO RADIUS: {radius}m</Text>
+          <Text style={styles.radiusLabel}>{t(S.create.echo.radiusLabel, { radius })}</Text>
           <View style={styles.radiusOptions}>
             {[30, 35, 40, 45, 50].map((r) => (
               <TouchableOpacity
@@ -562,12 +563,12 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
 
         {/* Time Window */}
         <View style={styles.radiusSection}>
-          <Text style={styles.radiusLabel}>TIME WINDOW</Text>
+          <Text style={styles.radiusLabel}>{S.create.echo.timeWindowLabel}</Text>
           <View style={styles.radiusOptions}>
             {([
-              { value: 'any' as const, label: 'Any Time' },
-              { value: 'day' as const, label: 'Day Only' },
-              { value: 'night' as const, label: 'Night Only' },
+              { value: 'any' as const, label: S.create.echo.timeAny },
+              { value: 'day' as const, label: S.create.echo.timeDayOnly },
+              { value: 'night' as const, label: S.create.echo.timeNightOnly },
             ]).map((opt) => (
               <TouchableOpacity
                 key={opt.value}
@@ -614,7 +615,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                 color="#0A0E17"
               />
               <Text style={styles.dropButtonText}>
-                {mediaType === 'audio' ? 'DROP ECHO' : mediaType === 'photo' ? 'DROP PHOTO' : 'DROP VIDEO'}
+                {mediaType === 'audio' ? S.create.echo.dropEcho : mediaType === 'photo' ? S.create.echo.dropPhoto : S.create.echo.dropVideo}
               </Text>
             </>
           )}

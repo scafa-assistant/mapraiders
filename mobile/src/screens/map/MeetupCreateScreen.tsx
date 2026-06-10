@@ -19,6 +19,7 @@ import { useLocationStore } from '../../store/locationStore';
 import { meetupApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MeetupCreateScreenProps } from '../../navigation/types';
+import { strings as S } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -42,12 +43,12 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { key: 'dog_walk', label: 'Hundespaziergang', emoji: '\uD83D\uDC15', color: '#FFB800' },
-  { key: 'sport', label: 'Sport', emoji: '\uD83C\uDFC3', color: '#00FF88' },
-  { key: 'party', label: 'Party', emoji: '\uD83C\uDF89', color: '#FF69B4' },
-  { key: 'gaming', label: 'Gaming', emoji: '\uD83C\uDFAE', color: '#7B61FF' },
-  { key: 'meetup', label: 'Meetup', emoji: '\uD83E\uDD1D', color: '#00D4FF' },
-  { key: 'other', label: 'Sonstiges', emoji: '\uD83D\uDCCC', color: '#8892B0' },
+  { key: 'dog_walk', label: S.map.meetupCreate.categoryDogWalk, emoji: '\uD83D\uDC15', color: '#FFB800' },
+  { key: 'sport', label: S.map.meetupCreate.categorySport, emoji: '\uD83C\uDFC3', color: '#00FF88' },
+  { key: 'party', label: S.map.meetupCreate.categoryParty, emoji: '\uD83C\uDF89', color: '#FF69B4' },
+  { key: 'gaming', label: S.map.meetupCreate.categoryGaming, emoji: '\uD83C\uDFAE', color: '#7B61FF' },
+  { key: 'meetup', label: S.map.meetupCreate.categoryMeetup, emoji: '\uD83E\uDD1D', color: '#00D4FF' },
+  { key: 'other', label: S.map.meetupCreate.categoryOther, emoji: '\uD83D\uDCCC', color: '#8892B0' },
 ];
 
 export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenProps) {
@@ -105,20 +106,20 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
 
   const handleCreate = async () => {
     if (!name.trim()) {
-      Alert.alert('Missing Name', 'Please enter an event name.');
+      Alert.alert(S.map.meetupCreate.missingNameTitle, S.map.meetupCreate.missingNameMsg);
       return;
     }
     // Use pin location or fall back to current GPS
     const eventLocation = pinLocation || (currentLocation ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude } : null);
     if (!eventLocation) {
-      Alert.alert('Missing Location', 'GPS not available. Please tap the map to set a location.');
+      Alert.alert(S.map.meetupCreate.missingLocationTitle, S.map.meetupCreate.missingLocationMsg);
       return;
     }
     // Build date from picker values
     const eventDate = new Date(year, month - 1, day, hour, minute);
 
     if (eventDate.getTime() <= Date.now()) {
-      Alert.alert('Past Date', 'The event date must be in the future.');
+      Alert.alert(S.map.meetupCreate.pastDateTitle, S.map.meetupCreate.pastDateMsg);
       return;
     }
 
@@ -135,11 +136,11 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
       };
 
       await meetupApi.create(payload);
-      Alert.alert('Event Created!', 'Your event is now visible on the map.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      Alert.alert(S.map.meetupCreate.createdTitle, S.map.meetupCreate.createdMsg, [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to create event.');
+      Alert.alert(S.common.error, err.message || S.map.meetupCreate.createFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -158,7 +159,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={THEME.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Create Event</Text>
+          <Text style={styles.headerTitle}>{S.map.meetupCreate.headerTitle}</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -202,7 +203,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 </Marker>
               )}
             </MapView>
-            <Text style={styles.mapHint}>Tippe auf die Karte um den Ort zu wählen</Text>
+            <Text style={styles.mapHint}>{S.map.meetupCreate.mapHint}</Text>
             {address ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 6, paddingHorizontal: 4 }}>
                 <Ionicons name="location-outline" size={14} color="#FFB800" />
@@ -215,12 +216,12 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
 
           {/* Name Input */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Event Name *</Text>
+            <Text style={styles.fieldLabel}>{S.map.meetupCreate.nameLabel}</Text>
             <TextInput
               style={styles.textInput}
               value={name}
-              onChangeText={(t) => setName(t.slice(0, 100))}
-              placeholder="What's the event called?"
+              onChangeText={(text) => setName(text.slice(0, 100))}
+              placeholder={S.map.meetupCreate.namePlaceholder}
               placeholderTextColor={THEME.textSecondary}
               maxLength={100}
             />
@@ -229,12 +230,12 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
 
           {/* Description */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Description</Text>
+            <Text style={styles.fieldLabel}>{S.map.meetupCreate.descriptionLabel}</Text>
             <TextInput
               style={[styles.textInput, styles.multilineInput]}
               value={description}
               onChangeText={setDescription}
-              placeholder="Tell people what to expect..."
+              placeholder={S.map.meetupCreate.descriptionPlaceholder}
               placeholderTextColor={THEME.textSecondary}
               multiline
               numberOfLines={4}
@@ -244,7 +245,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
 
           {/* Date & Time Picker */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Date & Time *</Text>
+            <Text style={styles.fieldLabel}>{S.map.meetupCreate.dateTimeLabel}</Text>
             <View style={styles.datePickerRow}>
               <View style={styles.datePickerUnit}>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setDay(d => Math.min(31, d + 1))}>
@@ -254,7 +255,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setDay(d => Math.max(1, d - 1))}>
                   <Ionicons name="chevron-down" size={18} color={THEME.primary} />
                 </TouchableOpacity>
-                <Text style={styles.dateUnitLabel}>Day</Text>
+                <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitDay}</Text>
               </View>
               <Text style={styles.dateSep}>.</Text>
               <View style={styles.datePickerUnit}>
@@ -265,7 +266,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setMonth(m => m <= 1 ? 12 : m - 1)}>
                   <Ionicons name="chevron-down" size={18} color={THEME.primary} />
                 </TouchableOpacity>
-                <Text style={styles.dateUnitLabel}>Mon</Text>
+                <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitMonth}</Text>
               </View>
               <Text style={styles.dateSep}>.</Text>
               <View style={styles.datePickerUnit}>
@@ -276,7 +277,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setYear(y => Math.max(2026, y - 1))}>
                   <Ionicons name="chevron-down" size={18} color={THEME.primary} />
                 </TouchableOpacity>
-                <Text style={styles.dateUnitLabel}>Year</Text>
+                <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitYear}</Text>
               </View>
               <View style={{ width: 16 }} />
               <View style={styles.datePickerUnit}>
@@ -287,7 +288,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setHour(h => h <= 0 ? 23 : h - 1)}>
                   <Ionicons name="chevron-down" size={18} color={THEME.warning} />
                 </TouchableOpacity>
-                <Text style={styles.dateUnitLabel}>Hr</Text>
+                <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitHour}</Text>
               </View>
               <Text style={styles.dateSep}>:</Text>
               <View style={styles.datePickerUnit}>
@@ -298,14 +299,14 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setMinute(m => m <= 0 ? 55 : m - 5)}>
                   <Ionicons name="chevron-down" size={18} color={THEME.warning} />
                 </TouchableOpacity>
-                <Text style={styles.dateUnitLabel}>Min</Text>
+                <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitMinute}</Text>
               </View>
             </View>
           </View>
 
           {/* Category */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Category</Text>
+            <Text style={styles.fieldLabel}>{S.map.meetupCreate.categoryLabel}</Text>
             <View style={styles.categoryRow}>
               {CATEGORIES.map((cat) => {
                 const isSelected = category === cat.key;
@@ -339,12 +340,12 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
 
           {/* Max Attendees */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Max Attendees</Text>
+            <Text style={styles.fieldLabel}>{S.map.meetupCreate.maxAttendeesLabel}</Text>
             <TextInput
               style={styles.textInput}
               value={maxAttendees}
-              onChangeText={(t) => setMaxAttendees(t.replace(/[^0-9]/g, ''))}
-              placeholder="Unlimited"
+              onChangeText={(text) => setMaxAttendees(text.replace(/[^0-9]/g, ''))}
+              placeholder={S.map.meetupCreate.unlimitedPlaceholder}
               placeholderTextColor={THEME.textSecondary}
               keyboardType="number-pad"
             />
@@ -366,7 +367,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
             ) : (
               <>
                 <Ionicons name="calendar" size={20} color={THEME.bg} />
-                <Text style={styles.createBtnText}>CREATE EVENT</Text>
+                <Text style={styles.createBtnText}>{S.map.meetupCreate.createEventBtn}</Text>
               </>
             )}
           </TouchableOpacity>

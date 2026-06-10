@@ -17,6 +17,7 @@ import { meetupApi } from '../../services/api';
 import { mapRaidersWs } from '../../services/websocket';
 import { useAuthStore } from '../../store/authStore';
 import type { MeetupChatScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 interface ChatMessage {
   id: string;
@@ -34,9 +35,9 @@ function formatTimestamp(dateStr: string): string {
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffMins < 1) return S.common.justNow;
+  if (diffMins < 60) return t(S.common.minutesAgo, { count: diffMins });
+  if (diffHours < 24) return t(S.common.hoursAgo, { count: diffHours });
 
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
@@ -175,8 +176,8 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="chatbubbles-outline" size={48} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No messages yet</Text>
-        <Text style={styles.emptySubtext}>Start the conversation with other attendees!</Text>
+        <Text style={styles.emptyTitle}>{S.map.meetupChat.emptyTitle}</Text>
+        <Text style={styles.emptySubtext}>{S.map.meetupChat.emptySubtext}</Text>
       </View>
     );
   };
@@ -202,7 +203,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle} numberOfLines={1}>{eventName}</Text>
-          <Text style={styles.headerSubtitle}>Event Chat</Text>
+          <Text style={styles.headerSubtitle}>{S.map.meetupChat.headerSubtitle}</Text>
         </View>
         <View style={styles.headerSpacer} />
       </View>
@@ -215,7 +216,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={THEME.primary} />
-            <Text style={styles.loadingText}>Loading messages...</Text>
+            <Text style={styles.loadingText}>{S.map.meetupChat.loadingMessages}</Text>
           </View>
         ) : (
           <FlatList
@@ -239,7 +240,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
             style={styles.textInput}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Type a message..."
+            placeholder={S.map.meetupChat.inputPlaceholder}
             placeholderTextColor={THEME.textSecondary}
             maxLength={500}
             multiline

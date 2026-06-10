@@ -18,6 +18,7 @@ import { useAuthStore } from '../../store/authStore';
 import { meetupApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MeetupDetailScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -42,11 +43,11 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
-  party: 'Party \uD83C\uDF89',
-  sport: 'Sport \uD83C\uDFC3',
-  gaming: 'Gaming \uD83C\uDFAE',
-  meetup: 'Meetup \uD83E\uDD1D',
-  other: 'Other \uD83D\uDCCC',
+  party: S.map.meetupDetail.categoryParty,
+  sport: S.map.meetupDetail.categorySport,
+  gaming: S.map.meetupDetail.categoryGaming,
+  meetup: S.map.meetupDetail.categoryMeetup,
+  other: S.map.meetupDetail.categoryOther,
 };
 
 function formatEventDate(dateStr: string): string {
@@ -77,7 +78,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       const m = data?.data ?? data;
       setMeetup(m);
     } catch {
-      Alert.alert('Error', 'Could not load event details.');
+      Alert.alert(S.common.error, S.map.meetupDetail.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -101,7 +102,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       await meetupApi.join(meetupId);
       await fetchMeetup();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to join event.');
+      Alert.alert(S.common.error, err.message || S.map.meetupDetail.joinFailed);
     } finally {
       setActionLoading(false);
     }
@@ -113,7 +114,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       await meetupApi.leave(meetupId);
       await fetchMeetup();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to leave event.');
+      Alert.alert(S.common.error, err.message || S.map.meetupDetail.leaveFailed);
     } finally {
       setActionLoading(false);
     }
@@ -122,24 +123,24 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
   const handleCancel = () => {
     const hasAttendees = attendeeCount > 0;
     Alert.alert(
-      hasAttendees ? 'Event absagen?' : 'Event löschen?',
+      hasAttendees ? S.map.meetupDetail.cancelEventTitle : S.map.meetupDetail.deleteEventTitle,
       hasAttendees
-        ? `${attendeeCount} Teilnehmer werden benachrichtigt, dass das Event abgesagt wurde. Das Event bleibt als "Abgesagt" sichtbar.`
-        : 'Das Event wird komplett gelöscht.',
+        ? t(S.map.meetupDetail.cancelEventMsg, { count: attendeeCount })
+        : S.map.meetupDetail.deleteEventMsg,
       [
-        { text: 'Zurück', style: 'cancel' },
+        { text: S.common.back, style: 'cancel' },
         {
-          text: hasAttendees ? 'Absagen' : 'Löschen',
+          text: hasAttendees ? S.map.meetupDetail.cancelAction : S.common.delete,
           style: 'destructive',
           onPress: async () => {
             setActionLoading(true);
             try {
               const { data } = await meetupApi.cancel(meetupId);
-              const msg = data?.data?.message || 'Event abgesagt.';
-              Alert.alert('Erledigt', msg);
+              const msg = data?.data?.message || S.map.meetupDetail.eventCancelledFallback;
+              Alert.alert(S.common.done, msg);
               navigation.goBack();
             } catch (err: any) {
-              Alert.alert('Fehler', err.message || 'Event konnte nicht abgesagt werden.');
+              Alert.alert(S.common.error, err.message || S.map.meetupDetail.cancelFailed);
             } finally {
               setActionLoading(false);
             }
@@ -151,23 +152,23 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
 
   const handleMarkPresent = async () => {
     if (!currentLocation) {
-      Alert.alert('Location Required', 'Please enable GPS to check in.');
+      Alert.alert(S.map.meetupDetail.locationRequiredTitle, S.map.meetupDetail.locationRequiredMsg);
       return;
     }
     setActionLoading(true);
     try {
       await meetupApi.markPresent(meetupId, currentLocation.latitude, currentLocation.longitude);
-      Alert.alert('Checked In!', 'You have been marked as present.');
+      Alert.alert(S.map.meetupDetail.checkedInTitle, S.map.meetupDetail.checkedInMsg);
       await fetchMeetup();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to check in. Are you close enough?');
+      Alert.alert(S.common.error, err.message || S.map.meetupDetail.checkInFailed);
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleChat = () => {
-    const eventName = meetup?.name ?? 'Event';
+    const eventName = meetup?.name ?? S.map.meetupDetail.defaultEventName;
     navigation.navigate('MeetupChat', { eventId: meetupId, eventName });
   };
 
@@ -176,7 +177,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Loading event...</Text>
+          <Text style={styles.loadingText}>{S.map.meetupDetail.loadingEvent}</Text>
         </View>
       </SafeAreaView>
     );
@@ -187,9 +188,9 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
           <Ionicons name="alert-circle-outline" size={48} color={THEME.danger} />
-          <Text style={styles.loadingText}>Event not found</Text>
+          <Text style={styles.loadingText}>{S.map.meetupDetail.notFound}</Text>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.goBackText}>Go Back</Text>
+            <Text style={styles.goBackText}>{S.map.meetupDetail.goBack}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -198,10 +199,10 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
 
   const categoryKey = meetup.category ?? 'other';
   const categoryColor = CATEGORY_COLORS[categoryKey] ?? '#8892B0';
-  const categoryLabel = CATEGORY_LABELS[categoryKey] ?? 'Other';
+  const categoryLabel = CATEGORY_LABELS[categoryKey] ?? S.map.meetupDetail.categoryFallback;
   const eventLat = meetup.lat ?? meetup.latitude ?? 0;
   const eventLng = meetup.lng ?? meetup.longitude ?? 0;
-  const creatorName = meetup.creator_username ?? meetup.creatorUsername ?? 'Unknown';
+  const creatorName = meetup.creator_username ?? meetup.creatorUsername ?? S.map.meetupDetail.unknownCreator;
   const eventDate = meetup.event_date ?? meetup.eventDate ?? '';
 
   return (
@@ -211,7 +212,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>Event Details</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>{S.map.meetupDetail.headerTitle}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -243,7 +244,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
             <Ionicons name="person" size={18} color={THEME.textSecondary} />
           </View>
           <Text style={styles.creatorText}>
-            Created by <Text style={styles.creatorName}>{creatorName}</Text>
+            {S.map.meetupDetail.createdByPrefix} <Text style={styles.creatorName}>{creatorName}</Text>
           </Text>
         </View>
 
@@ -278,11 +279,11 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
         <View style={styles.attendeesSection}>
           <Text style={styles.sectionTitle}>
             {maxAttendees
-              ? `${attendeeCount} / ${maxAttendees} attending`
-              : `${attendeeCount} attending`}
+              ? t(S.map.meetupDetail.attendingWithMax, { count: attendeeCount, max: maxAttendees })
+              : t(S.map.meetupDetail.attendingCount, { count: attendeeCount })}
           </Text>
           {attendees.length === 0 ? (
-            <Text style={styles.noAttendeesText}>No one has joined yet. Be the first!</Text>
+            <Text style={styles.noAttendeesText}>{S.map.meetupDetail.noAttendees}</Text>
           ) : (
             <View style={styles.attendeeList}>
               {attendees.map((a: any, index: number) => {
@@ -311,18 +312,18 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
           <ActivityIndicator size="large" color={THEME.primary} />
         ) : meetup?.status === 'cancelled' ? (
           <View style={{ alignItems: 'center', paddingVertical: 8 }}>
-            <Text style={{ color: THEME.danger, fontSize: 16, fontWeight: '800' }}>EVENT ABGESAGT</Text>
+            <Text style={{ color: THEME.danger, fontSize: 16, fontWeight: '800' }}>{S.map.meetupDetail.eventCancelledBanner}</Text>
           </View>
         ) : !isJoined ? (
           <View style={{ gap: 8 }}>
             <TouchableOpacity style={styles.joinBtn} onPress={handleJoin} activeOpacity={0.8}>
               <Ionicons name="add-circle" size={22} color={THEME.bg} />
-              <Text style={styles.joinBtnText}>BEITRETEN</Text>
+              <Text style={styles.joinBtnText}>{S.map.meetupDetail.joinBtn}</Text>
             </TouchableOpacity>
             {isCreator && (
               <TouchableOpacity style={styles.leaveBtn} onPress={handleCancel} activeOpacity={0.8}>
                 <Ionicons name="trash-outline" size={18} color={THEME.danger} />
-                <Text style={styles.leaveBtnText}>Event löschen</Text>
+                <Text style={styles.leaveBtnText}>{S.map.meetupDetail.deleteEventBtn}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -330,21 +331,21 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
           <View style={styles.joinedActions}>
             <TouchableOpacity style={styles.presentBtn} onPress={handleMarkPresent} activeOpacity={0.8}>
               <Ionicons name="location" size={20} color={THEME.bg} />
-              <Text style={styles.presentBtnText}>BIN DA</Text>
+              <Text style={styles.presentBtnText}>{S.map.meetupDetail.imHereBtn}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.chatBtn} onPress={handleChat} activeOpacity={0.8}>
               <Ionicons name="chatbubbles" size={20} color={THEME.primary} />
-              <Text style={styles.chatBtnText}>CHAT</Text>
+              <Text style={styles.chatBtnText}>{S.map.meetupDetail.chatBtn}</Text>
             </TouchableOpacity>
             {isCreator ? (
               <TouchableOpacity style={styles.leaveBtn} onPress={handleCancel} activeOpacity={0.8}>
                 <Ionicons name="close-circle" size={20} color={THEME.danger} />
-                <Text style={styles.leaveBtnText}>{attendeeCount > 0 ? 'ABSAGEN' : 'LÖSCHEN'}</Text>
+                <Text style={styles.leaveBtnText}>{attendeeCount > 0 ? S.map.meetupDetail.cancelBtn : S.map.meetupDetail.deleteBtn}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={styles.leaveBtn} onPress={handleLeave} activeOpacity={0.8}>
                 <Ionicons name="exit-outline" size={20} color={THEME.danger} />
-                <Text style={styles.leaveBtnText}>VERLASSEN</Text>
+                <Text style={styles.leaveBtnText}>{S.map.meetupDetail.leaveBtn}</Text>
               </TouchableOpacity>
             )}
           </View>

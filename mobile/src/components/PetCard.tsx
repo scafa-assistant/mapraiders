@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S, t } from '../i18n';
 import { formatDistance, formatNumber } from '../utils/formatters';
 import StatBar from './StatBar';
 import type { Pet } from '../utils/types';
@@ -21,13 +22,13 @@ function getSpecInfo(spec: Pet['specialization']): {
 } {
   switch (spec) {
     case 'explorer':
-      return { icon: 'compass-outline', color: THEME.primary, label: 'Explorer' };
+      return { icon: 'compass-outline', color: THEME.primary, label: S.components.petCard.specExplorer };
     case 'tracker':
-      return { icon: 'search-outline', color: THEME.accent, label: 'Tracker' };
+      return { icon: 'search-outline', color: THEME.accent, label: S.components.petCard.specTracker };
     case 'guardian':
-      return { icon: 'shield-outline', color: THEME.secondary, label: 'Guardian' };
+      return { icon: 'shield-outline', color: THEME.secondary, label: S.components.petCard.specGuardian };
     default:
-      return { icon: 'help-outline', color: THEME.textSecondary, label: 'No Spec' };
+      return { icon: 'help-outline', color: THEME.textSecondary, label: S.components.petCard.specNone };
   }
 }
 
@@ -80,7 +81,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       {/* Level + XP bar */}
       <View style={styles.levelSection}>
         <View style={styles.levelBadge}>
-          <Text style={styles.levelText}>Lv.{pet.level}</Text>
+          <Text style={styles.levelText}>{t(S.components.petCard.level, { level: pet.level })}</Text>
         </View>
         <View style={styles.xpBarWrapper}>
           <StatBar
@@ -101,7 +102,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
             <Ionicons name="footsteps-outline" size={16} color={THEME.primary} />
           </View>
           <Text style={styles.statValue}>{formatDistance(pet.totalDistance)}</Text>
-          <Text style={styles.statLabel}>Distance</Text>
+          <Text style={styles.statLabel}>{S.components.petCard.distance}</Text>
         </View>
 
         <View style={styles.statDivider} />
@@ -111,7 +112,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
             <Ionicons name="walk-outline" size={16} color={THEME.accent} />
           </View>
           <Text style={styles.statValue}>{formatNumber(pet.totalWalks)}</Text>
-          <Text style={styles.statLabel}>Walks</Text>
+          <Text style={styles.statLabel}>{S.components.petCard.walks}</Text>
         </View>
 
         <View style={styles.statDivider} />
@@ -121,7 +122,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
             <Ionicons name="diamond-outline" size={16} color={THEME.warning} />
           </View>
           <Text style={styles.statValue}>{formatNumber(pet.rareFinds)}</Text>
-          <Text style={styles.statLabel}>Rare Finds</Text>
+          <Text style={styles.statLabel}>{S.components.petCard.rareFinds}</Text>
         </View>
       </View>
     </View>

@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { notificationApi } from '../../services/api';
 import { formatRelativeTime } from '../../utils/formatters';
+import { strings as S } from '../../i18n';
 import type { NotificationsScreenProps } from '../../navigation/types';
 import type { NotificationData } from '../../utils/types';
 
@@ -122,9 +123,9 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="notifications-off-outline" size={64} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No notifications</Text>
+        <Text style={styles.emptyTitle}>{S.profile.notifications.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
-          You're all caught up! Check back later.
+          {S.profile.notifications.emptySubtext}
         </Text>
       </View>
     );
@@ -140,14 +141,14 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
         >
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notifications</Text>
+        <Text style={styles.headerTitle}>{S.profile.notifications.title}</Text>
         {unreadCount > 0 ? (
           <TouchableOpacity
             style={styles.markReadBtn}
             onPress={handleMarkAllRead}
           >
             <Ionicons name="checkmark-done" size={20} color={THEME.primary} />
-            <Text style={styles.markReadText}>Read all</Text>
+            <Text style={styles.markReadText}>{S.profile.notifications.readAll}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.headerSpacer} />
@@ -158,7 +159,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Loading notifications...</Text>
+          <Text style={styles.loadingText}>{S.profile.notifications.loadingNotifications}</Text>
         </View>
       ) : (
         <FlatList

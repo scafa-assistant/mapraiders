@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { clanApi } from '../../services/api';
+import { strings as S } from '../../i18n';
 
 const PRESET_COLORS = [
   '#00D4FF',
@@ -55,11 +56,11 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
         color,
         privacy: isPublic ? 'public' : 'private',
       });
-      Alert.alert('Clan erstellt!', 'Dein Clan wurde erfolgreich erstellt.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      Alert.alert(S.profile.createClan.createdTitle, S.profile.createClan.createdMessage, [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
-      Alert.alert('Fehler', err.message || 'Clan konnte nicht erstellt werden.');
+      Alert.alert(S.common.error, err.message || S.profile.createClan.createFailed);
     } finally {
       setSubmitting(false);
     }
@@ -72,7 +73,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Clan erstellen</Text>
+        <Text style={styles.headerTitle}>{S.profile.createClan.title}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -97,7 +98,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               </View>
             )}
             <Text style={styles.previewName} numberOfLines={1}>
-              {name.trim() || 'Clan Name'}
+              {name.trim() || S.profile.createClan.nameLabel}
             </Text>
             <View style={styles.previewMeta}>
               <Ionicons
@@ -106,19 +107,19 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
                 color={THEME.textSecondary}
               />
               <Text style={styles.previewMetaText}>
-                {isPublic ? 'Offentlich' : 'Privat'}
+                {isPublic ? S.profile.clan.public : S.profile.clan.private}
               </Text>
             </View>
           </View>
 
           {/* Clan Name */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Clan Name *</Text>
+            <Text style={styles.label}>{S.profile.createClan.nameLabel} *</Text>
             <View style={styles.inputContainer}>
               <Ionicons name="people" size={18} color={THEME.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Name deines Clans"
+                placeholder={S.profile.createClan.namePlaceholder}
                 placeholderTextColor="#3A4560"
                 value={name}
                 onChangeText={(t) => t.length <= 30 && setName(t)}
@@ -128,18 +129,18 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               <Text style={styles.charCount}>{name.length}/30</Text>
             </View>
             {name.length > 0 && name.trim().length < 3 && (
-              <Text style={styles.errorHint}>Mindestens 3 Zeichen</Text>
+              <Text style={styles.errorHint}>{S.profile.createClan.minChars3}</Text>
             )}
           </View>
 
           {/* Clan Tag */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Clan Tag *</Text>
+            <Text style={styles.label}>{S.profile.createClan.tagLabel} *</Text>
             <View style={styles.inputContainer}>
               <Ionicons name="pricetag" size={18} color={THEME.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="z.B. RAID"
+                placeholder={S.profile.createClan.tagPlaceholder}
                 placeholderTextColor="#3A4560"
                 value={tag}
                 onChangeText={handleTagChange}
@@ -149,11 +150,11 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               <Text style={styles.charCount}>{tag.length}/6</Text>
             </View>
             {tag.length > 0 && tag.length < 2 && (
-              <Text style={styles.errorHint}>Mindestens 2 Zeichen</Text>
+              <Text style={styles.errorHint}>{S.profile.createClan.minChars2}</Text>
             )}
             {tag.length >= 2 && (
               <View style={styles.tagPreviewRow}>
-                <Text style={styles.tagPreviewLabel}>Vorschau:</Text>
+                <Text style={styles.tagPreviewLabel}>{S.profile.createClan.previewLabel}</Text>
                 <View style={[styles.tagPreviewChip, { backgroundColor: `${color}20` }]}>
                   <Text style={[styles.tagPreviewChipText, { color }]}>[{tag}]</Text>
                 </View>
@@ -163,11 +164,11 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
 
           {/* Description */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Beschreibung</Text>
+            <Text style={styles.label}>{S.profile.createClan.descriptionLabel}</Text>
             <View style={[styles.inputContainer, styles.textAreaContainer]}>
               <TextInput
                 style={[styles.input, styles.textArea]}
-                placeholder="Beschreibe deinen Clan..."
+                placeholder={S.profile.createClan.descriptionPlaceholder}
                 placeholderTextColor="#3A4560"
                 value={description}
                 onChangeText={(t) => t.length <= 500 && setDescription(t)}
@@ -184,7 +185,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
 
           {/* Color Picker */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Clan Farbe</Text>
+            <Text style={styles.label}>{S.profile.createClan.colorLabel}</Text>
             <View style={styles.colorRow}>
               {PRESET_COLORS.map((c) => (
                 <TouchableOpacity
@@ -212,7 +213,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
 
           {/* Privacy Toggle */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Sichtbarkeit</Text>
+            <Text style={styles.label}>{S.profile.createClan.privacyLabel}</Text>
             <View style={styles.toggleRow}>
               <TouchableOpacity
                 style={[styles.toggleBtn, isPublic && styles.toggleBtnActive]}
@@ -225,10 +226,10 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
                   color={isPublic ? THEME.bg : THEME.textSecondary}
                 />
                 <Text style={[styles.toggleText, isPublic && styles.toggleTextActive]}>
-                  Offentlich
+                  {S.profile.clan.public}
                 </Text>
                 <Text style={[styles.toggleSubtext, isPublic && styles.toggleSubtextActive]}>
-                  Jeder kann beitreten
+                  {S.profile.createClan.publicHint}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -242,10 +243,10 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
                   color={!isPublic ? THEME.bg : THEME.textSecondary}
                 />
                 <Text style={[styles.toggleText, !isPublic && styles.toggleTextActive]}>
-                  Privat
+                  {S.profile.clan.private}
                 </Text>
                 <Text style={[styles.toggleSubtext, !isPublic && styles.toggleSubtextActive]}>
-                  Nur per Einladung
+                  {S.profile.createClan.privateHint}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -263,7 +264,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
             ) : (
               <>
                 <Ionicons name="shield-checkmark" size={22} color="#0A0E17" />
-                <Text style={styles.submitBtnText}>CLAN ERSTELLEN</Text>
+                <Text style={styles.submitBtnText}>{S.profile.createClan.submitButton}</Text>
               </>
             )}
           </TouchableOpacity>

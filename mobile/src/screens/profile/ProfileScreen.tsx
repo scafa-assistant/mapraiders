@@ -20,6 +20,7 @@ import { formatArea, formatNumber, formatXP } from '../../utils/formatters';
 import { notificationApi, userApi } from '../../services/api';
 import StatBar from '../../components/StatBar';
 import ClassBadge from '../../components/ClassBadge';
+import { strings as S, t, plural } from '../../i18n';
 import type { ProfileScreenProps, MovementClass } from '../../navigation/types';
 
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
@@ -77,7 +78,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         setAvatarUrl(responseData.avatar_url);
       }
     } catch (err) {
-      Alert.alert('Error', 'Failed to upload avatar. Please try again.');
+      Alert.alert(S.common.error, S.profile.profileScreen.avatarUploadFailed);
     }
   };
 
@@ -85,7 +86,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>Loading profile...</Text>
+          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>{S.profile.profileScreen.loadingProfile}</Text>
         </View>
       </SafeAreaView>
     );
@@ -124,7 +125,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
       >
         {/* Header with settings */}
         <View style={styles.headerRow}>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>{S.profile.profileScreen.title}</Text>
           <TouchableOpacity
             style={[styles.settingsBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
             onPress={() => navigation.navigate('Settings')}
@@ -153,23 +154,23 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <TouchableOpacity
             onPress={() => {
               Alert.prompt
-                ? Alert.prompt('Username ändern', 'Neuer Username:', async (newName) => {
+                ? Alert.prompt(S.profile.profileScreen.changeUsernameTitle, S.profile.profileScreen.changeUsernamePrompt, async (newName) => {
                     if (!newName?.trim()) return;
                     try {
                       await userApi.changeUsername(newName.trim());
                       refreshProfile();
-                      Alert.alert('Fertig', `Username geändert zu "${newName.trim()}"`);
+                      Alert.alert(S.common.done, t(S.profile.settings.usernameChanged, { username: newName.trim() }));
                     } catch (err: any) {
-                      Alert.alert('Fehler', err?.response?.data?.message || 'Username konnte nicht geändert werden.');
+                      Alert.alert(S.common.error, err?.response?.data?.message || S.profile.settings.usernameChangeFailed);
                     }
                   }, 'plain-text', user.username)
                 : // Android fallback
                   (() => {
                     // For Android, show a simple alert with info to use settings
                     Alert.alert(
-                      'Username ändern',
-                      `Aktueller Name: ${user.username}\n\nGib deinen neuen Username in den Einstellungen ein.`,
-                      [{ text: 'OK' }]
+                      S.profile.profileScreen.changeUsernameTitle,
+                      t(S.profile.profileScreen.changeUsernameAndroidHint, { username: user.username }),
+                      [{ text: S.common.ok }]
                     );
                   })();
             }}
@@ -182,7 +183,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           {/* Level + XP */}
           <View style={styles.levelRow}>
             <View style={styles.levelBadge}>
-              <Text style={[styles.levelText, { color: theme.primary }]}>Level {user.level}</Text>
+              <Text style={[styles.levelText, { color: theme.primary }]}>{t(S.profile.profileScreen.level, { level: user.level })}</Text>
             </View>
             <ClassBadge movementClass={dominantClass} size="sm" />
           </View>
@@ -219,22 +220,22 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <Ionicons name="map-outline" size={20} color={theme.primary} />
             <Text style={[styles.statValue, { color: theme.text }]}>{formatNumber(totalClaims)}</Text>
-            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Claims</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{S.profile.profileScreen.claims}</Text>
           </View>
           <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <Ionicons name="resize-outline" size={20} color={theme.accent} />
             <Text style={[styles.statValue, { color: theme.text }]}>{formatArea(totalArea)}</Text>
-            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Area</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{S.profile.profileScreen.area}</Text>
           </View>
           <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <Ionicons name="flag-outline" size={20} color={theme.secondary} />
             <Text style={[styles.statValue, { color: theme.text }]}>{formatNumber(questsCompleted)}</Text>
-            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Quests</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{S.profile.profileScreen.quests}</Text>
           </View>
           <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <Ionicons name="star-outline" size={20} color={theme.warning} />
             <Text style={[styles.statValue, { color: theme.text }]}>{formatXP(Number(user.xp) || 0)}</Text>
-            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Total XP</Text>
+            <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{S.profile.profileScreen.totalXp}</Text>
           </View>
         </View>
 
@@ -243,19 +244,19 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           <View style={styles.streakLeft}>
             <Ionicons name="flame" size={28} color="#FF6B35" />
             <View>
-              <Text style={[styles.streakValue, { color: theme.text }]}>{currentStreak} Days</Text>
-              <Text style={[styles.streakLabel, { color: theme.textSecondary }]}>Current Streak</Text>
+              <Text style={[styles.streakValue, { color: theme.text }]}>{plural(currentStreak, S.common.dayOne, S.common.dayOther)}</Text>
+              <Text style={[styles.streakLabel, { color: theme.textSecondary }]}>{S.profile.profileScreen.currentStreak}</Text>
             </View>
           </View>
           <View style={styles.streakRight}>
             <Text style={[styles.bestStreakValue, { color: theme.warning }]}>{longestStreak}</Text>
-            <Text style={[styles.bestStreakLabel, { color: theme.textSecondary }]}>Best</Text>
+            <Text style={[styles.bestStreakLabel, { color: theme.textSecondary }]}>{S.profile.profileScreen.bestStreak}</Text>
           </View>
         </View>
 
         {/* Class Breakdown */}
         <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Movement Classes</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{S.profile.profileScreen.movementClasses}</Text>
           {Object.entries(classBreakdown)
             .filter(([, count]) => Number(count) > 0)
             .sort(([, a], [, b]) => Number(b) - Number(a))
@@ -302,8 +303,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="paw" size={22} color={theme.secondary} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>My Pet</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>View your companion</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>{S.profile.profileScreen.myPet}</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>{S.profile.profileScreen.myPetSubtitle}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
@@ -318,8 +319,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="notifications" size={22} color={theme.primary} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Notifications</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>View your alerts</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>{S.profile.profileScreen.notifications}</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>{S.profile.profileScreen.notificationsSubtitle}</Text>
           </View>
           {unreadNotifications > 0 && (
             <View style={styles.badge}>
@@ -341,8 +342,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="people" size={22} color={theme.primary} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Freunde</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>Suchen, hinzufügen, verwalten</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>{S.profile.profileScreen.friends}</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>{S.profile.profileScreen.friendsSubtitle}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
@@ -357,8 +358,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="shield" size={22} color={theme.warning} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Mein Clan</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>Erstellen, beitreten, verwalten</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>{S.profile.profileScreen.myClan}</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>{S.profile.profileScreen.myClanSubtitle}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
@@ -373,8 +374,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="newspaper" size={22} color={theme.accent} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Activity Feed</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>See what's happening nearby</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>{S.profile.profileScreen.activityFeed}</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>{S.profile.profileScreen.activityFeedSubtitle}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>
@@ -389,8 +390,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <Ionicons name="trophy" size={22} color={theme.danger} />
           </View>
           <View style={styles.petButtonContent}>
-            <Text style={[styles.petButtonTitle, { color: theme.text }]}>Leaderboard</Text>
-            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>Top MapRaiders rankings</Text>
+            <Text style={[styles.petButtonTitle, { color: theme.text }]}>{S.profile.profileScreen.leaderboard}</Text>
+            <Text style={[styles.petButtonSubtitle, { color: theme.textSecondary }]}>{S.profile.profileScreen.leaderboardSubtitle}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={theme.border} />
         </TouchableOpacity>

@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { THEME } from '../../utils/constants';
+import { strings as S } from '../../i18n';
 
 const { width, height } = Dimensions.get('window');
 
@@ -116,11 +117,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         </View>
 
         <Text style={styles.title}>MAPRAIDERS</Text>
-        <Text style={styles.tagline}>Claim. Create. Conquer.</Text>
+        <Text style={styles.tagline}>{S.auth.onboarding.tagline}</Text>
 
         <Text style={styles.description}>
-          Your city is now a battlefield. Walk to claim territory, create quests
-          for others, and compete with players worldwide.
+          {S.auth.onboarding.welcomeDescription}
         </Text>
       </View>
 
@@ -131,7 +131,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           onPress={handleNext}
           activeOpacity={0.8}
         >
-          <Text style={styles.primaryButtonText}>NEXT</Text>
+          <Text style={styles.primaryButtonText}>{S.auth.onboarding.next}</Text>
           <Ionicons name="arrow-forward" size={18} color={THEME.bg} />
         </TouchableOpacity>
       </View>
@@ -150,17 +150,16 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           </View>
         </View>
 
-        <Text style={styles.stepTitle}>We need your location</Text>
+        <Text style={styles.stepTitle}>{S.auth.onboarding.locationTitle}</Text>
         <Text style={styles.stepDescription}>
-          MapRaiders uses GPS to track your movement and claim territory.
-          Without location access, the game can't work.
+          {S.auth.onboarding.locationDescription}
         </Text>
 
         {locationDenied && (
           <View style={styles.warningBanner}>
             <Ionicons name="warning" size={18} color={THEME.danger} />
             <Text style={styles.warningText}>
-              Location is required to play MapRaiders. Please grant access.
+              {S.auth.onboarding.locationDeniedWarning}
             </Text>
           </View>
         )}
@@ -168,7 +167,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         {locationGranted && (
           <View style={styles.successBanner}>
             <Ionicons name="checkmark-circle" size={18} color={THEME.accent} />
-            <Text style={styles.successText}>Location access granted!</Text>
+            <Text style={styles.successText}>{S.auth.onboarding.locationGrantedBanner}</Text>
           </View>
         )}
       </View>
@@ -190,13 +189,13 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           ) : locationGranted ? (
             <>
               <Ionicons name="checkmark" size={18} color={THEME.bg} />
-              <Text style={styles.primaryButtonText}>GRANTED</Text>
+              <Text style={styles.primaryButtonText}>{S.auth.onboarding.granted}</Text>
             </>
           ) : (
             <>
               <Ionicons name="location" size={18} color={THEME.bg} />
               <Text style={styles.primaryButtonText}>
-                {locationDenied ? 'RETRY' : 'ENABLE LOCATION'}
+                {locationDenied ? S.auth.onboarding.retry : S.auth.onboarding.enableLocation}
               </Text>
             </>
           )}
@@ -214,7 +213,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           <Ionicons name="rocket" size={56} color={THEME.primary} />
         </View>
 
-        <Text style={styles.stepTitle}>You're ready to raid!</Text>
+        <Text style={styles.stepTitle}>{S.auth.onboarding.readyTitle}</Text>
 
         <View style={styles.tipsList}>
           <View style={styles.tipRow}>
@@ -222,7 +221,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
               <Ionicons name="footsteps" size={20} color={THEME.primary} />
             </View>
             <Text style={styles.tipText}>
-              Walk to claim territory on the map
+              {S.auth.onboarding.tipWalk}
             </Text>
           </View>
 
@@ -231,7 +230,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
               <Ionicons name="compass" size={20} color={THEME.secondary} />
             </View>
             <Text style={styles.tipText}>
-              Create quests and echos for others to discover
+              {S.auth.onboarding.tipCreate}
             </Text>
           </View>
 
@@ -240,7 +239,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
               <Ionicons name="trophy" size={20} color={THEME.warning} />
             </View>
             <Text style={styles.tipText}>
-              Compete in duels and clan wars
+              {S.auth.onboarding.tipCompete}
             </Text>
           </View>
         </View>
@@ -254,7 +253,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           activeOpacity={0.8}
         >
           <Ionicons name="game-controller" size={20} color={THEME.bg} />
-          <Text style={styles.primaryButtonText}>START PLAYING</Text>
+          <Text style={styles.primaryButtonText}>{S.auth.onboarding.startPlaying}</Text>
         </TouchableOpacity>
       </View>
     </View>

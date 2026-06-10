@@ -17,6 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { petApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import PetCard from '../../components/PetCard';
+import { strings as S } from '../../i18n';
 import type { PetScreenProps, Pet } from '../../navigation/types';
 
 type RegisterStep = 'form' | 'loading';
@@ -66,7 +67,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
   const pickPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow photo library access to add a dog photo.');
+      Alert.alert(S.profile.pet.permissionNeededTitle, S.profile.pet.libraryPermission);
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -83,7 +84,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow camera access to take a dog photo.');
+      Alert.alert(S.profile.pet.permissionNeededTitle, S.profile.pet.cameraPermission);
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -97,16 +98,16 @@ export default function PetScreen({ navigation }: PetScreenProps) {
   };
 
   const handlePickPhoto = () => {
-    Alert.alert('Add Dog Photo', 'Choose an option', [
-      { text: 'Take Photo', onPress: takePhoto },
-      { text: 'Choose from Library', onPress: pickPhoto },
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(S.profile.pet.addPhotoTitle, S.profile.pet.addPhotoMessage, [
+      { text: S.profile.pet.takePhoto, onPress: takePhoto },
+      { text: S.profile.pet.chooseFromLibrary, onPress: pickPhoto },
+      { text: S.common.cancel, style: 'cancel' },
     ]);
   };
 
   const handleRegister = async () => {
     if (!petName.trim()) {
-      Alert.alert('Name required', 'Please give your dog a name!');
+      Alert.alert(S.profile.pet.nameRequiredTitle, S.profile.pet.nameRequiredMessage);
       return;
     }
 
@@ -144,7 +145,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
       setPet(newPet);
       setShowRegister(false);
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Could not register dog');
+      Alert.alert(S.common.error, err.message || S.profile.pet.registerFailed);
       setRegisterStep('form');
     }
   };
@@ -157,7 +158,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={THEME.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>My Dog</Text>
+          <Text style={styles.headerTitle}>{S.profile.pet.title}</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.loadingContainer}>
@@ -175,14 +176,14 @@ export default function PetScreen({ navigation }: PetScreenProps) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={THEME.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Register Dog</Text>
+          <Text style={styles.headerTitle}>{S.profile.pet.registerDog}</Text>
           <View style={{ width: 40 }} />
         </View>
 
         {registerStep === 'loading' ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={THEME.secondary} />
-            <Text style={styles.loadingText}>Registering your dog...</Text>
+            <Text style={styles.loadingText}>{S.profile.pet.registering}</Text>
           </View>
         ) : (
           <ScrollView
@@ -198,21 +199,21 @@ export default function PetScreen({ navigation }: PetScreenProps) {
                 ) : (
                   <View style={styles.registerPawCircle}>
                     <Ionicons name="camera" size={36} color={THEME.secondary} />
-                    <Text style={styles.addPhotoHint}>Add Photo</Text>
+                    <Text style={styles.addPhotoHint}>{S.profile.pet.addPhoto}</Text>
                   </View>
                 )}
               </TouchableOpacity>
-              <Text style={styles.registerTitle}>Register Your Dog</Text>
+              <Text style={styles.registerTitle}>{S.profile.pet.heroTitle}</Text>
               <Text style={styles.registerSubtitle}>
-                Your dog walks with you, earns XP, and finds rare items!
+                {S.profile.pet.heroSubtitle}
               </Text>
             </View>
 
             {/* Name Input */}
-            <Text style={styles.inputLabel}>Dog Name</Text>
+            <Text style={styles.inputLabel}>{S.profile.pet.nameLabel}</Text>
             <TextInput
               style={styles.textInput}
-              placeholder="What's their name?"
+              placeholder={S.profile.pet.namePlaceholder}
               placeholderTextColor="#555E78"
               value={petName}
               onChangeText={setPetName}
@@ -220,10 +221,10 @@ export default function PetScreen({ navigation }: PetScreenProps) {
             />
 
             {/* Breed */}
-            <Text style={styles.inputLabel}>Breed (optional)</Text>
+            <Text style={styles.inputLabel}>{S.profile.pet.breedLabel}</Text>
             <TextInput
               style={styles.textInput}
-              placeholder="e.g. Golden Retriever"
+              placeholder={S.profile.pet.breedPlaceholder}
               placeholderTextColor="#555E78"
               value={petBreed}
               onChangeText={setPetBreed}
@@ -241,7 +242,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
               activeOpacity={0.7}
             >
               <Ionicons name="paw" size={20} color="#0A0E17" />
-              <Text style={styles.registerBtnText}>Register Dog</Text>
+              <Text style={styles.registerBtnText}>{S.profile.pet.registerDog}</Text>
             </TouchableOpacity>
 
             <View style={{ height: 100 }} />
@@ -277,22 +278,22 @@ export default function PetScreen({ navigation }: PetScreenProps) {
 
         {/* Tips */}
         <View style={styles.tipsCard}>
-          <Text style={styles.tipsTitle}>How to level up</Text>
+          <Text style={styles.tipsTitle}>{S.profile.pet.tipsTitle}</Text>
           <View style={styles.tipRow}>
             <Ionicons name="footsteps-outline" size={16} color={THEME.primary} />
-            <Text style={styles.tipText}>Walk regularly to earn pet XP</Text>
+            <Text style={styles.tipText}>{S.profile.pet.tipWalk}</Text>
           </View>
           <View style={styles.tipRow}>
             <Ionicons name="compass-outline" size={16} color={THEME.accent} />
-            <Text style={styles.tipText}>Explore new areas for bonus XP</Text>
+            <Text style={styles.tipText}>{S.profile.pet.tipExplore}</Text>
           </View>
           <View style={styles.tipRow}>
             <Ionicons name="diamond-outline" size={16} color={THEME.warning} />
-            <Text style={styles.tipText}>Find rare items during walks</Text>
+            <Text style={styles.tipText}>{S.profile.pet.tipItems}</Text>
           </View>
           <View style={styles.tipRow}>
             <Ionicons name="shield-outline" size={16} color={THEME.secondary} />
-            <Text style={styles.tipText}>At level 5, choose a specialization</Text>
+            <Text style={styles.tipText}>{S.profile.pet.tipSpecialization}</Text>
           </View>
         </View>
 

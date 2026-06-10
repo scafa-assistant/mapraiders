@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { travelApi } from '../../services/api';
 import { useLocationStore } from '../../store/locationStore';
+import { strings as S, t } from '../../i18n';
 import { TravelRoutePlayScreenProps } from '../../navigation/types';
 import { TravelRoute, TravelSpot } from '../../utils/types';
 
@@ -162,12 +163,12 @@ export default function TravelRoutePlayScreen({
 
   const handleAbandon = () => {
     Alert.alert(
-      'Leave Route',
-      'Are you sure you want to leave this route? Progress will be lost.',
+      S.travel.play.leaveTitle,
+      S.travel.play.leaveMsg,
       [
-        { text: 'Continue Route', style: 'cancel' },
+        { text: S.travel.play.continueRoute, style: 'cancel' },
         {
-          text: 'Leave',
+          text: S.travel.play.leave,
           style: 'destructive',
           onPress: () => navigation.goBack(),
         },
@@ -198,11 +199,11 @@ export default function TravelRoutePlayScreen({
           <View style={styles.trophyCircle}>
             <Ionicons name="trophy" size={56} color="#FFB800" />
           </View>
-          <Text style={styles.completeTitle}>ROUTE COMPLETE!</Text>
+          <Text style={styles.completeTitle}>{S.travel.play.completeTitle}</Text>
           <Text style={styles.completeSubtitle}>{travelRoute?.name}</Text>
 
           <View style={styles.ratingSection}>
-            <Text style={styles.ratingPrompt}>Rate this route</Text>
+            <Text style={styles.ratingPrompt}>{S.travel.play.rateRoute}</Text>
             <View style={styles.ratingStars}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity key={star} onPress={() => setRating(star)}>
@@ -225,7 +226,7 @@ export default function TravelRoutePlayScreen({
             {completing ? (
               <ActivityIndicator color="#0A0E17" size="small" />
             ) : (
-              <Text style={styles.doneButtonText}>COMPLETE ROUTE</Text>
+              <Text style={styles.doneButtonText}>{S.travel.play.completeRoute}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -237,7 +238,7 @@ export default function TravelRoutePlayScreen({
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00D4FF" />
-        <Text style={styles.loadingText}>Loading route...</Text>
+        <Text style={styles.loadingText}>{S.travel.play.loadingRoute}</Text>
       </SafeAreaView>
     );
   }
@@ -359,7 +360,7 @@ export default function TravelRoutePlayScreen({
             <View style={styles.spotDetailHeader}>
               <View style={styles.spotDetailBadge}>
                 <Ionicons name="checkmark-circle" size={20} color="#00FF88" />
-                <Text style={styles.spotDetailBadgeText}>Spot Reached!</Text>
+                <Text style={styles.spotDetailBadgeText}>{S.travel.play.spotReached}</Text>
               </View>
             </View>
 
@@ -383,7 +384,7 @@ export default function TravelRoutePlayScreen({
               activeOpacity={0.8}
             >
               <Text style={styles.nextSpotButtonText}>
-                {visitedSpots.size >= spots.length ? 'FINISH' : 'NEXT SPOT'}
+                {visitedSpots.size >= spots.length ? S.travel.play.finish : S.travel.play.nextSpot}
               </Text>
               <Ionicons name="arrow-forward" size={18} color="#0A0E17" />
             </TouchableOpacity>
@@ -398,7 +399,7 @@ export default function TravelRoutePlayScreen({
             <View style={styles.spotTargetBadge}>
               <Ionicons name="navigate" size={16} color="#00FF88" />
               <Text style={styles.spotTargetText}>
-                Spot {currentTargetIndex + 1}: {currentSpot.name}
+                {t(S.travel.play.spotTarget, { number: currentTargetIndex + 1, name: currentSpot.name })}
               </Text>
             </View>
           </View>
@@ -406,7 +407,7 @@ export default function TravelRoutePlayScreen({
           <View style={styles.distanceRow}>
             <Ionicons name="navigate-outline" size={14} color="#8892B0" />
             <Text style={styles.distanceText}>
-              {dist < Infinity ? formatDistance(dist) : '---'} away
+              {t(S.travel.play.distanceAway, { distance: dist < Infinity ? formatDistance(dist) : '---' })}
             </Text>
           </View>
 

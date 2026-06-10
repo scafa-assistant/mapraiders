@@ -15,15 +15,16 @@ import { challengeApi } from '../../services/api';
 import ChallengeCard from '../../components/ChallengeCard';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { ChallengeListScreenProps, Challenge } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 const TEMPLATE_FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Distance Sprint', value: 'Distance Sprint' },
-  { label: 'Area', value: 'Area' },
-  { label: 'Elevation', value: 'Elevation' },
-  { label: 'Steps', value: 'Steps' },
-  { label: 'Timed Walk', value: 'Timed Walk' },
-  { label: 'Explorer', value: 'Explorer' },
+  { label: S.map.challengeList.filterAll, value: 'all' },
+  { label: S.map.challengeList.filterDistanceSprint, value: 'Distance Sprint' },
+  { label: S.map.challengeList.filterArea, value: 'Area' },
+  { label: S.map.challengeList.filterElevation, value: 'Elevation' },
+  { label: S.map.challengeList.filterSteps, value: 'Steps' },
+  { label: S.map.challengeList.filterTimedWalk, value: 'Timed Walk' },
+  { label: S.map.challengeList.filterExplorer, value: 'Explorer' },
 ] as const;
 
 type TemplateFilter = (typeof TEMPLATE_FILTERS)[number]['value'];
@@ -72,9 +73,9 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="trophy-outline" size={64} color={THEME.border} />
-        <Text style={styles.emptyTitle}>No challenges nearby</Text>
+        <Text style={styles.emptyTitle}>{S.map.challengeList.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
-          Create a challenge or move to a new area!
+          {S.map.challengeList.emptySubtext}
         </Text>
       </View>
     );
@@ -88,9 +89,9 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>Challenges</Text>
+          <Text style={styles.headerTitle}>{S.map.challengeList.headerTitle}</Text>
           <Text style={styles.headerSubtitle}>
-            {filteredChallenges.length} found nearby
+            {t(S.map.challengeList.foundNearby, { count: filteredChallenges.length })}
           </Text>
         </View>
       </View>
@@ -127,7 +128,7 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
       {isLoading && challenges.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Scanning for challenges...</Text>
+          <Text style={styles.loadingText}>{S.map.challengeList.scanning}</Text>
         </View>
       ) : (
         <FlatList

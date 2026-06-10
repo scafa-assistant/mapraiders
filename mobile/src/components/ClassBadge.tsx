@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CLASS_COLORS, CLASS_ICONS, CLASS_LABELS, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S } from '../i18n';
 import { withOpacity } from '../utils/colors';
 import type { MovementClass } from '../utils/types';
 
@@ -24,7 +25,7 @@ const ClassBadge: React.FC<ClassBadgeProps> = ({
 }) => {
   const color = CLASS_COLORS[movementClass] ?? '#8892B0';
   const iconName = (CLASS_ICONS[movementClass] ?? 'help-outline') as keyof typeof Ionicons.glyphMap;
-  const label = CLASS_LABELS[movementClass] ?? 'Unknown';
+  const label = CLASS_LABELS[movementClass] ?? S.components.classBadge.unknown;
 
   const sizeConfig = SIZE_CONFIGS[size];
 

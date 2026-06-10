@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { questApi } from '../../services/api';
+import { strings as S, t, plural } from '../../i18n';
 import { QuestCreateScreenProps, QuestStepType } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -32,12 +33,12 @@ interface DraftStep {
 }
 
 const STEP_TYPES: { type: QuestStepType; label: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
-  { type: 'FIND', label: 'Find', icon: 'camera', color: '#00D4FF' },
-  { type: 'LISTEN', label: 'Listen', icon: 'ear', color: '#7B61FF' },
-  { type: 'CHALLENGE', label: 'Challenge', icon: 'videocam', color: '#FF4757' },
-  { type: 'SOLVE', label: 'Solve', icon: 'help-circle', color: '#FFB800' },
-  { type: 'COLLECT', label: 'Collect', icon: 'location', color: '#00FF88' },
-  { type: 'DOG', label: 'Dog', icon: 'paw', color: '#7B61FF' },
+  { type: 'FIND', label: S.create.quest.typeFind, icon: 'camera', color: '#00D4FF' },
+  { type: 'LISTEN', label: S.create.quest.typeListen, icon: 'ear', color: '#7B61FF' },
+  { type: 'CHALLENGE', label: S.create.quest.typeChallenge, icon: 'videocam', color: '#FF4757' },
+  { type: 'SOLVE', label: S.create.quest.typeSolve, icon: 'help-circle', color: '#FFB800' },
+  { type: 'COLLECT', label: S.create.quest.typeCollect, icon: 'location', color: '#00FF88' },
+  { type: 'DOG', label: S.create.quest.typeDog, icon: 'paw', color: '#7B61FF' },
 ];
 
 type WizardStep = 'info' | 'steps' | 'edit' | 'preview';
@@ -95,16 +96,16 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
   const handlePublish = async () => {
     if (!title.trim()) {
-      Alert.alert('Missing Title', 'Please enter a quest title.');
+      Alert.alert(S.create.quest.missingTitleTitle, S.create.quest.missingTitleMsg);
       return;
     }
     if (steps.length < 2) {
-      Alert.alert('Too Few Steps', 'Add at least 2 steps to your quest.');
+      Alert.alert(S.create.quest.tooFewStepsTitle, S.create.quest.tooFewStepsMsg);
       return;
     }
     for (const step of steps) {
       if (!step.instruction.trim()) {
-        Alert.alert('Missing Instruction', 'Every step needs an instruction.');
+        Alert.alert(S.create.quest.missingInstructionTitle, S.create.quest.missingInstructionMsg);
         return;
       }
     }
@@ -127,11 +128,11 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           hint: s.hint.trim() || undefined,
         })),
       });
-      Alert.alert('Quest Published!', 'Your quest is now live on the grid.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      Alert.alert(S.create.quest.publishedTitle, S.create.quest.publishedMsg, [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (_err) {
-      Alert.alert('Error', 'Failed to publish quest. Please try again.');
+      Alert.alert(S.common.error, S.create.quest.publishFailed);
     } finally {
       setIsPublishing(false);
     }
@@ -147,14 +148,14 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         contentContainerStyle={styles.infoContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.wizardTitle}>Quest Details</Text>
-        <Text style={styles.wizardSubtitle}>Give your quest a name and description</Text>
+        <Text style={styles.wizardTitle}>{S.create.quest.detailsTitle}</Text>
+        <Text style={styles.wizardSubtitle}>{S.create.quest.detailsSubtitle}</Text>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>TITLE</Text>
+          <Text style={styles.label}>{S.create.quest.titleLabel}</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="Enter quest title..."
+            placeholder={S.create.quest.titlePlaceholder}
             placeholderTextColor="#555E78"
             value={title}
             onChangeText={setTitle}
@@ -164,10 +165,10 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>DESCRIPTION</Text>
+          <Text style={styles.label}>{S.create.quest.descriptionLabel}</Text>
           <TextInput
             style={[styles.textInput, styles.textArea]}
-            placeholder="Describe your quest..."
+            placeholder={S.create.quest.descriptionPlaceholder}
             placeholderTextColor="#555E78"
             value={description}
             onChangeText={setDescription}
@@ -180,7 +181,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>DIFFICULTY</Text>
+          <Text style={styles.label}>{S.create.quest.difficultyLabel}</Text>
           <View style={styles.difficultyRow}>
             {[1, 2, 3, 4, 5].map((star) => (
               <TouchableOpacity key={star} onPress={() => setDifficulty(star)}>
@@ -195,18 +196,18 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>WEATHER CONDITION (OPTIONAL)</Text>
+          <Text style={styles.label}>{S.create.quest.weatherLabel}</Text>
           <View style={styles.weatherGrid}>
             {[
-              { value: null, label: 'Any Weather', icon: 'partly-sunny' as keyof typeof Ionicons.glyphMap },
-              { value: 'rain', label: 'Rain', icon: 'rainy' as keyof typeof Ionicons.glyphMap },
-              { value: 'snow', label: 'Snow', icon: 'snow' as keyof typeof Ionicons.glyphMap },
-              { value: 'fog', label: 'Fog', icon: 'cloud' as keyof typeof Ionicons.glyphMap },
-              { value: 'wind', label: 'Wind', icon: 'flag' as keyof typeof Ionicons.glyphMap },
-              { value: 'storm', label: 'Storm', icon: 'thunderstorm' as keyof typeof Ionicons.glyphMap },
-              { value: 'clear', label: 'Clear Sky', icon: 'sunny' as keyof typeof Ionicons.glyphMap },
-              { value: 'cold', label: 'Cold (<5C)', icon: 'thermometer-outline' as keyof typeof Ionicons.glyphMap },
-              { value: 'heat', label: 'Heat (>30C)', icon: 'flame' as keyof typeof Ionicons.glyphMap },
+              { value: null, label: S.create.quest.weatherAny, icon: 'partly-sunny' as keyof typeof Ionicons.glyphMap },
+              { value: 'rain', label: S.create.quest.weatherRain, icon: 'rainy' as keyof typeof Ionicons.glyphMap },
+              { value: 'snow', label: S.create.quest.weatherSnow, icon: 'snow' as keyof typeof Ionicons.glyphMap },
+              { value: 'fog', label: S.create.quest.weatherFog, icon: 'cloud' as keyof typeof Ionicons.glyphMap },
+              { value: 'wind', label: S.create.quest.weatherWind, icon: 'flag' as keyof typeof Ionicons.glyphMap },
+              { value: 'storm', label: S.create.quest.weatherStorm, icon: 'thunderstorm' as keyof typeof Ionicons.glyphMap },
+              { value: 'clear', label: S.create.quest.weatherClear, icon: 'sunny' as keyof typeof Ionicons.glyphMap },
+              { value: 'cold', label: S.create.quest.weatherCold, icon: 'thermometer-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'heat', label: S.create.quest.weatherHeat, icon: 'flame' as keyof typeof Ionicons.glyphMap },
             ].map((opt) => (
               <TouchableOpacity
                 key={opt.value ?? 'any'}
@@ -240,10 +241,10 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
             <View style={styles.seedToggleInfo}>
               <View style={styles.seedToggleLabelRow}>
                 <Ionicons name="leaf" size={18} color="#00FF88" />
-                <Text style={styles.seedToggleLabel}>Plant as Seed Quest</Text>
+                <Text style={styles.seedToggleLabel}>{S.create.quest.seedToggleLabel}</Text>
               </View>
               <Text style={styles.seedToggleDescription}>
-                Seed quests grow with completions. They gain new steps and link with nearby quests.
+                {S.create.quest.seedToggleDesc}
               </Text>
             </View>
             <Switch
@@ -257,12 +258,12 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
         {/* Time Window (Night Layer) */}
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>TIME WINDOW</Text>
+          <Text style={styles.label}>{S.create.quest.timeWindowLabel}</Text>
           <View style={styles.difficultyRow}>
             {([
-              { value: 'any' as const, label: 'Any Time', icon: 'time-outline' as keyof typeof Ionicons.glyphMap },
-              { value: 'day' as const, label: 'Day Only', icon: 'sunny-outline' as keyof typeof Ionicons.glyphMap },
-              { value: 'night' as const, label: 'Night Only', icon: 'moon-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'any' as const, label: S.create.quest.timeAny, icon: 'time-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'day' as const, label: S.create.quest.timeDayOnly, icon: 'sunny-outline' as keyof typeof Ionicons.glyphMap },
+              { value: 'night' as const, label: S.create.quest.timeNightOnly, icon: 'moon-outline' as keyof typeof Ionicons.glyphMap },
             ]).map((opt) => (
               <TouchableOpacity
                 key={opt.value}
@@ -301,7 +302,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           }}
           disabled={!title.trim()}
         >
-          <Text style={styles.nextButtonText}>NEXT: PLACE STEPS</Text>
+          <Text style={styles.nextButtonText}>{S.create.quest.nextPlaceSteps}</Text>
           <Ionicons name="arrow-forward" size={20} color="#0A0E17" />
         </TouchableOpacity>
       </ScrollView>
@@ -311,9 +312,9 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
   const renderStepsStep = () => (
     <View style={styles.flex}>
       <View style={styles.stepsHeader}>
-        <Text style={styles.wizardTitle}>Place Steps</Text>
+        <Text style={styles.wizardTitle}>{S.create.quest.placeStepsTitle}</Text>
         <Text style={styles.wizardSubtitle}>
-          Tap on the map to add quest steps ({steps.length} added)
+          {t(S.create.quest.placeStepsSubtitle, { count: steps.length })}
         </Text>
       </View>
 
@@ -380,7 +381,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                   </Text>
                   <Ionicons name={typeInfo?.icon || 'help'} size={14} color={typeInfo?.color} />
                   <Text style={styles.stepChipLabel} numberOfLines={1}>
-                    {step.instruction || 'Untitled'}
+                    {step.instruction || S.create.quest.untitled}
                   </Text>
                 </TouchableOpacity>
               );
@@ -392,7 +393,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
       <View style={styles.stepsActions}>
         <TouchableOpacity style={styles.backButton} onPress={() => setWizardStep('info')}>
           <Ionicons name="arrow-back" size={20} color="#8892B0" />
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text style={styles.backButtonText}>{S.common.back}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -402,7 +403,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           }}
           disabled={steps.length < 2}
         >
-          <Text style={styles.nextButtonText}>PREVIEW</Text>
+          <Text style={styles.nextButtonText}>{S.create.quest.preview}</Text>
           <Ionicons name="arrow-forward" size={18} color="#0A0E17" />
         </TouchableOpacity>
       </View>
@@ -425,7 +426,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
         >
           <View style={styles.editHeader}>
             <Text style={styles.wizardTitle}>
-              Step {editingStepIndex !== null ? editingStepIndex + 1 : ''}
+              {t(S.create.quest.stepTitle, { number: editingStepIndex !== null ? editingStepIndex + 1 : '' })}
             </Text>
             <TouchableOpacity
               style={styles.deleteStepButton}
@@ -441,7 +442,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
           {/* Step Type Selector */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>TYPE</Text>
+            <Text style={styles.label}>{S.create.quest.typeLabel}</Text>
             <View style={styles.typeGrid}>
               {STEP_TYPES.map((typeOption) => (
                 <TouchableOpacity
@@ -475,10 +476,10 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
           {/* Instruction */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>INSTRUCTION</Text>
+            <Text style={styles.label}>{S.create.quest.instructionLabel}</Text>
             <TextInput
               style={[styles.textInput, styles.textArea]}
-              placeholder="What should the player do at this step?"
+              placeholder={S.create.quest.instructionPlaceholder}
               placeholderTextColor="#555E78"
               value={editingStep.instruction}
               onChangeText={(text) => updateStep('instruction', text)}
@@ -490,10 +491,10 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
           {/* Hint */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>HINT (OPTIONAL)</Text>
+            <Text style={styles.label}>{S.create.quest.hintLabel}</Text>
             <TextInput
               style={styles.textInput}
-              placeholder="Hint revealed after 5 minutes..."
+              placeholder={S.create.quest.hintPlaceholder}
               placeholderTextColor="#555E78"
               value={editingStep.hint}
               onChangeText={(text) => updateStep('hint', text)}
@@ -502,7 +503,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
           {/* Radius */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>RADIUS: {editingStep.radius}m</Text>
+            <Text style={styles.label}>{t(S.create.quest.radiusLabel, { radius: editingStep.radius })}</Text>
             <View style={styles.radiusRow}>
               {[20, 30, 50, 75, 100].map((r) => (
                 <TouchableOpacity
@@ -531,7 +532,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
             onPress={() => setWizardStep('steps')}
           >
             <Ionicons name="checkmark" size={20} color="#0A0E17" />
-            <Text style={styles.nextButtonText}>SAVE STEP</Text>
+            <Text style={styles.nextButtonText}>{S.create.quest.saveStep}</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -540,8 +541,8 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
 
   const renderPreview = () => (
     <ScrollView style={styles.flex} contentContainerStyle={styles.previewContent}>
-      <Text style={styles.wizardTitle}>Preview</Text>
-      <Text style={styles.wizardSubtitle}>Review your quest before publishing</Text>
+      <Text style={styles.wizardTitle}>{S.create.quest.previewTitle}</Text>
+      <Text style={styles.wizardSubtitle}>{S.create.quest.previewSubtitle}</Text>
 
       <View style={styles.previewCard}>
         <Text style={styles.previewTitle}>{title}</Text>
@@ -558,11 +559,11 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
               />
             ))}
           </View>
-          <Text style={styles.previewStepCount}>{steps.length} steps</Text>
+          <Text style={styles.previewStepCount}>{plural(steps.length, S.create.quest.stepsCountOne, S.create.quest.stepsCountOther)}</Text>
         </View>
       </View>
 
-      <Text style={styles.previewSectionTitle}>STEPS</Text>
+      <Text style={styles.previewSectionTitle}>{S.create.quest.stepsLabel}</Text>
       {steps.map((step, index) => {
         const typeInfo = STEP_TYPES.find((t) => t.type === step.type);
         return (
@@ -588,7 +589,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
       <View style={styles.publishActions}>
         <TouchableOpacity style={styles.backButton} onPress={() => setWizardStep('steps')}>
           <Ionicons name="arrow-back" size={20} color="#8892B0" />
-          <Text style={styles.backButtonText}>Edit</Text>
+          <Text style={styles.backButtonText}>{S.create.quest.edit}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -601,7 +602,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           ) : (
             <>
               <Ionicons name="rocket" size={20} color="#0A0E17" />
-              <Text style={styles.publishButtonText}>PUBLISH QUEST</Text>
+              <Text style={styles.publishButtonText}>{S.create.quest.publishQuest}</Text>
             </>
           )}
         </TouchableOpacity>

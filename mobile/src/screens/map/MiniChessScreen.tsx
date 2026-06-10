@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { turnGameApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MiniChessGameScreenProps } from '../../navigation/types';
+import { strings as S, t } from '../../i18n';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -230,7 +231,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       setGame(gameData);
       setError(null);
     } catch (err: any) {
-      setError(err.message || 'Failed to load game');
+      setError(err.message || S.map.miniChess.loadGameFailed);
     } finally {
       setLoading(false);
     }
@@ -278,7 +279,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       const diff = deadline - now;
 
       if (diff <= 0) {
-        setTimeLeft('Expired');
+        setTimeLeft(S.map.miniChess.expired);
         return;
       }
 
@@ -287,9 +288,9 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
       if (hours > 0) {
-        setTimeLeft(`${hours}h ${minutes.toString().padStart(2, '0')}m`);
+        setTimeLeft(t(S.map.miniChess.timeHoursMinutes, { hours, minutes: minutes.toString().padStart(2, '0') }));
       } else {
-        setTimeLeft(`${minutes}m ${seconds.toString().padStart(2, '0')}s`);
+        setTimeLeft(t(S.map.miniChess.timeMinutesSeconds, { minutes, seconds: seconds.toString().padStart(2, '0') }));
       }
     };
 
@@ -450,7 +451,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         const updatedGame = data?.data ?? data;
         setGame(updatedGame);
       } catch (err: any) {
-        Alert.alert('Invalid Move', err.message || 'That move is not allowed.');
+        Alert.alert(S.map.miniChess.invalidMoveTitle, err.message || S.map.miniChess.invalidMoveMsg);
         // Refresh game state
         fetchGame();
       } finally {
@@ -518,7 +519,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Loading game...</Text>
+          <Text style={styles.loadingText}>{S.map.miniChess.loadingGame}</Text>
         </View>
       </SafeAreaView>
     );
@@ -529,9 +530,9 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centerContent}>
           <Ionicons name="alert-circle-outline" size={48} color={THEME.danger} />
-          <Text style={styles.errorText}>{error || 'Failed to load game'}</Text>
+          <Text style={styles.errorText}>{error || S.map.miniChess.loadGameFailed}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={fetchGame}>
-            <Text style={styles.retryBtnText}>Retry</Text>
+            <Text style={styles.retryBtnText}>{S.common.retry}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -688,15 +689,15 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
 
     const color = game.your_symbol;
     const options = [
-      { piece: 'R', symbol: PIECE_SYMBOLS[color + 'R'], label: 'Rook' },
-      { piece: 'B', symbol: PIECE_SYMBOLS[color + 'B'], label: 'Bishop' },
+      { piece: 'R', symbol: PIECE_SYMBOLS[color + 'R'], label: S.map.miniChess.rook },
+      { piece: 'B', symbol: PIECE_SYMBOLS[color + 'B'], label: S.map.miniChess.bishop },
     ];
 
     return (
       <View style={styles.promotionOverlay}>
         <View style={styles.promotionDialog}>
-          <Text style={styles.promotionTitle}>Promote Pawn</Text>
-          <Text style={styles.promotionSubtitle}>Choose a piece</Text>
+          <Text style={styles.promotionTitle}>{S.map.miniChess.promoteTitle}</Text>
+          <Text style={styles.promotionSubtitle}>{S.map.miniChess.promoteSubtitle}</Text>
 
           <View style={styles.promotionOptions}>
             {options.map((opt) => (
@@ -728,7 +729,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
               setValidMoves([]);
             }}
           >
-            <Text style={styles.promotionCancelText}>Cancel</Text>
+            <Text style={styles.promotionCancelText}>{S.common.cancel}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -742,7 +743,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
 
     const isVictory = result === 'victory';
     const isDraw = result === 'draw';
-    const title = isVictory ? 'VICTORY' : isDraw ? 'DRAW' : 'DEFEATED';
+    const title = isVictory ? S.map.miniChess.victory : isDraw ? S.map.miniChess.draw : S.map.miniChess.defeated;
     const icon = isVictory ? 'trophy' : isDraw ? 'swap-horizontal' : 'close-circle';
     const color = isVictory ? '#FFB800' : isDraw ? THEME.primary : '#FF4757';
 
@@ -758,10 +759,10 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
           <Text style={[styles.resultTitle, { color }]}>{title}</Text>
           <Text style={styles.resultMessage}>
             {isVictory
-              ? 'Territory defended successfully!'
+              ? S.map.miniChess.victoryMsg
               : isDraw
-              ? 'The battle ends in a stalemate.'
-              : `${opponentUsername} conquers the territory!`}
+              ? S.map.miniChess.drawMsg
+              : t(S.map.miniChess.defeatedMsg, { username: opponentUsername })}
           </Text>
 
           <TouchableOpacity
@@ -769,7 +770,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.resultButtonText}>
-              {isVictory ? 'Celebrate!' : 'Back to Map'}
+              {isVictory ? S.map.miniChess.celebrate : S.map.miniChess.backToMap}
             </Text>
           </TouchableOpacity>
         </View>
@@ -798,7 +799,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
               { color: isYourTurn ? '#FFB800' : THEME.textSecondary },
             ]}
           >
-            {isYourTurn ? 'Your Turn' : 'Waiting for opponent...'}
+            {isYourTurn ? S.map.miniChess.yourTurn : S.map.miniChess.waitingOpponent}
           </Text>
         </View>
         {timeLeft ? (
@@ -830,9 +831,9 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         <View style={styles.headerCenter}>
           <View style={styles.headerTitleRow}>
             <Ionicons name="shield-half-outline" size={16} color={THEME.primary} />
-            <Text style={styles.headerTitle}>Mini Chess</Text>
+            <Text style={styles.headerTitle}>{S.map.miniChess.headerTitle}</Text>
           </View>
-          <Text style={styles.headerSubtitle}>vs {opponentUsername}</Text>
+          <Text style={styles.headerSubtitle}>{t(S.map.miniChess.vsUsername, { username: opponentUsername })}</Text>
         </View>
 
         <View style={styles.colorIndicator}>
@@ -846,7 +847,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
             ]}
           />
           <Text style={styles.colorLabel}>
-            {game.your_symbol === 'w' ? 'White' : 'Black'}
+            {game.your_symbol === 'w' ? S.map.miniChess.white : S.map.miniChess.black}
           </Text>
         </View>
       </View>
@@ -863,7 +864,9 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         {/* Opponent captured pieces (top) */}
         <View style={styles.capturedContainer}>
           <Text style={styles.capturedLabel}>
-            {isBlack ? game.defender_username || 'White' : game.challenger_username || 'Black'}
+            {isBlack
+              ? game.defender_username || S.map.miniChess.white
+              : game.challenger_username || S.map.miniChess.black}
           </Text>
           {renderCapturedPieces(topCaptured, topCapturedColor)}
         </View>
@@ -877,7 +880,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
 
         {/* Your captured pieces (bottom) */}
         <View style={styles.capturedContainer}>
-          <Text style={styles.capturedLabel}>You</Text>
+          <Text style={styles.capturedLabel}>{S.map.miniChess.you}</Text>
           {renderCapturedPieces(bottomCaptured, bottomCapturedColor)}
         </View>
 
@@ -885,17 +888,17 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         <View style={styles.gameInfo}>
           <View style={styles.gameInfoItem}>
             <Ionicons name="layers-outline" size={16} color={THEME.textSecondary} />
-            <Text style={styles.gameInfoText}>Turn {game.turn_number}</Text>
+            <Text style={styles.gameInfoText}>{t(S.map.miniChess.turnNumber, { number: game.turn_number })}</Text>
           </View>
           <View style={styles.gameInfoDivider} />
           <View style={styles.gameInfoItem}>
             <Ionicons name="information-circle-outline" size={16} color={THEME.textSecondary} />
-            <Text style={styles.gameInfoText}>5x5 Board</Text>
+            <Text style={styles.gameInfoText}>{S.map.miniChess.boardSize}</Text>
           </View>
           <View style={styles.gameInfoDivider} />
           <View style={styles.gameInfoItem}>
             <Ionicons name="timer-outline" size={16} color={THEME.textSecondary} />
-            <Text style={styles.gameInfoText}>4h / turn</Text>
+            <Text style={styles.gameInfoText}>{S.map.miniChess.turnLimit}</Text>
           </View>
         </View>
 
@@ -903,11 +906,10 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         <View style={styles.rulesCard}>
           <View style={styles.rulesHeader}>
             <Ionicons name="book-outline" size={16} color={THEME.primary} />
-            <Text style={styles.rulesTitle}>Rules</Text>
+            <Text style={styles.rulesTitle}>{S.map.miniChess.rulesTitle}</Text>
           </View>
           <Text style={styles.rulesText}>
-            Capture the enemy King to win. Pawns promote to Rook or Bishop on the last rank.
-            Each turn has a 4-hour time limit. If time expires, you forfeit.
+            {S.map.miniChess.rulesText}
           </Text>
         </View>
       </ScrollView>

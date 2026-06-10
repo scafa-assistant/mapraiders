@@ -11,6 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
+import { strings as S } from '../../i18n';
 import { CreateMenuScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -29,8 +30,8 @@ interface CreateOption {
 const CREATE_OPTIONS: CreateOption[] = [
   {
     key: 'meetup',
-    title: 'Event erstellen',
-    description: 'Hundespaziergang, Sport-Meetup oder Party an einem Ort planen.',
+    title: S.create.menu.eventTitle,
+    description: S.create.menu.eventDesc,
     icon: 'calendar-outline',
     color: '#FFB800',
     screen: 'MeetupCreate',
@@ -39,8 +40,8 @@ const CREATE_OPTIONS: CreateOption[] = [
   },
   {
     key: 'echo',
-    title: 'Echo hinterlassen',
-    description: 'Audio, Foto oder Video an deinem Standort hinterlassen.',
+    title: S.create.menu.echoTitle,
+    description: S.create.menu.echoDesc,
     icon: 'musical-note',
     color: '#7B61FF',
     screen: 'EchoCreate',
@@ -49,8 +50,8 @@ const CREATE_OPTIONS: CreateOption[] = [
   },
   {
     key: 'quest',
-    title: 'Quest erstellen',
-    description: 'Ein mehrstufiges Abenteuer gestalten, das andere entdecken.',
+    title: S.create.menu.questTitle,
+    description: S.create.menu.questDesc,
     icon: 'compass',
     color: '#00D4FF',
     screen: 'QuestCreate',
@@ -59,8 +60,8 @@ const CREATE_OPTIONS: CreateOption[] = [
   },
   {
     key: 'challenge',
-    title: 'Challenge setzen',
-    description: 'Physische Herausforderung an einem Ort erstellen.',
+    title: S.create.menu.challengeTitle,
+    description: S.create.menu.challengeDesc,
     icon: 'barbell',
     color: '#FF4757',
     screen: 'ChallengeCreate',
@@ -69,8 +70,8 @@ const CREATE_OPTIONS: CreateOption[] = [
   },
   {
     key: 'travel',
-    title: 'Travel Route (Coming Soon)',
-    description: 'Eine kuratierte Route mit Sehenswürdigkeiten gestalten.',
+    title: S.create.menu.travelTitle,
+    description: S.create.menu.travelDesc,
     icon: 'trail-sign',
     color: '#555E78',
     screen: 'TravelRouteCreate',
@@ -86,14 +87,14 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
 
   // All features unlocked except Coming Soon items
   const isUnlocked = (option: CreateOption): boolean => option.minLevel < 900;
-  const getLockedReason = (option: CreateOption): string => option.minLevel >= 900 ? 'Coming Soon' : '';
+  const getLockedReason = (option: CreateOption): string => option.minLevel >= 900 ? S.common.comingSoon : '';
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Create</Text>
-        <Text style={styles.headerSubtitle}>Leave your mark on the grid</Text>
+        <Text style={styles.headerTitle}>{S.create.menu.title}</Text>
+        <Text style={styles.headerSubtitle}>{S.create.menu.subtitle}</Text>
       </View>
 
       {/* Options */}
@@ -180,8 +181,7 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
       <View style={styles.infoCard}>
         <Ionicons name="information-circle" size={20} color="#00D4FF" />
         <Text style={styles.infoText}>
-          Content you create appears on the map for nearby walkers to discover.
-          Higher-rated content earns you Questmaker XP.
+          {S.create.menu.info}
         </Text>
       </View>
     </SafeAreaView>

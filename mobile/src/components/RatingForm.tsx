@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S } from '../i18n';
 import type { Rating } from '../utils/types';
 
 interface RatingFormProps {
@@ -81,7 +82,7 @@ const starStyles = StyleSheet.create({
 const RatingForm: React.FC<RatingFormProps> = ({
   onSubmit,
   isSubmitting = false,
-  title = 'Rate this experience',
+  title = S.components.ratingForm.titleDefault,
 }) => {
   const [creativity, setCreativity] = useState(0);
   const [difficulty, setDifficulty] = useState(0);
@@ -110,19 +111,19 @@ const RatingForm: React.FC<RatingFormProps> = ({
 
       {/* Star rows */}
       <View style={styles.starsContainer}>
-        <StarRow label="Creativity" value={creativity} onChange={setCreativity} />
-        <StarRow label="Difficulty" value={difficulty} onChange={setDifficulty} />
-        <StarRow label="Worth it?" value={worthIt} onChange={setWorthIt} />
+        <StarRow label={S.components.ratingForm.creativity} value={creativity} onChange={setCreativity} />
+        <StarRow label={S.components.ratingForm.difficulty} value={difficulty} onChange={setDifficulty} />
+        <StarRow label={S.components.ratingForm.worthIt} value={worthIt} onChange={setWorthIt} />
       </View>
 
       {/* Comment input */}
       <View style={styles.commentContainer}>
-        <Text style={styles.commentLabel}>Comment (optional)</Text>
+        <Text style={styles.commentLabel}>{S.components.ratingForm.commentLabel}</Text>
         <TextInput
           style={styles.commentInput}
           value={comment}
           onChangeText={setComment}
-          placeholder="Share your thoughts..."
+          placeholder={S.components.ratingForm.commentPlaceholder}
           placeholderTextColor={THEME.textSecondary}
           multiline
           maxLength={500}
@@ -139,11 +140,11 @@ const RatingForm: React.FC<RatingFormProps> = ({
         disabled={!canSubmit}
       >
         {isSubmitting ? (
-          <Text style={styles.submitText}>Submitting...</Text>
+          <Text style={styles.submitText}>{S.components.ratingForm.submitting}</Text>
         ) : (
           <>
             <Ionicons name="send-outline" size={18} color={THEME.bg} />
-            <Text style={styles.submitText}>Submit Rating</Text>
+            <Text style={styles.submitText}>{S.components.ratingForm.submit}</Text>
           </>
         )}
       </TouchableOpacity>

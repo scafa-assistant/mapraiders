@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { friendApi } from '../../services/api';
+import { strings as S, t, plural } from '../../i18n';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../../navigation/types';
 
@@ -36,14 +37,14 @@ function timeAgo(dateStr: string): string {
   const then = new Date(dateStr).getTime();
   const diff = now - then;
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'Gerade eben';
-  if (minutes < 60) return `Vor ${minutes} Min.`;
+  if (minutes < 1) return S.common.justNow;
+  if (minutes < 60) return t(S.common.minutesAgo, { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Vor ${hours} Std.`;
+  if (hours < 24) return t(S.common.hoursAgo, { count: hours });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `Vor ${days} ${days === 1 ? 'Tag' : 'Tagen'}`;
+  if (days < 7) return plural(days, S.common.daysAgoOne, S.common.daysAgoOther);
   const weeks = Math.floor(days / 7);
-  return `Vor ${weeks} ${weeks === 1 ? 'Woche' : 'Wochen'}`;
+  return plural(weeks, S.common.weeksAgoOne, S.common.weeksAgoOther);
 }
 
 export default function FriendRequestsScreen({ navigation }: Props) {
@@ -87,9 +88,9 @@ export default function FriendRequestsScreen({ navigation }: Props) {
     try {
       await friendApi.acceptRequest(request.id);
       setReceived((prev) => prev.filter((r) => r.id !== request.id));
-      Alert.alert('Freundschaft angenommen!', `Du bist jetzt mit ${request.username} befreundet.`);
+      Alert.alert(S.social.requests.acceptedTitle, t(S.social.requests.acceptedMsg, { username: request.username }));
     } catch {
-      Alert.alert('Fehler', 'Anfrage konnte nicht angenommen werden.');
+      Alert.alert(S.common.error, S.social.requests.acceptFailed);
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
@@ -105,7 +106,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
       await friendApi.declineRequest(request.id);
       setReceived((prev) => prev.filter((r) => r.id !== request.id));
     } catch {
-      Alert.alert('Fehler', 'Anfrage konnte nicht abgelehnt werden.');
+      Alert.alert(S.common.error, S.social.requests.declineFailed);
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
@@ -142,7 +143,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           <View style={styles.metaRow}>
             <View style={styles.levelBadge}>
               <Ionicons name="star" size={10} color={THEME.warning} />
-              <Text style={styles.levelText}>Lv. {item.level ?? 1}</Text>
+              <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
             </View>
             <Text style={styles.timeText}>{timeAgo(item.created_at)}</Text>
           </View>
@@ -199,7 +200,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
         <View style={styles.metaRow}>
           <View style={styles.levelBadge}>
             <Ionicons name="star" size={10} color={THEME.warning} />
-            <Text style={styles.levelText}>Lv. {item.level ?? 1}</Text>
+            <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
           </View>
           <Text style={styles.timeText}>{timeAgo(item.created_at)}</Text>
         </View>
@@ -208,7 +209,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
       {/* Pending badge */}
       <View style={styles.pendingBadge}>
         <Ionicons name="time-outline" size={12} color={THEME.textSecondary} />
-        <Text style={styles.pendingText}>Ausstehend</Text>
+        <Text style={styles.pendingText}>{S.social.requests.pending}</Text>
       </View>
     </View>
   );
@@ -220,9 +221,9 @@ export default function FriendRequestsScreen({ navigation }: Props) {
         <View style={styles.emptyIconCircle}>
           <Ionicons name="mail-open-outline" size={40} color={THEME.textSecondary} />
         </View>
-        <Text style={styles.emptyTitle}>Keine Anfragen</Text>
+        <Text style={styles.emptyTitle}>{S.social.requests.emptyReceivedTitle}</Text>
         <Text style={styles.emptySubtitle}>
-          Hier erscheinen eingehende Freundschaftsanfragen.
+          {S.social.requests.emptyReceivedSubtitle}
         </Text>
       </View>
     );
@@ -235,9 +236,9 @@ export default function FriendRequestsScreen({ navigation }: Props) {
         <View style={styles.emptyIconCircle}>
           <Ionicons name="paper-plane-outline" size={40} color={THEME.textSecondary} />
         </View>
-        <Text style={styles.emptyTitle}>Keine gesendeten Anfragen</Text>
+        <Text style={styles.emptyTitle}>{S.social.requests.emptySentTitle}</Text>
         <Text style={styles.emptySubtitle}>
-          Suche Spieler und sende ihnen eine Freundschaftsanfrage!
+          {S.social.requests.emptySentSubtitle}
         </Text>
       </View>
     );
@@ -255,7 +256,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
         >
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Freundschaftsanfragen</Text>
+        <Text style={styles.headerTitle}>{S.social.requests.title}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -274,7 +275,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           <Text
             style={[styles.tabText, activeTab === 'received' && styles.tabTextActive]}
           >
-            Empfangen
+            {S.social.requests.received}
           </Text>
           {received.length > 0 && (
             <View style={styles.tabBadge}>
@@ -296,7 +297,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           <Text
             style={[styles.tabText, activeTab === 'sent' && styles.tabTextActive]}
           >
-            Gesendet
+            {S.social.requests.sent}
           </Text>
           {sent.length > 0 && (
             <View style={[styles.tabBadge, { backgroundColor: `${THEME.textSecondary}30` }]}>

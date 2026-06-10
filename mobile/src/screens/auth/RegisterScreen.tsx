@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { RegisterScreenProps } from '../../navigation/types';
 import { web3authService } from '../../services/web3auth';
+import { strings as S } from '../../i18n';
 
 const { width } = Dimensions.get('window');
 
@@ -48,29 +49,29 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
     const errors: ValidationErrors = {};
 
     if (!username.trim()) {
-      errors.username = 'Username is required.';
+      errors.username = S.auth.register.usernameRequired;
     } else if (username.trim().length < 3) {
-      errors.username = 'Username must be at least 3 characters.';
+      errors.username = S.auth.register.usernameTooShort;
     } else if (username.trim().length > 20) {
-      errors.username = 'Username must be under 20 characters.';
+      errors.username = S.auth.register.usernameTooLong;
     } else if (!/^[a-zA-Z0-9_]+$/.test(username.trim())) {
-      errors.username = 'Only letters, numbers, and underscores.';
+      errors.username = S.auth.register.usernameInvalidChars;
     }
 
     if (!email.trim()) {
-      errors.email = 'Email is required.';
+      errors.email = S.auth.register.emailRequired;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      errors.email = 'Enter a valid email address.';
+      errors.email = S.auth.register.emailInvalid;
     }
 
     if (!password) {
-      errors.password = 'Password is required.';
+      errors.password = S.auth.register.passwordRequired;
     } else if (password.length < 8) {
-      errors.password = 'Password must be at least 8 characters.';
+      errors.password = S.auth.register.passwordTooShort;
     }
 
     if (password !== confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match.';
+      errors.confirmPassword = S.auth.register.passwordsMismatch;
     }
 
     setValidationErrors(errors);
@@ -80,11 +81,11 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   const handleRegister = async () => {
     if (!validate()) return;
     if (!acceptedTerms) {
-      Alert.alert('AGB akzeptieren', 'Bitte akzeptiere die AGB und Datenschutzerklärung.');
+      Alert.alert(S.auth.register.acceptTermsTitle, S.auth.register.acceptTermsMessage);
       return;
     }
     if (!confirmedAge) {
-      Alert.alert('Altersbestätigung', 'Bitte bestätige, dass du mindestens 16 Jahre alt bist.');
+      Alert.alert(S.auth.register.confirmAgeTitle, S.auth.register.confirmAgeMessage);
       return;
     }
     try {
@@ -103,11 +104,11 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
     if (/[0-9]/.test(password)) score++;
     if (/[^A-Za-z0-9]/.test(password)) score++;
 
-    if (score <= 1) return { label: 'Weak', color: '#FF4757', width: '20%' };
-    if (score <= 2) return { label: 'Fair', color: '#FFB800', width: '40%' };
-    if (score <= 3) return { label: 'Good', color: '#FFB800', width: '60%' };
-    if (score <= 4) return { label: 'Strong', color: '#00FF88', width: '80%' };
-    return { label: 'Excellent', color: '#00FF88', width: '100%' };
+    if (score <= 1) return { label: S.auth.register.strengthWeak, color: '#FF4757', width: '20%' };
+    if (score <= 2) return { label: S.auth.register.strengthFair, color: '#FFB800', width: '40%' };
+    if (score <= 3) return { label: S.auth.register.strengthGood, color: '#FFB800', width: '60%' };
+    if (score <= 4) return { label: S.auth.register.strengthStrong, color: '#00FF88', width: '80%' };
+    return { label: S.auth.register.strengthExcellent, color: '#00FF88', width: '100%' };
   };
 
   const strength = getPasswordStrength();
@@ -130,7 +131,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
   const handleEmailLink = async () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address first.');
+      Alert.alert(S.common.error, S.auth.login.enterEmailFirst);
       return;
     }
     setSocialLoading('email');
@@ -169,8 +170,8 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>JOIN THE GRID</Text>
-            <Text style={styles.subtitle}>Create your walker identity</Text>
+            <Text style={styles.title}>{S.auth.register.title}</Text>
+            <Text style={styles.subtitle}>{S.auth.register.subtitle}</Text>
           </View>
 
           {/* Error Banner */}
@@ -197,7 +198,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               ) : (
                 <>
                   <Ionicons name="logo-google" size={20} color="#4285F4" style={styles.socialIcon} />
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                  <Text style={styles.googleButtonText}>{S.auth.login.continueWithGoogle}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -214,7 +215,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 ) : (
                   <>
                     <Ionicons name="logo-apple" size={20} color="#FFFFFF" style={styles.socialIcon} />
-                    <Text style={styles.appleButtonText}>Continue with Apple</Text>
+                    <Text style={styles.appleButtonText}>{S.auth.login.continueWithApple}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -231,7 +232,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               ) : (
                 <>
                   <Ionicons name="mail-outline" size={20} color="#00D4FF" style={styles.socialIcon} />
-                  <Text style={styles.emailLinkButtonText}>Login with Email Link</Text>
+                  <Text style={styles.emailLinkButtonText}>{S.auth.login.loginWithEmailLink}</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -240,13 +241,13 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
           {/* OR Divider */}
           <View style={styles.orDividerRow}>
             <View style={styles.orDivider} />
-            <Text style={styles.orDividerText}>OR</Text>
+            <Text style={styles.orDividerText}>{S.auth.login.or}</Text>
             <View style={styles.orDivider} />
           </View>
 
           {/* Username */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>CALLSIGN</Text>
+            <Text style={styles.label}>{S.auth.register.callsignLabel}</Text>
             <View
               style={[
                 styles.inputContainer,
@@ -256,7 +257,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <Ionicons name="person-outline" size={20} color="#8892B0" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Username"
+                placeholder={S.auth.register.usernamePlaceholder}
                 placeholderTextColor="#555E78"
                 value={username}
                 onChangeText={(text) => {
@@ -278,7 +279,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
           {/* Email */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>EMAIL</Text>
+            <Text style={styles.label}>{S.auth.register.emailLabel}</Text>
             <View
               style={[
                 styles.inputContainer,
@@ -289,7 +290,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <TextInput
                 ref={emailRef}
                 style={styles.input}
-                placeholder="Email address"
+                placeholder={S.auth.register.emailPlaceholder}
                 placeholderTextColor="#555E78"
                 value={email}
                 onChangeText={(text) => {
@@ -312,7 +313,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
           {/* Password */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>PASSWORD</Text>
+            <Text style={styles.label}>{S.auth.register.passwordLabel}</Text>
             <View
               style={[
                 styles.inputContainer,
@@ -328,7 +329,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <TextInput
                 ref={passwordRef}
                 style={styles.input}
-                placeholder="Min 8 characters"
+                placeholder={S.auth.register.passwordPlaceholder}
                 placeholderTextColor="#555E78"
                 value={password}
                 onChangeText={(text) => {
@@ -374,7 +375,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
           {/* Confirm Password */}
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>CONFIRM PASSWORD</Text>
+            <Text style={styles.label}>{S.auth.register.confirmPasswordLabel}</Text>
             <View
               style={[
                 styles.inputContainer,
@@ -385,7 +386,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <TextInput
                 ref={confirmRef}
                 style={styles.input}
-                placeholder="Re-enter password"
+                placeholder={S.auth.register.confirmPasswordPlaceholder}
                 placeholderTextColor="#555E78"
                 value={confirmPassword}
                 onChangeText={(text) => {
@@ -423,10 +424,10 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 color={acceptedTerms ? '#00D4FF' : '#6B7A99'}
               />
               <Text style={styles.checkboxText}>
-                Ich akzeptiere die{' '}
-                <Text style={styles.legalLink} onPress={() => Linking.openURL('https://mapraiders.com/agb.html')}>AGB</Text>
-                {' '}und die{' '}
-                <Text style={styles.legalLink} onPress={() => Linking.openURL('https://mapraiders.com/datenschutz.html')}>Datenschutzerklärung</Text>
+                {S.auth.register.legalAcceptPrefix}
+                <Text style={styles.legalLink} onPress={() => Linking.openURL('https://mapraiders.com/agb.html')}>{S.auth.register.legalTerms}</Text>
+                {S.auth.register.legalAnd}
+                <Text style={styles.legalLink} onPress={() => Linking.openURL('https://mapraiders.com/datenschutz.html')}>{S.auth.register.legalPrivacy}</Text>
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -440,7 +441,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 color={confirmedAge ? '#00D4FF' : '#6B7A99'}
               />
               <Text style={styles.checkboxText}>
-                Ich bin mindestens 16 Jahre alt
+                {S.auth.register.confirmAgeCheckbox}
               </Text>
             </TouchableOpacity>
           </View>
@@ -455,15 +456,15 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
             {isLoading ? (
               <ActivityIndicator color="#0A0E17" size="small" />
             ) : (
-              <Text style={styles.registerButtonText}>INITIALIZE WALKER</Text>
+              <Text style={styles.registerButtonText}>{S.auth.register.initializeWalker}</Text>
             )}
           </TouchableOpacity>
 
           {/* Login Link */}
           <View style={styles.loginLink}>
-            <Text style={styles.loginLinkText}>Already have an account? </Text>
+            <Text style={styles.loginLinkText}>{S.auth.register.alreadyHaveAccount}</Text>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={styles.loginLinkAction}>Sign in</Text>
+              <Text style={styles.loginLinkAction}>{S.auth.register.signIn}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

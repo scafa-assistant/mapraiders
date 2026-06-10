@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { strings as S } from '../i18n';
 import { getRankColor } from '../utils/colors';
 import { formatXP } from '../utils/formatters';
 import ClassBadge from './ClassBadge';
@@ -88,7 +89,7 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
             numberOfLines={1}
           >
             {entry.username}
-            {isCurrentUser && ' (You)'}
+            {isCurrentUser && S.components.leaderboardRow.youSuffix}
           </Text>
         </View>
       </View>

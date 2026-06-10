@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { friendApi } from '../../services/api';
+import { strings as S, t, plural } from '../../i18n';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../../navigation/types';
 
@@ -89,19 +90,19 @@ export default function FriendsScreen({ navigation }: Props) {
   const handleRemoveFriend = useCallback(
     (friend: Friend) => {
       Alert.alert(
-        'Freund entfernen?',
-        `Willst du ${friend.username} wirklich als Freund entfernen?`,
+        S.social.friends.removeTitle,
+        t(S.social.friends.removeConfirmMsg, { username: friend.username }),
         [
-          { text: 'Abbrechen', style: 'cancel' },
+          { text: S.common.cancel, style: 'cancel' },
           {
-            text: 'Entfernen',
+            text: S.common.remove,
             style: 'destructive',
             onPress: async () => {
               try {
                 await friendApi.remove(friend.id);
                 setFriends((prev) => prev.filter((f) => f.id !== friend.id));
               } catch {
-                Alert.alert('Fehler', 'Konnte Freund nicht entfernen.');
+                Alert.alert(S.common.error, S.social.friends.removeFailed);
               }
             },
           },
@@ -141,12 +142,12 @@ export default function FriendsScreen({ navigation }: Props) {
         <View style={styles.levelRow}>
           <View style={styles.levelBadge}>
             <Ionicons name="star" size={10} color={THEME.warning} />
-            <Text style={styles.levelText}>Lv. {item.level ?? 1}</Text>
+            <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
           </View>
           {item.is_online ? (
-            <Text style={styles.onlineText}>Online</Text>
+            <Text style={styles.onlineText}>{S.social.friends.online}</Text>
           ) : item.last_seen ? (
-            <Text style={styles.offlineText}>Zuletzt gesehen</Text>
+            <Text style={styles.offlineText}>{S.social.friends.lastSeen}</Text>
           ) : null}
         </View>
       </View>
@@ -163,9 +164,9 @@ export default function FriendsScreen({ navigation }: Props) {
         <View style={styles.emptyIconCircle}>
           <Ionicons name="people-outline" size={48} color={THEME.textSecondary} />
         </View>
-        <Text style={styles.emptyTitle}>Noch keine Freunde</Text>
+        <Text style={styles.emptyTitle}>{S.social.friends.emptyTitle}</Text>
         <Text style={styles.emptySubtitle}>
-          Suche Spieler um sie hinzuzufugen!
+          {S.social.friends.emptySubtitle}
         </Text>
         <TouchableOpacity
           style={styles.emptySearchBtn}
@@ -173,7 +174,7 @@ export default function FriendsScreen({ navigation }: Props) {
           onPress={() => navigation.navigate('PlayerSearch')}
         >
           <Ionicons name="search" size={18} color="#0A0E17" />
-          <Text style={styles.emptySearchBtnText}>Spieler suchen</Text>
+          <Text style={styles.emptySearchBtnText}>{S.social.friends.searchPlayers}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -190,7 +191,7 @@ export default function FriendsScreen({ navigation }: Props) {
           <Ionicons name="arrow-back" size={22} color={THEME.text} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Freunde</Text>
+        <Text style={styles.headerTitle}>{S.social.friends.title}</Text>
 
         <TouchableOpacity
           style={styles.headerBtn}
@@ -217,7 +218,7 @@ export default function FriendsScreen({ navigation }: Props) {
           <View style={styles.requestsIconCircle}>
             <Ionicons name="mail-outline" size={18} color={THEME.primary} />
           </View>
-          <Text style={styles.requestsBtnText}>Anfragen</Text>
+          <Text style={styles.requestsBtnText}>{S.social.friends.requests}</Text>
           {pendingCount > 0 && (
             <View style={styles.requestsBadge}>
               <Text style={styles.requestsBadgeText}>{pendingCount}</Text>
@@ -233,7 +234,7 @@ export default function FriendsScreen({ navigation }: Props) {
           <Ionicons name="search-outline" size={18} color={THEME.textSecondary} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Freunde filtern..."
+            placeholder={S.social.friends.filterPlaceholder}
             placeholderTextColor={THEME.textSecondary}
             value={searchText}
             onChangeText={setSearchText}
@@ -251,7 +252,7 @@ export default function FriendsScreen({ navigation }: Props) {
       {/* Count */}
       {friends.length > 0 && (
         <Text style={styles.countText}>
-          {filteredFriends.length} {filteredFriends.length === 1 ? 'Freund' : 'Freunde'}
+          {plural(filteredFriends.length, S.social.friends.countOne, S.social.friends.countOther)}
         </Text>
       )}
 

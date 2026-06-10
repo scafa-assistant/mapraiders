@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { leaderboardApi, userApi } from '../../services/api';
 import { THEME, SPACING, FONT_SIZE, RADIUS, LEADERBOARD_TYPES } from '../../utils/constants';
 import LeaderboardRow from '../../components/LeaderboardRow';
+import { strings as S } from '../../i18n';
 import type { LeaderboardScreenProps, ProfileLeaderboardScreenProps } from '../../navigation/types';
 import type { LeaderboardEntry } from '../../utils/types';
 
@@ -95,9 +96,9 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
     return (
       <View style={styles.emptyContainer}>
         <Ionicons name="trophy-outline" size={64} color="#2A3450" />
-        <Text style={styles.emptyTitle}>No rankings yet</Text>
+        <Text style={styles.emptyTitle}>{S.leaderboard.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
-          Start walking to claim your place on the leaderboard!
+          {S.leaderboard.emptySubtext}
         </Text>
       </View>
     );
@@ -107,7 +108,7 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
     if (!myRank) return null;
     return (
       <View style={styles.myRankBar}>
-        <Text style={styles.myRankLabel}>Your Rank</Text>
+        <Text style={styles.myRankLabel}>{S.leaderboard.yourRank}</Text>
         <View style={styles.myRankContent}>
           <Text style={styles.myRankNumber}>#{myRank.rank ?? '?'}</Text>
           <Text style={styles.myRankScore}>{(myRank.score ?? 0).toLocaleString()}</Text>
@@ -120,8 +121,8 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Leaderboard</Text>
-        <Text style={styles.headerSubtitle}>Top MapRaiders</Text>
+        <Text style={styles.headerTitle}>{S.leaderboard.title}</Text>
+        <Text style={styles.headerSubtitle}>{S.leaderboard.subtitle}</Text>
       </View>
 
       {/* Type Selector */}
@@ -142,7 +143,7 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={THEME.primary} />
-          <Text style={styles.loadingText}>Loading rankings...</Text>
+          <Text style={styles.loadingText}>{S.leaderboard.loadingRankings}</Text>
         </View>
       ) : (
         <FlatList

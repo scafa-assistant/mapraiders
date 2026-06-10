@@ -19,6 +19,7 @@ import { useQuestStore } from '../../store/questStore';
 import { useLocationStore } from '../../store/locationStore';
 import { questApi } from '../../services/api';
 import RatingForm from '../../components/RatingForm';
+import { strings as S, t } from '../../i18n';
 import { QuestPlayScreenProps, QuestStep, QuestStepType } from '../../navigation/types';
 import type { Rating } from '../../utils/types';
 
@@ -157,7 +158,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         location: currentLocation,
       });
       if (success) playSuccessAnimation();
-      else Alert.alert('Not Verified', 'The photo did not match the requirement. Try again.');
+      else Alert.alert(S.quests.play.notVerifiedTitle, S.quests.play.photoNotMatched);
     }
   };
 
@@ -173,7 +174,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         location: currentLocation,
       });
       if (success) playSuccessAnimation();
-      else Alert.alert('Not Verified', 'Challenge verification failed. Try again.');
+      else Alert.alert(S.quests.play.notVerifiedTitle, S.quests.play.challengeNotVerified);
     }
   };
 
@@ -187,7 +188,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
       playSuccessAnimation();
       setSolveAnswer('');
     } else {
-      Alert.alert('Incorrect', 'That answer is not correct. Try again!');
+      Alert.alert(S.quests.play.incorrectTitle, S.quests.play.incorrectMsg);
     }
   };
 
@@ -216,10 +217,10 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
   };
 
   const handleAbandon = () => {
-    Alert.alert('Abandon Quest', 'Are you sure you want to leave this quest? Progress will be lost.', [
-      { text: 'Continue Quest', style: 'cancel' },
+    Alert.alert(S.quests.play.abandonTitle, S.quests.play.abandonMsg, [
+      { text: S.quests.play.continueQuest, style: 'cancel' },
       {
-        text: 'Abandon',
+        text: S.quests.play.abandon,
         style: 'destructive',
         onPress: () => {
           abandonQuest();
@@ -256,11 +257,11 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
           <View style={styles.trophyCircle}>
             <Ionicons name="trophy" size={56} color="#FFB800" />
           </View>
-          <Text style={styles.completeTitle}>QUEST COMPLETE!</Text>
+          <Text style={styles.completeTitle}>{S.quests.play.completeTitle}</Text>
           <Text style={styles.completeSubtitle}>{quest?.title}</Text>
 
           <RatingForm
-            title="Rate this quest"
+            title={S.quests.play.rateQuest}
             onSubmit={handleRatingSubmit}
             isSubmitting={isRatingSubmitting}
           />
@@ -273,7 +274,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00D4FF" />
-        <Text style={styles.loadingText}>Loading quest...</Text>
+        <Text style={styles.loadingText}>{S.quests.play.loadingQuest}</Text>
       </SafeAreaView>
     );
   }
@@ -296,7 +297,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             ) : (
               <>
                 <Ionicons name="camera" size={22} color="#0A0E17" />
-                <Text style={styles.verifyButtonText}>TAKE PHOTO</Text>
+                <Text style={styles.verifyButtonText}>{S.quests.play.takePhoto}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -317,7 +318,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
               />
             </View>
             <Text style={styles.proximityText}>
-              {isNearStep ? 'In range!' : `${Math.round(dist)}m away`}
+              {isNearStep ? S.quests.play.inRange : t(S.quests.play.metersAway, { count: Math.round(dist) })}
             </Text>
             {isNearStep && (
               <TouchableOpacity
@@ -330,7 +331,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
                 ) : (
                   <>
                     <Ionicons name="ear" size={22} color="#0A0E17" />
-                    <Text style={styles.verifyButtonText}>LISTEN</Text>
+                    <Text style={styles.verifyButtonText}>{S.quests.play.listen}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -350,7 +351,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             ) : (
               <>
                 <Ionicons name="videocam" size={22} color="#0A0E17" />
-                <Text style={styles.verifyButtonText}>RECORD VIDEO</Text>
+                <Text style={styles.verifyButtonText}>{S.quests.play.recordVideo}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -362,7 +363,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             <View style={styles.solveInputRow}>
               <TextInput
                 style={styles.solveInput}
-                placeholder="Type your answer..."
+                placeholder={S.quests.play.answerPlaceholder}
                 placeholderTextColor="#555E78"
                 value={solveAnswer}
                 onChangeText={setSolveAnswer}
@@ -395,7 +396,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         return (
           <View style={styles.collectContainer}>
             <Text style={styles.proximityText}>
-              {isNearStep ? 'You found it!' : `${Math.round(dist)}m to collection point`}
+              {isNearStep ? S.quests.play.foundIt : t(S.quests.play.metersToCollection, { count: Math.round(dist) })}
             </Text>
             {isNearStep && (
               <TouchableOpacity
@@ -408,7 +409,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
                 ) : (
                   <>
                     <Ionicons name="hand-left" size={22} color="#0A0E17" />
-                    <Text style={styles.verifyButtonText}>COLLECT</Text>
+                    <Text style={styles.verifyButtonText}>{S.quests.play.collect}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -428,7 +429,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             ) : (
               <>
                 <Ionicons name="paw" size={22} color="#0A0E17" />
-                <Text style={styles.verifyButtonText}>CONFIRM WITH DOG</Text>
+                <Text style={styles.verifyButtonText}>{S.quests.play.confirmWithDog}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -502,7 +503,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
           <View style={[styles.stepTypeBadge, { backgroundColor: `${stepColor}20` }]}>
             <Ionicons name={STEP_TYPE_ICONS[currentStep.type]} size={16} color={stepColor} />
             <Text style={[styles.stepTypeText, { color: stepColor }]}>
-              Step {currentStepIndex + 1}
+              {t(S.quests.play.stepBadge, { number: currentStepIndex + 1 })}
             </Text>
           </View>
 
@@ -529,7 +530,9 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         <View style={styles.distanceRow}>
           <Ionicons name="navigate" size={14} color="#8892B0" />
           <Text style={styles.distanceText}>
-            {dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`} away
+            {t(S.quests.play.distanceAway, {
+              distance: dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`,
+            })}
           </Text>
         </View>
 
@@ -558,7 +561,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         <View style={styles.successCircle}>
           <Ionicons name="checkmark" size={48} color="#00FF88" />
         </View>
-        <Text style={styles.successText}>STEP COMPLETE!</Text>
+        <Text style={styles.successText}>{S.quests.play.stepComplete}</Text>
       </Animated.View>
     </View>
   );

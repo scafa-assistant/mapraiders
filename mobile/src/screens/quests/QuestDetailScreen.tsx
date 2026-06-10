@@ -13,6 +13,7 @@ import MapView, { Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuestStore } from '../../store/questStore';
+import { strings as S, t, plural } from '../../i18n';
 import { QuestDetailScreenProps, Quest, QuestStepType } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -36,12 +37,12 @@ const STEP_TYPE_COLORS: Record<QuestStepType, string> = {
 };
 
 const STEP_TYPE_LABELS: Record<QuestStepType, string> = {
-  FIND: 'Find',
-  LISTEN: 'Listen',
-  CHALLENGE: 'Challenge',
-  SOLVE: 'Solve',
-  COLLECT: 'Collect',
-  DOG: 'Dog Task',
+  FIND: S.quests.detail.typeFind,
+  LISTEN: S.quests.detail.typeListen,
+  CHALLENGE: S.quests.detail.typeChallenge,
+  SOLVE: S.quests.detail.typeSolve,
+  COLLECT: S.quests.detail.typeCollect,
+  DOG: S.quests.detail.typeDog,
 };
 
 export default function QuestDetailScreen({ route, navigation }: QuestDetailScreenProps) {
@@ -88,9 +89,9 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <Ionicons name="alert-circle" size={48} color="#FF4757" />
-        <Text style={styles.errorText}>Quest not found</Text>
+        <Text style={styles.errorText}>{S.quests.detail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
-          <Text style={styles.backLinkText}>Go back</Text>
+          <Text style={styles.backLinkText}>{S.quests.detail.goBack}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -139,7 +140,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
             ))}
           </MapView>
           <View style={styles.mapOverlay}>
-            <Text style={styles.mapOverlayText}>{quest.stepCount} locations</Text>
+            <Text style={styles.mapOverlayText}>{t(S.quests.detail.locationsCount, { count: quest.stepCount })}</Text>
           </View>
         </View>
 
@@ -158,7 +159,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           <View style={styles.questStats}>
             <View style={styles.questStat}>
               <Ionicons name="footsteps" size={16} color="#8892B0" />
-              <Text style={styles.questStatText}>{quest.stepCount} steps</Text>
+              <Text style={styles.questStatText}>{t(S.quests.detail.stepsCount, { count: quest.stepCount })}</Text>
             </View>
             <View style={styles.questStat}>
               <Ionicons name="navigate" size={16} color="#8892B0" />
@@ -170,7 +171,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
             </View>
             <View style={styles.questStat}>
               <Ionicons name="checkmark-done" size={16} color="#8892B0" />
-              <Text style={styles.questStatText}>{quest.completions} done</Text>
+              <Text style={styles.questStatText}>{t(S.quests.detail.completionsDone, { count: quest.completions })}</Text>
             </View>
           </View>
 
@@ -178,7 +179,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
 
           <View style={styles.creatorRow}>
             <Ionicons name="person-circle-outline" size={18} color="#8892B0" />
-            <Text style={styles.creatorText}>by {quest.creatorUsername}</Text>
+            <Text style={styles.creatorText}>{t(S.quests.detail.by, { username: quest.creatorUsername })}</Text>
           </View>
         </View>
 
@@ -187,10 +188,16 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           <View style={styles.growthSection}>
             <View style={styles.growthHeader}>
               <Ionicons name="leaf" size={18} color="#00FF88" />
-              <Text style={styles.growthTitle}>Seed Quest</Text>
+              <Text style={styles.growthTitle}>{S.quests.detail.seedQuest}</Text>
             </View>
             <View style={styles.growthLevelRow}>
-              {['Seed', 'Sprout', 'Growing', 'Mature', 'Legendary'].map((name, idx) => {
+              {[
+                S.quests.detail.stageSeed,
+                S.quests.detail.stageSprout,
+                S.quests.detail.stageGrowing,
+                S.quests.detail.stageMature,
+                S.quests.detail.stageLegendary,
+              ].map((name, idx) => {
                 const growthLevel = (quest as any).growth_level ?? 0;
                 const isActive = idx <= growthLevel;
                 const isCurrent = idx === growthLevel;
@@ -219,12 +226,12 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
               <View style={styles.growthProgress}>
                 {(quest as any).growth_info.completionsToNext > 0 && (
                   <Text style={styles.growthProgressText}>
-                    {(quest as any).growth_info.completionsToNext} more completions to next level
+                    {t(S.quests.detail.completionsToNext, { count: (quest as any).growth_info.completionsToNext })}
                   </Text>
                 )}
                 {(quest as any).growth_info.ratingToNext > 0 && (
                   <Text style={styles.growthProgressText}>
-                    Needs +{(quest as any).growth_info.ratingToNext.toFixed(1)} avg rating
+                    {t(S.quests.detail.ratingToNext, { rating: (quest as any).growth_info.ratingToNext.toFixed(1) })}
                   </Text>
                 )}
               </View>
@@ -233,7 +240,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
               <View style={styles.linkedSection}>
                 <Ionicons name="link" size={14} color="#00D4FF" />
                 <Text style={styles.linkedText}>
-                  Linked with {(quest as any).linked_quests.length} nearby quest{(quest as any).linked_quests.length > 1 ? 's' : ''}
+                  {plural((quest as any).linked_quests.length, S.quests.detail.linkedWithOne, S.quests.detail.linkedWithOther)}
                 </Text>
               </View>
             )}
@@ -242,7 +249,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
 
         {/* Steps Preview */}
         <View style={styles.stepsSection}>
-          <Text style={styles.sectionTitle}>STEPS</Text>
+          <Text style={styles.sectionTitle}>{S.quests.detail.stepsLabel}</Text>
           {quest.steps.map((step, index) => (
             <View key={step.id} style={styles.stepCard}>
               <View
@@ -291,7 +298,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           ) : (
             <>
               <Ionicons name="play" size={22} color="#0A0E17" />
-              <Text style={styles.startButtonText}>START QUEST</Text>
+              <Text style={styles.startButtonText}>{S.quests.detail.startQuest}</Text>
             </>
           )}
         </TouchableOpacity>

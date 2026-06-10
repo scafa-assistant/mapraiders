@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { travelApi } from '../../services/api';
 import { useLocationStore } from '../../store/locationStore';
+import { strings as S, t } from '../../i18n';
 import { TravelRouteCreateScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -47,7 +48,7 @@ export default function TravelRouteCreateScreen({
     const { latitude, longitude } = e.nativeEvent.coordinate;
     const newSpot: SpotDraft = {
       id: `spot_${Date.now()}_${spots.length}`,
-      name: `Spot ${spots.length + 1}`,
+      name: t(S.travel.create.defaultSpotName, { number: spots.length + 1 }),
       description: '',
       latitude,
       longitude,
@@ -91,11 +92,11 @@ export default function TravelRouteCreateScreen({
 
   const handlePublish = async () => {
     if (!routeName.trim()) {
-      Alert.alert('Missing Name', 'Please enter a route name.');
+      Alert.alert(S.travel.create.missingNameTitle, S.travel.create.missingNameMsg);
       return;
     }
     if (spots.length < 2) {
-      Alert.alert('Not Enough Spots', 'Add at least 2 spots to create a route.');
+      Alert.alert(S.travel.create.notEnoughSpotsTitle, S.travel.create.notEnoughSpotsMsg);
       return;
     }
 
@@ -113,11 +114,11 @@ export default function TravelRouteCreateScreen({
         })),
       };
       await travelApi.create(payload);
-      Alert.alert('Published!', 'Your travel route is now live.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
+      Alert.alert(S.travel.create.publishedTitle, S.travel.create.publishedMsg, [
+        { text: S.common.ok, onPress: () => navigation.goBack() },
       ]);
     } catch (_err) {
-      Alert.alert('Error', 'Failed to publish route. Please try again.');
+      Alert.alert(S.common.error, S.travel.create.publishFailed);
     } finally {
       setPublishing(false);
     }
@@ -161,15 +162,15 @@ export default function TravelRouteCreateScreen({
             >
               <Ionicons name="arrow-back" size={22} color="#8892B0" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Create Travel Route</Text>
+            <Text style={styles.headerTitle}>{S.travel.create.title}</Text>
           </View>
 
           {/* Route Name */}
           <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>ROUTE NAME</Text>
+            <Text style={styles.inputLabel}>{S.travel.create.nameLabel}</Text>
             <TextInput
               style={styles.textInput}
-              placeholder="Give your route a name..."
+              placeholder={S.travel.create.namePlaceholder}
               placeholderTextColor="#555E78"
               value={routeName}
               onChangeText={setRouteName}
@@ -179,10 +180,10 @@ export default function TravelRouteCreateScreen({
 
           {/* Description */}
           <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>DESCRIPTION</Text>
+            <Text style={styles.inputLabel}>{S.travel.create.descriptionLabel}</Text>
             <TextInput
               style={[styles.textInput, styles.textArea]}
-              placeholder="Describe what makes this route special..."
+              placeholder={S.travel.create.descriptionPlaceholder}
               placeholderTextColor="#555E78"
               value={routeDescription}
               onChangeText={setRouteDescription}
@@ -196,7 +197,7 @@ export default function TravelRouteCreateScreen({
           {/* Map */}
           <View style={styles.inputSection}>
             <Text style={styles.inputLabel}>
-              TAP MAP TO ADD SPOTS ({spots.length} added)
+              {t(S.travel.create.mapLabel, { count: spots.length })}
             </Text>
             <View style={styles.mapContainer}>
               <MapView
@@ -243,7 +244,7 @@ export default function TravelRouteCreateScreen({
           {/* Spot List / Editor */}
           {spots.length > 0 && (
             <View style={styles.inputSection}>
-              <Text style={styles.inputLabel}>SPOTS</Text>
+              <Text style={styles.inputLabel}>{S.travel.create.spotsLabel}</Text>
               {spots.map((spot, index) => {
                 const isEditing = editingSpotIndex === index;
 
@@ -316,7 +317,7 @@ export default function TravelRouteCreateScreen({
                       <View style={styles.spotEditFields}>
                         <TextInput
                           style={styles.spotInput}
-                          placeholder="Spot name"
+                          placeholder={S.travel.create.spotNamePlaceholder}
                           placeholderTextColor="#555E78"
                           value={spot.name}
                           onChangeText={(text) => updateSpot(index, { name: text })}
@@ -324,7 +325,7 @@ export default function TravelRouteCreateScreen({
                         />
                         <TextInput
                           style={[styles.spotInput, styles.spotTextArea]}
-                          placeholder="Description (optional)"
+                          placeholder={S.travel.create.spotDescPlaceholder}
                           placeholderTextColor="#555E78"
                           value={spot.description}
                           onChangeText={(text) =>
@@ -350,7 +351,7 @@ export default function TravelRouteCreateScreen({
                               spot.photoUri && styles.photoButtonTextActive,
                             ]}
                           >
-                            {spot.photoUri ? 'Photo added' : 'Add photo'}
+                            {spot.photoUri ? S.travel.create.photoAdded : S.travel.create.addPhoto}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -383,7 +384,7 @@ export default function TravelRouteCreateScreen({
             ) : (
               <>
                 <Ionicons name="globe" size={22} color="#0A0E17" />
-                <Text style={styles.publishButtonText}>PUBLISH ROUTE</Text>
+                <Text style={styles.publishButtonText}>{S.travel.create.publishRoute}</Text>
               </>
             )}
           </TouchableOpacity>

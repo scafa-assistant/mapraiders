@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME, FONT_SIZE } from '../../utils/constants';
+import { strings as S } from '../../i18n';
 
 export default function TravelRouteListScreen() {
   return (
@@ -11,10 +12,10 @@ export default function TravelRouteListScreen() {
         <View style={styles.iconCircle}>
           <Ionicons name="trail-sign-outline" size={48} color={THEME.primary} />
         </View>
-        <Text style={styles.title}>Travel Routes</Text>
-        <Text style={styles.subtitle}>Coming Soon</Text>
+        <Text style={styles.title}>{S.travel.list.title}</Text>
+        <Text style={styles.subtitle}>{S.common.comingSoon}</Text>
         <Text style={styles.description}>
-          Create and discover curated walking routes with interesting stops and hidden gems.
+          {S.travel.list.description}
         </Text>
       </View>
     </SafeAreaView>

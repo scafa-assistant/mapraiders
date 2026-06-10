@@ -15,14 +15,20 @@ import { TerritoryDetailScreenProps, MovementClass } from '../../navigation/type
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useAuthStore } from '../../store/authStore';
 import { defenseApi } from '../../services/api';
+import { strings as S, t, plural } from '../../i18n';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
   walker: '#00D4FF', runner: '#FF4757', cyclist: '#00FF88',
   skater: '#FFB800', dog_walker: '#7B61FF', driver: '#8892B0', unknown: '#555E78',
 };
 const CLASS_LABELS: Record<MovementClass, string> = {
-  walker: 'Walker', runner: 'Runner', cyclist: 'Cyclist',
-  skater: 'Skater', dog_walker: 'Dog Walker', driver: 'Driver', unknown: 'Unknown',
+  walker: S.map.territoryDetail.classWalker,
+  runner: S.map.territoryDetail.classRunner,
+  cyclist: S.map.territoryDetail.classCyclist,
+  skater: S.map.territoryDetail.classSkater,
+  dog_walker: S.map.territoryDetail.classDogWalker,
+  driver: S.map.territoryDetail.classDriver,
+  unknown: S.map.territoryDetail.classUnknown,
 };
 const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
   walker: 'walk', runner: 'speedometer', cyclist: 'bicycle',
@@ -30,16 +36,16 @@ const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
 };
 
 const DEFENSE_LABELS: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
-  rock_paper_scissors: { label: 'Schnick Schnack Schnuck', icon: 'hand-left-outline', color: '#7B61FF' },
-  sprint_race: { label: 'Sprint Race', icon: 'speedometer-outline', color: '#00FF88' },
-  trivia: { label: 'Trivia', icon: 'help-circle-outline', color: '#00D4FF' },
-  coin_flip: { label: 'Münzwurf', icon: 'ellipse-outline', color: '#FFB800' },
-  odd_even: { label: 'Gerade/Ungerade', icon: 'finger-print-outline', color: '#FF69B4' },
-  tic_tac_toe: { label: 'Tic Tac Toe', icon: 'grid-outline', color: '#00D4FF' },
-  mini_chess: { label: 'Mini-Schach', icon: 'trophy-outline', color: '#FFB800' },
-  challenge: { label: 'Challenge', icon: 'flag-outline', color: '#FF4757' },
-  quest: { label: 'Quest', icon: 'map-outline', color: '#00FF88' },
-  echo: { label: 'Echo', icon: 'volume-high-outline', color: '#7B61FF' },
+  rock_paper_scissors: { label: S.map.territoryDetail.gameRps, icon: 'hand-left-outline', color: '#7B61FF' },
+  sprint_race: { label: S.map.territoryDetail.gameSprintRace, icon: 'speedometer-outline', color: '#00FF88' },
+  trivia: { label: S.map.territoryDetail.gameTrivia, icon: 'help-circle-outline', color: '#00D4FF' },
+  coin_flip: { label: S.map.territoryDetail.gameCoinFlip, icon: 'ellipse-outline', color: '#FFB800' },
+  odd_even: { label: S.map.territoryDetail.gameOddEven, icon: 'finger-print-outline', color: '#FF69B4' },
+  tic_tac_toe: { label: S.map.territoryDetail.gameTicTacToe, icon: 'grid-outline', color: '#00D4FF' },
+  mini_chess: { label: S.map.territoryDetail.gameMiniChess, icon: 'trophy-outline', color: '#FFB800' },
+  challenge: { label: S.map.territoryDetail.gameChallenge, icon: 'flag-outline', color: '#FF4757' },
+  quest: { label: S.map.territoryDetail.gameQuest, icon: 'map-outline', color: '#00FF88' },
+  echo: { label: S.map.territoryDetail.gameEcho, icon: 'volume-high-outline', color: '#7B61FF' },
 };
 
 export default function TerritoryDetailScreen({ route, navigation }: TerritoryDetailScreenProps) {
@@ -50,7 +56,11 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   const isOwner = user?.id === territory.ownerId;
   const classColor = CLASS_COLORS[territory.movementClass];
   const decayLevel =
-    territory.decayPercent < 30 ? 'Strong' : territory.decayPercent < 60 ? 'Fading' : 'Weak';
+    territory.decayPercent < 30
+      ? S.map.territoryDetail.strengthStrong
+      : territory.decayPercent < 60
+        ? S.map.territoryDetail.strengthFading
+        : S.map.territoryDetail.strengthWeak;
   const decayColor =
     territory.decayPercent < 30 ? '#00FF88' : territory.decayPercent < 60 ? '#FFB800' : '#FF4757';
 
@@ -81,12 +91,12 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   const handleRemoveDefense = (defenseId: string, gameType: string) => {
     const info = DEFENSE_LABELS[gameType] || DEFENSE_LABELS.trivia;
     Alert.alert(
-      'Verteidigung entfernen',
-      `"${info.label}" von diesem Territorium entfernen?`,
+      S.map.territoryDetail.removeDefenseTitle,
+      t(S.map.territoryDetail.removeDefenseMsg, { label: info.label }),
       [
-        { text: 'Abbrechen', style: 'cancel' },
+        { text: S.common.cancel, style: 'cancel' },
         {
-          text: 'Entfernen',
+          text: S.common.remove,
           style: 'destructive',
           onPress: async () => {
             setRemovingId(defenseId);
@@ -94,7 +104,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               await defenseApi.removeDefense(defenseId);
               setDefenses(prev => prev.filter(d => d.id !== defenseId));
             } catch (err: any) {
-              Alert.alert('Fehler', err.message || 'Entfernen fehlgeschlagen.');
+              Alert.alert(S.common.error, err.message || S.map.territoryDetail.removeFailed);
             } finally {
               setRemovingId(null);
             }
@@ -116,20 +126,20 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
   const handleChallenge = () => {
     Alert.alert(
-      'Territorium herausfordern',
-      `Möchtest du ${territory.ownerUsername}s Territorium herausfordern?`,
+      S.map.territoryDetail.challengeTitle,
+      t(S.map.territoryDetail.challengeConfirm, { username: territory.ownerUsername }),
       [
-        { text: 'Abbrechen', style: 'cancel' },
+        { text: S.common.cancel, style: 'cancel' },
         {
-          text: 'Herausfordern',
+          text: S.map.territoryDetail.challengeAction,
           style: 'destructive',
           onPress: async () => {
             const success = await challengeTerritory(territory.id);
             if (success) {
-              Alert.alert('Challenge gestartet', 'Lauf deine Route durch das Territorium!');
+              Alert.alert(S.map.territoryDetail.challengeStartedTitle, S.map.territoryDetail.challengeStartedMsg);
               navigation.goBack();
             } else {
-              Alert.alert('Fehler', 'Challenge konnte nicht gestartet werden.');
+              Alert.alert(S.common.error, S.map.territoryDetail.challengeStartFailed);
             }
           },
         },
@@ -148,7 +158,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
             <Ionicons name="close" size={24} color="#8892B0" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Territorium</Text>
+          <Text style={styles.headerTitle}>{S.map.territoryDetail.headerTitle}</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -167,7 +177,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           </View>
           {isOwner && (
             <View style={styles.yoursBadge}>
-              <Text style={styles.yoursText}>DEINS</Text>
+              <Text style={styles.yoursText}>{S.map.territoryDetail.yoursBadge}</Text>
             </View>
           )}
         </View>
@@ -177,7 +187,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           <View style={styles.statCard}>
             <Ionicons name="resize" size={20} color="#00D4FF" />
             <Text style={styles.statValue}>{territory.area} m²</Text>
-            <Text style={styles.statLabel}>Fläche</Text>
+            <Text style={styles.statLabel}>{S.map.territoryDetail.statArea}</Text>
           </View>
           <View style={styles.statCard}>
             <View style={[styles.decayIndicator, { borderColor: decayColor }]}>
@@ -186,30 +196,30 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               </Text>
             </View>
             <Text style={[styles.statValue, { color: decayColor }]}>{decayLevel}</Text>
-            <Text style={styles.statLabel}>Stärke</Text>
+            <Text style={styles.statLabel}>{S.map.territoryDetail.statStrength}</Text>
           </View>
         </View>
 
         {/* Details */}
         <View style={styles.detailsSection}>
-          <Text style={styles.sectionTitle}>DETAILS</Text>
+          <Text style={styles.sectionTitle}>{S.map.territoryDetail.detailsTitle}</Text>
           <View style={styles.detailRow}>
             <Ionicons name="calendar-outline" size={18} color="#8892B0" />
-            <Text style={styles.detailLabel}>Erobert</Text>
+            <Text style={styles.detailLabel}>{S.map.territoryDetail.claimedLabel}</Text>
             <Text style={styles.detailValue}>
               {format(new Date(territory.claimedAt), 'dd.MM.yyyy')}
             </Text>
           </View>
           <View style={styles.detailRow}>
             <Ionicons name="time-outline" size={18} color="#8892B0" />
-            <Text style={styles.detailLabel}>Alter</Text>
+            <Text style={styles.detailLabel}>{S.map.territoryDetail.ageLabel}</Text>
             <Text style={styles.detailValue}>
               {formatDistanceToNow(new Date(territory.claimedAt), { addSuffix: true })}
             </Text>
           </View>
           <View style={styles.detailRow}>
             <Ionicons name="trending-down-outline" size={18} color="#8892B0" />
-            <Text style={styles.detailLabel}>Verfall</Text>
+            <Text style={styles.detailLabel}>{S.map.territoryDetail.decayLabel}</Text>
             <View style={styles.decayBarContainer}>
               <View style={styles.decayBarBg}>
                 <View style={[styles.decayBarFill, { width: `${100 - territory.decayPercent}%`, backgroundColor: decayColor }]} />
@@ -221,7 +231,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
         {/* ─── DEFENSE SECTION ─── */}
         <Text style={styles.sectionTitle}>
-          VERTEIDIGUNG ({usedSlots}/{maxSlots} Slots)
+          {t(S.map.territoryDetail.defenseTitle, { used: usedSlots, max: maxSlots })}
         </Text>
 
         {defenseLoading ? (
@@ -262,7 +272,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                     <Text style={[styles.defenseCardTitle, { color: info.color }]}>
                       {info.label}
                     </Text>
-                    <Text style={styles.defenseCardSlot}>Slot {idx + 1}</Text>
+                    <Text style={styles.defenseCardSlot}>{t(S.map.territoryDetail.slotNumber, { number: idx + 1 })}</Text>
                   </View>
 
                   {/* Owner: remove button */}
@@ -302,7 +312,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               >
                 <Ionicons name="add-circle-outline" size={22} color="#0A0E17" />
                 <Text style={styles.addDefenseButtonText}>
-                  VERTEIDIGUNG HINZUFÜGEN ({freeSlots} frei)
+                  {t(S.map.territoryDetail.addDefense, { count: freeSlots })}
                 </Text>
               </TouchableOpacity>
             )}
@@ -312,7 +322,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               <View style={styles.slotsFullNotice}>
                 <Ionicons name="shield-checkmark" size={16} color="#00FF88" />
                 <Text style={styles.slotsFullText}>
-                  Alle {maxSlots} Slots belegt! Territorium ist maximal geschützt.
+                  {t(S.map.territoryDetail.slotsFull, { max: maxSlots })}
                 </Text>
               </View>
             )}
@@ -325,7 +335,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 activeOpacity={0.8}
               >
                 <Ionicons name="shield-outline" size={22} color="#0A0E17" />
-                <Text style={styles.setDefenseButtonText}>VERTEIDIGUNG EINRICHTEN</Text>
+                <Text style={styles.setDefenseButtonText}>{S.map.territoryDetail.setupDefense}</Text>
               </TouchableOpacity>
             )}
 
@@ -337,7 +347,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 activeOpacity={0.8}
               >
                 <Ionicons name="flash" size={22} color="#0A0E17" />
-                <Text style={styles.challengeButtonText}>TERRITORIUM HERAUSFORDERN</Text>
+                <Text style={styles.challengeButtonText}>{S.map.territoryDetail.challengeTerritoryBtn}</Text>
               </TouchableOpacity>
             )}
 
@@ -346,7 +356,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               <View style={styles.challengeInfo}>
                 <Ionicons name="information-circle" size={18} color="#FFB800" />
                 <Text style={styles.challengeInfoText}>
-                  Besiege alle {usedSlots} Verteidigungen um das Territorium zu erobern!
+                  {plural(usedSlots, S.map.territoryDetail.defeatAllDefensesOne, S.map.territoryDetail.defeatAllDefensesOther)}
                 </Text>
               </View>
             )}
@@ -356,7 +366,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               <View style={[styles.ownerNotice, { marginTop: 12 }]}>
                 <Ionicons name="footsteps-outline" size={20} color="#00FF88" />
                 <Text style={styles.ownerNoticeText}>
-                  Laufe regelmäßig durch dein Territorium um Verfall zu verhindern.
+                  {S.map.territoryDetail.ownerNotice}
                 </Text>
               </View>
             )}
