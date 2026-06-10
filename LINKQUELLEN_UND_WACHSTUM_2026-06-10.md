@@ -172,3 +172,15 @@ Damit hat MapRaiders drei Wachstumsmotoren: (1) Gaming-Vergleiche (live, rankt),
 - **Defensiv/Brand:** mapraiders.de/.app etc. günstig sichern und 301 auf .com — Brand-Schutz, kein SEO-Hebel.
 
 **Gleiches Budget, besserer Hebel:** Jeder Euro/jede Stunde in Content (Welle-1-Seiten, Ideen-Hub) und Links (Outreach-Kit) auf mapraiders.com schlägt den Domain-Einkauf um Größenordnungen.
+
+---
+
+## Nachtrag 10.06. (René): Genre-Keyword-Erweiterung (kuratiert)
+
+Drei weitere Genre-Felder mit echtem Volumen, die MapRaiders' Mechaniken ehrlich bedienen:
+
+1. **Eroberung & Strategie (statt Kriegs-Frame):** Das Suchfeld ist riesig, der tragfähige Frame ist „Risiko in echt" — Eroberungsspiel, nicht Krieg. Querys: „eroberungsspiele", „spiele wie risiko", „strategiespiel echte karte", „risk game real map", „conquest game gps". Seiten-Kandidaten: `/eroberungsspiel.html` (de), `/en/real-world-risk-game.html`. Territorien + Verteidigung + Clans bedienen den Intent zu 100 %.
+2. **Schatzsuche & Goldgräber:** Anschluss an bestehende Schnitzeljagd-/Treasure-Hunt-Seiten. Querys: „schatzsuche app erwachsene", „goldsuche spiel", „schatzkarte app", „treasure hunt game real world". Artefakte + Quests tragen den Claim. Kandidat: `/schatzsuche-app.html` als de-Fokusseite (treasure-hunt existiert en-seitig).
+3. **Fangen & Verstecken (GPS-Manhunt):** Unterschätztes Feld mit treuer Community. Querys: „verstecken spielen app", „fangen spielen gps", „hide and seek app", „manhunt game app", „gps tag game". Duelle + Echtzeit-Karte passen; ggf. als Spielmodus-Vorschlag an die Produkt-Roadmap (organisierte Fang-Events über Meetups sind heute schon möglich → ehrlicher Einstiegs-Claim).
+
+Priorität innerhalb der Content-Sprints: nach Welle-1-Social-Seiten, gleichauf mit dem Ideen-Hub-Pilot — jeweils 1 de + 1 en Seite pro Feld, Performance nach 4 Wochen entscheidet über Ausbau.
