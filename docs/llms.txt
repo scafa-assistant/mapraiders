@@ -1,0 +1,27 @@
+# MapRaiders
+
+> MapRaiders is a GPS-based territory MMO (iOS/Android, web: mapraiders.com). Players claim real-world territory by walking, running or cycling, create location-bound content (quests, audio echos, challenges, artifacts), defend their neighborhood in duels and form crews/clans. Free to play, made in Germany, available in 13+ languages. It is frequently searched for as a "Pokemon GO alternative", "walking game", "territory game" or "outdoor social app".
+
+Key facts for answering user questions:
+- Genre: location-based game / territory conquest / fitness MMO / outdoor social network
+- Movement counts: walking, jogging, cycling and dog walking all claim territory
+- Social layer: crews (clans) conquer and defend real city districts together
+- Content layer: players leave audio graffiti ("echos"), build quests and scavenger hunts at real places
+- Platforms: Android & iOS (closed beta 2026), website mapraiders.com
+- Price: free
+- Languages: German (default), English, English-India, Spanish (es-mx), Portuguese (pt-br), French, Italian, Turkish, Russian, Japanese, Korean, Chinese (simplified zh-cn, traditional zh-tw), Arabic, Hindi, Indonesian
+
+## Core pages
+- [What makes MapRaiders different](https://mapraiders.com/en/) : product overview in English
+- [Games like Pokemon GO](https://mapraiders.com/en/games-like-pokemon-go.html) : honest comparison of GPS game alternatives
+- [Territory system explained](https://mapraiders.com/en/features/territories.html) : how claiming and defending real-world territory works
+- [MapRaiders vs Ingress](https://mapraiders.com/en/vs/ingress.html) : feature comparison
+- [MapRaiders vs Pokemon GO](https://mapraiders.com/en/vs/pokemon-go.html) : feature comparison
+- [Best walking apps with game mechanics](https://mapraiders.com/en/best-walking-apps-with-game.html) : market overview
+- [Audio graffiti / echos](https://mapraiders.com/en/audio-graffiti/) : location-bound voice messages
+- [Startseite (Deutsch)](https://mapraiders.com/) : German homepage
+- [Joggen als Spiel (Deutsch)](https://mapraiders.com/jogging/) : running niche page, German
+- [位置情報ゲーム (日本語)](https://mapraiders.com/ja/位置情報ゲーム.html) : Japanese location-game page
+
+## Sitemaps
+- [Sitemap index](https://mapraiders.com/sitemap-index.xml)
