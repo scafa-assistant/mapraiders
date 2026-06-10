@@ -17,16 +17,47 @@ import { strings as S } from '../../i18n';
 import type { FeedScreenProps } from '../../navigation/types';
 import type { FeedItem } from '../../utils/types';
 
-const FEED_TYPE_CONFIG: Record<
-  FeedItem['type'],
-  { icon: keyof typeof Ionicons.glyphMap; color: string; verb: string }
-> = {
+interface FeedTypeConfig {
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+  verb: string;
+}
+
+// Keys match server feed_events.type values
+const FEED_TYPE_CONFIG: Record<string, FeedTypeConfig> = {
   claim: { icon: 'map', color: THEME.primary, verb: S.profile.feed.verbClaim },
   quest_complete: { icon: 'flag', color: THEME.accent, verb: S.profile.feed.verbQuestComplete },
+  quest_growth: { icon: 'leaf', color: THEME.accent, verb: S.profile.feed.verbQuestGrowth },
   challenge_complete: { icon: 'trophy', color: THEME.warning, verb: S.profile.feed.verbChallengeComplete },
-  echo_created: { icon: 'mic', color: THEME.secondary, verb: S.profile.feed.verbEchoCreated },
+  echo_drop: { icon: 'mic', color: THEME.secondary, verb: S.profile.feed.verbEchoCreated },
   level_up: { icon: 'star', color: '#FFB800', verb: S.profile.feed.verbLevelUp },
+  title_earned: { icon: 'ribbon', color: '#FFB800', verb: S.profile.feed.verbTitleEarned },
+  duel_won: { icon: 'flash', color: THEME.warning, verb: S.profile.feed.verbDuelWon },
+  defense_win: { icon: 'shield-checkmark', color: THEME.primary, verb: S.profile.feed.verbDefenseWin },
+  trap_triggered: { icon: 'alert-circle', color: THEME.warning, verb: S.profile.feed.verbTrapTriggered },
+  turn_game_result: { icon: 'game-controller', color: THEME.secondary, verb: S.profile.feed.verbTurnGameResult },
+  pet_level_up: { icon: 'paw', color: '#FFB800', verb: S.profile.feed.verbPetLevelUp },
+  pet_rare_find: { icon: 'sparkles', color: '#FFB800', verb: S.profile.feed.verbPetRareFind },
+  artifact_created: { icon: 'diamond', color: THEME.accent, verb: S.profile.feed.verbArtifactCreated },
+  artifact_vote: { icon: 'thumbs-up', color: THEME.accent, verb: S.profile.feed.verbArtifactVote },
+  artifact_permanent: { icon: 'diamond', color: '#FFB800', verb: S.profile.feed.verbArtifactPermanent },
+  bounty_placed: { icon: 'skull', color: THEME.warning, verb: S.profile.feed.verbBountyPlaced },
+  bounty_claimed: { icon: 'cash', color: THEME.warning, verb: S.profile.feed.verbBountyClaimed },
+  race_created: { icon: 'speedometer', color: THEME.secondary, verb: S.profile.feed.verbRaceCreated },
+  race_record: { icon: 'stopwatch', color: THEME.secondary, verb: S.profile.feed.verbRaceRecord },
+  resonance_discovered: { icon: 'radio', color: THEME.secondary, verb: S.profile.feed.verbResonanceDiscovered },
+  silent_zone_proposed: { icon: 'volume-mute', color: THEME.textSecondary, verb: S.profile.feed.verbSilentZoneProposed },
+  silent_zone_vote: { icon: 'volume-mute', color: THEME.textSecondary, verb: S.profile.feed.verbSilentZoneVote },
+  alias_revealed: { icon: 'eye', color: THEME.secondary, verb: S.profile.feed.verbAliasRevealed },
 };
+
+const FEED_TYPE_FALLBACK: FeedTypeConfig = {
+  icon: 'pulse',
+  color: THEME.primary,
+  verb: S.profile.feed.verbDefault,
+};
+
+const PAGE_SIZE = 30;
 
 export default function FeedScreen({ navigation }: FeedScreenProps) {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
@@ -46,7 +77,10 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
       } else {
         setFeedItems(items);
       }
-      setHasMore(items.length >= 20);
+      const total = data?.data?.pagination?.total;
+      setHasMore(
+        typeof total === 'number' ? pageNum * PAGE_SIZE < total : items.length >= PAGE_SIZE,
+      );
     } catch {
       if (!append) setFeedItems([]);
     } finally {
@@ -75,7 +109,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
   }, [hasMore, loadingMore, loading, page, fetchFeed]);
 
   const renderFeedItem = ({ item }: { item: FeedItem }) => {
-    const config = FEED_TYPE_CONFIG[item.type] ?? FEED_TYPE_CONFIG.claim;
+    const config = FEED_TYPE_CONFIG[item.type] ?? FEED_TYPE_FALLBACK;
 
     return (
       <View style={styles.feedCard}>
@@ -88,13 +122,13 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
         <View style={styles.feedContent}>
           <Text style={styles.feedText} numberOfLines={2}>
             <Text style={[styles.feedUsername, { color: config.color }]}>
-              {item.username}
+              {item.user?.username ?? '?'}
             </Text>
             {' '}
-            {item.description || config.verb}
+            {config.verb}
           </Text>
           <Text style={styles.feedTime}>
-            {formatRelativeTime(item.createdAt)}
+            {formatRelativeTime(item.created_at)}
           </Text>
         </View>
       </View>

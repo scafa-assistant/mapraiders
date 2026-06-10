@@ -1,3 +1,5 @@
+import { strings as S, t, plural } from '../i18n';
+
 /**
  * Format a distance in meters to a human-readable string.
  * Under 1000m shows meters, above shows km with one decimal.
@@ -74,14 +76,14 @@ export function formatRelativeTime(date: Date | string | null | undefined): stri
   const diffHr = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHr / 24);
 
-  if (diffSec < 60) return 'just now';
-  if (diffMin < 60) return `${diffMin}m ago`;
-  if (diffHr < 24) return `${diffHr}h ago`;
-  if (diffDay === 1) return 'yesterday';
-  if (diffDay < 7) return `${diffDay}d ago`;
-  if (diffDay < 30) return `${Math.floor(diffDay / 7)}w ago`;
-  if (diffDay < 365) return `${Math.floor(diffDay / 30)}mo ago`;
-  return `${Math.floor(diffDay / 365)}y ago`;
+  if (diffSec < 60) return S.common.justNow;
+  if (diffMin < 60) return t(S.common.minutesAgo, { count: diffMin });
+  if (diffHr < 24) return t(S.common.hoursAgo, { count: diffHr });
+  if (diffDay === 1) return S.common.yesterday;
+  if (diffDay < 7) return plural(diffDay, S.common.daysAgoOne, S.common.daysAgoOther);
+  if (diffDay < 30) return plural(Math.floor(diffDay / 7), S.common.weeksAgoOne, S.common.weeksAgoOther);
+  if (diffDay < 365) return t(S.common.monthsAgo, { count: Math.floor(diffDay / 30) });
+  return t(S.common.yearsAgo, { count: Math.floor(diffDay / 365) });
 }
 
 /**

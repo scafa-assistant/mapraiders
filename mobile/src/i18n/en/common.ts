@@ -23,6 +23,9 @@ export const common = {
   daysAgoOther: '{count} days ago',
   weeksAgoOne: '{count} week ago',
   weeksAgoOther: '{count} weeks ago',
+  yesterday: 'yesterday',
+  monthsAgo: '{count}mo ago',
+  yearsAgo: '{count}y ago',
   dayOne: '{count} Day',
   dayOther: '{count} Days',
 };

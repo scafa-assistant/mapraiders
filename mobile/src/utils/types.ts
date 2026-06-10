@@ -81,14 +81,17 @@ export interface NotificationData {
   createdAt: string;
 }
 
+// Shape matches GET /api/social/feed response items
 export interface FeedItem {
   id: string;
-  type: 'claim' | 'quest_complete' | 'challenge_complete' | 'echo_created' | 'level_up';
-  userId: string;
-  username: string;
-  description: string;
-  createdAt: string;
-  metadata?: Record<string, unknown>;
+  type: string;
+  user: {
+    id: string;
+    username: string;
+    level: number;
+  };
+  data?: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface Rating {

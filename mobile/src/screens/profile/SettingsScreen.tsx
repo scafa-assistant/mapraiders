@@ -173,8 +173,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
       <Switch
         value={value}
         onValueChange={onToggle}
-        trackColor={{ false: settings.darkMapStyle ? '#1A2340' : '#D0D0D0', true: `${color}60` }}
-        thumbColor={value ? color : settings.darkMapStyle ? '#555E78' : '#AAAAAA'}
+        trackColor={{ false: '#1A2340', true: `${color}60` }}
+        thumbColor={value ? color : '#555E78'}
       />
     </View>
   );
@@ -281,8 +281,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderToggleRow(
             'moon-outline',
-            S.profile.settings.darkMode,
-            S.profile.settings.darkModeSubtitle,
+            S.profile.settings.darkMap,
+            S.profile.settings.darkMapSubtitle,
             settings.darkMapStyle,
             (val) => updateSetting('darkMapStyle', val),
             theme.secondary

@@ -25,6 +25,9 @@ export const common: typeof en = {
   daysAgoOther: 'vor {count} Tagen',
   weeksAgoOne: 'vor {count} Woche',
   weeksAgoOther: 'vor {count} Wochen',
+  yesterday: 'gestern',
+  monthsAgo: 'vor {count} Mon.',
+  yearsAgo: 'vor {count} J.',
   dayOne: '{count} Tag',
   dayOther: '{count} Tage',
 };
