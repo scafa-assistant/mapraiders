@@ -26,3 +26,22 @@ Server: 1 Endpoint + Service (~1 Tag, Tabellen + Indizes vorhanden). Mobile: 1 D
 Sobald live: Feature-Seite `/features/umkreis-suche/` + Erwähnung auf „Leute kennenlernen"-/Meetup-Seiten („zeig mir, was in 3 km um mich passiert") — konkreter Differenzierer, den weder Pokémon GO noch Meetup so bieten.
 
 **Status:** Spez bereit für Produkt-Backlog. Implementierung durch Terminal-Agent/Session nach Priorisierung durch René (empfohlen: nach Store-Launch-Blockern, vor Social-Layer — Discovery macht alle künftigen Inhaltstypen sofort auffindbar).
+
+---
+
+## Ergänzung (René, 10.06.): Detail-Ansicht mit Social Proof
+
+Jedes Discovery-Ergebnis öffnet eine Detail-Karte mit Aktivitäts- und Freunde-Signalen:
+
+| Typ | Zahlen | Freunde-Signal |
+|---|---|---|
+| Minigame | „287× gespielt · 41 diese Woche" + Bestzeit/Highscore | „3 Freunde haben es gespielt" (Avatare) + deren Bestleistung als Challenge-Anreiz |
+| Live-Event/Meetup | „17 angemeldet · 5 Plätze frei" | „Anna & Ben sind dabei" + 1-Tap „Mit anmelden" |
+| Territorium | Claim-Historie, aktueller Halter-Clan, Angriffe diese Woche | „Dein Clan-Mitglied hält das Gebiet" / „Freund X hat es gestern angegriffen" |
+| Quest/Echo | Abschluss-/Anhör-Zähler, Bewertung | „2 Freunde haben die Quest geschafft" |
+
+**Warum das wichtig ist:** Social Proof ist der stärkste Aktivierungs-Hebel — „17 Angemeldete, davon 2 Freunde" konvertiert um ein Vielfaches besser als ein leerer Event-Eintrag. Gleichzeitig Anti-Geisterstadt-Regel: Bei niedrigen Zahlen neutrale Formulierung („Sei unter den Ersten!") statt „0 Teilnehmer".
+
+**Technik:** Zähler als Aggregat-Spalten/Redis-Counter (play_count, signup_count — atomar inkrementieren, kein COUNT(*) pro Request). Freunde-Overlap: `friend_ids ∩ participant_ids` server-seitig, Response liefert nur mutual-Friends (Privacy inhärent: man sieht nur eigene bestätigte Freunde, nie Fremde namentlich). Detail-Endpoint: `GET /api/discovery/:type/:id` → `{ stats: {...}, friends: [{id, username, avatar}] }`.
+
+**UI-Vorlage:** Bestehende Detail-Screens (ChallengeDetail, MeetupDetail, TerritoryDetail) bekommen eine einheitliche `SocialProofBar`-Komponente — einmal bauen, überall einsetzen (gleiches Muster wie der generische Discovery-Endpoint).
