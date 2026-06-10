@@ -153,3 +153,22 @@ Querys wie „selbsthilfegruppe finden", „laufgruppe finden", „mama treff in
 
 ### Einordnung ins Gesamtbild
 Damit hat MapRaiders drei Wachstumsmotoren: (1) Gaming-Vergleiche (live, rankt), (2) Adjacent-Intent/Draußen-Hub (Pilot ab Juli), (3) Social-Alternative-Layer (Welle 1 sofort baubar, Welle 2 nach Social-Layer-Launch). Reihenfolge der nächsten Content-Sprints: Welle-1-Seiten (Zenly/Meetup/Leute-kennenlernen zuerst — höchste Ehrlichkeit, geringste Konkurrenz) → Ideen-Hub-Pilot → Welle 2 mit Feature-Launch.
+
+---
+
+## Nachtrag 10.06. (René): Exact-Match-Domains kaufen? — Ehrliche Bewertung
+
+**Idee:** Domains wie gameslikepokemongo.com kaufen und als Landing Pages betreiben.
+
+**Klare Empfehlung: NEIN als Microsite-Strategie — mit zwei gezielten Ausnahmen.**
+
+1. **Der EMD-Bonus ist seit Googles EMD-Update (2012) tot.** Eine Domain, die das Keyword enthält, rankt nicht durch ihren Namen — sie rankt durch Content + Links. Genau die haben wir auf mapraiders.com gerade mühsam aufgebaut.
+2. **Microsites zersplittern unsere Autorität.** Wir stehen bei 0 → bald 10 Backlinks auf EINER Domain. Fünf Satelliten-Domains heißen: fünfmal Linkaufbau, fünfmal Technik-Pflege, je 1/5 Ergebnis. Konsolidierung schlägt Streuung — immer.
+3. **Doorway-Risiko:** Ein Netz dünner Keyword-Domains, das alle auf dieselbe App leiten, ist exakt das, was Googles Doorway-Policy abstraft — schlimmstenfalls färbt das auf die Hauptdomain ab.
+4. **⚠️ Markenrecht:** Domains mit „pokemon" im Namen verletzen die Marke von Nintendo/The Pokémon Company — UDRP-Verfahren enden mit Domainverlust + Kosten. Finger weg von Fremdmarken in Domains (gilt auch für zenly, discord, tiktok).
+
+**Die zwei sinnvollen Ausnahmen:**
+- **Expired Domains MIT bestehenden Backlinks:** Stirbt z. B. ein LBG-Fanprojekt/Blog mit echtem Linkprofil, kann der Kauf + 301 auf unsere thematisch passende Seite reale Autorität übertragen. Prüfprozess: Linkprofil (Ahrefs/archive.org), Historie sauber? Themen-Match? Sonst Spam-Risiko. Einzelfälle, kein Programm.
+- **Defensiv/Brand:** mapraiders.de/.app etc. günstig sichern und 301 auf .com — Brand-Schutz, kein SEO-Hebel.
+
+**Gleiches Budget, besserer Hebel:** Jeder Euro/jede Stunde in Content (Welle-1-Seiten, Ideen-Hub) und Links (Outreach-Kit) auf mapraiders.com schlägt den Domain-Einkauf um Größenordnungen.

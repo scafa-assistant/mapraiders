@@ -185,3 +185,16 @@ Vorhandene Bausteine, auf denen der Social Layer aufsetzt:
 * WebSocket-Infrastruktur (Server) → Basis für Live-Features + Chat
 * Friends/Clan-System → Basis für Follower/Community-Graph
 * PostGIS Spatial Indexes → Basis für lokalen Feed (Distanz-Queries)
+
+---
+
+## Anforderungen aus der Community-/SEO-Strategie (ergänzt 10.06.2026)
+
+Für Gruppen/Communities — insbesondere Selbsthilfegruppen (siehe LINKQUELLEN_UND_WACHSTUM, Social-2.0-Roadmap):
+
+1. **Anonymer Modus pro Gruppe (René-Anforderung):** Teilnahme mit Pseudonym + separatem Avatar, entkoppelt vom Spielprofil; keine Rückverfolgbarkeit zwischen Spiel-Identität und Gruppen-Identität.
+2. **Sichtbarkeits-Stufen pro Gruppe:** öffentlich / privat (Beitritt auf Anfrage) / unsichtbar (nur per Einladungslink).
+3. **Standort-Schutz in Gruppen:** kein Live-Standort in Gruppen-Kontexten; Treffen nur als bewusst gesetzter Treffpunkt (nie Wohnort/aktuelle Position); Umkreis-Anzeige statt Punkt („~2 km entfernt").
+4. **Safety-Basics vor Launch des Selbsthilfe-Marketings:** Melden/Blockieren auf Gruppenebene, keine Screenshots-Erwartung kommunizieren, Moderations-Werkzeuge für Gruppengründer.
+
+Begründung: „Private by Design + Server in Deutschland" wird erst mit diesen Stufen zum belegbaren Differenzierer gegen Meta/Discord — und Selbsthilfe-Suchanfragen („selbsthilfegruppe finden") dürfen erst dann beworben werden.
