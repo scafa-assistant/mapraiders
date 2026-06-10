@@ -122,3 +122,34 @@ Struktur: `/ideen/` als deutscher Hub (+ `/en/ideas/`), darunter je Query-Cluste
 3. `/ideen/motivation-zum-spazieren.html` — Brücke zu Streak-Mechanik
 4. `/ideen/10000-schritte-tipps.html` — Brücke zu Claim-Mechanik
 5. `/ideen/neue-stadt-kennenlernen.html` — Brücke zu Echos/Urban-Explorer
+
+---
+
+## Nachtrag 10.06. (René): Social Media 2.0 — die „Alternative zu X"-Roadmap
+
+**Vision:** MapRaiders als Karten-basiertes Social Network — Alternative zu Discord, TikTok, Facebook, Zenly. Live gehen, sehen wo Freunde sind, Gruppen/Communities (bis hin zu Selbsthilfegruppen) finden und aufbauen.
+
+**Das eiserne SEO-Gesetz dazu:** Eine „X-Alternative"-Seite darf erst live gehen, wenn das Feature den Such-Intent TODAY erfüllt. Wer „TikTok Alternative" sucht und keinen Video-Feed findet, springt ab — und der Bounce killt das Ranking dauerhaft. Deshalb Staffelung nach Feature-Realität (Abgleich mit App-Bestand + SOCIAL_LAYER_MISSION.md):
+
+### Welle 1 — JETZT claimbar (Features existieren in der App)
+| Claim | Trägt das Feature? | Query-Beispiele |
+|---|---|---|
+| **Zenly-Alternative** | ✅ Freunde + Live-Karte (Zenly ist tot — Vakuum!) | zenly alternative, zenly ersatz, freunde karte app |
+| **Meetup-Alternative** | ✅ Meetups + Meetup-Chat existieren | meetup alternative kostenlos, lokale events app |
+| **„Leute kennenlernen"** | ✅ Friends/Meetups/Clans | leute kennenlernen app ohne dating, freunde finden app, gleichgesinnte finden |
+| **Discord-Alternative (für Outdoor-Crews)** | ✅ Clan-Chat + Meetup-Chats — ehrlich geframed als „Discord für draußen" | discord alternative, crew chat app |
+| **Facebook-Gruppen-Alternative (lokal)** | ✅ Clans + Meetups = lokale Gruppen | facebook gruppen alternative, nachbarschafts app |
+
+### Welle 2 — NACH Social-Layer-Launch (Mission: Kurzvideos, Livestreams, Feeds)
+| Claim | Wartet auf | Query-Beispiele |
+|---|---|---|
+| TikTok-Alternative | Kurzvideo-Feed (lokal+global) | tiktok alternative ohne algorithmus, tiktok alternative deutschland |
+| Live gehen / Livestream-Map | Livestream-Feature | live gehen app, livestream karte |
+| Instagram-Alternative | Foto-Beiträge auf Karte | instagram alternative privat |
+Seiten-Skelette können vorbereitet werden (noindex bis Launch), Publikation strikt erst mit Feature.
+
+### Communities & Selbsthilfegruppen — Chance mit Verantwortung
+Querys wie „selbsthilfegruppe finden", „laufgruppe finden", „mama treff in der nähe" sind groß und unterversorgt. ABER: vulnerable Gruppen + Echtzeit-Standort verlangen Privacy-Stufen (Gruppen ohne Live-Standort, Treffpunkt statt Wohnort, private/unsichtbare Clans). Genau hier wird „Private by Design + Server in Deutschland" vom Compliance-Satz zum Verkaufsargument gegen Meta/Discord. → Feature-Anforderung an Social Layer: Sichtbarkeits-Stufen pro Gruppe (öffentlich / privat / unsichtbar) VOR dem Selbsthilfe-Marketing.
+
+### Einordnung ins Gesamtbild
+Damit hat MapRaiders drei Wachstumsmotoren: (1) Gaming-Vergleiche (live, rankt), (2) Adjacent-Intent/Draußen-Hub (Pilot ab Juli), (3) Social-Alternative-Layer (Welle 1 sofort baubar, Welle 2 nach Social-Layer-Launch). Reihenfolge der nächsten Content-Sprints: Welle-1-Seiten (Zenly/Meetup/Leute-kennenlernen zuerst — höchste Ehrlichkeit, geringste Konkurrenz) → Ideen-Hub-Pilot → Welle 2 mit Feature-Launch.
