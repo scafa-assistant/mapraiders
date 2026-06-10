@@ -61,3 +61,15 @@ Betreffzeile (alle): `Addition for your "[ARTIKELTITEL]" — GPS territory MMO f
 
 ## D) Messlatte
 Ziel Q3: 10 verweisende Domains, davon 3 aus Listicles. Tracking: GSC-Linkbericht monatlich (Montags-Monitoring meldet neue Domains).
+
+## E) Hunde-Blogger & Gassi-Community (Nachtrag, DE-Fokus)
+Zielgruppe mit täglicher Outdoor-Routine und hoher Blog-Dichte. Pitch (DE):
+> Betreff: Gassi-Runden als Spiel — Beta-Zugang für [BLOG]
+>
+> Hallo [NAME], ich bin René, Gründer von MapRaiders — einer kostenlosen Outdoor-App, bei der jede Gassi-Runde das eigene Revier auf der echten Karte erobert. Hunde bekommen eigene Profile, Routen lassen sich als Quests teilen, und mit Audio-Echos kann man anderen Hundebesitzern Tipps am Wegesrand hinterlassen.
+>
+> Ich würde dir/euch gern exklusiven Beta-Zugang geben — ehrliches Feedback ist uns wichtiger als ein Werbetext. Wenn daraus ein Erfahrungsbericht wird: umso schöner.
+>
+> Viele Grüße, René (Scafa Investment LLC, made in Germany, werbefrei)
+
+Zielrecherche (je 5 min): „Hundeblog Gassi App Test", „Dog Walker Blog Deutschland" — Kandidaten in Tabelle ergänzen, Versand nur René.

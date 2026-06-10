@@ -72,3 +72,19 @@
 3. **Slug-Strategie bestätigt:** Native Slugs für ja/ko/zh funktionieren nachweislich (GSC: 位置情報ゲーム 108 Impr.), AR/HI bleiben bewusst lateinisch (Slug-Drift-/Encoding-Risiko) — MapRaiders macht es bereits richtig, keine Änderung.
 4. **Keyword-Transfer (Language Gaps):** Querys, für die en bereits rankt (pokemon go alternatives, walking games), semantisch in de/fr-Pendants spiegeln — Kandidat für den Title/Description-Sprint de (CTR-Problem: 118 Impr., 1 Klick).
 5. **⚠️ An den DopaSpeak-Agenten weitergeben:** Im Research-Dokument verlinkt der CTA auf `https://dopaspeak.com/MapRaiders.apk` — vermutlich Copy-Paste-Fehler (falsche App auf falscher Domain). Vor Umsetzung korrigieren.
+
+---
+
+## Nachtrag 10.06. (Recherche #2 „Nischen-Eroberung"): Bewertung & Übernahmen
+
+**Bereits erledigt (Recherche basierte auf altem Master-Log):** noindex-Stub-Sanierung per nginx-301 (305 Regeln, deployt + volltestet), Rezensions-Snippets-Fix, Sitemap-Konsolidierung (eine Quelle, phase1 entfernt), Outreach-Grundstein. ⚠️ Recherche-Fehler korrigiert: vorgeschlagenes `/id/ → /id-id/` wäre 404 (id-id existiert nicht — /id/ ist bereits kanonisch); **die GEO-Formeln der Recherche waren erfunden** (Regen +0,25 statt real ×1,5; Slot-Stufentabelle statt real `min(5, ⌊Fläche/1000⌋+1)`).
+
+**Neu übernommen:**
+1. **GEO-Faktenblock mit ECHTEN Formeln** (aus `server/src/config/constants.ts` + `claimEngine.ts` verifiziert) live auf `/en/features/territories.html`: Wetter-/Zeit-/Streak-/Novelty-Multiplikatoren + Slot-Regel. Einzigartiger, RAG-extrahierbarer Content, den kein Wettbewerber hat. Rollout-Kandidaten: de/ja-Pendants.
+2. **Drei Nischen-Briefs für den nächsten Content-Sprint** (Seiten existieren teils als Basis):
+   - „Niantic-Flüchtlinge": neue Seite `/en/non-niantic-gps-games.html` (Keywords: indie pokemon go alternatives, no pay to win); Scopely/PIF-Frust sachlich aufgreifen, Hetzner/DE-Hosting + Akku-Vorteil als Fakten. Bestehende vs-Seiten verlinken.
+   - „Gassi-Gaming": de-Fokusseite `/gassi-gehen-app.html` (Keyword: Gassi gehen App) — /hundespaziergang/ existiert, zielt aber auf „Hundespaziergang"; Gassi-Query ist größer. + Hunde-Profile/Gassi-Events als USP.
+   - „Audio-Schnitzeljagd": de `/audio-schnitzeljagd.html` als Brücke Geocaching↔Echos (/schnitzeljagd/ + /audio-graffiti/ existieren, das Kombi-Keyword fehlt).
+3. **Hunde-Blogger-Outreach** als neue Sektion im OUTREACH_KIT (Beta-Zugang gegen Bericht — lokal relevante Backlinks).
+
+**Nicht übernommen:** Akku-Claim „4× länger als Pokémon GO" (unbelegt; Site sagt belegt „43 % weniger" — keine widersprüchlichen Zahlen publizieren).
