@@ -1,0 +1,3 @@
+
+# Never commit a static JS bundle — it shadows fresh code in every build
+android/app/src/main/assets/index.android.bundle
