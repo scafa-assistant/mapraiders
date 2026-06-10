@@ -84,7 +84,9 @@
         {
           "microphonePermission": "MapRaiders needs microphone access to record echoes."
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {

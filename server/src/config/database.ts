@@ -21,7 +21,8 @@ const poolConfig: PoolConfig = {
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
-  ...(isProduction ? { ssl: { rejectUnauthorized: true } } : {}),
+  // DATABASE_SSL=false erlaubt lokale Docker-Postgres ohne SSL (Hetzner-Setup)
+  ...(isProduction && process.env.DATABASE_SSL !== 'false' ? { ssl: { rejectUnauthorized: true } } : {}),
 };
 
 export const pool = new Pool(poolConfig);
