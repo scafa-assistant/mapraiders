@@ -88,3 +88,37 @@
 3. **Hunde-Blogger-Outreach** als neue Sektion im OUTREACH_KIT (Beta-Zugang gegen Bericht — lokal relevante Backlinks).
 
 **Nicht übernommen:** Akku-Claim „4× länger als Pokémon GO" (unbelegt; Site sagt belegt „43 % weniger" — keine widersprüchlichen Zahlen publizieren).
+
+---
+
+## Nachtrag 10.06. (René): Das Adjacent-Intent-Universum — „Leute, die uns nicht suchen, aber uns brauchen"
+
+**These (korrekt):** Produkt-Keywords („pokemon go alternative") sind die kleinste Suchebene. Die viel größeren Volumina liegen bei Menschen, die ein PROBLEM oder eine SITUATION googeln — und für die MapRaiders die Antwort ist, ohne dass sie es wissen.
+
+### Die 5 Intent-Ebenen (von eng zu riesig)
+
+| Ebene | Intent | Beispiel-Querys (DE) | Status |
+|---|---|---|---|
+| 1 | Produkt/Vergleich | pokemon go alternative, ingress alternative | ✅ live, rankt |
+| 2 | Feature-Nische | gassi gehen app, audio schnitzeljagd, schrittzähler spiel | 📋 Briefs fertig |
+| 3 | **Problem/Situation** | was kann man draußen machen, aktivitäten mit freunden draußen, langeweile am wochenende, motivation zum spazieren, 10.000 schritte schaffen, date-ideen draußen, digital detox aber wie | 🆕 unerschlossen |
+| 4 | **Zielgruppen-Situation** | aktivitäten mit kindern draußen, teambuilding outdoor ideen, neue stadt kennenlernen, allein wohnen leute kennenlernen, urlaub zuhause was tun | 🆕 unerschlossen |
+| 5 | **Trend/Saison** | outdoor trends 2026, sommer-apps 2026, walking challenge ideen, neujahrsvorsätze bewegung, spiele im trend | 🆕 unerschlossen, saisonal wiederkehrend |
+
+### Format: „Draußen-Hub" statt Einzelseiten
+Ebenen 3–5 sind informationale Suchen → sie brauchen **ehrlichen Ratgeber-Content**, in dem MapRaiders eine von mehreren Antworten ist (Listicle-Format: „12 Ideen, was du heute draußen machen kannst — #7 macht aus deinem Spaziergang ein Revier"). Reine Werbeseiten ranken hier nicht und konvertieren nicht.
+
+Struktur: `/ideen/` als deutscher Hub (+ `/en/ideas/`), darunter je Query-Cluster eine Seite. Eigene Silo-Sitemap (`sitemap-ideen-de.xml`). Interne Brücken: jede Ideen-Seite verlinkt kontextuell auf die passende Feature-/Nischen-Seite (Ebene 1–2), nicht auf die Homepage.
+
+### Ehrliche Trade-offs (CEO-Sicht)
+1. **Conversion sinkt pro Ebene:** Ebene-3-Besucher installieren seltener sofort — dafür ist das Volumen 100–1000×. Erwartung: Sichtbarkeit + Brand-Erinnerung + AI-Zitierfähigkeit (genau solche Ratgeber zitieren ChatGPT/Perplexity bei „was kann man draußen machen").
+2. **Saisonalität ist ein Feature:** „Neujahrsvorsätze bewegung" (Januar), „sommerferien aktivitäten" (Juni) — Trend-Seiten 6–8 Wochen VOR Saison publizieren, jährlich aktualisieren (Jahreszahl im Title).
+3. **Guardrail bleibt:** Gleiches Staffel-Limit wie pSEO (25–50 Seiten/Woche erst ab Indexierungsquote >85 %, Juli-Review). Start: 5 handgeschriebene Pilot-Seiten Ebene 3 (DE), Performance 4 Wochen messen, dann skalieren.
+4. **Validierung ohne Keyword-Tool:** Google Suggest (Autocomplete) + „Ähnliche Fragen"-Boxen pro Cluster abgrasen + GSC-Query-Report (zeigt schon heute Adjacent-Signale: „walking games" 14 Impr. ohne dass wir es targeten). Optional: Ahrefs/Similarweb-Connector anbinden für echte Volumina.
+
+### Pilot-Vorschlag (5 Seiten, DE, Ebene 3)
+1. `/ideen/was-kann-man-draussen-machen.html` — der Volumen-König
+2. `/ideen/aktivitaeten-mit-freunden-draussen.html`
+3. `/ideen/motivation-zum-spazieren.html` — Brücke zu Streak-Mechanik
+4. `/ideen/10000-schritte-tipps.html` — Brücke zu Claim-Mechanik
+5. `/ideen/neue-stadt-kennenlernen.html` — Brücke zu Echos/Urban-Explorer
