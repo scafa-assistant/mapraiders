@@ -26,9 +26,6 @@
 
 Die deployte Sprint2-Conf (≈80 Regeln) greift, deckt aber nur einen Teil der ~1000 gelöschten Alt-URLs ab. Für den exakten Volltest aller 80 Regeln wird die Datei `DopaSpeak/gsc_audit_2026-06-10/sprint2_404fix_nginx_redirects.conf` benötigt (Quelle-Ziel-Paare).
 
-## Nächste Schritte
-1. **MapRaiders AP1:** nginx-Conf aus der 301-Matrix generieren (Vorlage: Sprint2-Blaupause), Deploy auf zoro durch René/Terminal-Agent, danach Stubs nach `_retired/`.
-2. **DopaSpeak:** Volltest der 80 Regeln nach Freigabe der Conf-Datei; Lücken-Mapping für die restlichen 404s (GSC-Export als Quelle).
-3. Nach Deploy: Crawl-Statistik „Verschoben (Sonstiges)" beobachten (Soll: → 0), GSC-noindex-Validierung startet René.
+## NACHTRAG — Deploy + finaler Volltest (10.06., nachmittags)
 
-*Rohdaten: 305 Einzelergebnisse im Test-Log; Redirect-Matrix: `redirect_matrix.json` (195 Quelle→Ziel-Paare, Ketten aufgelöst).*
+Die 301-Conf wurde von René auf zoro deployt (Backup `mapraiders.bak_20260610_131521`, nginx -t ok, Include 4× nach server_name-Zeilen). **Finaler Volltest: 305/305 bestanden** — jede Quelle antwortet 301 direkt auf das Soll-Ziel, jedes Ziel 200, keine Redirect-Ketten; Unicode-Pfade dekodiert und percent-encoded verifiziert. Anschließend: 195 Stub-Dateien nach `docs/_retired/` archiviert, 103 interne Links von Stub-URLs auf finale Ziele umgeschrieben (Commit d06debc). AP1 = **Definition of Done erfüllt** (0 
