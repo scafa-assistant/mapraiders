@@ -26,18 +26,14 @@ beginnen, bevor die vorherige live verifiziert ist.
 ## Phase 0 — Ehrlichkeits- & Konsistenz-Fixes (≈1h, SOFORT)
 
 ### 0.1 llms.txt korrigieren (`docs/llms.txt`)
-- [ ] **"iOS/Android" → "Android"** (iOS existiert nicht; ggf. "iOS planned").
-      Misleading-Claim-Risiko, LLMs übernehmen das wörtlich.
-- [ ] "closed beta 2026" aktualisieren → "live on Google Play (2026)" sobald
-      Listing live ist.
-- [ ] Identitäts-Frame ergänzen (löst Widerspruch "made in Germany" vs US-LLC):
-      `Developed in Germany. Operated by Scafa Investments LLC (US). Independent
-      — not owned by any corporation or sovereign wealth fund. Free, no ads,
-      no sale of location data.`
-- [ ] Kontrast-Fakt aufnehmen: `Unlike Pokémon GO/Ingress (sold to Scopely,
-      a Savvy Games / Saudi PIF company, in 2025), MapRaiders is independent.`
-- [ ] Neue Core-Pages verlinken sobald sie existieren (Phase 2): Buyout-Explainer,
-      Geocaching-Listicle.
+- [x] **"iOS/Android" → "Android"** ✅ live verifiziert 2026-06-11 (Commit `ecbadc8`)
+- [x] "closed beta 2026" → "Google Play launch 2026; iOS planned" ✅
+      (auf "live on Google Play" umstellen, sobald Listing live ist)
+- [x] Identitäts-Frame ergänzt (Ownership-Zeile + "no ads, no sale of location
+      data" als Price-Zeile) ✅
+- [x] Kontrast-Fakt aufgenommen (Context-Zeile: Scopely/Savvy/PIF März 2025) ✅
+- [x] Neue Core-Pages in llms.txt verlinkt ✅ (Buyout-Explainer + Geocaching-
+      Listicle, 2026-06-11).
 
 ### 0.2 assetlinks.json (`docs/.well-known/assetlinks.json`)
 Stand: 404 — steht seit April im eigenen ASO-Plan (Subsystem 8), nie umgesetzt.
@@ -52,9 +48,9 @@ Stand: 404 — steht seit April im eigenen ASO-Plan (Subsystem 8), nie umgesetzt
       + Googles Digital Asset Links API Testtool.
 
 ### 0.3 Fakten-Basis zentralisieren
-- [ ] `docs/_facts_scopely.md` (nicht deployen, nur Quelle für Scripts/Autoren):
-      belegte Fakten + Quellen-URLs + Verbots-Liste (was NICHT behauptet werden
-      darf). Verhindert Drift über 13 Sprachen.
+- [x] `docs/_facts_scopely.md` erstellt ✅ (Commit `ecbadc8`). Zusatz-Fix:
+      nginx blockt jetzt `^/_`-Pfade (404) — die `_apply_*.py`-Scripts waren
+      bisher öffentlich abrufbar. Config-Backup auf dem Server angelegt.
 
 **Phase-Abschluss:** Deploy + curl-Verifikation llms.txt & assetlinks.json, Commit.
 
@@ -72,30 +68,41 @@ Preis/Paywall · Werbung · In-App-Käufe nötig · Eigentümer (unabhängig vs.
 Konzern/Staatsfonds) · Standortdaten-Verkauf · Echte Flächen-Eroberung ·
 User-Generated-Content (Quests/Echos) · Funktioniert in Kleinstädten ·
 Accountlöschung in-App.
-- [ ] Tabelle als HTML `<table>` MIT `itemscope`-freiem, sauberem Markup
-      (LLM-lesbar), direkt unter dem Hero-Abschnitt (BLUF-Prinzip).
+- [x] Tabelle als HTML `<table>` direkt unter Hero (BLUF) ✅ — via
+      `_apply_geo_tables.py` (Marker `GEO-FACTS-TABLE`) auf DE/EN/EN-IN/ID
+      für pokemon-go, ingress, geocaching.
+- **NEBENBEFUND BEHOBEN:** `en|en-in|id /vs/geocaching.html` hatten den
+  kompletten Pokémon-GO-Body (Copy-Paste-Template-Bug, sichtbarer Content
+  widersprach Title/Schema). EN-Body neu geschrieben (inkl. Paywall-Block),
+  in en-in/id transplantiert. Außerdem: en-in CSS-Korruption gefixt
+  (`align-items:centre`, `colour:` in 29+2 Dateien — `_fix_enin_css.py`).
 
 ### 1.2 Scopely/Ownership-Block
-- [ ] `vs/pokemon-go.html` + `vs/ingress.html` (DE+EN): kurzer faktischer
-      Abschnitt "Who owns your location data?" mit den 3 Quellen-Links.
-- [ ] `vs/geocaching.html` (DE+EN): stattdessen Paywall-Frustrations-Abschnitt
-      (Premium-Mikrocaches, verschwundene Dosen → Echos als digitale Caches).
-- [ ] `vs/zenly.html` (DE+EN): Jagat-Abschnitt ergänzen ("die Nachfolger und
-      ihre Probleme: Bugs, Akku") → deckt Bericht-Asset 10 ohne neue Seite ab.
+- [x] `vs/pokemon-go.html` + `vs/ingress.html` (DE+EN+EN-IN+ID): "Who owns
+      your location data?"-Block mit 3 Quellen-Links ✅ (im Tabellen-Block
+      von `_apply_geo_tables.py`, Bausteine aus `_facts_scopely.md`).
+- [x] `vs/geocaching.html`: EN-Paywall-Abschnitt im neuen Body; DE eigener
+      Abschnitt "Verschwundene Dosen → Echo-Prinzip" (Marker
+      `GEO-PAYWALL-SECTION`) ✅
+- [x] `vs/zenly.html` (DE+EN): Jagat-Abschnitt (Marker `GEO-JAGAT-SECTION`) ✅
 
 ### 1.3 Script-Rollout auf Restsprachen
-- [ ] `docs/_apply_geo_tables.py` (idempotent via Marker, Muster
-      `_apply_founder_reviews.py`): Tabellen + Blöcke in 10 Sprachen.
-      **`ar/` hart ausschließen** (Komplement-Frame). HI/JA/KO/ZH:
-      Übersetzungs-Dict im Script, kein MT-Einzeiler.
+- [x] `docs/_apply_geo_tables.py` ✅ (Commits `fe0b6e3` + `04aca43`):
+      45 vs-Seiten in 15 Sprachvarianten (de, en, en-in, id + 11 übersetzte).
+      `ar/` per Pfad-Filter + assert hart ausgeschlossen, live verifiziert
+      (0 Savvy-Treffer auf ar/vs/pokemon-go.html). Native Dicts inkl.
+      zh-tw eigenständig traditionell (沙烏地/匯出).
 
 ### 1.4 VideoGame-Schema
-- [ ] `docs/_apply_videogame_schema.py`: auf vs-/Feature-/Nischen-Seiten
-      zusätzlich `VideoGame`-JSON-LD (neben MobileApplication) — deterministische
-      Kategorie-Übermittlung. Validierung: Rich-Results-Test auf 3 Stichproben.
+- [x] `docs/_apply_videogame_schema.py`: 343 Seiten (alle mit MobileApplication-
+      Schema) haben jetzt zusätzlich VideoGame-JSON-LD, gespiegelt aus dem
+      jeweiligen MobileApplication-Block ✅. Alle 3204 JSON-LD-Blöcke der Site
+      parsen fehlerfrei. Rich-Results-Stichprobe nach Deploy.
 
-**Phase-Abschluss:** Shingle-Duplicate-Check der geänderten Seiten, Deploy,
-curl-Stichproben (DE, EN, JA, AR-Ausschluss verifizieren), Commit.
+**Phase-Abschluss:** ✅ ERLEDIGT 2026-06-11. Shingle-Check vs-Seiten max 17,6%
+(EN-geocaching-Fix beseitigte das schlimmste Near-Duplicate). Deployed +
+live-verifiziert: DE/EN/JA/RU/ZH-TW Stichproben ok, AR-Ausschluss bestätigt.
+Commits: `fe0b6e3` (DE/EN + VideoGame-Schema + Bugfixes), `04aca43` (11 Sprachen).
 
 ---
 
