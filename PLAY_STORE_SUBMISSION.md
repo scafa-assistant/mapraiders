@@ -120,7 +120,7 @@ Die Karte ist leer. Hol sie dir.
 | Fotos/Audio/Video | Ja, nur bei Echo-Erstellung | App-Funktion (User-Content) | Ja | Ja |
 | App-Interaktionen (XP, Routen) | Ja | App-Funktion | Ja | Nein |
 
-**Sicherheit:** Daten verschlüsselt übertragen (HTTPS). **Löschung:** Account-Löschung in-App (Settings → Delete Account) + GDPR-Export. Datenschutz-URL: https://mapraiders.com/privacy
+**Sicherheit:** Daten verschlüsselt übertragen (HTTPS). **Löschung:** Account-Löschung in-App (Settings → Delete Account) + GDPR-Export. Datenschutz-URL: https://mapraiders.com/datenschutz.html
 
 ## 6. Content-Rating-Fragebogen (IARC)
 
@@ -136,13 +136,13 @@ Die Karte ist leer. Hol sie dir.
 - **Tags:** GPS, Fitness, Territorium, Outdoor, Multiplayer
 - **E-Mail (öffentlich):** info@scafa-investments.com
 - **Website:** https://mapraiders.com
-- **Datenschutz-URL:** https://mapraiders.com/privacy ← **vor Submission prüfen, dass Seite live ist + SCAFA INVESTMENTS LLC als Betreiber nennt**
+- **Datenschutz-URL:** https://mapraiders.com/datenschutz.html ✅ (geprüft 2026-06-11: live, nennt SCAFA INVESTMENTS LLC, beschreibt Standort/GPS-Nutzung 16×)
 - **Zielgruppe:** 13+ (keine Kinder-App — vermeidet Families-Policy-Auflagen)
 - **Werbung enthalten:** Nein
 
 ## 8. Checkliste vor Submit
 
-- [ ] Privacy-Policy-Seite live unter mapraiders.com/privacy (LLC als Betreiber, GPS-Datennutzung beschrieben)
+- [x] Privacy-Policy live: mapraiders.com/datenschutz.html (LLC als Betreiber ✓, GPS-Datennutzung ✓; AGB + Impressum ebenfalls live, App-Links zeigen auf dieselben URLs)
 - [ ] AAB hochgeladen (Internal Testing)
 - [ ] Data-Safety ausgefüllt wie oben
 - [ ] Content-Rating-Fragebogen abgeschickt
