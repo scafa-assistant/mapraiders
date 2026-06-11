@@ -482,7 +482,7 @@ const createStyles = (theme: Theme) =>
     flex: 1,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
     overflow: 'hidden',
   },
   progressBarFill: {
@@ -491,7 +491,7 @@ const createStyles = (theme: Theme) =>
     backgroundColor: '#00FF88',
   },
   progressText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -499,7 +499,7 @@ const createStyles = (theme: Theme) =>
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
