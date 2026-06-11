@@ -188,6 +188,63 @@ Vorhandene Bausteine, auf denen der Social Layer aufsetzt:
 
 ---
 
+## Erweiterung 2026-06-11: Community-Kern & Risiko-Meta (Ideen von René)
+
+Leitfrage: Was macht ein Spiel oder Social Media wirklich attraktiv?
+Antwort: **Community aufbauen, Crews erstellen, sich mit Menschen verbinden — die Dramen
+und den Spaß der anderen teilen können.** Das ist der Kern, den der Social Layer
+liefern muss. Dazu vier konkrete neue Bausteine:
+
+### 1. Hauptstadt-Wahl (Onboarding)
+
+* Jeder Spieler wählt zu Beginn eine **Hauptstadt** (Heimatstadt/Repräsentations-Stadt)
+* Bindet den Spieler an eine geografische Community ab Tag 1
+* Basis für alle Stadt-vs-Stadt-Mechaniken
+* Technisch: ein Feld `home_city` am User + Geocoding-Lookup, kein großer Aufwand
+
+### 2. Risiko-Meta: Städte- & Community-Rankings
+
+Das Spiel soll sich auf der Makro-Ebene wie **Risiko** anfühlen — Städte und
+Communities kämpfen um globale Dominanz. Sichtbar machen:
+
+* Welche **Stadt** besitzt die meisten Länder / Territorien?
+* Welche Stadt/Community hat die meisten **Quadratmeter**?
+* Wer hat die meisten **Punkte**?
+* Welche Community ist die **größte** (Mitgliederzahl)?
+
+Technisch: Aggregations-Leaderboards über `home_city` bzw. Clan — passt in das
+bestehende Leaderboard-System (leaderboardCron) als neue Kategorien.
+
+### 3. Forum / Schwarzes Brett (Anzeigen-Board)
+
+* Board, auf dem Spieler **Annoncen** schreiben (wie in Foren): Treffen organisieren,
+  Crews suchen, Events ankündigen
+* Soll sich anfühlen **wie Reddit** — Threads, Antworten, Upvotes
+* **Doppelnutzen SEO:** Die Beiträge erscheinen als indexierbare Seiten auf
+  mapraiders.com (User-Generated Content = Blogpost-Ersatz, kontinuierlich frischer
+  Content auf der Landing Page ohne eigenes Schreiben)
+* Landing Page bekommt damit einen Forum-Bereich
+
+### 4. Web-Erlebnis (mapraiders.com)
+
+* Auf der Website soll man **durchstöbern und ggf. spielen** können:
+  Live-Weltkarte, Stadt-Rankings, Forum, öffentliche Profile/Feeds
+* Mindestens: Read-only-Discovery (Karte + Rankings + Forum) — zieht
+  organischen Traffic und konvertiert zu App-Installs
+
+### Priorisierung innerhalb des Social Layers
+
+Diese vier Punkte sind **Community-Infrastruktur** und konkurrieren mit dem
+Content-MVP (Video/Feeds/Live). Empfohlene Reihung beim Start der Mission:
+
+1. Hauptstadt-Wahl (klein, sofort, füttert alles andere)
+2. Stadt-/Community-Rankings (baut auf bestehendem Leaderboard-System auf)
+3. Forum/Board (App + Web, SEO-Hebel)
+4. Content-MVP (Video-Upload, Feeds, Kartenmarker)
+5. Live-Features (Streams, JOY Voice Rooms)
+
+---
+
 ## Anforderungen aus der Community-/SEO-Strategie (ergänzt 10.06.2026)
 
 Für Gruppen/Communities — insbesondere Selbsthilfegruppen (siehe LINKQUELLEN_UND_WACHSTUM, Social-2.0-Roadmap):
