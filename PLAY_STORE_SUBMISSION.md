@@ -99,13 +99,24 @@ MapRaiders funktioniert überall auf der Welt. Ob du im Park joggst, mit dem Hun
 Die Karte ist leer. Hol sie dir.
 ```
 
-## 4. Grafiken (müssen noch erstellt werden)
+## 4. Grafiken ✅ (fertig in `store-assets/`)
 
-| Asset | Format | Status |
-|---|---|---|
-| App-Icon | 512×512 PNG | aus `mobile/assets/` exportieren |
-| Feature Graphic | 1024×500 PNG | **fehlt — erstellen** |
-| Screenshots Phone | min. 2, 16:9 oder 9:16 | aus Geräte-Tests vorhanden (test_*.png 1280×2856) — kuratieren: Map dark, Map light, Quests, Profil, Leaderboard, Settings |
+| Asset | Datei | Format | Status |
+|---|---|---|---|
+| App-Icon | `store-assets/icon-512.png` | 512×512 PNG | ✅ |
+| Feature Graphic | `store-assets/feature-graphic-1024x500.png` | 1024×500 PNG | ✅ ("MAPRAIDERS — GPS Territory Game / Walk. Claim. Conquer.") |
+| Screenshot 1 | `store-assets/screenshot-01.png` | 1080×1920 (9:16) | ✅ Karte dunkel — "Claim real territory" |
+| Screenshot 2 | `store-assets/screenshot-02.png` | 1080×1920 | ✅ Karte hell — "Your city is the board" |
+| Screenshot 3 | `store-assets/screenshot-03.png` | 1080×1920 | ✅ Erstellen-Hub — "Create quests, echoes & events" |
+| Screenshot 4 | `store-assets/screenshot-04.png` | 1080×1920 | ✅ Activity-Feed — "See what's happening nearby" |
+| Screenshot 5 | `store-assets/screenshot-05.png` | 1080×1920 | ✅ Profil-Features/Streak — "Keep your streak alive" |
+| Screenshot 6 | `store-assets/screenshot-06.png` | 1080×1920 | ✅ Haustier — "Raise your companion" |
+
+Hinweise:
+- Geräte-Statusbar ist aus allen Screenshots herausgeschnitten (keine Uhrzeit/Akku/System-Icons im Listing)
+- Keine Gesichter, keine echten Namen — nur Usernames (DopeRunner, Gigi_Beule), per IARC ok
+- Reproduzierbar via `store-assets/generate_screenshots.py` (braucht die test_*/lt_*-Quell-Screenshots im Projekt-Root, untracked)
+- Upload-Reihenfolge in der Console = Nummerierung (01 zuerst = wichtigster Slot)
 
 ## 5. Data-Safety-Formular (wahrheitsgemäß per Code-Stand)
 
@@ -147,6 +158,6 @@ Die Karte ist leer. Hol sie dir.
 - [ ] Data-Safety ausgefüllt wie oben
 - [ ] Content-Rating-Fragebogen abgeschickt
 - [ ] Listing EN + DE eingepflegt
-- [ ] Feature Graphic + min. 4 Screenshots hochgeladen
+- [ ] Feature Graphic + 6 Screenshots hochgeladen (alle fertig in `store-assets/`, siehe §4)
 - [ ] Tester-Liste fürs Internal Testing (workspace.scafa@gmail.com + Beta-Tester)
 - [ ] Nach Internal-Test ok → Production-Release einreichen
