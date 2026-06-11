@@ -1,6 +1,6 @@
 # Play Store Submission — MapRaiders v1.0.0 (versionCode 2)
 
-> **Artefakt:** `builds/mapraiders-v1.0.0-vc2-production.aab` (EAS-Build `8d3ee35d`, signiert mit EAS-Keystore "Build Credentials 62P9H0rQMx")
+> **Artefakt:** `builds/mapraiders-v1.0.0-vc2-production-final.aab` (EAS-Build `506fa5a3`, 2026-06-11 11:24, signiert mit EAS-Keystore "Build Credentials 62P9H0rQMx")
 > **Account:** workspace.scafa@gmail.com — Play Console Account-ID 7101708942875114448
 > **Rechtsträger:** SCAFA INVESTMENTS LLC (keine persönlichen Namen im Listing!)
 > **Paket:** com.mapraiders.app
