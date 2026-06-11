@@ -23,6 +23,8 @@ import { useTerritoryStore } from '../../store/territoryStore';
 import { echoApi, silentZoneApi } from '../../services/api';
 import { strings as S, t } from '../../i18n';
 import { useTheme } from '../../hooks/useTheme';
+import { getMapStyle } from '../../utils/mapStyles';
+import { useSettingsStore } from '../../store/settingsStore';
 import { Theme } from '../../utils/constants';
 import { EchoCreateScreenProps } from '../../navigation/types';
 
@@ -31,6 +33,7 @@ const MAX_DURATION = 30; // seconds
 
 export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) {
   const theme = useTheme();
+  const { settings } = useSettingsStore();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { currentLocation } = useLocationStore();
   const { territories } = useTerritoryStore();
@@ -332,7 +335,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
           zoomEnabled={true}
           rotateEnabled={false}
           pitchEnabled={false}
-          customMapStyle={[{elementType:'geometry',stylers:[{color:'#0A0E17'}]},{elementType:'labels.text.fill',stylers:[{color:'#8892B0'}]},{elementType:'labels.text.stroke',stylers:[{color:'#0A0E17'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#1A2340'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#080C15'}]}]}
+          customMapStyle={getMapStyle(settings.darkMapStyle)}
         >
           {/* Territory Polygons */}
           {Array.isArray(territories) && territories.map((t) => {

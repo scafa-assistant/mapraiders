@@ -28,6 +28,7 @@ import EchoMarker from '../../components/EchoMarker';
 import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
 import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
+import { getMapStyle } from '../../utils/mapStyles';
 import { strings as S, t, plural } from '../../i18n';
 
 const WEATHER_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -79,18 +80,6 @@ const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
   driver: 'car',
   unknown: 'help-circle',
 };
-
-const DARK_MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#0A0E17' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#0A0E17' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#555E78' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1A2340' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#141B2D' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D1220' }] },
-  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#0F1A1A' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
-];
 
 function getPolygonCentroid(polygon: any[]): { latitude: number; longitude: number } | null {
   if (!polygon || !Array.isArray(polygon) || polygon.length === 0) return null;
@@ -616,7 +605,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         ref={mapRef}
         style={styles.map}
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-        customMapStyle={settings.darkMapStyle ? DARK_MAP_STYLE : []}
+        customMapStyle={getMapStyle(settings.darkMapStyle)}
         showsUserLocation={true}
         showsMyLocationButton={true}
         followsUserLocation={true}

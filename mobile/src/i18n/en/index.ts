@@ -9,9 +9,11 @@ import { leaderboard } from './leaderboard';
 import { travel } from './travel';
 import { components } from './components';
 import { nav } from './nav';
+import { system } from './system';
 
 export default {
   nav,
+  system,
   common,
   auth,
   map,

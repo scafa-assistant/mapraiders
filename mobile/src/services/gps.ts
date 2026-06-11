@@ -1,7 +1,12 @@
 import * as Location from 'expo-location';
 import { Alert, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { GpsPoint, MovementClass } from '../utils/types';
 import { SPEED_THRESHOLDS } from '../utils/constants';
+import { strings as S } from '../i18n';
+
+// Set once the user picks "foreground only" so we stop re-asking on every start.
+const BG_LOCATION_DECLINED_KEY = '@mapraiders_bg_location_declined';
 
 export class GpsService {
   private subscription: Location.LocationSubscription | null = null;
@@ -14,43 +19,47 @@ export class GpsService {
    */
   async requestPermissions(): Promise<boolean> {
     try {
-      // Pre-permission dialog (Play Store requirement)
-      const userAccepted = await new Promise<boolean>((resolve) => {
-        Alert.alert(
-          'Standort-Berechtigung',
-          'MapRaiders benötigt deinen GPS-Standort, um:\n\n' +
-          '• Deine Position auf der Karte anzuzeigen\n' +
-          '• Territorien beim Gehen/Laufen zu beanspruchen\n' +
-          '• Quests und Echos in deiner Nähe zu finden\n\n' +
-          'Du kannst die Berechtigung jederzeit in den Geräteeinstellungen widerrufen.',
-          [
-            { text: 'Nicht jetzt', onPress: () => resolve(false), style: 'cancel' },
-            { text: 'Weiter', onPress: () => resolve(true) },
-          ],
-          { cancelable: false }
-        );
-      });
+      // Already granted? Don't bother the user again on every app start.
+      const existing = await Location.getForegroundPermissionsAsync();
+      if (existing.status !== 'granted') {
+        // Pre-permission dialog (Play Store requirement)
+        const userAccepted = await new Promise<boolean>((resolve) => {
+          Alert.alert(
+            S.system.location.permissionTitle,
+            S.system.location.permissionMessage,
+            [
+              { text: S.system.location.permissionNotNow, onPress: () => resolve(false), style: 'cancel' },
+              { text: S.system.location.permissionContinue, onPress: () => resolve(true) },
+            ],
+            { cancelable: false }
+          );
+        });
 
-      if (!userAccepted) return false;
+        if (!userAccepted) return false;
 
-      const { status: foregroundStatus } =
-        await Location.requestForegroundPermissionsAsync();
+        const { status: foregroundStatus } =
+          await Location.requestForegroundPermissionsAsync();
 
-      if (foregroundStatus !== 'granted') {
-        return false;
+        if (foregroundStatus !== 'granted') {
+          return false;
+        }
       }
+
+      // Background location: skip if already granted or previously declined.
+      const bgExisting = await Location.getBackgroundPermissionsAsync();
+      if (bgExisting.status === 'granted') return true;
+      const bgDeclined = await AsyncStorage.getItem(BG_LOCATION_DECLINED_KEY);
+      if (bgDeclined === 'true') return true;
 
       // Background location pre-permission dialog
       if (Platform.OS === 'android') {
         const bgAccepted = await new Promise<boolean>((resolve) => {
           Alert.alert(
-            'Hintergrund-Standort',
-            'Damit MapRaiders Territorien auch bei geschlossenem Bildschirm beanspruchen kann, ' +
-            'benötigen wir die Berechtigung "Immer erlauben".\n\n' +
-            'Ohne diese Berechtigung funktioniert die App nur im Vordergrund.',
+            S.system.location.backgroundTitle,
+            S.system.location.backgroundMessage,
             [
-              { text: 'Nur im Vordergrund', onPress: () => resolve(false) },
-              { text: 'Immer erlauben', onPress: () => resolve(true) },
+              { text: S.system.location.backgroundForegroundOnly, onPress: () => resolve(false) },
+              { text: S.system.location.backgroundAllowAlways, onPress: () => resolve(true) },
             ],
             { cancelable: false }
           );
@@ -62,6 +71,8 @@ export class GpsService {
           } catch {
             // Background permission is optional
           }
+        } else {
+          await AsyncStorage.setItem(BG_LOCATION_DECLINED_KEY, 'true');
         }
       } else {
         try {

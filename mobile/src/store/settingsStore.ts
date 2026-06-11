@@ -1,8 +1,21 @@
 import { create } from 'zustand';
+import { Appearance } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userApi } from '../services/api';
 
 const SETTINGS_KEY = '@mapraiders_settings';
+
+// app.json pins userInterfaceStyle to "dark"; Google Maps' new renderer
+// follows the Activity uiMode whenever customMapStyle is empty. Forcing the
+// color scheme here keeps native surfaces (map tiles, dialogs) in sync with
+// the in-app dark mode toggle.
+function syncNativeColorScheme(darkMode: boolean): void {
+  try {
+    Appearance.setColorScheme(darkMode ? 'dark' : 'light');
+  } catch {
+    // Appearance override unsupported — UI theme still applies via useTheme
+  }
+}
 
 interface AppSettings {
   darkMapStyle: boolean;
@@ -38,8 +51,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       const stored = await AsyncStorage.getItem(SETTINGS_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        set({ settings: { ...DEFAULT_SETTINGS, ...parsed }, loaded: true });
+        const settings = { ...DEFAULT_SETTINGS, ...parsed };
+        syncNativeColorScheme(settings.darkMapStyle);
+        set({ settings, loaded: true });
       } else {
+        syncNativeColorScheme(DEFAULT_SETTINGS.darkMapStyle);
         set({ loaded: true });
       }
     } catch {
@@ -50,6 +66,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   updateSetting: async (key, value) => {
     console.log(`[Settings] ${key} = ${value}`);
     const newSettings = { ...get().settings, [key]: value };
+    if (key === 'darkMapStyle') {
+      syncNativeColorScheme(value);
+    }
     set({ settings: newSettings });
     try {
       await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));

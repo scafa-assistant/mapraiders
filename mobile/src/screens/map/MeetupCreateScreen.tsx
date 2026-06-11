@@ -18,23 +18,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { meetupApi } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
+import { getMapStyle } from '../../utils/mapStyles';
+import { useSettingsStore } from '../../store/settingsStore';
 import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MeetupCreateScreenProps } from '../../navigation/types';
 import { strings as S } from '../../i18n';
 
 const { width } = Dimensions.get('window');
-
-const DARK_MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#0A0E17' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#0A0E17' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#555E78' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1A2340' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#141B2D' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D1220' }] },
-  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#0F1A1A' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
-];
 
 interface Category {
   key: string;
@@ -54,6 +44,7 @@ const getCategories = (): Category[] => [
 
 export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenProps) {
   const theme = useTheme();
+  const { settings } = useSettingsStore();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const categories = useMemo(getCategories, []);
   const { currentLocation } = useLocationStore();
@@ -179,7 +170,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
               ref={mapRef}
               style={styles.mapPicker}
               provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-              customMapStyle={DARK_MAP_STYLE}
+              customMapStyle={getMapStyle(settings.darkMapStyle)}
               initialRegion={
                 currentLocation
                   ? {

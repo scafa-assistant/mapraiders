@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import api from './api';
+import { strings as S } from '../i18n';
 
 // ─── Configure Default Notification Behavior ────────────────────────────────
 
@@ -60,31 +61,31 @@ export async function registerForPushNotifications(): Promise<string | null> {
     // Configure Android notification channel
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
-        name: 'MapRaiders',
+        name: S.system.notifications.channelDefault,
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#00D4FF',
       });
 
       await Notifications.setNotificationChannelAsync('territory', {
-        name: 'Territory Alerts',
+        name: S.system.notifications.channelTerritory,
         importance: Notifications.AndroidImportance.HIGH,
-        description: 'Alerts when your territory is contested',
+        description: S.system.notifications.channelTerritoryDesc,
         vibrationPattern: [0, 500, 250, 500],
         lightColor: '#FF4757',
       });
 
       await Notifications.setNotificationChannelAsync('quests', {
-        name: 'Quest Updates',
+        name: S.system.notifications.channelQuests,
         importance: Notifications.AndroidImportance.DEFAULT,
-        description: 'Quest completion and nearby quest alerts',
+        description: S.system.notifications.channelQuestsDesc,
         lightColor: '#7B61FF',
       });
 
       await Notifications.setNotificationChannelAsync('social', {
-        name: 'Social',
+        name: S.system.notifications.channelSocial,
         importance: Notifications.AndroidImportance.DEFAULT,
-        description: 'Likes, clan activity, and social updates',
+        description: S.system.notifications.channelSocialDesc,
         lightColor: '#00FF88',
       });
     }

@@ -1,0 +1,89 @@
+import { system as en } from '../en/system';
+
+export const system: typeof en = {
+  location: {
+    permissionTitle: 'Standort-Berechtigung',
+    permissionMessage:
+      'MapRaiders benötigt deinen GPS-Standort, um:\n\n' +
+      '• Deine Position auf der Karte anzuzeigen\n' +
+      '• Territorien beim Gehen/Laufen zu beanspruchen\n' +
+      '• Quests und Echos in deiner Nähe zu finden\n\n' +
+      'Du kannst die Berechtigung jederzeit in den Geräteeinstellungen widerrufen.',
+    permissionNotNow: 'Nicht jetzt',
+    permissionContinue: 'Weiter',
+    backgroundTitle: 'Hintergrund-Standort',
+    backgroundMessage:
+      'Damit MapRaiders Territorien auch bei geschlossenem Bildschirm beanspruchen kann, ' +
+      'benötigen wir die Berechtigung "Immer erlauben".\n\n' +
+      'Ohne diese Berechtigung funktioniert die App nur im Vordergrund.',
+    backgroundForegroundOnly: 'Nur im Vordergrund',
+    backgroundAllowAlways: 'Immer erlauben',
+  },
+  ws: {
+    unknownPlayer: 'Ein Spieler',
+    territoryAttackedTitle: 'Territorium angegriffen!',
+    territoryAttackedMessage: '{attacker} greift dein Territorium an!',
+    levelUpTitle: 'Level Up!',
+    levelUpMessage: 'Du hast Level {level} erreicht!',
+    resonanceTitle: 'Resonanz!',
+    resonanceMessage: '{types} an diesem Ort = {bonus}x Bonus!',
+    resonanceFallbackTypes: 'mehrere Inhalte',
+    questGrowthTitle: 'Quest gewachsen!',
+    questGrowthMessage: 'Deine Seed-Quest hat die Stufe {growth} erreicht!',
+    duelChallengeTitle: 'Duell-Herausforderung!',
+    duelChallengeMessage: '{challenger} fordert dich zu einem {type}-Duell heraus!',
+    duelDecline: 'Ablehnen',
+    duelAccept: 'Annehmen',
+    duelAcceptedTitle: 'Duell angenommen!',
+    duelAcceptedMessage: 'Dein {type}-Duell hat begonnen!',
+    duelDeclinedTitle: 'Duell abgelehnt',
+    duelDeclinedMessage: 'Dein Gegner hat das Duell abgelehnt.',
+    duelDrawTitle: 'Duell unentschieden!',
+    duelDrawMessage: 'Das Duell endete unentschieden! ({challengerScore} - {defenderScore})',
+    duelCompleteTitle: 'Duell beendet!',
+    duelCompleteMessage:
+      '{winner} gewinnt! ({challengerScore} - {defenderScore})\nXP: Sieger +{xpWinner}, Verlierer +{xpLoser}',
+    raceRecordTitle: 'Neuer Streckenrekord!',
+    raceRecordMessage: '{username} hat einen neuen Rekord auf "{track}" aufgestellt ({time}s)!',
+    eventTitle: 'Spiel-Event!',
+    eventEclipse: 'Die Eclipse hat begonnen! Alle Territorien geschwächt. Doppelte XP für 6 Stunden!',
+    eventBlitz: 'Blitz-Claims in deiner Nähe aktiv! 10x XP für 10 Minuten!',
+    eventKingOfHill: 'King of the Hill gestartet! Erobere das meiste Territorium, um zu gewinnen!',
+    eventWaveAttack: 'Wellenangriff! Dein Clan greift {district} an!',
+    eventWaveAttackFallbackDistrict: 'einen Bezirk',
+    eventMysteryZone: 'Du hast eine Mystery Zone entdeckt! Versteckte Belohnungen warten...',
+    eventGenericStarted: 'Event "{name}" hat begonnen!',
+    lootTitle: 'Loot Drop!',
+    lootMessage: 'Ein {type}-Drop ist in deiner Nähe aufgetaucht!',
+    lootFallbackType: 'Loot',
+    eventOverTitle: 'Event vorbei',
+    eventEndedWinnerMessage: 'Sieger gekürt! Event "{name}" ist vorbei.',
+    eventEndedMessage: 'Event "{name}" ist beendet.',
+    gameTicTacToe: 'Tic Tac Toe',
+    gameMiniChess: 'Mini-Schach',
+    gameChallengeTitle: '{game} Herausforderung!',
+    gameStartedYourTurn: 'Ein Angreifer fordert dein Territorium! Du bist am Zug.',
+    gameStartedWaiting: 'Spiel gestartet! Warte auf den Gegner.',
+    gameYourTurn: 'Du bist am Zug!',
+    gameEndedTitle: 'Spiel beendet',
+    gameWon: 'Du hast gewonnen!',
+    gameDraw: 'Unentschieden!',
+    gameLost: 'Du hast verloren!',
+    territoryLostTitle: 'Territorium verloren!',
+    territoryLostMessage: 'Ein Angreifer hat deine Verteidigung durchbrochen!',
+    defenseHeldTitle: 'Verteidigung hält!',
+    defenseHeldMessage: 'Ein Angreifer wurde abgewehrt.',
+  },
+  notifications: {
+    channelDefault: 'MapRaiders',
+    channelTerritory: 'Territorium-Alarme',
+    channelTerritoryDesc: 'Alarme, wenn dein Territorium umkämpft ist',
+    channelQuests: 'Quest-Updates',
+    channelQuestsDesc: 'Quest-Abschlüsse und Quests in deiner Nähe',
+    channelSocial: 'Soziales',
+    channelSocialDesc: 'Likes, Clan-Aktivität und soziale Updates',
+  },
+  echo: {
+    unknownCreator: 'Unbekannt',
+  },
+};

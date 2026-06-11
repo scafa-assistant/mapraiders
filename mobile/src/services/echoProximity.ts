@@ -1,6 +1,7 @@
 import { echoApi } from './api';
 import { audioService } from './audio';
 import { useLocationStore } from '../store/locationStore';
+import { strings as S } from '../i18n';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ class EchoProximityService {
         longitude: echo.longitude ?? echo.location?.longitude,
         radius: echo.radius_m ?? echo.radius ?? 40,
         audioUrl: echo.audio_url ?? echo.audioUrl,
-        creatorUsername: echo.creator_username ?? echo.creatorUsername ?? 'Unknown',
+        creatorUsername: echo.creator_username ?? echo.creatorUsername ?? S.system.echo.unknownCreator,
       }));
     } catch (err) {
       console.error('[EchoProximity] Failed to refresh nearby echos:', err);

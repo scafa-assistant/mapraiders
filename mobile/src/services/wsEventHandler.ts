@@ -3,6 +3,7 @@ import { Alert, Vibration } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTerritoryStore } from '../store/territoryStore';
 import { useSettingsStore } from '../store/settingsStore';
+import { strings as S, t } from '../i18n';
 
 /** Vibrate only if haptic feedback is enabled in settings */
 function hapticVibrate(pattern?: number | number[]) {
@@ -21,7 +22,10 @@ export function setupWsEventHandlers(): () => void {
   unsubs.push(mapRaidersWs.on('territory_attacked', (data) => {
     if (!data) return;
     hapticVibrate(500);
-    Alert.alert('Territorium angegriffen!', `${data.attacker || 'Ein Spieler'} greift dein Territorium an!`);
+    Alert.alert(
+      S.system.ws.territoryAttackedTitle,
+      t(S.system.ws.territoryAttackedMessage, { attacker: data.attacker || S.system.ws.unknownPlayer })
+    );
   }));
 
   // Territory claimed nearby - refresh my territories
@@ -32,7 +36,7 @@ export function setupWsEventHandlers(): () => void {
   // Level up
   unsubs.push(mapRaidersWs.on('level_up', (data) => {
     if (!data) return;
-    Alert.alert('Level Up!', `Du hast Level ${data.level || '?'} erreicht!`);
+    Alert.alert(S.system.ws.levelUpTitle, t(S.system.ws.levelUpMessage, { level: data.level || '?' }));
   }));
 
   // Notification
@@ -44,18 +48,18 @@ export function setupWsEventHandlers(): () => void {
   // Resonance discovered - cross-content synergy bonus
   unsubs.push(mapRaidersWs.on('resonance_discovered', (data) => {
     hapticVibrate(300);
-    const typesStr = data.types?.join(' + ') || 'multiple content';
+    const typesStr = data.types?.join(' + ') || S.system.ws.resonanceFallbackTypes;
     Alert.alert(
-      'Resonance!',
-      `${typesStr} at this spot = ${data.bonus}x bonus!`
+      S.system.ws.resonanceTitle,
+      t(S.system.ws.resonanceMessage, { types: typesStr, bonus: data.bonus })
     );
   }));
 
   // Quest growth - seed quest leveled up
   unsubs.push(mapRaidersWs.on('quest_growth', (data) => {
     Alert.alert(
-      'Quest Grew!',
-      `Your seed quest reached ${data.growth_name} level!`
+      S.system.ws.questGrowthTitle,
+      t(S.system.ws.questGrowthMessage, { growth: data.growth_name })
     );
   }));
 
@@ -64,11 +68,11 @@ export function setupWsEventHandlers(): () => void {
     hapticVibrate(500);
     const typeLabel = (data.type || 'speed_claim').replace(/_/g, ' ');
     Alert.alert(
-      'Duel Challenge!',
-      `${data.challenger_name} challenges you to a ${typeLabel} duel!`,
+      S.system.ws.duelChallengeTitle,
+      t(S.system.ws.duelChallengeMessage, { challenger: data.challenger_name, type: typeLabel }),
       [
         {
-          text: 'Decline',
+          text: S.system.ws.duelDecline,
           style: 'cancel',
           onPress: () => {
             import('./api').then(({ duelApi }) => {
@@ -77,7 +81,7 @@ export function setupWsEventHandlers(): () => void {
           },
         },
         {
-          text: 'Accept',
+          text: S.system.ws.duelAccept,
           onPress: () => {
             import('./api').then(({ duelApi }) => {
               duelApi.accept(data.duel_id).catch(console.error);
@@ -90,23 +94,35 @@ export function setupWsEventHandlers(): () => void {
 
   // Duel accepted - notify challenger
   unsubs.push(mapRaidersWs.on('duel_accepted', (data) => {
-    Alert.alert('Duel Accepted!', `Your ${(data.type || '').replace(/_/g, ' ')} duel has started!`);
+    Alert.alert(
+      S.system.ws.duelAcceptedTitle,
+      t(S.system.ws.duelAcceptedMessage, { type: (data.type || '').replace(/_/g, ' ') })
+    );
   }));
 
   // Duel declined - notify challenger
   unsubs.push(mapRaidersWs.on('duel_declined', (_data) => {
-    Alert.alert('Duel Declined', 'Your opponent declined the duel.');
+    Alert.alert(S.system.ws.duelDeclinedTitle, S.system.ws.duelDeclinedMessage);
   }));
 
   // Duel result - show winner
   unsubs.push(mapRaidersWs.on('duel_result', (data) => {
     hapticVibrate(300);
     if (data.is_draw) {
-      Alert.alert('Duel Draw!', `The duel ended in a tie! (${data.challenger_score} - ${data.defender_score})`);
+      Alert.alert(
+        S.system.ws.duelDrawTitle,
+        t(S.system.ws.duelDrawMessage, { challengerScore: data.challenger_score, defenderScore: data.defender_score })
+      );
     } else {
       Alert.alert(
-        'Duel Complete!',
-        `${data.winner_name} wins! (${data.challenger_score} - ${data.defender_score})\nXP: Winner +${data.xp_winner}, Loser +${data.xp_loser}`
+        S.system.ws.duelCompleteTitle,
+        t(S.system.ws.duelCompleteMessage, {
+          winner: data.winner_name,
+          challengerScore: data.challenger_score,
+          defenderScore: data.defender_score,
+          xpWinner: data.xp_winner,
+          xpLoser: data.xp_loser,
+        })
       );
     }
   }));
@@ -114,8 +130,8 @@ export function setupWsEventHandlers(): () => void {
   // Race record - someone set a new track record
   unsubs.push(mapRaidersWs.on('race_record', (data) => {
     Alert.alert(
-      'New Race Record!',
-      `${data.username} set a new record on "${data.track_name}" (${data.time_seconds}s)!`
+      S.system.ws.raceRecordTitle,
+      t(S.system.ws.raceRecordMessage, { username: data.username, track: data.track_name, time: data.time_seconds })
     );
   }));
 
@@ -123,28 +139,33 @@ export function setupWsEventHandlers(): () => void {
   unsubs.push(mapRaidersWs.on('event_started', (data) => {
     hapticVibrate(400);
     const messages: Record<string, string> = {
-      eclipse: 'Eclipse has begun! All territories weakened. Double XP for 6 hours!',
-      blitz: 'Blitz Claims active nearby! 10x XP for 10 minutes!',
-      king_of_hill: 'King of the Hill started! Claim the most territory to win!',
-      wave_attack: `Wave Attack! Your clan is assaulting ${data.target_district || 'a district'}!`,
-      mystery_zone: 'You discovered a Mystery Zone! Hidden rewards await...',
+      eclipse: S.system.ws.eventEclipse,
+      blitz: S.system.ws.eventBlitz,
+      king_of_hill: S.system.ws.eventKingOfHill,
+      wave_attack: t(S.system.ws.eventWaveAttack, {
+        district: data.target_district || S.system.ws.eventWaveAttackFallbackDistrict,
+      }),
+      mystery_zone: S.system.ws.eventMysteryZone,
     };
-    const msg = messages[data.type] || `Event "${data.name}" has started!`;
-    Alert.alert('Game Event!', msg);
+    const msg = messages[data.type] || t(S.system.ws.eventGenericStarted, { name: data.name });
+    Alert.alert(S.system.ws.eventTitle, msg);
   }));
 
   // Loot spawned nearby - show pickup prompt
   unsubs.push(mapRaidersWs.on('loot_spawned', (data) => {
     hapticVibrate(200);
-    Alert.alert('Loot Drop!', `A ${data.type || 'loot'} drop appeared nearby!`);
+    Alert.alert(
+      S.system.ws.lootTitle,
+      t(S.system.ws.lootMessage, { type: data.type || S.system.ws.lootFallbackType })
+    );
   }));
 
   // Event ended - show results
   unsubs.push(mapRaidersWs.on('event_ended', (data) => {
     const resultMsg = data.winner_id
-      ? `Winner declared! Event "${data.name || data.type}" is over.`
-      : `Event "${data.name || data.type}" has ended.`;
-    Alert.alert('Event Over', resultMsg);
+      ? t(S.system.ws.eventEndedWinnerMessage, { name: data.name || data.type })
+      : t(S.system.ws.eventEndedMessage, { name: data.name || data.type });
+    Alert.alert(S.system.ws.eventOverTitle, resultMsg);
   }));
 
   // ─── Turn-Based Game Events ─────────────────────────────────────────
@@ -152,31 +173,31 @@ export function setupWsEventHandlers(): () => void {
   // Game started - defender gets notified
   unsubs.push(mapRaidersWs.on('game_started', (data) => {
     hapticVibrate([0, 200, 100, 200]);
-    const gameLabel = data.game_type === 'tic_tac_toe' ? 'Tic Tac Toe' : 'Mini-Schach';
+    const gameLabel = data.game_type === 'tic_tac_toe' ? S.system.ws.gameTicTacToe : S.system.ws.gameMiniChess;
     Alert.alert(
-      `${gameLabel} Herausforderung!`,
+      t(S.system.ws.gameChallengeTitle, { game: gameLabel }),
       data.your_turn
-        ? 'Ein Angreifer fordert dein Territorium! Du bist am Zug.'
-        : 'Spiel gestartet! Warte auf den Gegner.',
+        ? S.system.ws.gameStartedYourTurn
+        : S.system.ws.gameStartedWaiting,
     );
   }));
 
   // Game turn - it's your move
   unsubs.push(mapRaidersWs.on('game_turn', (data) => {
     hapticVibrate(300);
-    const gameLabel = data.game_type === 'tic_tac_toe' ? 'Tic Tac Toe' : 'Mini-Schach';
-    Alert.alert(`${gameLabel}`, 'Du bist am Zug!');
+    const gameLabel = data.game_type === 'tic_tac_toe' ? S.system.ws.gameTicTacToe : S.system.ws.gameMiniChess;
+    Alert.alert(`${gameLabel}`, S.system.ws.gameYourTurn);
   }));
 
   // Game ended - result
   unsubs.push(mapRaidersWs.on('game_ended', (data) => {
     hapticVibrate(500);
     const resultText = data.result === 'won'
-      ? 'Du hast gewonnen!'
+      ? S.system.ws.gameWon
       : data.result === 'draw'
-      ? 'Unentschieden!'
-      : 'Du hast verloren!';
-    Alert.alert('Spiel beendet', `${resultText}\n${data.message || ''}`);
+      ? S.system.ws.gameDraw
+      : S.system.ws.gameLost;
+    Alert.alert(S.system.ws.gameEndedTitle, `${resultText}\n${data.message || ''}`);
     // Refresh territories
     useTerritoryStore.getState().fetchMyTerritories();
   }));
@@ -184,13 +205,13 @@ export function setupWsEventHandlers(): () => void {
   // Defense lost via instant game
   unsubs.push(mapRaidersWs.on('defense_lost', (_data) => {
     hapticVibrate([0, 300, 100, 300]);
-    Alert.alert('Territorium verloren!', 'Ein Angreifer hat deine Verteidigung durchbrochen!');
+    Alert.alert(S.system.ws.territoryLostTitle, S.system.ws.territoryLostMessage);
     useTerritoryStore.getState().fetchMyTerritories();
   }));
 
   // Defense held - your defense worked
   unsubs.push(mapRaidersWs.on('defense_held', (_data) => {
-    Alert.alert('Verteidigung hält!', 'Ein Angreifer wurde abgewehrt.');
+    Alert.alert(S.system.ws.defenseHeldTitle, S.system.ws.defenseHeldMessage);
   }));
 
   return () => unsubs.forEach(fn => fn());

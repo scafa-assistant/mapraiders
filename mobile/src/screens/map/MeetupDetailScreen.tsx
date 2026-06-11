@@ -17,23 +17,13 @@ import { useLocationStore } from '../../store/locationStore';
 import { useAuthStore } from '../../store/authStore';
 import { meetupApi } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
+import { getMapStyle } from '../../utils/mapStyles';
+import { useSettingsStore } from '../../store/settingsStore';
 import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MeetupDetailScreenProps } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
 const { width } = Dimensions.get('window');
-
-const DARK_MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#0A0E17' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#0A0E17' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#555E78' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1A2340' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#141B2D' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D1220' }] },
-  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#0F1A1A' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
-];
 
 const CATEGORY_COLORS: Record<string, string> = {
   party: '#FF69B4',
@@ -65,6 +55,7 @@ function formatEventDate(dateStr: string): string {
 
 export default function MeetupDetailScreen({ navigation, route }: MeetupDetailScreenProps) {
   const theme = useTheme();
+  const { settings } = useSettingsStore();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const categoryLabels = useMemo(getCategoryLabels, []);
   const { meetupId } = route.params;
@@ -258,7 +249,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
             <MapView
               style={styles.miniMap}
               provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-              customMapStyle={DARK_MAP_STYLE}
+              customMapStyle={getMapStyle(settings.darkMapStyle)}
               initialRegion={{
                 latitude: eventLat,
                 longitude: eventLng,
