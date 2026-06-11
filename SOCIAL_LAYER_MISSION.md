@@ -195,11 +195,15 @@ Antwort: **Community aufbauen, Crews erstellen, sich mit Menschen verbinden — 
 und den Spaß der anderen teilen können.** Das ist der Kern, den der Social Layer
 liefern muss. Dazu vier konkrete neue Bausteine:
 
-### 1. Hauptstadt-Wahl (Onboarding)
+### 1. Hauptstadt-Wahl (PFLICHT-Schritt bei der Anmeldung)
 
-* Jeder Spieler wählt zu Beginn eine **Hauptstadt** (Heimatstadt/Repräsentations-Stadt)
+* Jeder Spieler wählt **direkt zu Beginn der Registrierung** eine **Hauptstadt**
+  (Heimatstadt/Repräsentations-Stadt) — nicht optional, nicht später im Onboarding,
+  sondern fester Bestandteil des Signup-Flows (Schritt direkt nach E-Mail/Passwort)
 * Bindet den Spieler an eine geografische Community ab Tag 1
 * Basis für alle Stadt-vs-Stadt-Mechaniken
+* Bestandsnutzer: einmaliger "Wähle deine Hauptstadt"-Prompt beim ersten App-Start
+  nach dem Update
 * Technisch: ein Feld `home_city` am User + Geocoding-Lookup, kein großer Aufwand
 
 ### 2. Risiko-Meta: Städte- & Community-Rankings
