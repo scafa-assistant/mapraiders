@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { friendApi } from '../../services/api';
 import { strings as S, t, plural } from '../../i18n';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -48,6 +49,8 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function FriendRequestsScreen({ navigation }: Props) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const [received, setReceived] = useState<FriendRequest[]>([]);
   const [sent, setSent] = useState<FriendRequest[]>([]);
@@ -130,7 +133,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
             />
           ) : (
             <View style={styles.avatarPlaceholder}>
-              <Ionicons name="person" size={22} color={THEME.textSecondary} />
+              <Ionicons name="person" size={22} color={theme.textSecondary} />
             </View>
           )}
         </View>
@@ -142,7 +145,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           </Text>
           <View style={styles.metaRow}>
             <View style={styles.levelBadge}>
-              <Ionicons name="star" size={10} color={THEME.warning} />
+              <Ionicons name="star" size={10} color={theme.warning} />
               <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
             </View>
             <Text style={styles.timeText}>{timeAgo(item.created_at)}</Text>
@@ -152,7 +155,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
         {/* Actions */}
         <View style={styles.actionBtns}>
           {isProcessing ? (
-            <ActivityIndicator size="small" color={THEME.primary} />
+            <ActivityIndicator size="small" color={theme.primary} />
           ) : (
             <>
               <TouchableOpacity
@@ -160,14 +163,14 @@ export default function FriendRequestsScreen({ navigation }: Props) {
                 activeOpacity={0.7}
                 onPress={() => handleAccept(item)}
               >
-                <Ionicons name="checkmark" size={20} color="#0A0E17" />
+                <Ionicons name="checkmark" size={20} color={theme.bg} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.declineBtn}
                 activeOpacity={0.7}
                 onPress={() => handleDecline(item)}
               >
-                <Ionicons name="close" size={20} color={THEME.danger} />
+                <Ionicons name="close" size={20} color={theme.danger} />
               </TouchableOpacity>
             </>
           )}
@@ -187,7 +190,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           />
         ) : (
           <View style={styles.avatarPlaceholder}>
-            <Ionicons name="person" size={22} color={THEME.textSecondary} />
+            <Ionicons name="person" size={22} color={theme.textSecondary} />
           </View>
         )}
       </View>
@@ -199,7 +202,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
         </Text>
         <View style={styles.metaRow}>
           <View style={styles.levelBadge}>
-            <Ionicons name="star" size={10} color={THEME.warning} />
+            <Ionicons name="star" size={10} color={theme.warning} />
             <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
           </View>
           <Text style={styles.timeText}>{timeAgo(item.created_at)}</Text>
@@ -208,7 +211,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
 
       {/* Pending badge */}
       <View style={styles.pendingBadge}>
-        <Ionicons name="time-outline" size={12} color={THEME.textSecondary} />
+        <Ionicons name="time-outline" size={12} color={theme.textSecondary} />
         <Text style={styles.pendingText}>{S.social.requests.pending}</Text>
       </View>
     </View>
@@ -219,7 +222,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconCircle}>
-          <Ionicons name="mail-open-outline" size={40} color={THEME.textSecondary} />
+          <Ionicons name="mail-open-outline" size={40} color={theme.textSecondary} />
         </View>
         <Text style={styles.emptyTitle}>{S.social.requests.emptyReceivedTitle}</Text>
         <Text style={styles.emptySubtitle}>
@@ -234,7 +237,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconCircle}>
-          <Ionicons name="paper-plane-outline" size={40} color={THEME.textSecondary} />
+          <Ionicons name="paper-plane-outline" size={40} color={theme.textSecondary} />
         </View>
         <Text style={styles.emptyTitle}>{S.social.requests.emptySentTitle}</Text>
         <Text style={styles.emptySubtitle}>
@@ -254,7 +257,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           style={styles.headerBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.social.requests.title}</Text>
         <View style={{ width: 40 }} />
@@ -270,7 +273,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           <Ionicons
             name="arrow-down-circle-outline"
             size={16}
-            color={activeTab === 'received' ? THEME.primary : THEME.textSecondary}
+            color={activeTab === 'received' ? theme.primary : theme.textSecondary}
           />
           <Text
             style={[styles.tabText, activeTab === 'received' && styles.tabTextActive]}
@@ -292,7 +295,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
           <Ionicons
             name="arrow-up-circle-outline"
             size={16}
-            color={activeTab === 'sent' ? THEME.primary : THEME.textSecondary}
+            color={activeTab === 'sent' ? theme.primary : theme.textSecondary}
           />
           <Text
             style={[styles.tabText, activeTab === 'sent' && styles.tabTextActive]}
@@ -300,8 +303,8 @@ export default function FriendRequestsScreen({ navigation }: Props) {
             {S.social.requests.sent}
           </Text>
           {sent.length > 0 && (
-            <View style={[styles.tabBadge, { backgroundColor: `${THEME.textSecondary}30` }]}>
-              <Text style={[styles.tabBadgeText, { color: THEME.textSecondary }]}>
+            <View style={[styles.tabBadge, { backgroundColor: `${theme.textSecondary}30` }]}>
+              <Text style={[styles.tabBadgeText, { color: theme.textSecondary }]}>
                 {sent.length}
               </Text>
             </View>
@@ -312,7 +315,7 @@ export default function FriendRequestsScreen({ navigation }: Props) {
       {/* List */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
         <FlatList
@@ -331,8 +334,8 @@ export default function FriendRequestsScreen({ navigation }: Props) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
           showsVerticalScrollIndicator={false}
@@ -342,10 +345,11 @@ export default function FriendRequestsScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
 
   // ─── Header ────────────────────────────────────────────────────────────────
@@ -360,16 +364,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: RADIUS.md,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   headerTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 0.3,
   },
 
@@ -378,11 +382,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.lg,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: 4,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   tab: {
     flex: 1,
@@ -394,20 +398,20 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   tabActive: {
-    backgroundColor: `${THEME.primary}15`,
+    backgroundColor: `${theme.primary}15`,
     borderWidth: 1,
-    borderColor: `${THEME.primary}30`,
+    borderColor: `${theme.primary}30`,
   },
   tabText: {
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
   },
   tabTextActive: {
-    color: THEME.primary,
+    color: theme.primary,
   },
   tabBadge: {
-    backgroundColor: `${THEME.danger}20`,
+    backgroundColor: `${theme.danger}20`,
     borderRadius: RADIUS.full,
     minWidth: 20,
     height: 20,
@@ -419,7 +423,7 @@ const styles = StyleSheet.create({
   tabBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: THEME.danger,
+    color: theme.danger,
   },
 
   // ─── Request Card ──────────────────────────────────────────────────────────
@@ -430,10 +434,10 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.sm,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: SPACING.md,
   },
 
@@ -446,17 +450,17 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: RADIUS.full,
     borderWidth: 2,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   avatarPlaceholder: {
     width: 48,
     height: 48,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}10`,
+    backgroundColor: `${theme.primary}10`,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
 
   // ─── Request Info ──────────────────────────────────────────────────────────
@@ -467,7 +471,7 @@ const styles = StyleSheet.create({
   requestName: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
-    color: THEME.text,
+    color: theme.text,
   },
   metaRow: {
     flexDirection: 'row',
@@ -478,7 +482,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    backgroundColor: `${THEME.warning}15`,
+    backgroundColor: `${theme.warning}15`,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 2,
     borderRadius: RADIUS.full,
@@ -486,11 +490,11 @@ const styles = StyleSheet.create({
   levelText: {
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
-    color: THEME.warning,
+    color: theme.warning,
   },
   timeText: {
     fontSize: FONT_SIZE.xs,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
   },
 
   // ─── Action Buttons ────────────────────────────────────────────────────────
@@ -503,10 +507,10 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: RADIUS.full,
-    backgroundColor: THEME.accent,
+    backgroundColor: theme.accent,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: THEME.accent,
+    shadowColor: theme.accent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
@@ -516,11 +520,11 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.danger}15`,
+    backgroundColor: `${theme.danger}15`,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: `${THEME.danger}30`,
+    borderColor: `${theme.danger}30`,
   },
 
   // ─── Pending Badge ─────────────────────────────────────────────────────────
@@ -528,17 +532,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: `${THEME.textSecondary}15`,
+    backgroundColor: `${theme.textSecondary}15`,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: `${THEME.textSecondary}20`,
+    borderColor: `${theme.textSecondary}20`,
   },
   pendingText: {
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
   },
 
   // ─── Empty State ───────────────────────────────────────────────────────────
@@ -551,22 +555,22 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}08`,
+    backgroundColor: `${theme.primary}08`,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xl,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   emptyTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
-    color: THEME.text,
+    color: theme.text,
     marginBottom: SPACING.sm,
   },
   emptySubtitle: {
     fontSize: FONT_SIZE.md,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },

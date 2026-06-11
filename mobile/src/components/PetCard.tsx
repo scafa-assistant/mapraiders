@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S, t } from '../i18n';
 import { formatDistance, formatNumber } from '../utils/formatters';
 import StatBar from './StatBar';
@@ -15,20 +16,20 @@ interface PetCardProps {
 /**
  * Map pet specialization to color and icon.
  */
-function getSpecInfo(spec: Pet['specialization']): {
+function getSpecInfo(spec: Pet['specialization'], theme: Theme): {
   icon: keyof typeof Ionicons.glyphMap;
   color: string;
   label: string;
 } {
   switch (spec) {
     case 'explorer':
-      return { icon: 'compass-outline', color: THEME.primary, label: S.components.petCard.specExplorer };
+      return { icon: 'compass-outline', color: theme.primary, label: S.components.petCard.specExplorer };
     case 'tracker':
-      return { icon: 'search-outline', color: THEME.accent, label: S.components.petCard.specTracker };
+      return { icon: 'search-outline', color: theme.accent, label: S.components.petCard.specTracker };
     case 'guardian':
-      return { icon: 'shield-outline', color: THEME.secondary, label: S.components.petCard.specGuardian };
+      return { icon: 'shield-outline', color: theme.secondary, label: S.components.petCard.specGuardian };
     default:
-      return { icon: 'help-outline', color: THEME.textSecondary, label: S.components.petCard.specNone };
+      return { icon: 'help-outline', color: theme.textSecondary, label: S.components.petCard.specNone };
   }
 }
 
@@ -37,7 +38,9 @@ function getSpecInfo(spec: Pet['specialization']): {
  * specialization badge, and stats (distance, walks, rare finds).
  */
 const PetCard: React.FC<PetCardProps> = ({ pet }) => {
-  const specInfo = getSpecInfo(pet.specialization);
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const specInfo = getSpecInfo(pet.specialization, theme);
 
   return (
     <View style={styles.container}>
@@ -58,7 +61,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
           />
         ) : (
           <View style={styles.avatarCircle}>
-            <Ionicons name="paw" size={28} color={THEME.secondary} />
+            <Ionicons name="paw" size={28} color={theme.secondary} />
           </View>
         )}
         <View style={styles.headerInfo}>
@@ -87,7 +90,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
           <StatBar
             current={pet.xp}
             max={pet.xpToNextLevel}
-            color={THEME.secondary}
+            color={theme.secondary}
             height={6}
             showPercentage={false}
             showValues
@@ -99,7 +102,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <View style={styles.statIconCircle}>
-            <Ionicons name="footsteps-outline" size={16} color={THEME.primary} />
+            <Ionicons name="footsteps-outline" size={16} color={theme.primary} />
           </View>
           <Text style={styles.statValue}>{formatDistance(pet.totalDistance)}</Text>
           <Text style={styles.statLabel}>{S.components.petCard.distance}</Text>
@@ -109,7 +112,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
         <View style={styles.statItem}>
           <View style={styles.statIconCircle}>
-            <Ionicons name="walk-outline" size={16} color={THEME.accent} />
+            <Ionicons name="walk-outline" size={16} color={theme.accent} />
           </View>
           <Text style={styles.statValue}>{formatNumber(pet.totalWalks)}</Text>
           <Text style={styles.statLabel}>{S.components.petCard.walks}</Text>
@@ -119,7 +122,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
 
         <View style={styles.statItem}>
           <View style={styles.statIconCircle}>
-            <Ionicons name="diamond-outline" size={16} color={THEME.warning} />
+            <Ionicons name="diamond-outline" size={16} color={theme.warning} />
           </View>
           <Text style={styles.statValue}>{formatNumber(pet.rareFinds)}</Text>
           <Text style={styles.statLabel}>{S.components.petCard.rareFinds}</Text>
@@ -129,14 +132,15 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     marginHorizontal: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     overflow: 'hidden',
     shadowColor: '#7B61FF',
     shadowOffset: { width: 0, height: 4 },
@@ -177,19 +181,19 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     borderWidth: 2,
-    borderColor: THEME.secondary,
+    borderColor: theme.secondary,
     marginRight: SPACING.md,
   },
   headerInfo: {
     flex: 1,
   },
   name: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
   },
   breed: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginTop: 2,
     textTransform: 'capitalize',
@@ -220,7 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
   },
   levelText: {
-    color: THEME.secondary,
+    color: theme.secondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '800',
   },
@@ -250,18 +254,18 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   statValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   statLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   statDivider: {
     width: 1,
     height: 40,
-    backgroundColor: THEME.border,
+    backgroundColor: theme.border,
     marginHorizontal: SPACING.sm,
   },
 });

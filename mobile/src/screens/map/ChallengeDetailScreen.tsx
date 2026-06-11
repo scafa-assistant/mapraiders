@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocationStore } from '../../store/locationStore';
 import { challengeApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { ChallengeDetailScreenProps, Challenge } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
@@ -30,14 +31,16 @@ interface Submission {
   completedAt: string;
 }
 
-const VERIFICATION_INFO: Record<
+const getVerificationInfo = (
+  theme: Theme
+): Record<
   Challenge['verificationLevel'],
   { icon: keyof typeof Ionicons.glyphMap; label: string; color: string }
-> = {
-  honor: { icon: 'hand-left-outline', label: S.map.challengeDetail.honorSystem, color: THEME.accent },
-  sensor: { icon: 'hardware-chip-outline', label: S.map.challengeDetail.sensorVerified, color: THEME.danger },
-  video: { icon: 'videocam-outline', label: S.map.challengeDetail.videoProof, color: THEME.warning },
-};
+> => ({
+  honor: { icon: 'hand-left-outline', label: S.map.challengeDetail.honorSystem, color: theme.accent },
+  sensor: { icon: 'hardware-chip-outline', label: S.map.challengeDetail.sensorVerified, color: theme.danger },
+  video: { icon: 'videocam-outline', label: S.map.challengeDetail.videoProof, color: theme.warning },
+});
 
 function formatParameters(params: Record<string, number>): { label: string; value: string }[] {
   return Object.entries(params).map(([key, value]) => ({
@@ -47,6 +50,9 @@ function formatParameters(params: Record<string, number>): { label: string; valu
 }
 
 export default function ChallengeDetailScreen({ route, navigation }: ChallengeDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const verificationInfo = useMemo(() => getVerificationInfo(theme), [theme]);
   const { challengeId } = route.params;
   const { currentLocation } = useLocationStore();
   const mapRef = useRef<MapView>(null);
@@ -192,13 +198,13 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
   if (isLoading || !challenge) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={THEME.primary} />
+        <ActivityIndicator size="large" color={theme.primary} />
         <Text style={styles.loadingText}>{S.map.challengeDetail.loadingChallenge}</Text>
       </SafeAreaView>
     );
   }
 
-  const verification = VERIFICATION_INFO[challenge.verificationLevel];
+  const verification = verificationInfo[challenge.verificationLevel];
   const params = formatParameters(challenge.parameters);
 
   // ── Completed state ──
@@ -207,7 +213,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
       <SafeAreaView style={styles.completedContainer}>
         <View style={styles.completedContent}>
           <View style={styles.trophyCircle}>
-            <Ionicons name="trophy" size={56} color={THEME.warning} />
+            <Ionicons name="trophy" size={56} color={theme.warning} />
           </View>
           <Text style={styles.completedTitle}>{S.map.challengeDetail.completedTitle}</Text>
           <Text style={styles.completedSubtitle}>{challenge.template}</Text>
@@ -233,16 +239,16 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
               {S.map.challengeDetail.honorInstruction}
             </Text>
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: THEME.accent }]}
+              style={[styles.actionButton, { backgroundColor: theme.accent }]}
               onPress={handleHonorComplete}
               disabled={isSubmitting}
               activeOpacity={0.8}
             >
               {isSubmitting ? (
-                <ActivityIndicator color={THEME.bg} />
+                <ActivityIndicator color={theme.bg} />
               ) : (
                 <>
-                  <Ionicons name="checkmark-circle" size={22} color={THEME.bg} />
+                  <Ionicons name="checkmark-circle" size={22} color={theme.bg} />
                   <Text style={styles.actionButtonText}>{S.map.challengeDetail.completeBtn}</Text>
                 </>
               )}
@@ -273,16 +279,16 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
               </View>
             </View>
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: THEME.danger }]}
+              style={[styles.actionButton, { backgroundColor: theme.danger }]}
               onPress={handleSensorComplete}
               disabled={isSubmitting}
               activeOpacity={0.8}
             >
               {isSubmitting ? (
-                <ActivityIndicator color={THEME.bg} />
+                <ActivityIndicator color={theme.bg} />
               ) : (
                 <>
-                  <Ionicons name="stop-circle" size={22} color={THEME.bg} />
+                  <Ionicons name="stop-circle" size={22} color={theme.bg} />
                   <Text style={styles.actionButtonText}>{S.map.challengeDetail.finishSubmitBtn}</Text>
                 </>
               )}
@@ -297,16 +303,16 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
               {S.map.challengeDetail.videoInstruction}
             </Text>
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: THEME.warning }]}
+              style={[styles.actionButton, { backgroundColor: theme.warning }]}
               onPress={handleVideoComplete}
               disabled={isSubmitting}
               activeOpacity={0.8}
             >
               {isSubmitting ? (
-                <ActivityIndicator color={THEME.bg} />
+                <ActivityIndicator color={theme.bg} />
               ) : (
                 <>
-                  <Ionicons name="videocam" size={22} color={THEME.bg} />
+                  <Ionicons name="videocam" size={22} color={theme.bg} />
                   <Text style={styles.actionButtonText}>{S.map.challengeDetail.recordVideoBtn}</Text>
                 </>
               )}
@@ -342,7 +348,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
           anchor={{ x: 0.5, y: 0.5 }}
         >
           <View style={styles.challengeMarker}>
-            <Ionicons name="trophy" size={18} color={THEME.warning} />
+            <Ionicons name="trophy" size={18} color={theme.warning} />
           </View>
         </Marker>
       </MapView>
@@ -350,7 +356,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
       {/* Back button overlay */}
       <SafeAreaView style={styles.topBar} edges={['top']}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -364,7 +370,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
         <View style={styles.infoSection}>
           <View style={styles.templateRow}>
             <View style={styles.templateIcon}>
-              <Ionicons name="trophy-outline" size={24} color={THEME.warning} />
+              <Ionicons name="trophy-outline" size={24} color={theme.warning} />
             </View>
             <View style={styles.templateInfo}>
               <Text style={styles.templateName}>{challenge.template}</Text>
@@ -401,7 +407,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
             onPress={handleAccept}
             activeOpacity={0.8}
           >
-            <Ionicons name="flash" size={22} color={THEME.bg} />
+            <Ionicons name="flash" size={22} color={theme.bg} />
             <Text style={styles.acceptButtonText}>{S.map.challengeDetail.acceptChallengeBtn}</Text>
           </TouchableOpacity>
         ) : (
@@ -414,7 +420,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
             <Text style={styles.sectionTitle}>{S.map.challengeDetail.recentCompletions}</Text>
             {recentCompletions.map((sub) => (
               <View key={sub.id} style={styles.completionRow}>
-                <Ionicons name="checkmark-circle" size={16} color={THEME.accent} />
+                <Ionicons name="checkmark-circle" size={16} color={theme.accent} />
                 <Text style={styles.completionUser}>{sub.username}</Text>
                 <Text style={styles.completionTime}>{sub.completedAt}</Text>
               </View>
@@ -426,20 +432,21 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: SPACING.md,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   miniMap: {
@@ -462,7 +469,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   challengeMarker: {
     width: 36,
@@ -470,18 +477,18 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: 'rgba(255, 184, 0, 0.2)',
     borderWidth: 2,
-    borderColor: THEME.warning,
+    borderColor: theme.warning,
     justifyContent: 'center',
     alignItems: 'center',
   },
   contentSheet: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     borderTopLeftRadius: RADIUS.xl,
     borderTopRightRadius: RADIUS.xl,
     marginTop: -20,
     borderTopWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   contentContainer: {
     padding: SPACING.xl,
@@ -508,12 +515,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   templateName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
   },
   creatorText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginTop: 2,
   },
@@ -532,15 +539,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   parametersSection: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.xl,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   sectionTitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -553,34 +560,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   paramLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   paramValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   acceptButton: {
     flexDirection: 'row',
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     borderRadius: RADIUS.lg,
     height: 56,
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
     marginBottom: SPACING.xl,
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   acceptButtonText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
     letterSpacing: 2,
@@ -589,7 +596,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   activeInstruction: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     lineHeight: 22,
     marginBottom: SPACING.lg,
@@ -598,25 +605,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     paddingVertical: SPACING.lg,
     paddingHorizontal: SPACING.md,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   sensorStatItem: {
     alignItems: 'center',
     flex: 1,
   },
   sensorStatValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
   },
   sensorStatLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     marginTop: SPACING.xs,
     fontWeight: '500',
@@ -624,7 +631,7 @@ const styles = StyleSheet.create({
   sensorDivider: {
     width: 1,
     height: 30,
-    backgroundColor: THEME.border,
+    backgroundColor: theme.border,
   },
   actionButton: {
     flexDirection: 'row',
@@ -635,17 +642,17 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   actionButtonText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.md,
     fontWeight: '800',
     letterSpacing: 1,
   },
   completionsSection: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   completionRow: {
     flexDirection: 'row',
@@ -653,22 +660,22 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   completionUser: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
     flex: 1,
   },
   completionTime: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   // Completed screen
   completedContainer: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -682,44 +689,44 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     backgroundColor: 'rgba(255, 184, 0, 0.1)',
     borderWidth: 3,
-    borderColor: THEME.warning,
+    borderColor: theme.warning,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.xl,
-    shadowColor: THEME.warning,
+    shadowColor: theme.warning,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 10,
   },
   completedTitle: {
-    color: THEME.warning,
+    color: theme.warning,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
     letterSpacing: 4,
     marginBottom: SPACING.sm,
   },
   completedSubtitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.lg,
     marginBottom: 40,
   },
   doneButton: {
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     borderRadius: RADIUS.lg,
     paddingHorizontal: 40,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   doneButtonText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
     letterSpacing: 2,

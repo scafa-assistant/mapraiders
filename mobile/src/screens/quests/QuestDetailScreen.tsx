@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuestStore } from '../../store/questStore';
 import { strings as S, t, plural } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { QuestDetailScreenProps, Quest, QuestStepType } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -36,16 +38,19 @@ const STEP_TYPE_COLORS: Record<QuestStepType, string> = {
   DOG: '#7B61FF',
 };
 
-const STEP_TYPE_LABELS: Record<QuestStepType, string> = {
+const getStepTypeLabels = (): Record<QuestStepType, string> => ({
   FIND: S.quests.detail.typeFind,
   LISTEN: S.quests.detail.typeListen,
   CHALLENGE: S.quests.detail.typeChallenge,
   SOLVE: S.quests.detail.typeSolve,
   COLLECT: S.quests.detail.typeCollect,
   DOG: S.quests.detail.typeDog,
-};
+});
 
 export default function QuestDetailScreen({ route, navigation }: QuestDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const stepTypeLabels = useMemo(getStepTypeLabels, []);
   const { questId } = route.params;
   const { fetchQuestDetail, startQuest, isLoading } = useQuestStore();
   const [quest, setQuest] = useState<Quest | null>(null);
@@ -71,7 +76,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           key={star}
           name={star <= difficulty ? 'star' : 'star-outline'}
           size={16}
-          color={star <= difficulty ? '#FFB800' : '#2A3450'}
+          color={star <= difficulty ? '#FFB800' : theme.textSecondary}
         />
       ))}
     </View>
@@ -106,7 +111,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color="#8892B0" />
+          <Ionicons name="arrow-back" size={22} color={theme.textSecondary} />
         </TouchableOpacity>
 
         {/* Map Preview */}
@@ -158,11 +163,11 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
 
           <View style={styles.questStats}>
             <View style={styles.questStat}>
-              <Ionicons name="footsteps" size={16} color="#8892B0" />
+              <Ionicons name="footsteps" size={16} color={theme.textSecondary} />
               <Text style={styles.questStatText}>{t(S.quests.detail.stepsCount, { count: quest.stepCount })}</Text>
             </View>
             <View style={styles.questStat}>
-              <Ionicons name="navigate" size={16} color="#8892B0" />
+              <Ionicons name="navigate" size={16} color={theme.textSecondary} />
               <Text style={styles.questStatText}>
                 ~{quest.estimatedDistance < 1000
                   ? `${Math.round(quest.estimatedDistance)}m`
@@ -170,7 +175,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
               </Text>
             </View>
             <View style={styles.questStat}>
-              <Ionicons name="checkmark-done" size={16} color="#8892B0" />
+              <Ionicons name="checkmark-done" size={16} color={theme.textSecondary} />
               <Text style={styles.questStatText}>{t(S.quests.detail.completionsDone, { count: quest.completions })}</Text>
             </View>
           </View>
@@ -178,7 +183,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           <Text style={styles.description}>{quest.description}</Text>
 
           <View style={styles.creatorRow}>
-            <Ionicons name="person-circle-outline" size={18} color="#8892B0" />
+            <Ionicons name="person-circle-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.creatorText}>{t(S.quests.detail.by, { username: quest.creatorUsername })}</Text>
           </View>
         </View>
@@ -209,7 +214,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
                     <Ionicons
                       name={iconNames[idx]}
                       size={isCurrent ? 22 : 16}
-                      color={isActive ? '#00FF88' : '#2A3450'}
+                      color={isActive ? '#00FF88' : theme.textSecondary}
                     />
                     <Text style={[
                       styles.growthStageName,
@@ -270,7 +275,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
                     color={STEP_TYPE_COLORS[step.type]}
                   />
                   <Text style={[styles.stepTypeLabel, { color: STEP_TYPE_COLORS[step.type] }]}>
-                    {STEP_TYPE_LABELS[step.type]}
+                    {stepTypeLabels[step.type]}
                   </Text>
                 </View>
                 <Text style={styles.stepInstruction} numberOfLines={1}>
@@ -278,7 +283,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
                 </Text>
               </View>
               {index > 0 && (
-                <Ionicons name="lock-closed" size={16} color="#2A3450" />
+                <Ionicons name="lock-closed" size={16} color={theme.textSecondary} />
               )}
             </View>
           ))}
@@ -307,14 +312,15 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
@@ -366,17 +372,17 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   mapOverlayText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '600',
   },
   questInfo: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: theme.border,
   },
   questTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 24,
     fontWeight: '900',
     marginBottom: 10,
@@ -416,7 +422,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   questStatText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   description: {
@@ -431,14 +437,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   creatorText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   stepsSection: {
     padding: 20,
   },
   sectionTitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2,
@@ -447,12 +453,12 @@ const styles = StyleSheet.create({
   stepCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: 12,
   },
   stepNumber: {
@@ -482,7 +488,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   stepInstruction: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   bottomBar: {
@@ -495,7 +501,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 36,
     borderTopWidth: 1,
-    borderTopColor: '#1A2340',
+    borderTopColor: theme.border,
   },
   startButton: {
     flexDirection: 'row',
@@ -523,7 +529,7 @@ const styles = StyleSheet.create({
   growthSection: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: theme.border,
   },
   growthHeader: {
     flexDirection: 'row',
@@ -547,7 +553,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   growthStageName: {
-    color: '#2A3450',
+    color: theme.textSecondary,
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,
@@ -560,13 +566,13 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   growthProgress: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 10,
     padding: 12,
     gap: 4,
   },
   growthProgressText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
   },
   linkedSection: {

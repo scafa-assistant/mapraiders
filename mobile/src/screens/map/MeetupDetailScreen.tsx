@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { useAuthStore } from '../../store/authStore';
 import { meetupApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MeetupDetailScreenProps } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
@@ -42,13 +43,13 @@ const CATEGORY_COLORS: Record<string, string> = {
   other: '#8892B0',
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
+const getCategoryLabels = (): Record<string, string> => ({
   party: S.map.meetupDetail.categoryParty,
   sport: S.map.meetupDetail.categorySport,
   gaming: S.map.meetupDetail.categoryGaming,
   meetup: S.map.meetupDetail.categoryMeetup,
   other: S.map.meetupDetail.categoryOther,
-};
+});
 
 function formatEventDate(dateStr: string): string {
   const date = new Date(dateStr);
@@ -63,6 +64,9 @@ function formatEventDate(dateStr: string): string {
 }
 
 export default function MeetupDetailScreen({ navigation, route }: MeetupDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const categoryLabels = useMemo(getCategoryLabels, []);
   const { meetupId } = route.params;
   const { user } = useAuthStore();
   const { currentLocation } = useLocationStore();
@@ -176,7 +180,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.map.meetupDetail.loadingEvent}</Text>
         </View>
       </SafeAreaView>
@@ -187,7 +191,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <Ionicons name="alert-circle-outline" size={48} color={THEME.danger} />
+          <Ionicons name="alert-circle-outline" size={48} color={theme.danger} />
           <Text style={styles.loadingText}>{S.map.meetupDetail.notFound}</Text>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Text style={styles.goBackText}>{S.map.meetupDetail.goBack}</Text>
@@ -199,7 +203,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
 
   const categoryKey = meetup.category ?? 'other';
   const categoryColor = CATEGORY_COLORS[categoryKey] ?? '#8892B0';
-  const categoryLabel = CATEGORY_LABELS[categoryKey] ?? S.map.meetupDetail.categoryFallback;
+  const categoryLabel = categoryLabels[categoryKey] ?? S.map.meetupDetail.categoryFallback;
   const eventLat = meetup.lat ?? meetup.latitude ?? 0;
   const eventLng = meetup.lng ?? meetup.longitude ?? 0;
   const creatorName = meetup.creator_username ?? meetup.creatorUsername ?? S.map.meetupDetail.unknownCreator;
@@ -210,7 +214,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>{S.map.meetupDetail.headerTitle}</Text>
         <View style={styles.headerSpacer} />
@@ -229,7 +233,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
           <Text style={styles.eventName}>{meetup.name}</Text>
           {eventDate ? (
             <View style={styles.dateRow}>
-              <Ionicons name="calendar-outline" size={16} color={THEME.textSecondary} />
+              <Ionicons name="calendar-outline" size={16} color={theme.textSecondary} />
               <Text style={styles.dateText}>{formatEventDate(eventDate)}</Text>
             </View>
           ) : null}
@@ -241,7 +245,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
         {/* Creator */}
         <View style={styles.creatorRow}>
           <View style={styles.avatarPlaceholder}>
-            <Ionicons name="person" size={18} color={THEME.textSecondary} />
+            <Ionicons name="person" size={18} color={theme.textSecondary} />
           </View>
           <Text style={styles.creatorText}>
             {S.map.meetupDetail.createdByPrefix} <Text style={styles.creatorName}>{creatorName}</Text>
@@ -292,7 +296,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
                 return (
                   <View key={a.user_id ?? a.userId ?? a.id ?? index} style={styles.attendeeRow}>
                     <View style={styles.attendeeAvatar}>
-                      <Ionicons name="person" size={14} color={THEME.textSecondary} />
+                      <Ionicons name="person" size={14} color={theme.textSecondary} />
                     </View>
                     <Text style={styles.attendeeUsername}>{username}</Text>
                     {isPresent && (
@@ -309,20 +313,20 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
       {/* Action Buttons */}
       <View style={styles.actionBar}>
         {actionLoading ? (
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
         ) : meetup?.status === 'cancelled' ? (
           <View style={{ alignItems: 'center', paddingVertical: 8 }}>
-            <Text style={{ color: THEME.danger, fontSize: 16, fontWeight: '800' }}>{S.map.meetupDetail.eventCancelledBanner}</Text>
+            <Text style={{ color: theme.danger, fontSize: 16, fontWeight: '800' }}>{S.map.meetupDetail.eventCancelledBanner}</Text>
           </View>
         ) : !isJoined ? (
           <View style={{ gap: 8 }}>
             <TouchableOpacity style={styles.joinBtn} onPress={handleJoin} activeOpacity={0.8}>
-              <Ionicons name="add-circle" size={22} color={THEME.bg} />
+              <Ionicons name="add-circle" size={22} color={theme.bg} />
               <Text style={styles.joinBtnText}>{S.map.meetupDetail.joinBtn}</Text>
             </TouchableOpacity>
             {isCreator && (
               <TouchableOpacity style={styles.leaveBtn} onPress={handleCancel} activeOpacity={0.8}>
-                <Ionicons name="trash-outline" size={18} color={THEME.danger} />
+                <Ionicons name="trash-outline" size={18} color={theme.danger} />
                 <Text style={styles.leaveBtnText}>{S.map.meetupDetail.deleteEventBtn}</Text>
               </TouchableOpacity>
             )}
@@ -330,21 +334,21 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
         ) : (
           <View style={styles.joinedActions}>
             <TouchableOpacity style={styles.presentBtn} onPress={handleMarkPresent} activeOpacity={0.8}>
-              <Ionicons name="location" size={20} color={THEME.bg} />
+              <Ionicons name="location" size={20} color={theme.bg} />
               <Text style={styles.presentBtnText}>{S.map.meetupDetail.imHereBtn}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.chatBtn} onPress={handleChat} activeOpacity={0.8}>
-              <Ionicons name="chatbubbles" size={20} color={THEME.primary} />
+              <Ionicons name="chatbubbles" size={20} color={theme.primary} />
               <Text style={styles.chatBtnText}>{S.map.meetupDetail.chatBtn}</Text>
             </TouchableOpacity>
             {isCreator ? (
               <TouchableOpacity style={styles.leaveBtn} onPress={handleCancel} activeOpacity={0.8}>
-                <Ionicons name="close-circle" size={20} color={THEME.danger} />
+                <Ionicons name="close-circle" size={20} color={theme.danger} />
                 <Text style={styles.leaveBtnText}>{attendeeCount > 0 ? S.map.meetupDetail.cancelBtn : S.map.meetupDetail.deleteBtn}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={styles.leaveBtn} onPress={handleLeave} activeOpacity={0.8}>
-                <Ionicons name="exit-outline" size={20} color={THEME.danger} />
+                <Ionicons name="exit-outline" size={20} color={theme.danger} />
                 <Text style={styles.leaveBtnText}>{S.map.meetupDetail.leaveBtn}</Text>
               </TouchableOpacity>
             )}
@@ -355,10 +359,11 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
@@ -367,11 +372,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   goBackText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
     marginTop: SPACING.md,
@@ -383,24 +388,24 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     marginRight: SPACING.md,
   },
   headerTitle: {
     flex: 1,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
   },
   headerSpacer: {
     width: 40,
@@ -414,7 +419,7 @@ const styles = StyleSheet.create({
   },
   eventCard: {
     marginTop: SPACING.lg,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     borderWidth: 1,
@@ -435,7 +440,7 @@ const styles = StyleSheet.create({
   eventName: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     marginBottom: SPACING.sm,
   },
   dateRow: {
@@ -445,11 +450,11 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   dateText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   description: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     lineHeight: 22,
   },
@@ -463,18 +468,18 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   creatorText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   creatorName: {
-    color: THEME.text,
+    color: theme.text,
     fontWeight: '700',
   },
   miniMapContainer: {
@@ -482,7 +487,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   miniMap: {
     width: '100%',
@@ -500,13 +505,13 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xl,
   },
   sectionTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
     marginBottom: SPACING.md,
   },
   noAttendeesText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   attendeeList: {
@@ -515,27 +520,27 @@ const styles = StyleSheet.create({
   attendeeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     gap: SPACING.md,
   },
   attendeeAvatar: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   attendeeUsername: {
     flex: 1,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
@@ -543,26 +548,26 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#00FF88',
+    backgroundColor: theme.accent,
   },
   actionBar: {
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderTopWidth: 1,
-    borderTopColor: THEME.border,
-    backgroundColor: THEME.bg,
+    borderTopColor: theme.border,
+    backgroundColor: theme.bg,
   },
   joinBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00D4FF',
+    backgroundColor: theme.primary,
     borderRadius: RADIUS.lg,
     paddingVertical: 16,
     gap: SPACING.sm,
   },
   joinBtnText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '900',
     letterSpacing: 1,
@@ -576,13 +581,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00FF88',
+    backgroundColor: theme.accent,
     borderRadius: RADIUS.lg,
     paddingVertical: 14,
     gap: 6,
   },
   presentBtnText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.sm,
     fontWeight: '900',
     letterSpacing: 0.5,
@@ -600,7 +605,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   chatBtnText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '800',
   },
@@ -613,11 +618,11 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     paddingVertical: 14,
     borderWidth: 1.5,
-    borderColor: THEME.danger,
+    borderColor: theme.danger,
     gap: 4,
   },
   leaveBtnText: {
-    color: THEME.danger,
+    color: theme.danger,
     fontSize: FONT_SIZE.sm,
     fontWeight: '800',
   },

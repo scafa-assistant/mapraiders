@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE, MapPressEvent } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { travelApi } from '../../services/api';
 import { useLocationStore } from '../../store/locationStore';
 import { strings as S, t } from '../../i18n';
@@ -35,6 +37,8 @@ interface SpotDraft {
 export default function TravelRouteCreateScreen({
   navigation,
 }: TravelRouteCreateScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { currentLocation } = useLocationStore();
   const mapRef = useRef<MapView>(null);
 
@@ -160,7 +164,7 @@ export default function TravelRouteCreateScreen({
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <Ionicons name="arrow-back" size={22} color="#8892B0" />
+              <Ionicons name="arrow-back" size={22} color={theme.textSecondary} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>{S.travel.create.title}</Text>
           </View>
@@ -171,7 +175,7 @@ export default function TravelRouteCreateScreen({
             <TextInput
               style={styles.textInput}
               placeholder={S.travel.create.namePlaceholder}
-              placeholderTextColor="#555E78"
+              placeholderTextColor={theme.textSecondary}
               value={routeName}
               onChangeText={setRouteName}
               maxLength={60}
@@ -184,7 +188,7 @@ export default function TravelRouteCreateScreen({
             <TextInput
               style={[styles.textInput, styles.textArea]}
               placeholder={S.travel.create.descriptionPlaceholder}
-              placeholderTextColor="#555E78"
+              placeholderTextColor={theme.textSecondary}
               value={routeDescription}
               onChangeText={setRouteDescription}
               multiline
@@ -270,7 +274,7 @@ export default function TravelRouteCreateScreen({
                         <Ionicons
                           name={isEditing ? 'chevron-up' : 'chevron-down'}
                           size={18}
-                          color="#8892B0"
+                          color={theme.textSecondary}
                         />
                       </TouchableOpacity>
 
@@ -286,7 +290,7 @@ export default function TravelRouteCreateScreen({
                         <Ionicons
                           name="arrow-up"
                           size={16}
-                          color={index === 0 ? '#2A3450' : '#8892B0'}
+                          color={theme.textSecondary}
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
@@ -300,7 +304,7 @@ export default function TravelRouteCreateScreen({
                         <Ionicons
                           name="arrow-down"
                           size={16}
-                          color={index === spots.length - 1 ? '#2A3450' : '#8892B0'}
+                          color={theme.textSecondary}
                         />
                       </TouchableOpacity>
 
@@ -308,7 +312,7 @@ export default function TravelRouteCreateScreen({
                         onPress={() => removeSpot(index)}
                         style={styles.removeButton}
                       >
-                        <Ionicons name="trash-outline" size={16} color="#FF4757" />
+                        <Ionicons name="trash-outline" size={16} color={theme.danger} />
                       </TouchableOpacity>
                     </View>
 
@@ -318,7 +322,7 @@ export default function TravelRouteCreateScreen({
                         <TextInput
                           style={styles.spotInput}
                           placeholder={S.travel.create.spotNamePlaceholder}
-                          placeholderTextColor="#555E78"
+                          placeholderTextColor={theme.textSecondary}
                           value={spot.name}
                           onChangeText={(text) => updateSpot(index, { name: text })}
                           maxLength={60}
@@ -326,7 +330,7 @@ export default function TravelRouteCreateScreen({
                         <TextInput
                           style={[styles.spotInput, styles.spotTextArea]}
                           placeholder={S.travel.create.spotDescPlaceholder}
-                          placeholderTextColor="#555E78"
+                          placeholderTextColor={theme.textSecondary}
                           value={spot.description}
                           onChangeText={(text) =>
                             updateSpot(index, { description: text })
@@ -343,7 +347,7 @@ export default function TravelRouteCreateScreen({
                           <Ionicons
                             name={spot.photoUri ? 'image' : 'image-outline'}
                             size={18}
-                            color={spot.photoUri ? '#00FF88' : '#8892B0'}
+                            color={spot.photoUri ? theme.accent : theme.textSecondary}
                           />
                           <Text
                             style={[
@@ -380,10 +384,10 @@ export default function TravelRouteCreateScreen({
             activeOpacity={0.8}
           >
             {publishing ? (
-              <ActivityIndicator color="#0A0E17" size="small" />
+              <ActivityIndicator color={theme.bg} size="small" />
             ) : (
               <>
-                <Ionicons name="globe" size={22} color="#0A0E17" />
+                <Ionicons name="globe" size={22} color={theme.bg} />
                 <Text style={styles.publishButtonText}>{S.travel.create.publishRoute}</Text>
               </>
             )}
@@ -394,10 +398,11 @@ export default function TravelRouteCreateScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   flex: {
     flex: 1,
@@ -417,14 +422,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: theme.text,
     letterSpacing: 0.5,
   },
   inputSection: {
@@ -432,20 +437,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inputLabel: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2,
     marginBottom: 10,
   },
   textInput: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 15,
   },
   textArea: {
@@ -458,7 +463,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   map: {
     width: '100%',
@@ -487,15 +492,15 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   spotCard: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   spotCardEditing: {
-    borderColor: '#00D4FF',
+    borderColor: theme.primary,
   },
   spotCardHeader: {
     flexDirection: 'row',
@@ -513,7 +518,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   spotNumberText: {
-    color: '#00FF88',
+    color: theme.accent,
     fontSize: 13,
     fontWeight: '800',
   },
@@ -524,7 +529,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -543,13 +548,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   spotInput: {
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 14,
   },
   spotTextArea: {
@@ -563,15 +568,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   photoButtonText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
     fontWeight: '600',
   },
   photoButtonTextActive: {
-    color: '#00FF88',
+    color: theme.accent,
   },
   spotNamePreview: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -585,17 +590,17 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 36,
     borderTopWidth: 1,
-    borderTopColor: '#1A2340',
+    borderTopColor: theme.border,
   },
   publishButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00D4FF',
+    backgroundColor: theme.primary,
     borderRadius: 16,
     height: 56,
     gap: 10,
-    shadowColor: '#00D4FF',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -605,7 +610,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   publishButtonText: {
-    color: '#0A0E17',
+    color: theme.bg,
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,

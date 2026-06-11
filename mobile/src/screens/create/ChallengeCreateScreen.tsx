@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { challengeApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { strings as S, t } from '../../i18n';
 import type { ChallengeCreateScreenProps } from '../../navigation/types';
 
@@ -25,7 +26,7 @@ interface ChallengeTemplate {
   parameters: { key: string; label: string; unit: string; min: number; max: number; default: number }[];
 }
 
-const TEMPLATES: ChallengeTemplate[] = [
+const getTemplates = (): ChallengeTemplate[] => [
   {
     id: 'step_count',
     name: S.create.challenge.templateStepsName,
@@ -58,6 +59,9 @@ const TEMPLATES: ChallengeTemplate[] = [
 type VerificationLevel = 'honor' | 'video' | 'sensor';
 
 export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const templates = useMemo(getTemplates, []);
   const { currentLocation } = useLocationStore();
   const [selectedTemplate, setSelectedTemplate] = useState<ChallengeTemplate | null>(null);
   const [paramValues, setParamValues] = useState<Record<string, number>>({});
@@ -122,7 +126,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.create.challenge.title}</Text>
         <View style={{ width: 40 }} />
@@ -135,7 +139,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
         {/* Step 1: Select Template */}
         <Text style={styles.sectionHeader}>{S.create.challenge.sectionTemplate}</Text>
         <View style={styles.templateGrid}>
-          {TEMPLATES.map((t) => (
+          {templates.map((t) => (
             <TouchableOpacity
               key={t.id}
               style={[
@@ -148,7 +152,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
               <Ionicons
                 name={t.icon}
                 size={28}
-                color={selectedTemplate?.id === t.id ? THEME.primary : THEME.textSecondary}
+                color={selectedTemplate?.id === t.id ? theme.primary : theme.textSecondary}
               />
               <Text
                 style={[
@@ -187,7 +191,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                         setParamValues((prev) => ({ ...prev, [param.key]: newVal }));
                       }}
                     >
-                      <Ionicons name="remove" size={18} color={THEME.primary} />
+                      <Ionicons name="remove" size={18} color={theme.primary} />
                     </TouchableOpacity>
                     <TextInput
                       style={styles.paramInput}
@@ -205,7 +209,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                         setParamValues((prev) => ({ ...prev, [param.key]: newVal }));
                       }}
                     >
-                      <Ionicons name="add" size={18} color={THEME.primary} />
+                      <Ionicons name="add" size={18} color={theme.primary} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -228,7 +232,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                   <Ionicons
                     name={opt.icon}
                     size={22}
-                    color={verification === opt.value ? THEME.primary : THEME.textSecondary}
+                    color={verification === opt.value ? theme.primary : theme.textSecondary}
                   />
                   <Text
                     style={[
@@ -268,7 +272,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                   <Ionicons
                     name={opt.icon}
                     size={16}
-                    color={weatherCondition === opt.value ? THEME.primary : THEME.textSecondary}
+                    color={weatherCondition === opt.value ? theme.primary : theme.textSecondary}
                   />
                   <Text
                     style={[
@@ -304,12 +308,12 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                   <Ionicons
                     name={opt.icon}
                     size={22}
-                    color={timeWindow === opt.value ? (opt.value === 'night' ? '#8B5CF6' : THEME.primary) : THEME.textSecondary}
+                    color={timeWindow === opt.value ? (opt.value === 'night' ? '#8B5CF6' : theme.primary) : theme.textSecondary}
                   />
                   <Text
                     style={[
                       styles.verificationLabel,
-                      timeWindow === opt.value && { color: opt.value === 'night' ? '#8B5CF6' : THEME.primary },
+                      timeWindow === opt.value && { color: opt.value === 'night' ? '#8B5CF6' : theme.primary },
                     ]}
                   >
                     {opt.label}
@@ -321,7 +325,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
 
             {/* Location Info */}
             <View style={styles.locationInfo}>
-              <Ionicons name="location-outline" size={16} color={THEME.primary} />
+              <Ionicons name="location-outline" size={16} color={theme.primary} />
               <Text style={styles.locationText}>
                 {currentLocation
                   ? t(S.create.challenge.locationAt, {
@@ -340,10 +344,10 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
               activeOpacity={0.7}
             >
               {isSubmitting ? (
-                <ActivityIndicator size="small" color="#0A0E17" />
+                <ActivityIndicator size="small" color={theme.bg} />
               ) : (
                 <>
-                  <Ionicons name="flash" size={20} color="#0A0E17" />
+                  <Ionicons name="flash" size={20} color={theme.bg} />
                   <Text style={styles.createBtnText}>{S.create.challenge.placeChallenge}</Text>
                 </>
               )}
@@ -357,10 +361,11 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -373,19 +378,19 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   headerTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
   },
   sectionHeader: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -402,40 +407,40 @@ const styles = StyleSheet.create({
   },
   templateCard: {
     width: '47%',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     alignItems: 'center',
     gap: 6,
   },
   templateCardActive: {
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
     backgroundColor: 'rgba(0, 212, 255, 0.08)',
   },
   templateName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
     textAlign: 'center',
   },
   templateNameActive: {
-    color: THEME.primary,
+    color: theme.primary,
   },
   templateDesc: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     textAlign: 'center',
     lineHeight: 16,
   },
   paramsCard: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     marginHorizontal: 20,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   paramRow: {
     marginBottom: SPACING.md,
@@ -446,12 +451,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   paramLabel: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
   paramRange: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   paramInputRow: {
@@ -471,18 +476,18 @@ const styles = StyleSheet.create({
   },
   paramInput: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     textAlign: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   paramUnit: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
     minWidth: 24,
@@ -494,28 +499,28 @@ const styles = StyleSheet.create({
   },
   verificationCard: {
     flex: 1,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     alignItems: 'center',
     gap: 4,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   verificationCardActive: {
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
     backgroundColor: 'rgba(0, 212, 255, 0.08)',
   },
   verificationLabel: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
   },
   verificationLabelActive: {
-    color: THEME.primary,
+    color: theme.primary,
   },
   verificationDesc: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     textAlign: 'center',
   },
@@ -527,14 +532,14 @@ const styles = StyleSheet.create({
     marginTop: SPACING.lg,
   },
   locationText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: 20,
@@ -545,7 +550,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   createBtnText: {
-    color: '#0A0E17',
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },
@@ -559,23 +564,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
   weatherChipActive: {
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
     backgroundColor: 'rgba(0, 212, 255, 0.08)',
   },
   weatherChipText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
   weatherChipTextActive: {
-    color: THEME.primary,
+    color: theme.primary,
   },
 });

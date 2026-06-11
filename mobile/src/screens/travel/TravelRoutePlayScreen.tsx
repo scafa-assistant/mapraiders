@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,8 @@ import {
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { travelApi } from '../../services/api';
 import { useLocationStore } from '../../store/locationStore';
 import { strings as S, t } from '../../i18n';
@@ -43,6 +45,8 @@ export default function TravelRoutePlayScreen({
   route,
   navigation,
 }: TravelRoutePlayScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { routeId } = route.params;
   const { currentLocation } = useLocationStore();
   const mapRef = useRef<MapView>(null);
@@ -197,7 +201,7 @@ export default function TravelRoutePlayScreen({
       <SafeAreaView style={styles.completeContainer}>
         <View style={styles.completeContent}>
           <View style={styles.trophyCircle}>
-            <Ionicons name="trophy" size={56} color="#FFB800" />
+            <Ionicons name="trophy" size={56} color={theme.warning} />
           </View>
           <Text style={styles.completeTitle}>{S.travel.play.completeTitle}</Text>
           <Text style={styles.completeSubtitle}>{travelRoute?.name}</Text>
@@ -210,7 +214,7 @@ export default function TravelRoutePlayScreen({
                   <Ionicons
                     name={star <= rating ? 'star' : 'star-outline'}
                     size={36}
-                    color={star <= rating ? '#FFB800' : '#2A3450'}
+                    color={star <= rating ? theme.warning : theme.textSecondary}
                   />
                 </TouchableOpacity>
               ))}
@@ -224,7 +228,7 @@ export default function TravelRoutePlayScreen({
             activeOpacity={0.8}
           >
             {completing ? (
-              <ActivityIndicator color="#0A0E17" size="small" />
+              <ActivityIndicator color={theme.bg} size="small" />
             ) : (
               <Text style={styles.doneButtonText}>{S.travel.play.completeRoute}</Text>
             )}
@@ -237,7 +241,7 @@ export default function TravelRoutePlayScreen({
   if (loading || !travelRoute) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00D4FF" />
+        <ActivityIndicator size="large" color={theme.primary} />
         <Text style={styles.loadingText}>{S.travel.play.loadingRoute}</Text>
       </SafeAreaView>
     );
@@ -314,7 +318,7 @@ export default function TravelRoutePlayScreen({
       {/* Top Bar */}
       <SafeAreaView style={styles.topBar} edges={['top']}>
         <TouchableOpacity style={styles.abandonButton} onPress={handleAbandon}>
-          <Ionicons name="close" size={22} color="#FF4757" />
+          <Ionicons name="close" size={22} color={theme.danger} />
         </TouchableOpacity>
 
         {/* Progress Bar */}
@@ -359,7 +363,7 @@ export default function TravelRoutePlayScreen({
           <View style={styles.spotDetailCard}>
             <View style={styles.spotDetailHeader}>
               <View style={styles.spotDetailBadge}>
-                <Ionicons name="checkmark-circle" size={20} color="#00FF88" />
+                <Ionicons name="checkmark-circle" size={20} color={theme.accent} />
                 <Text style={styles.spotDetailBadgeText}>{S.travel.play.spotReached}</Text>
               </View>
             </View>
@@ -386,7 +390,7 @@ export default function TravelRoutePlayScreen({
               <Text style={styles.nextSpotButtonText}>
                 {visitedSpots.size >= spots.length ? S.travel.play.finish : S.travel.play.nextSpot}
               </Text>
-              <Ionicons name="arrow-forward" size={18} color="#0A0E17" />
+              <Ionicons name="arrow-forward" size={18} color={theme.bg} />
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -397,7 +401,7 @@ export default function TravelRoutePlayScreen({
         <View style={styles.bottomCard}>
           <View style={styles.bottomCardHeader}>
             <View style={styles.spotTargetBadge}>
-              <Ionicons name="navigate" size={16} color="#00FF88" />
+              <Ionicons name="navigate" size={16} color={theme.accent} />
               <Text style={styles.spotTargetText}>
                 {t(S.travel.play.spotTarget, { number: currentTargetIndex + 1, name: currentSpot.name })}
               </Text>
@@ -405,7 +409,7 @@ export default function TravelRoutePlayScreen({
           </View>
 
           <View style={styles.distanceRow}>
-            <Ionicons name="navigate-outline" size={14} color="#8892B0" />
+            <Ionicons name="navigate-outline" size={14} color={theme.textSecondary} />
             <Text style={styles.distanceText}>
               {t(S.travel.play.distanceAway, { distance: dist < Infinity ? formatDistance(dist) : '---' })}
             </Text>
@@ -422,20 +426,21 @@ export default function TravelRoutePlayScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
   },
   loadingText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   map: {
@@ -529,14 +534,14 @@ const styles = StyleSheet.create({
     right: 0,
   },
   spotDetailCard: {
-    backgroundColor: '#0D1220',
+    backgroundColor: theme.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 40,
     borderTopWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   spotDetailHeader: {
     marginBottom: 12,
@@ -547,7 +552,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   spotDetailBadgeText: {
-    color: '#00FF88',
+    color: theme.accent,
     fontSize: 15,
     fontWeight: '700',
   },
@@ -555,17 +560,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 160,
     borderRadius: 12,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
     marginBottom: 14,
   },
   spotDetailName: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 20,
     fontWeight: '800',
     marginBottom: 6,
   },
   spotDetailDescription: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
@@ -574,13 +579,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00FF88',
+    backgroundColor: theme.accent,
     borderRadius: 14,
     height: 52,
     gap: 8,
   },
   nextSpotButtonText: {
-    color: '#0A0E17',
+    color: theme.bg,
     fontSize: 15,
     fontWeight: '800',
     letterSpacing: 1,
@@ -588,7 +593,7 @@ const styles = StyleSheet.create({
   // Bottom info card
   bottomCard: {
     flex: 1,
-    backgroundColor: '#0D1220',
+    backgroundColor: theme.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     marginTop: -20,
@@ -596,7 +601,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 40,
     borderTopWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   bottomCardHeader: {
     marginBottom: 12,
@@ -612,7 +617,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   spotTargetText: {
-    color: '#00FF88',
+    color: theme.accent,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -623,18 +628,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   distanceText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   spotHint: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 13,
     lineHeight: 18,
   },
   // Completion screen
   completeContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -648,25 +653,25 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     backgroundColor: 'rgba(255, 184, 0, 0.1)',
     borderWidth: 3,
-    borderColor: '#FFB800',
+    borderColor: theme.warning,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#FFB800',
+    shadowColor: theme.warning,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 10,
   },
   completeTitle: {
-    color: '#FFB800',
+    color: theme.warning,
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: 4,
     marginBottom: 8,
   },
   completeSubtitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 16,
     marginBottom: 40,
   },
@@ -675,7 +680,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   ratingPrompt: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
     marginBottom: 12,
   },
@@ -684,14 +689,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   doneButton: {
-    backgroundColor: '#00D4FF',
+    backgroundColor: theme.primary,
     borderRadius: 16,
     paddingHorizontal: 40,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    shadowColor: '#00D4FF',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -701,7 +706,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   doneButtonText: {
-    color: '#0A0E17',
+    color: theme.bg,
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,

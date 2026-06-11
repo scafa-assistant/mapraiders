@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S, t } from '../i18n';
 import { formatArea, formatXP } from '../utils/formatters';
 import type { ClaimResult as ClaimResultType } from '../utils/types';
@@ -24,6 +25,8 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
   onViewTerritory,
   onDismiss,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const xpCountAnim = useRef(new Animated.Value(0)).current;
@@ -79,7 +82,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
     return (
       <View style={styles.multiplierRow} key={label}>
         <View style={styles.multiplierLeft}>
-          <Ionicons name={icon} size={14} color={THEME.textSecondary} />
+          <Ionicons name={icon} size={14} color={theme.textSecondary} />
           <Text style={styles.multiplierLabel}>{label}</Text>
         </View>
         <Text style={styles.multiplierValue}>
@@ -124,13 +127,13 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
                   ],
                 }}
               >
-                <Ionicons name="star" size={16} color={THEME.warning} />
+                <Ionicons name="star" size={16} color={theme.warning} />
               </Animated.View>
             );
           })}
 
           <View style={styles.trophyCircle}>
-            <Ionicons name="flag" size={32} color={THEME.accent} />
+            <Ionicons name="flag" size={32} color={theme.accent} />
           </View>
 
           <Text style={styles.title}>{S.components.claimResult.title}</Text>
@@ -138,14 +141,14 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
 
         {/* XP earned */}
         <View style={styles.xpContainer}>
-          <Ionicons name="star" size={20} color={THEME.warning} />
+          <Ionicons name="star" size={20} color={theme.warning} />
           <Text style={styles.xpValue}>{t(S.components.claimResult.xpEarned, { xp: formatXP(result.xp) })}</Text>
         </View>
 
         {/* Area claimed */}
         {calc.finalArea > 0 && (
           <View style={styles.areaContainer}>
-            <Ionicons name="map-outline" size={16} color={THEME.primary} />
+            <Ionicons name="map-outline" size={16} color={theme.primary} />
             <Text style={styles.areaText}>{formatArea(calc.finalArea)}</Text>
           </View>
         )}
@@ -160,10 +163,10 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
           {calc.contestedBonus > 0 && (
             <View style={styles.multiplierRow}>
               <View style={styles.multiplierLeft}>
-                <Ionicons name="flash-outline" size={14} color={THEME.danger} />
+                <Ionicons name="flash-outline" size={14} color={theme.danger} />
                 <Text style={styles.multiplierLabel}>{S.components.claimResult.contestedBonus}</Text>
               </View>
-              <Text style={[styles.multiplierValue, { color: THEME.danger }]}>
+              <Text style={[styles.multiplierValue, { color: theme.danger }]}>
                 +{calc.contestedBonus.toFixed(0)}
               </Text>
             </View>
@@ -178,7 +181,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
               onPress={onViewTerritory}
               activeOpacity={0.8}
             >
-              <Ionicons name="eye-outline" size={18} color={THEME.bg} />
+              <Ionicons name="eye-outline" size={18} color={theme.bg} />
               <Text style={styles.viewButtonText}>{S.components.claimResult.viewTerritory}</Text>
             </TouchableOpacity>
           )}
@@ -195,7 +198,8 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -204,15 +208,15 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   card: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     marginHorizontal: SPACING.xl,
     width: '88%',
     maxWidth: 380,
     borderWidth: 1,
-    borderColor: THEME.border,
-    shadowColor: THEME.accent,
+    borderColor: theme.border,
+    shadowColor: theme.accent,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '800',
   },
@@ -251,7 +255,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   xpValue: {
-    color: THEME.warning,
+    color: theme.warning,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
   },
@@ -263,7 +267,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   areaText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
   },
@@ -274,7 +278,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   breakdownTitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -293,11 +297,11 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   multiplierLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   multiplierValue: {
-    color: THEME.accent,
+    color: theme.accent,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
   },
@@ -308,7 +312,7 @@ const styles = StyleSheet.create({
   viewButton: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: THEME.accent,
+    backgroundColor: theme.accent,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     alignItems: 'center',
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   viewButtonText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
@@ -327,10 +331,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   dismissButtonText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },

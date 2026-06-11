@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -18,10 +18,14 @@ import { useAuthStore } from '../../store/authStore';
 import { LoginScreenProps } from '../../navigation/types';
 import { web3authService } from '../../services/web3auth';
 import { strings as S } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 
 const { width } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -174,11 +178,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           {/* Email/Password Form */}
           <View style={styles.form}>
             <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#8892B0" style={styles.inputIcon} />
+              <Ionicons name="mail-outline" size={20} color={theme.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder={S.auth.login.emailPlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -192,13 +196,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               <Ionicons
                 name="lock-closed-outline"
                 size={20}
-                color="#8892B0"
+                color={theme.textSecondary}
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
                 placeholder={S.auth.login.passwordPlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -212,7 +216,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                 <Ionicons
                   name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                   size={20}
-                  color="#8892B0"
+                  color={theme.textSecondary}
                 />
               </TouchableOpacity>
             </View>
@@ -257,10 +261,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   keyboardView: {
     flex: 1,
@@ -279,7 +284,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 2,
     borderColor: '#00D4FF',
     justifyContent: 'center',
@@ -294,12 +299,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: theme.text,
     letterSpacing: 6,
   },
   subtitle: {
     fontSize: 14,
-    color: '#8892B0',
+    color: theme.textSecondary,
     marginTop: 8,
     letterSpacing: 2,
   },
@@ -377,10 +382,10 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
   },
   dividerText: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
@@ -392,10 +397,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     marginBottom: 14,
     paddingHorizontal: 16,
     height: 56,
@@ -405,7 +410,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 16,
     height: '100%',
   },
@@ -440,7 +445,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   forgotText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   footer: {

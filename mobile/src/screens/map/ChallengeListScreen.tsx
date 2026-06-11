@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,23 +13,28 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { challengeApi } from '../../services/api';
 import ChallengeCard from '../../components/ChallengeCard';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { ChallengeListScreenProps, Challenge } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
-const TEMPLATE_FILTERS = [
-  { label: S.map.challengeList.filterAll, value: 'all' },
-  { label: S.map.challengeList.filterDistanceSprint, value: 'Distance Sprint' },
-  { label: S.map.challengeList.filterArea, value: 'Area' },
-  { label: S.map.challengeList.filterElevation, value: 'Elevation' },
-  { label: S.map.challengeList.filterSteps, value: 'Steps' },
-  { label: S.map.challengeList.filterTimedWalk, value: 'Timed Walk' },
-  { label: S.map.challengeList.filterExplorer, value: 'Explorer' },
-] as const;
+const getTemplateFilters = () =>
+  [
+    { label: S.map.challengeList.filterAll, value: 'all' },
+    { label: S.map.challengeList.filterDistanceSprint, value: 'Distance Sprint' },
+    { label: S.map.challengeList.filterArea, value: 'Area' },
+    { label: S.map.challengeList.filterElevation, value: 'Elevation' },
+    { label: S.map.challengeList.filterSteps, value: 'Steps' },
+    { label: S.map.challengeList.filterTimedWalk, value: 'Timed Walk' },
+    { label: S.map.challengeList.filterExplorer, value: 'Explorer' },
+  ] as const;
 
-type TemplateFilter = (typeof TEMPLATE_FILTERS)[number]['value'];
+type TemplateFilter = ReturnType<typeof getTemplateFilters>[number]['value'];
 
 export default function ChallengeListScreen({ navigation }: ChallengeListScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const templateFilters = useMemo(getTemplateFilters, []);
   const { currentLocation } = useLocationStore();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +77,7 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
     if (isLoading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="trophy-outline" size={64} color={THEME.border} />
+        <Ionicons name="trophy-outline" size={64} color={theme.border} />
         <Text style={styles.emptyTitle}>{S.map.challengeList.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
           {S.map.challengeList.emptySubtext}
@@ -86,7 +91,7 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <View style={styles.headerTextContainer}>
           <Text style={styles.headerTitle}>{S.map.challengeList.headerTitle}</Text>
@@ -100,7 +105,7 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={TEMPLATE_FILTERS}
+        data={templateFilters}
         keyExtractor={(item) => item.value}
         contentContainerStyle={styles.filterList}
         style={styles.filterBar}
@@ -127,7 +132,7 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
       {/* Challenge List */}
       {isLoading && challenges.length === 0 ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.map.challengeList.scanning}</Text>
         </View>
       ) : (
@@ -147,8 +152,8 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
         />
@@ -157,10 +162,11 @@ export default function ChallengeListScreen({ navigation }: ChallengeListScreenP
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -174,11 +180,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   headerTextContainer: {
     flex: 1,
@@ -186,12 +192,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 1,
   },
   headerSubtitle: {
     fontSize: FONT_SIZE.sm,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     marginTop: 2,
   },
   filterBar: {
@@ -203,24 +209,24 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   filterChip: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.full,
     paddingHorizontal: 14,
     paddingVertical: SPACING.sm,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   filterChipActive: {
     backgroundColor: 'rgba(0, 212, 255, 0.15)',
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
   },
   filterChipText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
   filterChipTextActive: {
-    color: THEME.primary,
+    color: theme.primary,
   },
   loadingContainer: {
     flex: 1,
@@ -229,7 +235,7 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   listContent: {
@@ -244,13 +250,13 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   emptyTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
     marginTop: SPACING.lg,
   },
   emptySubtext: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginTop: SPACING.xs,
   },

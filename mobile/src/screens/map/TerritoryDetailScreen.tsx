@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -15,13 +15,15 @@ import { TerritoryDetailScreenProps, MovementClass } from '../../navigation/type
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useAuthStore } from '../../store/authStore';
 import { defenseApi } from '../../services/api';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { strings as S, t, plural } from '../../i18n';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
   walker: '#00D4FF', runner: '#FF4757', cyclist: '#00FF88',
   skater: '#FFB800', dog_walker: '#7B61FF', driver: '#8892B0', unknown: '#555E78',
 };
-const CLASS_LABELS: Record<MovementClass, string> = {
+const getClassLabels = (): Record<MovementClass, string> => ({
   walker: S.map.territoryDetail.classWalker,
   runner: S.map.territoryDetail.classRunner,
   cyclist: S.map.territoryDetail.classCyclist,
@@ -29,13 +31,13 @@ const CLASS_LABELS: Record<MovementClass, string> = {
   dog_walker: S.map.territoryDetail.classDogWalker,
   driver: S.map.territoryDetail.classDriver,
   unknown: S.map.territoryDetail.classUnknown,
-};
+});
 const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
   walker: 'walk', runner: 'speedometer', cyclist: 'bicycle',
   skater: 'flash', dog_walker: 'paw', driver: 'car', unknown: 'help-circle',
 };
 
-const DEFENSE_LABELS: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
+const getDefenseLabels = (): Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> => ({
   rock_paper_scissors: { label: S.map.territoryDetail.gameRps, icon: 'hand-left-outline', color: '#7B61FF' },
   sprint_race: { label: S.map.territoryDetail.gameSprintRace, icon: 'speedometer-outline', color: '#00FF88' },
   trivia: { label: S.map.territoryDetail.gameTrivia, icon: 'help-circle-outline', color: '#00D4FF' },
@@ -46,9 +48,13 @@ const DEFENSE_LABELS: Record<string, { label: string; icon: keyof typeof Ionicon
   challenge: { label: S.map.territoryDetail.gameChallenge, icon: 'flag-outline', color: '#FF4757' },
   quest: { label: S.map.territoryDetail.gameQuest, icon: 'map-outline', color: '#00FF88' },
   echo: { label: S.map.territoryDetail.gameEcho, icon: 'volume-high-outline', color: '#7B61FF' },
-};
+});
 
 export default function TerritoryDetailScreen({ route, navigation }: TerritoryDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const classLabels = useMemo(getClassLabels, []);
+  const defenseLabels = useMemo(getDefenseLabels, []);
   const { territory } = route.params;
   const { challengeTerritory } = useTerritoryStore();
   const { user } = useAuthStore();
@@ -62,7 +68,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
         ? S.map.territoryDetail.strengthFading
         : S.map.territoryDetail.strengthWeak;
   const decayColor =
-    territory.decayPercent < 30 ? '#00FF88' : territory.decayPercent < 60 ? '#FFB800' : '#FF4757';
+    territory.decayPercent < 30 ? theme.accent : territory.decayPercent < 60 ? theme.warning : theme.danger;
 
   // Defense state (multi-layer)
   const [defenses, setDefenses] = useState<any[]>([]);
@@ -89,7 +95,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   };
 
   const handleRemoveDefense = (defenseId: string, gameType: string) => {
-    const info = DEFENSE_LABELS[gameType] || DEFENSE_LABELS.trivia;
+    const info = defenseLabels[gameType] || defenseLabels.trivia;
     Alert.alert(
       S.map.territoryDetail.removeDefenseTitle,
       t(S.map.territoryDetail.removeDefenseMsg, { label: info.label }),
@@ -156,7 +162,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="close" size={24} color="#8892B0" />
+            <Ionicons name="close" size={24} color={theme.textSecondary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.map.territoryDetail.headerTitle}</Text>
           <View style={styles.headerSpacer} />
@@ -171,7 +177,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             <Text style={styles.ownerName}>{territory.ownerUsername}</Text>
             <View style={[styles.classBadge, { backgroundColor: `${classColor}20` }]}>
               <Text style={[styles.classLabel, { color: classColor }]}>
-                {CLASS_LABELS[territory.movementClass]}
+                {classLabels[territory.movementClass]}
               </Text>
             </View>
           </View>
@@ -185,7 +191,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
-            <Ionicons name="resize" size={20} color="#00D4FF" />
+            <Ionicons name="resize" size={20} color={theme.primary} />
             <Text style={styles.statValue}>{territory.area} m²</Text>
             <Text style={styles.statLabel}>{S.map.territoryDetail.statArea}</Text>
           </View>
@@ -204,21 +210,21 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
         <View style={styles.detailsSection}>
           <Text style={styles.sectionTitle}>{S.map.territoryDetail.detailsTitle}</Text>
           <View style={styles.detailRow}>
-            <Ionicons name="calendar-outline" size={18} color="#8892B0" />
+            <Ionicons name="calendar-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.detailLabel}>{S.map.territoryDetail.claimedLabel}</Text>
             <Text style={styles.detailValue}>
               {format(new Date(territory.claimedAt), 'dd.MM.yyyy')}
             </Text>
           </View>
           <View style={styles.detailRow}>
-            <Ionicons name="time-outline" size={18} color="#8892B0" />
+            <Ionicons name="time-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.detailLabel}>{S.map.territoryDetail.ageLabel}</Text>
             <Text style={styles.detailValue}>
               {formatDistanceToNow(new Date(territory.claimedAt), { addSuffix: true })}
             </Text>
           </View>
           <View style={styles.detailRow}>
-            <Ionicons name="trending-down-outline" size={18} color="#8892B0" />
+            <Ionicons name="trending-down-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.detailLabel}>{S.map.territoryDetail.decayLabel}</Text>
             <View style={styles.decayBarContainer}>
               <View style={styles.decayBarBg}>
@@ -236,7 +242,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
         {defenseLoading ? (
           <View style={styles.defenseLoading}>
-            <ActivityIndicator size="small" color="#8892B0" />
+            <ActivityIndicator size="small" color={theme.textSecondary} />
           </View>
         ) : (
           <>
@@ -245,13 +251,13 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               {Array.from({ length: maxSlots }).map((_, i) => {
                 const filled = i < usedSlots;
                 const defense = defenses[i];
-                const color = defense ? (DEFENSE_LABELS[defense.game_type]?.color || '#FFB800') : '#1A2340';
+                const color = defense ? (defenseLabels[defense.game_type]?.color || theme.warning) : theme.border;
                 return (
                   <View
                     key={i}
                     style={[
                       styles.slotDot,
-                      { backgroundColor: filled ? color : '#1A2340', borderColor: filled ? color : '#2A3350' },
+                      { backgroundColor: filled ? color : theme.border, borderColor: filled ? color : '#2A3350' },
                     ]}
                   >
                     {filled && <Ionicons name="shield-checkmark" size={10} color="#0A0E17" />}
@@ -262,7 +268,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
             {/* Defense Layer Cards */}
             {defenses.map((defense, idx) => {
-              const info = DEFENSE_LABELS[defense.game_type] || DEFENSE_LABELS.trivia;
+              const info = defenseLabels[defense.game_type] || defenseLabels.trivia;
               return (
                 <View key={defense.id} style={[styles.defenseCard, { borderColor: info.color }]}>
                   <View style={[styles.defenseCardIcon, { backgroundColor: `${info.color}15` }]}>
@@ -283,9 +289,9 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                       disabled={removingId === defense.id}
                     >
                       {removingId === defense.id ? (
-                        <ActivityIndicator size="small" color="#FF4757" />
+                        <ActivityIndicator size="small" color={theme.danger} />
                       ) : (
-                        <Ionicons name="close-circle" size={22} color="#FF4757" />
+                        <Ionicons name="close-circle" size={22} color={theme.danger} />
                       )}
                     </TouchableOpacity>
                   )}
@@ -320,7 +326,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             {/* Owner: max slots reached */}
             {isOwner && freeSlots === 0 && usedSlots > 0 && (
               <View style={styles.slotsFullNotice}>
-                <Ionicons name="shield-checkmark" size={16} color="#00FF88" />
+                <Ionicons name="shield-checkmark" size={16} color={theme.accent} />
                 <Text style={styles.slotsFullText}>
                   {t(S.map.territoryDetail.slotsFull, { max: maxSlots })}
                 </Text>
@@ -354,7 +360,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             {/* Challenger: has defenses → info */}
             {!isOwner && usedSlots > 0 && (
               <View style={styles.challengeInfo}>
-                <Ionicons name="information-circle" size={18} color="#FFB800" />
+                <Ionicons name="information-circle" size={18} color={theme.warning} />
                 <Text style={styles.challengeInfoText}>
                   {plural(usedSlots, S.map.territoryDetail.defeatAllDefensesOne, S.map.territoryDetail.defeatAllDefensesOther)}
                 </Text>
@@ -364,7 +370,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             {/* Owner Notice */}
             {isOwner && (
               <View style={[styles.ownerNotice, { marginTop: 12 }]}>
-                <Ionicons name="footsteps-outline" size={20} color="#00FF88" />
+                <Ionicons name="footsteps-outline" size={20} color={theme.accent} />
                 <Text style={styles.ownerNoticeText}>
                   {S.map.territoryDetail.ownerNotice}
                 </Text>
@@ -377,34 +383,35 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0E17' },
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+  container: { flex: 1, backgroundColor: theme.bg },
   scrollContent: { padding: 20, paddingBottom: 40 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
-  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#141B2D', justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
+  closeButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: theme.surface, justifyContent: 'center', alignItems: 'center' },
+  headerTitle: { color: theme.text, fontSize: 18, fontWeight: '700' },
   headerSpacer: { width: 40 },
-  ownerCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#141B2D', borderRadius: 16, borderWidth: 1, padding: 16, marginBottom: 20 },
+  ownerCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 16, borderWidth: 1, padding: 16, marginBottom: 20 },
   classIconCircle: { width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
   ownerInfo: { flex: 1 },
-  ownerName: { color: '#FFFFFF', fontSize: 18, fontWeight: '700', marginBottom: 4 },
+  ownerName: { color: theme.text, fontSize: 18, fontWeight: '700', marginBottom: 4 },
   classBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10 },
   classLabel: { fontSize: 12, fontWeight: '600' },
   yoursBadge: { backgroundColor: 'rgba(0, 255, 136, 0.15)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
-  yoursText: { color: '#00FF88', fontSize: 11, fontWeight: '800', letterSpacing: 1 },
+  yoursText: { color: theme.accent, fontSize: 11, fontWeight: '800', letterSpacing: 1 },
   statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  statCard: { flex: 1, backgroundColor: '#141B2D', borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#1A2340' },
-  statValue: { color: '#FFFFFF', fontSize: 20, fontWeight: '800', marginTop: 8 },
-  statLabel: { color: '#8892B0', fontSize: 11, marginTop: 4 },
+  statCard: { flex: 1, backgroundColor: theme.surface, borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: theme.border },
+  statValue: { color: theme.text, fontSize: 20, fontWeight: '800', marginTop: 8 },
+  statLabel: { color: theme.textSecondary, fontSize: 11, marginTop: 4 },
   decayIndicator: { width: 44, height: 44, borderRadius: 22, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
   decayPercent: { fontSize: 11, fontWeight: '800' },
   detailsSection: { marginBottom: 24 },
-  sectionTitle: { color: '#8892B0', fontSize: 12, fontWeight: '700', letterSpacing: 2, marginBottom: 14 },
-  detailRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#141B2D', borderRadius: 12, padding: 14, marginBottom: 8, gap: 12 },
-  detailLabel: { color: '#8892B0', fontSize: 14, flex: 1 },
-  detailValue: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  sectionTitle: { color: theme.textSecondary, fontSize: 12, fontWeight: '700', letterSpacing: 2, marginBottom: 14 },
+  detailRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 12, padding: 14, marginBottom: 8, gap: 12 },
+  detailLabel: { color: theme.textSecondary, fontSize: 14, flex: 1 },
+  detailValue: { color: theme.text, fontSize: 14, fontWeight: '600' },
   decayBarContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end' },
-  decayBarBg: { width: 80, height: 6, borderRadius: 3, backgroundColor: '#1A2340', overflow: 'hidden' },
+  decayBarBg: { width: 80, height: 6, borderRadius: 3, backgroundColor: theme.border, overflow: 'hidden' },
   decayBarFill: { height: '100%', borderRadius: 3 },
   decayBarText: { fontSize: 12, fontWeight: '700', width: 36, textAlign: 'right' },
   defenseLoading: { alignItems: 'center', paddingVertical: 20 },
@@ -414,35 +421,35 @@ const styles = StyleSheet.create({
   slotDot: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center' },
 
   // Defense layer cards
-  defenseCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#141B2D', borderRadius: 14, borderWidth: 1, padding: 12, marginBottom: 8, gap: 12 },
+  defenseCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, padding: 12, marginBottom: 8, gap: 12 },
   defenseCardIcon: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
   defenseCardContent: { flex: 1 },
   defenseCardTitle: { fontSize: 14, fontWeight: '700' },
-  defenseCardSlot: { color: '#8892B0', fontSize: 11, marginTop: 2 },
+  defenseCardSlot: { color: theme.textSecondary, fontSize: 11, marginTop: 2 },
   defenseCardRemove: { padding: 6 },
   defenseCardAttack: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
 
   // Add defense button
-  addDefenseButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFB800', borderRadius: 16, height: 52, gap: 10, marginTop: 4, marginBottom: 8 },
+  addDefenseButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.warning, borderRadius: 16, height: 52, gap: 10, marginTop: 4, marginBottom: 8 },
   addDefenseButtonText: { color: '#0A0E17', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
 
   // Slots full
   slotsFullNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(0, 255, 136, 0.08)', borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(0, 255, 136, 0.2)' },
-  slotsFullText: { flex: 1, color: '#00FF88', fontSize: 12, fontWeight: '600' },
+  slotsFullText: { flex: 1, color: theme.accent, fontSize: 12, fontWeight: '600' },
 
   // Set defense (first time)
-  setDefenseButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFB800', borderRadius: 16, height: 56, gap: 10, shadowColor: '#FFB800', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
+  setDefenseButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.warning, borderRadius: 16, height: 56, gap: 10, shadowColor: theme.warning, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
   setDefenseButtonText: { color: '#0A0E17', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
 
   // Challenge button
-  challengeButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FF4757', borderRadius: 16, height: 56, gap: 10, shadowColor: '#FF4757', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
+  challengeButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.danger, borderRadius: 16, height: 56, gap: 10, shadowColor: theme.danger, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
   challengeButtonText: { color: '#0A0E17', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
 
   // Challenge info
   challengeInfo: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255, 184, 0, 0.08)', borderRadius: 12, padding: 12, marginTop: 8, borderWidth: 1, borderColor: 'rgba(255, 184, 0, 0.2)' },
-  challengeInfoText: { flex: 1, color: '#FFB800', fontSize: 12, fontWeight: '600' },
+  challengeInfoText: { flex: 1, color: theme.warning, fontSize: 12, fontWeight: '600' },
 
   // Owner notice
   ownerNotice: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0, 255, 136, 0.08)', borderWidth: 1, borderColor: 'rgba(0, 255, 136, 0.2)', borderRadius: 12, padding: 16, gap: 12 },
-  ownerNoticeText: { flex: 1, color: '#8892B0', fontSize: 13, lineHeight: 18 },
+  ownerNoticeText: { flex: 1, color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
 });

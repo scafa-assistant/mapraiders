@@ -1,7 +1,9 @@
-import { DARK_THEME } from '../utils/constants';
+import { useSettingsStore } from '../store/settingsStore';
+import { DARK_THEME, LIGHT_THEME } from '../utils/constants';
 
-// v1.0 ships dark-only UI. The darkMapStyle setting only affects
-// the map tiles/overlays in MapScreen, not the app theme.
+// Global app theme. settings.darkMapStyle is the historic storage key,
+// but it now means "dark mode for the whole app" (incl. map tiles).
 export function useTheme() {
-  return DARK_THEME;
+  const { settings } = useSettingsStore();
+  return settings.darkMapStyle ? DARK_THEME : LIGHT_THEME;
 }

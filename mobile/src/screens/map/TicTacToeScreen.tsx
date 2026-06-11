@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { turnGameApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { TicTacToeGameScreenProps } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
@@ -68,6 +69,8 @@ const COLOR_DRAW = '#FFB800';
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { gameId, opponentUsername } = route.params;
 
   // ─── State ───────────────────────────────────────────────────────────────
@@ -646,19 +649,19 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
   const renderInfo = () => (
     <View style={styles.infoContainer}>
       <View style={styles.infoRow}>
-        <Ionicons name="information-circle-outline" size={16} color={THEME.textSecondary} />
+        <Ionicons name="information-circle-outline" size={16} color={theme.textSecondary} />
         <Text style={styles.infoText}>
           {S.map.ticTacToe.infoSymbols}
         </Text>
       </View>
       <View style={styles.infoRow}>
-        <Ionicons name="shield-outline" size={16} color={THEME.textSecondary} />
+        <Ionicons name="shield-outline" size={16} color={theme.textSecondary} />
         <Text style={styles.infoText}>
           {S.map.ticTacToe.infoDraw}
         </Text>
       </View>
       <View style={styles.infoRow}>
-        <Ionicons name="timer-outline" size={16} color={THEME.textSecondary} />
+        <Ionicons name="timer-outline" size={16} color={theme.textSecondary} />
         <Text style={styles.infoText}>
           {S.map.ticTacToe.infoTimeout}
         </Text>
@@ -672,7 +675,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.map.ticTacToe.loadingBattle}</Text>
         </View>
       </SafeAreaView>
@@ -686,12 +689,12 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
           <View style={styles.headerGameBadge}>
-            <Ionicons name="grid-outline" size={16} color={THEME.primary} />
+            <Ionicons name="grid-outline" size={16} color={theme.primary} />
             <Text style={styles.headerGameLabel}>{S.map.ticTacToe.headerTitle}</Text>
           </View>
           <Text style={styles.headerOpponent}>{t(S.map.ticTacToe.vsUsername, { username: opponentUsername })}</Text>
@@ -714,7 +717,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
                 backgroundColor: isYourTurn
                   ? COLOR_X
                   : isGameOver
-                  ? THEME.textSecondary
+                  ? theme.textSecondary
                   : COLOR_O,
               },
             ]}
@@ -733,7 +736,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
             size={20}
             color={
               isGameOver
-                ? THEME.textSecondary
+                ? theme.textSecondary
                 : isYourTurn
                 ? COLOR_X
                 : COLOR_O
@@ -742,7 +745,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
           <Text
             style={[
               styles.timerText,
-              isGameOver && { color: THEME.textSecondary },
+              isGameOver && { color: theme.textSecondary },
               isYourTurn && { color: COLOR_X },
               !isYourTurn && !isGameOver && { color: COLOR_O },
             ]}
@@ -792,7 +795,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
         <View style={styles.turnIndicatorRow}>
           {isGameOver ? (
             <View style={styles.turnIndicator}>
-              <Ionicons name="flag" size={18} color={THEME.textSecondary} />
+              <Ionicons name="flag" size={18} color={theme.textSecondary} />
               <Text style={styles.turnIndicatorText}>{S.map.ticTacToe.gameComplete}</Text>
             </View>
           ) : isYourTurn ? (
@@ -832,7 +835,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
       {/* Submitting overlay */}
       {submitting && (
         <View style={styles.submittingOverlay}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
         </View>
       )}
 
@@ -845,6 +848,8 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
 // ─── Thinking Text Component ─────────────────────────────────────────────────
 
 function ThinkingText() {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [dots, setDots] = useState('');
 
   useEffect(() => {
@@ -866,10 +871,11 @@ function ThinkingText() {
 const CELL_SIZE = 100;
 const BOARD_GAP = 6;
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
 
   // ─── Loading ───────────────────────────────────────────────────────────
@@ -880,7 +886,7 @@ const styles = StyleSheet.create({
     gap: SPACING.lg,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
   },
@@ -897,11 +903,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   headerCenter: {
     alignItems: 'center',
@@ -914,15 +920,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}20`,
+    backgroundColor: `${theme.primary}20`,
   },
   headerGameLabel: {
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
-    color: THEME.primary,
+    color: theme.primary,
   },
   headerOpponent: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
@@ -943,8 +949,8 @@ const styles = StyleSheet.create({
     backgroundColor: `${COLOR_O}15`,
   },
   turnBadgeDone: {
-    borderColor: THEME.border,
-    backgroundColor: THEME.surface,
+    borderColor: theme.border,
+    backgroundColor: theme.surface,
   },
   turnDot: {
     width: 12,
@@ -986,17 +992,17 @@ const styles = StyleSheet.create({
   playerCard: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.sm,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     gap: 2,
   },
   playerCardActive: {
-    borderColor: `${THEME.primary}60`,
-    backgroundColor: `${THEME.primary}08`,
+    borderColor: `${theme.primary}60`,
+    backgroundColor: `${theme.primary}08`,
   },
   playerSymbol: {
     fontSize: 28,
@@ -1004,13 +1010,13 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   playerLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
     maxWidth: 100,
   },
   playerYou: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
   },
@@ -1018,14 +1024,14 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   vsText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '800',
     letterSpacing: 1,
@@ -1044,16 +1050,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     borderRadius: RADIUS.full,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   turnIndicatorActive: {
     borderColor: `${COLOR_X}40`,
     backgroundColor: `${COLOR_X}10`,
   },
   turnIndicatorText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
@@ -1063,7 +1069,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: RADIUS.xl + 4,
     padding: SPACING.md,
-    backgroundColor: `${THEME.surface}80`,
+    backgroundColor: `${theme.surface}80`,
     shadowColor: COLOR_X,
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 20,
@@ -1082,15 +1088,15 @@ const styles = StyleSheet.create({
     width: CELL_SIZE,
     height: CELL_SIZE,
     borderRadius: RADIUS.lg,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
   },
   cellEmpty: {
-    borderColor: `${THEME.primary}30`,
+    borderColor: `${theme.primary}30`,
     borderStyle: 'dashed',
   },
   symbolContainer: {
@@ -1124,7 +1130,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: `${THEME.primary}30`,
+    backgroundColor: `${theme.primary}30`,
   },
 
   // ─── Move Number ───────────────────────────────────────────────────────
@@ -1133,12 +1139,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   moveNumberLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
   },
@@ -1150,7 +1156,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   historyTitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
     letterSpacing: 1,
@@ -1164,14 +1170,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderWidth: 1,
   },
   historyMoveNum: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
@@ -1180,7 +1186,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   historyPos: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
@@ -1189,11 +1195,11 @@ const styles = StyleSheet.create({
   infoContainer: {
     width: '100%',
     marginTop: SPACING.xl,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     gap: SPACING.sm,
   },
   infoRow: {
@@ -1202,7 +1208,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   infoText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
     flex: 1,
@@ -1242,13 +1248,13 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
   },
   resultSubtitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
     textAlign: 'center',
   },
   resultMessage: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
     textAlign: 'center',
@@ -1256,11 +1262,11 @@ const styles = StyleSheet.create({
   resultDivider: {
     width: 60,
     height: 2,
-    backgroundColor: THEME.border,
+    backgroundColor: theme.border,
     marginVertical: SPACING.sm,
   },
   resultAutoNav: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
     fontStyle: 'italic',

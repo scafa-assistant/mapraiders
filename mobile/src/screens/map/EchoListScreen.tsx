@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import { useLocationStore } from '../../store/locationStore';
 import { echoApi } from '../../services/api';
 import { audioService } from '../../services/audio';
 import { EchoListScreenProps } from '../../navigation/types';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { strings as S, t } from '../../i18n';
 
 interface EchoItem {
@@ -32,6 +34,8 @@ interface EchoItem {
 }
 
 export default function EchoListScreen({ navigation }: EchoListScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { currentLocation } = useLocationStore();
   const [echos, setEchos] = useState<EchoItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +139,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
         <View style={styles.echoCardTop}>
           <View style={styles.echoCreator}>
             <View style={styles.waveformIcon}>
-              <Ionicons name="musical-notes" size={20} color="#7B61FF" />
+              <Ionicons name="musical-notes" size={20} color={theme.secondary} />
             </View>
             <View>
               <Text style={styles.creatorUsername}>{item.creatorUsername}</Text>
@@ -158,7 +162,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
             <Ionicons
               name={isPlaying ? 'stop' : 'play'}
               size={22}
-              color={isPlaying ? '#FFFFFF' : '#7B61FF'}
+              color={isPlaying ? '#FFFFFF' : theme.secondary}
             />
           </TouchableOpacity>
         </View>
@@ -173,7 +177,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
             <Ionicons
               name={item.liked ? 'heart' : 'heart-outline'}
               size={16}
-              color={item.liked ? '#FF4757' : '#555E78'}
+              color={item.liked ? theme.danger : '#555E78'}
             />
             <Text style={[styles.likeCount, item.liked && styles.likeCountActive]}>
               {item.likes}
@@ -204,7 +208,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#8892B0" />
+          <Ionicons name="arrow-back" size={24} color={theme.textSecondary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.map.echoList.headerTitle}</Text>
         <View style={{ width: 24 }} />
@@ -213,7 +217,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
       {/* Echo List */}
       {loading && echos.length === 0 ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#7B61FF" />
+          <ActivityIndicator size="large" color={theme.secondary} />
           <Text style={styles.loadingText}>{S.map.echoList.scanning}</Text>
         </View>
       ) : (
@@ -228,8 +232,8 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#7B61FF"
-              colors={['#7B61FF']}
+              tintColor={theme.secondary}
+              colors={[theme.secondary]}
             />
           }
         />
@@ -238,10 +242,11 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -251,7 +256,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   headerTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -262,7 +267,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   listContent: {
@@ -272,12 +277,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   echoCard: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 16,
     padding: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   echoCardTop: {
     flexDirection: 'row',
@@ -300,7 +305,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   creatorUsername: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 15,
     fontWeight: '700',
     marginBottom: 4,
@@ -317,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A3450',
   },
   metaText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
   },
   playButton: {
@@ -326,12 +331,12 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: 'rgba(123, 97, 255, 0.15)',
     borderWidth: 1.5,
-    borderColor: '#7B61FF',
+    borderColor: theme.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   playButtonActive: {
-    backgroundColor: '#7B61FF',
+    backgroundColor: theme.secondary,
   },
   echoCardBottom: {
     flexDirection: 'row',
@@ -349,10 +354,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   likeCountActive: {
-    color: '#FF4757',
+    color: theme.danger,
   },
   expiryText: {
-    color: '#FFB800',
+    color: theme.warning,
     fontSize: 11,
     fontWeight: '600',
   },
@@ -363,7 +368,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
     marginTop: 16,

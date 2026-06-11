@@ -15,6 +15,7 @@ import { setupWsEventHandlers } from './src/services/wsEventHandler';
 import { registerForPushNotifications } from './src/services/notifications';
 import { userApi } from './src/services/api';
 import { useSettingsStore } from './src/store/settingsStore';
+import { initLocale, onLanguageChange } from './src/i18n';
 
 const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
 
@@ -42,10 +43,7 @@ function AppContent() {
 
   const networkCleanupRef = useRef<(() => void) | null>(null);
 
-  // Load persisted settings from AsyncStorage on mount
-  useEffect(() => {
-    useSettingsStore.getState().loadSettings();
-  }, []);
+  // Settings are loaded by AppShell before this component mounts.
 
   // Initialize offline queue and network listener on mount
   useEffect(() => {
@@ -111,8 +109,21 @@ function AppContent() {
 }
 
 function AppShell() {
-  const { settings } = useSettingsStore();
+  const { settings, loaded: settingsLoaded } = useSettingsStore();
   const isDark = settings.darkMapStyle;
+
+  // Locale must be resolved before the first render; settings before the
+  // first themed frame (avoids a dark flash for light-mode users).
+  const [localeReady, setLocaleReady] = useState(false);
+  // Language change swaps the strings container in place; the key remount
+  // re-renders every screen so module trees pick up the new language.
+  const [langVersion, setLangVersion] = useState(0);
+
+  useEffect(() => {
+    initLocale().finally(() => setLocaleReady(true));
+    useSettingsStore.getState().loadSettings();
+    return onLanguageChange(() => setLangVersion((v) => v + 1));
+  }, []);
 
   const navTheme = useMemo(() => ({
     dark: isDark,
@@ -126,8 +137,16 @@ function AppShell() {
     },
   }), [isDark]);
 
+  if (!localeReady || !settingsLoaded) {
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: isDark ? '#0A0E17' : '#F5F5F5' }]}>
+        <ActivityIndicator size="large" color="#00D4FF" />
+      </View>
+    );
+  }
+
   return (
-    <NavigationContainer theme={navTheme}>
+    <NavigationContainer key={langVersion} theme={navTheme}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <AppContent />
     </NavigationContainer>

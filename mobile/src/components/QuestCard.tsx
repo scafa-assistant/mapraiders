@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S, t } from '../i18n';
 import { getClassColor } from '../utils/colors';
 import { formatDistance, formatRating } from '../utils/formatters';
@@ -23,6 +24,8 @@ interface QuestCardProps {
  * Left border gradient accent based on class color.
  */
 const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const classColor = getClassColor(quest.movementClass);
   const weatherLabels: Record<string, string> = S.components.questCard.weather;
 
@@ -34,7 +37,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
           key={i}
           name={i <= quest.difficulty ? 'star' : 'star-outline'}
           size={12}
-          color={i <= quest.difficulty ? THEME.warning : THEME.textSecondary}
+          color={i <= quest.difficulty ? theme.warning : theme.textSecondary}
           style={styles.star}
         />
       );
@@ -52,7 +55,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
         <View style={styles.titleRow}>
           {(quest as any).is_seed && (
             <View style={styles.seedBadge}>
-              <Ionicons name="leaf" size={10} color={THEME.accent} />
+              <Ionicons name="leaf" size={10} color={theme.accent} />
             </View>
           )}
           <Text style={styles.title} numberOfLines={1}>
@@ -87,7 +90,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
                 'sunny'
               }
               size={10}
-              color="#00D4FF"
+              color={theme.primary}
             />
             <Text style={styles.weatherBadgeText}>{weatherLabels[(quest as any).weather_condition] ?? (quest as any).weather_condition}</Text>
           </View>
@@ -96,20 +99,20 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
         {/* Rating */}
         {quest.rating > 0 && (
           <View style={styles.metaItem}>
-            <Ionicons name="star" size={12} color={THEME.warning} />
+            <Ionicons name="star" size={12} color={theme.warning} />
             <Text style={styles.metaText}>{formatRating(quest.rating)}</Text>
           </View>
         )}
 
         {/* Step count */}
         <View style={styles.metaItem}>
-          <Ionicons name="footsteps-outline" size={12} color={THEME.textSecondary} />
+          <Ionicons name="footsteps-outline" size={12} color={theme.textSecondary} />
           <Text style={styles.metaText}>{t(S.components.questCard.stepsCount, { count: quest.stepCount })}</Text>
         </View>
 
         {/* Completions */}
         <View style={styles.metaItem}>
-          <Ionicons name="people-outline" size={12} color={THEME.textSecondary} />
+          <Ionicons name="people-outline" size={12} color={theme.textSecondary} />
           <Text style={styles.metaText}>{quest.completions}</Text>
         </View>
       </View>
@@ -118,7 +121,7 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
       <View style={styles.bottomRow}>
         {distance !== undefined && (
           <View style={styles.distanceBadge}>
-            <Ionicons name="navigate-outline" size={11} color={THEME.primary} />
+            <Ionicons name="navigate-outline" size={11} color={theme.primary} />
             <Text style={styles.distanceText}>{formatDistance(distance)}</Text>
           </View>
         )}
@@ -128,9 +131,10 @@ const QuestCard: React.FC<QuestCardProps> = ({ quest, onPress, distance }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderLeftWidth: 4,
     padding: SPACING.lg,
@@ -165,13 +169,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     flex: 1,
   },
   description: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     lineHeight: 18,
     marginBottom: SPACING.md,
@@ -198,13 +202,13 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   weatherBadgeText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: 9,
     fontWeight: '700',
     textTransform: 'capitalize',
   },
   metaText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   star: {
@@ -226,12 +230,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   distanceText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
   creatorText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontStyle: 'italic',
   },

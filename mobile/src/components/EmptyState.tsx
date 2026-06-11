@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 
 interface EmptyStateProps {
   /** Ionicons icon name to display. */
@@ -29,12 +30,15 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   message,
   actionLabel,
   onAction,
-  iconColor = THEME.textSecondary,
+  iconColor,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle}>
-        <Ionicons name={icon} size={48} color={iconColor} />
+        <Ionicons name={icon} size={48} color={iconColor ?? theme.textSecondary} />
       </View>
 
       <Text style={styles.title}>{title}</Text>
@@ -53,7 +57,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
@@ -67,20 +72,20 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xl,
   },
   title: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: SPACING.sm,
   },
   message: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     textAlign: 'center',
     lineHeight: 22,
@@ -88,13 +93,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   actionButton: {
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.xl,
   },
   actionText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },

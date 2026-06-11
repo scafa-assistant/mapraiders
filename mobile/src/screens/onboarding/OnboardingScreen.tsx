@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
-import { THEME } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { strings as S } from '../../i18n';
 
 const { width, height } = Dimensions.get('window');
@@ -23,6 +24,8 @@ interface OnboardingScreenProps {
 type Step = 1 | 2 | 3;
 
 export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [step, setStep] = useState<Step>(1);
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
@@ -105,14 +108,14 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         <View style={styles.iconCluster}>
           <View style={styles.iconCircleOuter}>
             <View style={styles.iconCircleInner}>
-              <Ionicons name="map" size={48} color={THEME.primary} />
+              <Ionicons name="map" size={48} color={theme.primary} />
             </View>
           </View>
           <View style={styles.iconBadgeLeft}>
-            <Ionicons name="flash" size={20} color={THEME.warning} />
+            <Ionicons name="flash" size={20} color={theme.warning} />
           </View>
           <View style={styles.iconBadgeRight}>
-            <Ionicons name="shield" size={20} color={THEME.secondary} />
+            <Ionicons name="shield" size={20} color={theme.secondary} />
           </View>
         </View>
 
@@ -132,7 +135,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           activeOpacity={0.8}
         >
           <Text style={styles.primaryButtonText}>{S.auth.onboarding.next}</Text>
-          <Ionicons name="arrow-forward" size={18} color={THEME.bg} />
+          <Ionicons name="arrow-forward" size={18} color={theme.bg} />
         </TouchableOpacity>
       </View>
     </View>
@@ -146,7 +149,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         <View style={styles.locationIconContainer}>
           <View style={styles.locationPulseRing} />
           <View style={styles.locationIconCircle}>
-            <Ionicons name="location" size={52} color={THEME.primary} />
+            <Ionicons name="location" size={52} color={theme.primary} />
           </View>
         </View>
 
@@ -157,7 +160,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
 
         {locationDenied && (
           <View style={styles.warningBanner}>
-            <Ionicons name="warning" size={18} color={THEME.danger} />
+            <Ionicons name="warning" size={18} color={theme.danger} />
             <Text style={styles.warningText}>
               {S.auth.onboarding.locationDeniedWarning}
             </Text>
@@ -166,7 +169,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
 
         {locationGranted && (
           <View style={styles.successBanner}>
-            <Ionicons name="checkmark-circle" size={18} color={THEME.accent} />
+            <Ionicons name="checkmark-circle" size={18} color={theme.accent} />
             <Text style={styles.successText}>{S.auth.onboarding.locationGrantedBanner}</Text>
           </View>
         )}
@@ -185,15 +188,15 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           disabled={requesting || locationGranted}
         >
           {requesting ? (
-            <ActivityIndicator color={THEME.bg} size="small" />
+            <ActivityIndicator color={theme.bg} size="small" />
           ) : locationGranted ? (
             <>
-              <Ionicons name="checkmark" size={18} color={THEME.bg} />
+              <Ionicons name="checkmark" size={18} color={theme.bg} />
               <Text style={styles.primaryButtonText}>{S.auth.onboarding.granted}</Text>
             </>
           ) : (
             <>
-              <Ionicons name="location" size={18} color={THEME.bg} />
+              <Ionicons name="location" size={18} color={theme.bg} />
               <Text style={styles.primaryButtonText}>
                 {locationDenied ? S.auth.onboarding.retry : S.auth.onboarding.enableLocation}
               </Text>
@@ -210,15 +213,15 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     <View style={styles.stepContainer}>
       <View style={styles.stepContent}>
         <View style={styles.readyIconContainer}>
-          <Ionicons name="rocket" size={56} color={THEME.primary} />
+          <Ionicons name="rocket" size={56} color={theme.primary} />
         </View>
 
         <Text style={styles.stepTitle}>{S.auth.onboarding.readyTitle}</Text>
 
         <View style={styles.tipsList}>
           <View style={styles.tipRow}>
-            <View style={[styles.tipIcon, { backgroundColor: `${THEME.primary}20` }]}>
-              <Ionicons name="footsteps" size={20} color={THEME.primary} />
+            <View style={[styles.tipIcon, { backgroundColor: `${theme.primary}20` }]}>
+              <Ionicons name="footsteps" size={20} color={theme.primary} />
             </View>
             <Text style={styles.tipText}>
               {S.auth.onboarding.tipWalk}
@@ -226,8 +229,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           </View>
 
           <View style={styles.tipRow}>
-            <View style={[styles.tipIcon, { backgroundColor: `${THEME.secondary}20` }]}>
-              <Ionicons name="compass" size={20} color={THEME.secondary} />
+            <View style={[styles.tipIcon, { backgroundColor: `${theme.secondary}20` }]}>
+              <Ionicons name="compass" size={20} color={theme.secondary} />
             </View>
             <Text style={styles.tipText}>
               {S.auth.onboarding.tipCreate}
@@ -235,8 +238,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           </View>
 
           <View style={styles.tipRow}>
-            <View style={[styles.tipIcon, { backgroundColor: `${THEME.warning}20` }]}>
-              <Ionicons name="trophy" size={20} color={THEME.warning} />
+            <View style={[styles.tipIcon, { backgroundColor: `${theme.warning}20` }]}>
+              <Ionicons name="trophy" size={20} color={theme.warning} />
             </View>
             <Text style={styles.tipText}>
               {S.auth.onboarding.tipCompete}
@@ -252,7 +255,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
           onPress={handleStartPlaying}
           activeOpacity={0.8}
         >
-          <Ionicons name="game-controller" size={20} color={THEME.bg} />
+          <Ionicons name="game-controller" size={20} color={theme.bg} />
           <Text style={styles.primaryButtonText}>{S.auth.onboarding.startPlaying}</Text>
         </TouchableOpacity>
       </View>
@@ -283,10 +286,11 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   animatedContainer: {
     flex: 1,
@@ -318,14 +322,14 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
   },
   dotActive: {
     width: 28,
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
   },
   dotCompleted: {
-    backgroundColor: `${THEME.primary}60`,
+    backgroundColor: `${theme.primary}60`,
   },
 
   // ─── Step 1: Welcome ──────────────────────────────────────────────────
@@ -341,9 +345,9 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: `${THEME.primary}10`,
+    backgroundColor: `${theme.primary}10`,
     borderWidth: 1,
-    borderColor: `${THEME.primary}30`,
+    borderColor: `${theme.primary}30`,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -351,12 +355,12 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 2,
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 24,
@@ -369,9 +373,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 1.5,
-    borderColor: THEME.warning,
+    borderColor: theme.warning,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -382,33 +386,33 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 1.5,
-    borderColor: THEME.secondary,
+    borderColor: theme.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
     fontSize: 36,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 6,
     textAlign: 'center',
-    textShadowColor: `${THEME.primary}80`,
+    textShadowColor: `${theme.primary}80`,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 20,
   },
   tagline: {
     fontSize: 16,
     fontWeight: '700',
-    color: THEME.primary,
+    color: theme.primary,
     letterSpacing: 4,
     marginTop: 8,
     textAlign: 'center',
   },
   description: {
     fontSize: 15,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginTop: 20,
@@ -429,18 +433,18 @@ const styles = StyleSheet.create({
     height: 130,
     borderRadius: 65,
     borderWidth: 2,
-    borderColor: `${THEME.primary}25`,
+    borderColor: `${theme.primary}25`,
   },
   locationIconCircle: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 2,
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 24,
@@ -449,13 +453,13 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
     textAlign: 'center',
     letterSpacing: 1,
   },
   stepDescription: {
     fontSize: 15,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginTop: 16,
@@ -474,7 +478,7 @@ const styles = StyleSheet.create({
   },
   warningText: {
     flex: 1,
-    color: THEME.danger,
+    color: theme.danger,
     fontSize: 13,
     lineHeight: 18,
   },
@@ -492,7 +496,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     flex: 1,
-    color: THEME.accent,
+    color: theme.accent,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -503,13 +507,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 2,
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 24,
@@ -523,13 +527,13 @@ const styles = StyleSheet.create({
   tipRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 18,
     gap: 14,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   tipIcon: {
     width: 40,
@@ -540,7 +544,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     flex: 1,
-    color: THEME.text,
+    color: theme.text,
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
@@ -550,31 +554,31 @@ const styles = StyleSheet.create({
 
   primaryButton: {
     flexDirection: 'row',
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     borderRadius: 14,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     gap: 10,
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   primaryButtonText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
   },
   successButton: {
-    backgroundColor: THEME.accent,
-    shadowColor: THEME.accent,
+    backgroundColor: theme.accent,
+    shadowColor: theme.accent,
   },
   startButton: {
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOpacity: 0.5,
   },
   buttonDisabled: {

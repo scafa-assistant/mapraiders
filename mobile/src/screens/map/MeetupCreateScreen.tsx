@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
 import { meetupApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MeetupCreateScreenProps } from '../../navigation/types';
 import { strings as S } from '../../i18n';
 
@@ -42,7 +43,7 @@ interface Category {
   color: string;
 }
 
-const CATEGORIES: Category[] = [
+const getCategories = (): Category[] => [
   { key: 'dog_walk', label: S.map.meetupCreate.categoryDogWalk, emoji: '\uD83D\uDC15', color: '#FFB800' },
   { key: 'sport', label: S.map.meetupCreate.categorySport, emoji: '\uD83C\uDFC3', color: '#00FF88' },
   { key: 'party', label: S.map.meetupCreate.categoryParty, emoji: '\uD83C\uDF89', color: '#FF69B4' },
@@ -52,6 +53,9 @@ const CATEGORIES: Category[] = [
 ];
 
 export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const categories = useMemo(getCategories, []);
   const { currentLocation } = useLocationStore();
   const mapRef = useRef<MapView>(null);
 
@@ -146,7 +150,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
     }
   };
 
-  const selectedCategory = CATEGORIES.find((c) => c.key === category) ?? CATEGORIES[3];
+  const selectedCategory = categories.find((c) => c.key === category) ?? categories[3];
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -157,7 +161,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={22} color={THEME.text} />
+            <Ionicons name="arrow-back" size={22} color={theme.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.map.meetupCreate.headerTitle}</Text>
           <View style={styles.headerSpacer} />
@@ -222,7 +226,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
               value={name}
               onChangeText={(text) => setName(text.slice(0, 100))}
               placeholder={S.map.meetupCreate.namePlaceholder}
-              placeholderTextColor={THEME.textSecondary}
+              placeholderTextColor={theme.textSecondary}
               maxLength={100}
             />
             <Text style={styles.charCount}>{name.length}/100</Text>
@@ -236,7 +240,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
               value={description}
               onChangeText={setDescription}
               placeholder={S.map.meetupCreate.descriptionPlaceholder}
-              placeholderTextColor={THEME.textSecondary}
+              placeholderTextColor={theme.textSecondary}
               multiline
               numberOfLines={4}
               textAlignVertical="top"
@@ -249,55 +253,55 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
             <View style={styles.datePickerRow}>
               <View style={styles.datePickerUnit}>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setDay(d => Math.min(31, d + 1))}>
-                  <Ionicons name="chevron-up" size={18} color={THEME.primary} />
+                  <Ionicons name="chevron-up" size={18} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={styles.dateValue}>{String(day).padStart(2, '0')}</Text>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setDay(d => Math.max(1, d - 1))}>
-                  <Ionicons name="chevron-down" size={18} color={THEME.primary} />
+                  <Ionicons name="chevron-down" size={18} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitDay}</Text>
               </View>
               <Text style={styles.dateSep}>.</Text>
               <View style={styles.datePickerUnit}>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setMonth(m => m >= 12 ? 1 : m + 1)}>
-                  <Ionicons name="chevron-up" size={18} color={THEME.primary} />
+                  <Ionicons name="chevron-up" size={18} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={styles.dateValue}>{String(month).padStart(2, '0')}</Text>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setMonth(m => m <= 1 ? 12 : m - 1)}>
-                  <Ionicons name="chevron-down" size={18} color={THEME.primary} />
+                  <Ionicons name="chevron-down" size={18} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitMonth}</Text>
               </View>
               <Text style={styles.dateSep}>.</Text>
               <View style={styles.datePickerUnit}>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setYear(y => y + 1)}>
-                  <Ionicons name="chevron-up" size={18} color={THEME.primary} />
+                  <Ionicons name="chevron-up" size={18} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={styles.dateValue}>{year}</Text>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setYear(y => Math.max(2026, y - 1))}>
-                  <Ionicons name="chevron-down" size={18} color={THEME.primary} />
+                  <Ionicons name="chevron-down" size={18} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitYear}</Text>
               </View>
               <View style={{ width: 16 }} />
               <View style={styles.datePickerUnit}>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setHour(h => h >= 23 ? 0 : h + 1)}>
-                  <Ionicons name="chevron-up" size={18} color={THEME.warning} />
+                  <Ionicons name="chevron-up" size={18} color={theme.warning} />
                 </TouchableOpacity>
                 <Text style={styles.dateValue}>{String(hour).padStart(2, '0')}</Text>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setHour(h => h <= 0 ? 23 : h - 1)}>
-                  <Ionicons name="chevron-down" size={18} color={THEME.warning} />
+                  <Ionicons name="chevron-down" size={18} color={theme.warning} />
                 </TouchableOpacity>
                 <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitHour}</Text>
               </View>
               <Text style={styles.dateSep}>:</Text>
               <View style={styles.datePickerUnit}>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setMinute(m => m >= 55 ? 0 : m + 5)}>
-                  <Ionicons name="chevron-up" size={18} color={THEME.warning} />
+                  <Ionicons name="chevron-up" size={18} color={theme.warning} />
                 </TouchableOpacity>
                 <Text style={styles.dateValue}>{String(minute).padStart(2, '0')}</Text>
                 <TouchableOpacity style={styles.dateBtn} onPress={() => setMinute(m => m <= 0 ? 55 : m - 5)}>
-                  <Ionicons name="chevron-down" size={18} color={THEME.warning} />
+                  <Ionicons name="chevron-down" size={18} color={theme.warning} />
                 </TouchableOpacity>
                 <Text style={styles.dateUnitLabel}>{S.map.meetupCreate.unitMinute}</Text>
               </View>
@@ -308,7 +312,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>{S.map.meetupCreate.categoryLabel}</Text>
             <View style={styles.categoryRow}>
-              {CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const isSelected = category === cat.key;
                 return (
                   <TouchableOpacity
@@ -316,8 +320,8 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                     style={[
                       styles.categoryChip,
                       {
-                        backgroundColor: isSelected ? `${cat.color}30` : THEME.surface,
-                        borderColor: isSelected ? cat.color : THEME.border,
+                        backgroundColor: isSelected ? `${cat.color}30` : theme.surface,
+                        borderColor: isSelected ? cat.color : theme.border,
                       },
                     ]}
                     onPress={() => setCategory(cat.key)}
@@ -327,7 +331,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
                     <Text
                       style={[
                         styles.categoryLabel,
-                        { color: isSelected ? cat.color : THEME.textSecondary },
+                        { color: isSelected ? cat.color : theme.textSecondary },
                       ]}
                     >
                       {cat.label}
@@ -346,7 +350,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
               value={maxAttendees}
               onChangeText={(text) => setMaxAttendees(text.replace(/[^0-9]/g, ''))}
               placeholder={S.map.meetupCreate.unlimitedPlaceholder}
-              placeholderTextColor={THEME.textSecondary}
+              placeholderTextColor={theme.textSecondary}
               keyboardType="number-pad"
             />
           </View>
@@ -363,10 +367,10 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
             activeOpacity={0.8}
           >
             {isSubmitting ? (
-              <ActivityIndicator color={THEME.bg} />
+              <ActivityIndicator color={theme.bg} />
             ) : (
               <>
-                <Ionicons name="calendar" size={20} color={THEME.bg} />
+                <Ionicons name="calendar" size={20} color={theme.bg} />
                 <Text style={styles.createBtnText}>{S.map.meetupCreate.createEventBtn}</Text>
               </>
             )}
@@ -377,10 +381,11 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -389,24 +394,24 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     marginRight: SPACING.md,
   },
   headerTitle: {
     flex: 1,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
   },
   headerSpacer: {
     width: 40,
@@ -423,7 +428,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   mapPicker: {
     width: '100%',
@@ -434,7 +439,7 @@ const styles = StyleSheet.create({
     bottom: 8,
     alignSelf: 'center',
     backgroundColor: 'rgba(10, 14, 23, 0.85)',
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -449,7 +454,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xl,
   },
   fieldLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
     marginBottom: SPACING.sm,
@@ -457,21 +462,21 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   textInput: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   multilineInput: {
     minHeight: 90,
     paddingTop: SPACING.md,
   },
   charCount: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     marginTop: 4,
     textAlign: 'right',
@@ -510,7 +515,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   createBtnText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '900',
     letterSpacing: 1,
@@ -529,19 +534,19 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   dateValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
   },
   dateUnitLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: 9,
     fontWeight: '600',
     marginTop: 2,
   },
   dateSep: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
     marginBottom: 16,

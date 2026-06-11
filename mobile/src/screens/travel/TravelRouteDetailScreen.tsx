@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import {
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { travelApi } from '../../services/api';
 import { strings as S, t } from '../../i18n';
 import { TravelRouteDetailScreenProps } from '../../navigation/types';
@@ -24,6 +26,8 @@ export default function TravelRouteDetailScreen({
   route,
   navigation,
 }: TravelRouteDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { routeId } = route.params;
   const [travelRoute, setTravelRoute] = useState<TravelRoute | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +57,7 @@ export default function TravelRouteDetailScreen({
           key={star}
           name={star <= Math.round(rating) ? 'star' : 'star-outline'}
           size={16}
-          color={star <= Math.round(rating) ? '#FFB800' : '#2A3450'}
+          color={star <= Math.round(rating) ? theme.warning : theme.textSecondary}
         />
       ))}
     </View>
@@ -62,7 +66,7 @@ export default function TravelRouteDetailScreen({
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00D4FF" />
+        <ActivityIndicator size="large" color={theme.primary} />
       </SafeAreaView>
     );
   }
@@ -70,7 +74,7 @@ export default function TravelRouteDetailScreen({
   if (!travelRoute) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Ionicons name="alert-circle" size={48} color="#FF4757" />
+        <Ionicons name="alert-circle" size={48} color={theme.danger} />
         <Text style={styles.errorText}>{S.travel.detail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
           <Text style={styles.backLinkText}>{S.travel.detail.goBack}</Text>
@@ -180,7 +184,7 @@ export default function TravelRouteDetailScreen({
           <View style={styles.routeMeta}>
             {renderRatingStars(travelRoute.rating ?? 0)}
             <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={14} color="#FFB800" />
+              <Ionicons name="star" size={14} color={theme.warning} />
               <Text style={styles.ratingText}>
                 {(travelRoute.rating ?? 0).toFixed(1)}
               </Text>
@@ -189,17 +193,17 @@ export default function TravelRouteDetailScreen({
 
           <View style={styles.routeStats}>
             <View style={styles.routeStat}>
-              <Ionicons name="location" size={16} color="#8892B0" />
+              <Ionicons name="location" size={16} color={theme.textSecondary} />
               <Text style={styles.routeStatText}>{t(S.travel.detail.spotsCount, { count: spots.length })}</Text>
             </View>
             <View style={styles.routeStat}>
-              <Ionicons name="navigate" size={16} color="#8892B0" />
+              <Ionicons name="navigate" size={16} color={theme.textSecondary} />
               <Text style={styles.routeStatText}>
                 ~{formatDistance(travelRoute.distance ?? 0)}
               </Text>
             </View>
             <View style={styles.routeStat}>
-              <Ionicons name="checkmark-done" size={16} color="#8892B0" />
+              <Ionicons name="checkmark-done" size={16} color={theme.textSecondary} />
               <Text style={styles.routeStatText}>
                 {t(S.travel.detail.completionsDone, { count: travelRoute.completions ?? 0 })}
               </Text>
@@ -209,7 +213,7 @@ export default function TravelRouteDetailScreen({
           <Text style={styles.description}>{travelRoute.description}</Text>
 
           <View style={styles.creatorRow}>
-            <Ionicons name="person-circle-outline" size={18} color="#8892B0" />
+            <Ionicons name="person-circle-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.creatorText}>{t(S.travel.detail.by, { username: travelRoute.creatorUsername })}</Text>
           </View>
         </View>
@@ -248,7 +252,7 @@ export default function TravelRouteDetailScreen({
           onPress={() => navigation.navigate('TravelRoutePlay', { routeId })}
           activeOpacity={0.8}
         >
-          <Ionicons name="play" size={22} color="#0A0E17" />
+          <Ionicons name="play" size={22} color={theme.bg} />
           <Text style={styles.startButtonText}>{S.travel.detail.startRoute}</Text>
         </TouchableOpacity>
       </View>
@@ -256,20 +260,21 @@ export default function TravelRouteDetailScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
   },
   errorText: {
-    color: '#FF4757',
+    color: theme.danger,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -277,7 +282,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   backLinkText: {
-    color: '#00D4FF',
+    color: theme.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -322,10 +327,10 @@ const styles = StyleSheet.create({
   routeInfo: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: theme.border,
   },
   routeTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 24,
     fontWeight: '900',
     marginBottom: 10,
@@ -350,7 +355,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   ratingText: {
-    color: '#FFB800',
+    color: theme.warning,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -365,7 +370,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   routeStatText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   description: {
@@ -380,14 +385,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   creatorText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   spotsSection: {
     padding: 20,
   },
   sectionTitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2,
@@ -396,12 +401,12 @@ const styles = StyleSheet.create({
   spotCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: 12,
   },
   spotNumber: {
@@ -415,19 +420,19 @@ const styles = StyleSheet.create({
   spotNumberText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#00FF88',
+    color: theme.accent,
   },
   spotContent: {
     flex: 1,
   },
   spotName: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 14,
     fontWeight: '700',
     marginBottom: 2,
   },
   spotDescription: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     lineHeight: 17,
   },
@@ -435,7 +440,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 8,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
   },
   spotMarker: {
     width: 28,
@@ -462,24 +467,24 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 36,
     borderTopWidth: 1,
-    borderTopColor: '#1A2340',
+    borderTopColor: theme.border,
   },
   startButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00D4FF',
+    backgroundColor: theme.primary,
     borderRadius: 16,
     height: 56,
     gap: 10,
-    shadowColor: '#00D4FF',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   startButtonText: {
-    color: '#0A0E17',
+    color: theme.bg,
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,

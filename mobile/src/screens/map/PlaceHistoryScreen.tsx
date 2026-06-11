@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { placeApi } from '../../services/api';
 import type { PlaceHistoryScreenProps } from '../../navigation/types';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { strings as S, t, plural } from '../../i18n';
 
 const { width } = Dimensions.get('window');
@@ -24,7 +26,7 @@ interface EventConfig {
   label: string;
 }
 
-const EVENT_CONFIG: Record<string, EventConfig> = {
+const getEventConfig = (): Record<string, EventConfig> => ({
   claim: { icon: 'flag', color: '#00FF88', label: S.map.placeHistory.eventClaim },
   takeover: { icon: 'flash', color: '#FF4757', label: S.map.placeHistory.eventTakeover },
   quest_complete: { icon: 'compass', color: '#00D4FF', label: S.map.placeHistory.eventQuestComplete },
@@ -32,13 +34,13 @@ const EVENT_CONFIG: Record<string, EventConfig> = {
   echo_expired: { icon: 'musical-note', color: '#555E78', label: S.map.placeHistory.eventEchoExpired },
   challenge_complete: { icon: 'trophy', color: '#FFB800', label: S.map.placeHistory.eventChallengeComplete },
   artifact_placed: { icon: 'diamond', color: '#7B61FF', label: S.map.placeHistory.eventArtifactPlaced },
-};
+});
 
-const DEFAULT_EVENT_CONFIG: EventConfig = {
+const getDefaultEventConfig = (): EventConfig => ({
   icon: 'ellipse',
   color: '#8892B0',
   label: S.map.placeHistory.eventDefault,
-};
+});
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -79,6 +81,10 @@ function timeAgo(dateStr: string): string {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function PlaceHistoryScreen({ navigation, route }: PlaceHistoryScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const eventConfig = useMemo(getEventConfig, []);
+  const defaultEventConfig = useMemo(getDefaultEventConfig, []);
   const { lat, lng } = route.params;
 
   const [events, setEvents] = useState<PlaceEvent[]>([]);
@@ -131,7 +137,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
         </View>
         {stats.most_active_user && (
           <View style={styles.topUserRow}>
-            <Ionicons name="star" size={14} color="#FFB800" />
+            <Ionicons name="star" size={14} color={theme.warning} />
             <Text style={styles.topUserText}>
               {S.map.placeHistory.mostActivePrefix} <Text style={styles.topUserName}>{stats.most_active_user}</Text>
             </Text>
@@ -139,7 +145,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
         )}
         {stats.busiest_hour !== null && (
           <View style={styles.topUserRow}>
-            <Ionicons name="time" size={14} color="#00D4FF" />
+            <Ionicons name="time" size={14} color={theme.primary} />
             <Text style={styles.topUserText}>
               {S.map.placeHistory.busiestHourPrefix} <Text style={styles.topUserName}>{stats.busiest_hour}:00</Text>
             </Text>
@@ -150,7 +156,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
   };
 
   const renderEvent = ({ item }: { item: PlaceEvent }) => {
-    const config = EVENT_CONFIG[item.event_type] || DEFAULT_EVENT_CONFIG;
+    const config = eventConfig[item.event_type] || defaultEventConfig;
     const displayName = item.username || S.map.placeHistory.someone;
 
     return (
@@ -174,7 +180,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={22} color="#8892B0" />
+          <Ionicons name="arrow-back" size={22} color={theme.textSecondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{S.map.placeHistory.headerTitle}</Text>
@@ -187,7 +193,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#00D4FF" />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.map.placeHistory.loading}</Text>
         </View>
       ) : (
@@ -199,7 +205,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
             <>
               {renderStatCard()}
               <View style={styles.timelineHeader}>
-                <Ionicons name="time-outline" size={14} color="#8892B0" />
+                <Ionicons name="time-outline" size={14} color={theme.textSecondary} />
                 <Text style={styles.timelineTitle}>{S.map.placeHistory.timelineTitle}</Text>
               </View>
             </>
@@ -223,10 +229,11 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
 
 // ─── Styles ─────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -235,13 +242,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -249,7 +256,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '800',
   },
@@ -266,7 +273,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   listContent: {
@@ -275,15 +282,15 @@ const styles = StyleSheet.create({
   },
   // Stats card
   statsCard: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   statsTitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
@@ -298,7 +305,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 20,
     fontWeight: '800',
   },
@@ -316,15 +323,15 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#1A2340',
+    borderTopColor: theme.border,
     marginTop: 4,
   },
   topUserText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
   },
   topUserName: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontWeight: '700',
   },
   // Timeline
@@ -335,7 +342,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   timelineTitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
@@ -343,12 +350,12 @@ const styles = StyleSheet.create({
   eventRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: 12,
   },
   eventIcon: {
@@ -362,7 +369,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   eventText: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 13,
     lineHeight: 18,
   },
@@ -381,7 +388,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 16,
     fontWeight: '600',
   },

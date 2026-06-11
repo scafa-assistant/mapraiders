@@ -2,8 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { View, Animated, Easing, StyleSheet } from 'react-native';
 import { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME } from '../utils/constants';
 import type { Echo } from '../utils/types';
+
+// Echo markers are map content: the base color stays fixed regardless of the
+// app theme so it always matches the hardcoded rgba(123, 97, 255, …) glow.
+const ECHO_BASE_COLOR = '#7B61FF';
 
 interface EchoMarkerProps {
   /** The echo data to render. */
@@ -71,7 +74,7 @@ const EchoMarker: React.FC<EchoMarkerProps> = ({ echo, onPress, likes = 0 }) => 
 
   // Color intensity based on likes: more likes = more vivid
   const baseOpacity = Math.min(0.3 + likes * 0.05, 0.7);
-  const markerColor = likes > 10 ? '#FF6B9D' : likes > 5 ? '#C77DFF' : THEME.secondary;
+  const markerColor = likes > 10 ? '#FF6B9D' : likes > 5 ? '#C77DFF' : ECHO_BASE_COLOR;
 
   return (
     <>

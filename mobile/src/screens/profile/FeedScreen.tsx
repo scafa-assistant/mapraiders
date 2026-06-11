@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { socialApi } from '../../services/api';
 import { formatRelativeTime } from '../../utils/formatters';
 import { strings as S } from '../../i18n';
@@ -24,42 +25,46 @@ interface FeedTypeConfig {
 }
 
 // Keys match server feed_events.type values
-const FEED_TYPE_CONFIG: Record<string, FeedTypeConfig> = {
-  claim: { icon: 'map', color: THEME.primary, verb: S.profile.feed.verbClaim },
-  quest_complete: { icon: 'flag', color: THEME.accent, verb: S.profile.feed.verbQuestComplete },
-  quest_growth: { icon: 'leaf', color: THEME.accent, verb: S.profile.feed.verbQuestGrowth },
-  challenge_complete: { icon: 'trophy', color: THEME.warning, verb: S.profile.feed.verbChallengeComplete },
-  echo_drop: { icon: 'mic', color: THEME.secondary, verb: S.profile.feed.verbEchoCreated },
+const getFeedTypeConfig = (theme: Theme): Record<string, FeedTypeConfig> => ({
+  claim: { icon: 'map', color: theme.primary, verb: S.profile.feed.verbClaim },
+  quest_complete: { icon: 'flag', color: theme.accent, verb: S.profile.feed.verbQuestComplete },
+  quest_growth: { icon: 'leaf', color: theme.accent, verb: S.profile.feed.verbQuestGrowth },
+  challenge_complete: { icon: 'trophy', color: theme.warning, verb: S.profile.feed.verbChallengeComplete },
+  echo_drop: { icon: 'mic', color: theme.secondary, verb: S.profile.feed.verbEchoCreated },
   level_up: { icon: 'star', color: '#FFB800', verb: S.profile.feed.verbLevelUp },
   title_earned: { icon: 'ribbon', color: '#FFB800', verb: S.profile.feed.verbTitleEarned },
-  duel_won: { icon: 'flash', color: THEME.warning, verb: S.profile.feed.verbDuelWon },
-  defense_win: { icon: 'shield-checkmark', color: THEME.primary, verb: S.profile.feed.verbDefenseWin },
-  trap_triggered: { icon: 'alert-circle', color: THEME.warning, verb: S.profile.feed.verbTrapTriggered },
-  turn_game_result: { icon: 'game-controller', color: THEME.secondary, verb: S.profile.feed.verbTurnGameResult },
+  duel_won: { icon: 'flash', color: theme.warning, verb: S.profile.feed.verbDuelWon },
+  defense_win: { icon: 'shield-checkmark', color: theme.primary, verb: S.profile.feed.verbDefenseWin },
+  trap_triggered: { icon: 'alert-circle', color: theme.warning, verb: S.profile.feed.verbTrapTriggered },
+  turn_game_result: { icon: 'game-controller', color: theme.secondary, verb: S.profile.feed.verbTurnGameResult },
   pet_level_up: { icon: 'paw', color: '#FFB800', verb: S.profile.feed.verbPetLevelUp },
   pet_rare_find: { icon: 'sparkles', color: '#FFB800', verb: S.profile.feed.verbPetRareFind },
-  artifact_created: { icon: 'diamond', color: THEME.accent, verb: S.profile.feed.verbArtifactCreated },
-  artifact_vote: { icon: 'thumbs-up', color: THEME.accent, verb: S.profile.feed.verbArtifactVote },
+  artifact_created: { icon: 'diamond', color: theme.accent, verb: S.profile.feed.verbArtifactCreated },
+  artifact_vote: { icon: 'thumbs-up', color: theme.accent, verb: S.profile.feed.verbArtifactVote },
   artifact_permanent: { icon: 'diamond', color: '#FFB800', verb: S.profile.feed.verbArtifactPermanent },
-  bounty_placed: { icon: 'skull', color: THEME.warning, verb: S.profile.feed.verbBountyPlaced },
-  bounty_claimed: { icon: 'cash', color: THEME.warning, verb: S.profile.feed.verbBountyClaimed },
-  race_created: { icon: 'speedometer', color: THEME.secondary, verb: S.profile.feed.verbRaceCreated },
-  race_record: { icon: 'stopwatch', color: THEME.secondary, verb: S.profile.feed.verbRaceRecord },
-  resonance_discovered: { icon: 'radio', color: THEME.secondary, verb: S.profile.feed.verbResonanceDiscovered },
-  silent_zone_proposed: { icon: 'volume-mute', color: THEME.textSecondary, verb: S.profile.feed.verbSilentZoneProposed },
-  silent_zone_vote: { icon: 'volume-mute', color: THEME.textSecondary, verb: S.profile.feed.verbSilentZoneVote },
-  alias_revealed: { icon: 'eye', color: THEME.secondary, verb: S.profile.feed.verbAliasRevealed },
-};
+  bounty_placed: { icon: 'skull', color: theme.warning, verb: S.profile.feed.verbBountyPlaced },
+  bounty_claimed: { icon: 'cash', color: theme.warning, verb: S.profile.feed.verbBountyClaimed },
+  race_created: { icon: 'speedometer', color: theme.secondary, verb: S.profile.feed.verbRaceCreated },
+  race_record: { icon: 'stopwatch', color: theme.secondary, verb: S.profile.feed.verbRaceRecord },
+  resonance_discovered: { icon: 'radio', color: theme.secondary, verb: S.profile.feed.verbResonanceDiscovered },
+  silent_zone_proposed: { icon: 'volume-mute', color: theme.textSecondary, verb: S.profile.feed.verbSilentZoneProposed },
+  silent_zone_vote: { icon: 'volume-mute', color: theme.textSecondary, verb: S.profile.feed.verbSilentZoneVote },
+  alias_revealed: { icon: 'eye', color: theme.secondary, verb: S.profile.feed.verbAliasRevealed },
+});
 
-const FEED_TYPE_FALLBACK: FeedTypeConfig = {
+const getFeedTypeFallback = (theme: Theme): FeedTypeConfig => ({
   icon: 'pulse',
-  color: THEME.primary,
+  color: theme.primary,
   verb: S.profile.feed.verbDefault,
-};
+});
 
 const PAGE_SIZE = 30;
 
 export default function FeedScreen({ navigation }: FeedScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const feedTypeConfig = useMemo(() => getFeedTypeConfig(theme), [theme]);
+  const feedTypeFallback = useMemo(() => getFeedTypeFallback(theme), [theme]);
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -109,7 +114,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
   }, [hasMore, loadingMore, loading, page, fetchFeed]);
 
   const renderFeedItem = ({ item }: { item: FeedItem }) => {
-    const config = FEED_TYPE_CONFIG[item.type] ?? FEED_TYPE_FALLBACK;
+    const config = feedTypeConfig[item.type] ?? feedTypeFallback;
 
     return (
       <View style={styles.feedCard}>
@@ -139,7 +144,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
     if (loading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="newspaper-outline" size={64} color="#2A3450" />
+        <Ionicons name="newspaper-outline" size={64} color={theme.textSecondary} />
         <Text style={styles.emptyTitle}>{S.profile.feed.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
           {S.profile.feed.emptySubtext}
@@ -152,7 +157,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
     if (!loadingMore) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={THEME.primary} />
+        <ActivityIndicator size="small" color={theme.primary} />
       </View>
     );
   };
@@ -165,7 +170,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.profile.feed.title}</Text>
         <View style={styles.headerSpacer} />
@@ -174,7 +179,7 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
       {/* Feed List */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.profile.feed.loadingFeed}</Text>
         </View>
       ) : (
@@ -192,8 +197,8 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
         />
@@ -202,110 +207,111 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.bg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 12,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: THEME.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: THEME.border,
-    marginRight: SPACING.md,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: '900',
-    color: THEME.text,
-    letterSpacing: 1,
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 12,
-  },
-  loadingText: {
-    color: THEME.textSecondary,
-    fontSize: FONT_SIZE.md,
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 100,
-    flexGrow: 1,
-  },
-  feedCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.surface,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.lg,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  feedIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SPACING.md,
-  },
-  feedContent: {
-    flex: 1,
-  },
-  feedText: {
-    color: THEME.textSecondary,
-    fontSize: FONT_SIZE.md,
-    lineHeight: 20,
-    marginBottom: 4,
-  },
-  feedUsername: {
-    fontWeight: '700',
-  },
-  feedTime: {
-    color: '#555E78',
-    fontSize: FONT_SIZE.xs,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 100,
-  },
-  emptyTitle: {
-    color: THEME.text,
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '700',
-    marginTop: SPACING.lg,
-  },
-  emptySubtext: {
-    color: '#555E78',
-    fontSize: FONT_SIZE.sm,
-    marginTop: SPACING.sm,
-    textAlign: 'center',
-    paddingHorizontal: 40,
-  },
-  footerLoader: {
-    paddingVertical: SPACING.xl,
-    alignItems: 'center',
-  },
-});
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.bg,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: 8,
+      paddingBottom: 12,
+    },
+    backBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: theme.border,
+      marginRight: SPACING.md,
+    },
+    headerTitle: {
+      flex: 1,
+      fontSize: FONT_SIZE.xxl,
+      fontWeight: '900',
+      color: theme.text,
+      letterSpacing: 1,
+    },
+    headerSpacer: {
+      width: 40,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 12,
+    },
+    loadingText: {
+      color: theme.textSecondary,
+      fontSize: FONT_SIZE.md,
+    },
+    listContent: {
+      paddingHorizontal: 20,
+      paddingTop: 8,
+      paddingBottom: 100,
+      flexGrow: 1,
+    },
+    feedCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.surface,
+      borderRadius: RADIUS.lg,
+      padding: SPACING.lg,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    feedIconCircle: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: SPACING.md,
+    },
+    feedContent: {
+      flex: 1,
+    },
+    feedText: {
+      color: theme.textSecondary,
+      fontSize: FONT_SIZE.md,
+      lineHeight: 20,
+      marginBottom: 4,
+    },
+    feedUsername: {
+      fontWeight: '700',
+    },
+    feedTime: {
+      color: theme.textSecondary,
+      fontSize: FONT_SIZE.xs,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingBottom: 100,
+    },
+    emptyTitle: {
+      color: theme.text,
+      fontSize: FONT_SIZE.lg,
+      fontWeight: '700',
+      marginTop: SPACING.lg,
+    },
+    emptySubtext: {
+      color: theme.textSecondary,
+      fontSize: FONT_SIZE.sm,
+      marginTop: SPACING.sm,
+      textAlign: 'center',
+      paddingHorizontal: 40,
+    },
+    footerLoader: {
+      paddingVertical: SPACING.xl,
+      alignItems: 'center',
+    },
+  });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { strings as S } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { CreateMenuScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
@@ -27,7 +29,7 @@ interface CreateOption {
   requiresTerritory: boolean;
 }
 
-const CREATE_OPTIONS: CreateOption[] = [
+const getCreateOptions = (): CreateOption[] => [
   {
     key: 'meetup',
     title: S.create.menu.eventTitle,
@@ -81,6 +83,9 @@ const CREATE_OPTIONS: CreateOption[] = [
 ];
 
 export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const createOptions = useMemo(getCreateOptions, []);
   const { user } = useAuthStore();
   const userLevel = user?.level ?? 1;
   const hasTerritories = (user?.totalClaims ?? 0) > 0;
@@ -99,7 +104,7 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
 
       {/* Options */}
       <View style={styles.optionsContainer}>
-        {CREATE_OPTIONS.map((option) => {
+        {createOptions.map((option) => {
           const unlocked = isUnlocked(option);
           const lockedReason = getLockedReason(option);
 
@@ -128,14 +133,14 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
                   {
                     backgroundColor: unlocked
                       ? `${option.color}15`
-                      : '#141B2D',
+                      : theme.surface,
                   },
                 ]}
               >
                 <Ionicons
                   name={option.icon}
                   size={28}
-                  color={unlocked ? option.color : '#2A3450'}
+                  color={unlocked ? option.color : theme.textSecondary}
                 />
               </View>
 
@@ -160,7 +165,7 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
 
                 {!unlocked && (
                   <View style={styles.lockedBadge}>
-                    <Ionicons name="lock-closed" size={12} color="#555E78" />
+                    <Ionicons name="lock-closed" size={12} color={theme.textSecondary} />
                     <Text style={styles.lockedText}>{lockedReason}</Text>
                   </View>
                 )}
@@ -170,7 +175,7 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
               {unlocked ? (
                 <Ionicons name="chevron-forward" size={22} color={option.color} />
               ) : (
-                <Ionicons name="lock-closed" size={22} color="#2A3450" />
+                <Ionicons name="lock-closed" size={22} color={theme.textSecondary} />
               )}
             </TouchableOpacity>
           );
@@ -188,10 +193,11 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   header: {
     paddingHorizontal: 20,
@@ -201,12 +207,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: theme.text,
     letterSpacing: 1,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: '#8892B0',
+    color: theme.textSecondary,
     marginTop: 2,
   },
   optionsContainer: {
@@ -216,16 +222,16 @@ const styles = StyleSheet.create({
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 18,
     padding: 18,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: 14,
   },
   optionCardLocked: {
     opacity: 0.5,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   optionIconCircle: {
     width: 56,
@@ -238,21 +244,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 17,
     fontWeight: '700',
     marginBottom: 4,
   },
   optionTitleLocked: {
-    color: '#555E78',
+    color: theme.textSecondary,
   },
   optionDescription: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     lineHeight: 17,
   },
   optionDescriptionLocked: {
-    color: '#2A3450',
+    color: theme.textSecondary,
   },
   lockedBadge: {
     flexDirection: 'row',
@@ -261,7 +267,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   lockedText: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '600',
   },
@@ -279,7 +285,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     flex: 1,
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
     lineHeight: 19,
   },

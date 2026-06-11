@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ import { useLocationStore } from '../../store/locationStore';
 import { questApi } from '../../services/api';
 import RatingForm from '../../components/RatingForm';
 import { strings as S, t } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { QuestPlayScreenProps, QuestStep, QuestStepType } from '../../navigation/types';
 import type { Rating } from '../../utils/types';
 
@@ -44,6 +46,8 @@ const STEP_TYPE_COLORS: Record<QuestStepType, string> = {
 };
 
 export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { questId } = route.params;
   const { activeQuest, verifyStep, isVerifying, abandonQuest, completeQuest } = useQuestStore();
   const { currentLocation } = useLocationStore();
@@ -364,7 +368,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
               <TextInput
                 style={styles.solveInput}
                 placeholder={S.quests.play.answerPlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={solveAnswer}
                 onChangeText={setSolveAnswer}
                 returnKeyType="send"
@@ -373,7 +377,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
               <TouchableOpacity
                 style={[
                   styles.solveSubmit,
-                  { backgroundColor: solveAnswer.trim() ? stepColor : '#1A2340' },
+                  { backgroundColor: solveAnswer.trim() ? stepColor : theme.border },
                 ]}
                 onPress={handleSolveVerify}
                 disabled={!solveAnswer.trim() || isVerifying}
@@ -384,7 +388,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
                   <Ionicons
                     name="send"
                     size={18}
-                    color={solveAnswer.trim() ? '#0A0E17' : '#555E78'}
+                    color={solveAnswer.trim() ? '#0A0E17' : theme.textSecondary}
                   />
                 )}
               </TouchableOpacity>
@@ -528,7 +532,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
 
         {/* Distance Indicator */}
         <View style={styles.distanceRow}>
-          <Ionicons name="navigate" size={14} color="#8892B0" />
+          <Ionicons name="navigate" size={14} color={theme.textSecondary} />
           <Text style={styles.distanceText}>
             {t(S.quests.play.distanceAway, {
               distance: dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`,
@@ -567,20 +571,21 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
   },
   loadingText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   map: {
@@ -622,7 +627,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
     overflow: 'hidden',
   },
   progressBarFill: {
@@ -631,7 +636,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00D4FF',
   },
   progressText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -646,7 +651,7 @@ const styles = StyleSheet.create({
   },
   instructionCard: {
     flex: 1,
-    backgroundColor: '#0D1220',
+    backgroundColor: theme.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     marginTop: -20,
@@ -654,7 +659,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 40,
     borderTopWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   instructionHeader: {
     flexDirection: 'row',
@@ -683,7 +688,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   instructionText: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 17,
     fontWeight: '600',
     lineHeight: 24,
@@ -713,7 +718,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   distanceText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   verifyButton: {
@@ -737,7 +742,7 @@ const styles = StyleSheet.create({
   proximityIndicator: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
     overflow: 'hidden',
   },
   proximityFill: {
@@ -745,7 +750,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   proximityText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
     textAlign: 'center',
   },
@@ -762,13 +767,13 @@ const styles = StyleSheet.create({
   },
   solveInput: {
     flex: 1,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     paddingHorizontal: 16,
     height: 48,
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 15,
   },
   solveSubmit: {
@@ -808,7 +813,7 @@ const styles = StyleSheet.create({
   // Quest Complete Screen
   completeContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -840,7 +845,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   completeSubtitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 16,
     marginBottom: 40,
   },

@@ -9,6 +9,7 @@ import CreateStack from './CreateStack';
 import TravelStack from './TravelStack';
 import ProfileStack from './ProfileStack';
 import { useTheme } from '../hooks/useTheme';
+import { useSettingsStore } from '../store/settingsStore';
 import { strings as S } from '../i18n';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -26,10 +27,12 @@ const TAB_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 export default function MainNavigator() {
   const theme = useTheme();
+  const { settings } = useSettingsStore();
+  const isDark = settings.darkMapStyle;
 
   const tabBarStyle = useMemo(() => ({
-    backgroundColor: '#0D1220',
-    borderTopColor: '#1A2340',
+    backgroundColor: isDark ? '#0D1220' : '#FFFFFF',
+    borderTopColor: isDark ? '#1A2340' : '#E0E0E0',
     borderTopWidth: 1,
     height: 85,
     paddingTop: 8,
@@ -37,15 +40,15 @@ export default function MainNavigator() {
     elevation: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: isDark ? 0.3 : 0.1,
     shadowRadius: 8,
-  }), []);
+  }), [isDark]);
 
   const createButtonStyle = useMemo(() => ({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#141B2D',
+    backgroundColor: isDark ? '#141B2D' : '#FFFFFF',
     borderWidth: 2,
     borderColor: theme.primary,
     justifyContent: 'center' as const,
@@ -56,7 +59,7 @@ export default function MainNavigator() {
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 10,
-  }), [theme.primary]);
+  }), [isDark, theme.primary]);
 
   return (
     <Tab.Navigator

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -22,12 +22,16 @@ import { useLocationStore } from '../../store/locationStore';
 import { useTerritoryStore } from '../../store/territoryStore';
 import { echoApi, silentZoneApi } from '../../services/api';
 import { strings as S, t } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { EchoCreateScreenProps } from '../../navigation/types';
 
 const { width } = Dimensions.get('window');
 const MAX_DURATION = 30; // seconds
 
 export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { currentLocation } = useLocationStore();
   const { territories } = useTerritoryStore();
 
@@ -297,7 +301,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#8892B0" />
+          <Ionicons name="arrow-back" size={24} color={theme.textSecondary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.create.echo.title}</Text>
         <View style={{ width: 24 }} />
@@ -393,7 +397,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
             <Ionicons
               name={opt.icon}
               size={16}
-              color={mediaType === opt.value ? '#7B61FF' : '#555E78'}
+              color={mediaType === opt.value ? '#7B61FF' : theme.textSecondary}
             />
             <Text
               style={[
@@ -530,7 +534,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
             <TextInput
               style={styles.captionInput}
               placeholder={S.create.echo.captionPlaceholder}
-              placeholderTextColor="#555E78"
+              placeholderTextColor={theme.textSecondary}
               value={caption}
               onChangeText={setCaption}
               maxLength={200}
@@ -625,10 +629,11 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -638,7 +643,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   headerTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -648,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   map: {
     flex: 1,
@@ -674,7 +679,7 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 14,
     marginBottom: 12,
     overflow: 'hidden',
@@ -698,14 +703,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#7B61FF',
   },
   waveBarStatic: {
-    backgroundColor: '#555E78',
+    backgroundColor: theme.textSecondary,
   },
   waveformPlaceholder: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   durationText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 16,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
@@ -767,7 +772,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   radiusLabel: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
@@ -780,10 +785,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   radiusChip: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
@@ -792,7 +797,7 @@ const styles = StyleSheet.create({
     borderColor: '#7B61FF',
   },
   radiusChipText: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -853,10 +858,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
@@ -865,17 +870,17 @@ const styles = StyleSheet.create({
     borderColor: '#7B61FF',
   },
   mediaTypeChipText: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 13,
     fontWeight: '600',
   },
   captionInput: {
     width: '100%',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#1A2340',
-    color: '#FFFFFF',
+    borderColor: theme.border,
+    color: theme.text,
     fontSize: 14,
     paddingHorizontal: 16,
     paddingVertical: 12,

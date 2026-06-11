@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { defenseApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { DefenseSetupScreenProps } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
@@ -31,7 +32,7 @@ interface GameTypeCard {
   category: 'instant' | 'strategy';
 }
 
-const GAME_TYPES: GameTypeCard[] = [
+const getGameTypes = (): GameTypeCard[] => [
   {
     id: 'rock_paper_scissors',
     name: S.map.defenseSetup.rpsName,
@@ -95,6 +96,9 @@ type RpsChoice = 'rock' | 'scissors' | 'paper';
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function DefenseSetupScreen({ route, navigation }: DefenseSetupScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const gameTypes = useMemo(getGameTypes, []);
   const { territoryId } = route.params;
 
   // State
@@ -326,7 +330,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
               <TouchableOpacity
                 style={[
                   styles.rpsButton,
-                  { borderColor: rpsChoice === m.choice ? m.color : THEME.border },
+                  { borderColor: rpsChoice === m.choice ? m.color : theme.border },
                   rpsChoice === m.choice && { backgroundColor: `${m.color}15` },
                 ]}
                 onPress={() => animateRpsChoice(m.choice)}
@@ -408,7 +412,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
         {benchmarkTime !== null ? (
           <View style={styles.benchmarkResult}>
-            <Ionicons name="checkmark-circle" size={28} color="#00FF88" />
+            <Ionicons name="checkmark-circle" size={28} color={theme.accent} />
             <Text style={styles.benchmarkTimeText}>{benchmarkTime}s</Text>
             <Text style={styles.benchmarkLabel}>{t(S.map.defenseSetup.overDistance, { distance: sprintDistance })}</Text>
             <TouchableOpacity
@@ -418,14 +422,14 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
                 setBenchmarkDistanceCovered(0);
               }}
             >
-              <Ionicons name="refresh" size={16} color={THEME.primary} />
+              <Ionicons name="refresh" size={16} color={theme.primary} />
               <Text style={styles.rerunText}>{S.map.defenseSetup.redo}</Text>
             </TouchableOpacity>
           </View>
         ) : isBenchmarking ? (
           <View style={styles.benchmarkLive}>
             <View style={styles.sprintTimerRow}>
-              <Ionicons name="time-outline" size={22} color="#FF4757" />
+              <Ionicons name="time-outline" size={22} color={theme.danger} />
               <Text style={styles.sprintTimer}>{elapsedSecs}s</Text>
             </View>
             <View style={styles.progressBarBg}>
@@ -461,7 +465,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
       <TextInput
         style={styles.triviaInput}
         placeholder={S.map.defenseSetup.questionPlaceholder}
-        placeholderTextColor={THEME.textSecondary}
+        placeholderTextColor={theme.textSecondary}
         value={triviaQuestion}
         onChangeText={setTriviaQuestion}
         multiline
@@ -472,7 +476,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
       <TextInput
         style={[styles.triviaInput, { height: 48 }]}
         placeholder={S.map.defenseSetup.correctAnswerPlaceholder}
-        placeholderTextColor={THEME.textSecondary}
+        placeholderTextColor={theme.textSecondary}
         value={triviaAnswer}
         onChangeText={setTriviaAnswer}
         maxLength={100}
@@ -492,7 +496,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             style={[
               styles.rpsButton,
               { width: 130, height: 110 },
-              { borderColor: coinBet === bet ? '#FFB800' : THEME.border },
+              { borderColor: coinBet === bet ? '#FFB800' : theme.border },
               coinBet === bet && { backgroundColor: 'rgba(255, 184, 0, 0.15)' },
             ]}
             onPress={() => setCoinBet(bet)}
@@ -578,7 +582,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.map.defenseSetup.headerTitle}</Text>
         <View style={{ width: 40 }} />
@@ -592,7 +596,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         {/* Instant Games */}
         <Text style={styles.sectionHeader}>{S.map.defenseSetup.instantGames}</Text>
         <View style={styles.gameGrid}>
-          {GAME_TYPES.filter((g) => g.category === 'instant').map((game) => (
+          {gameTypes.filter((g) => g.category === 'instant').map((game) => (
             <TouchableOpacity
               key={game.id}
               style={[
@@ -610,14 +614,14 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
                   styles.gameIconCircle,
                   {
                     backgroundColor:
-                      selectedGame === game.id ? `${game.color}20` : `${THEME.border}40`,
+                      selectedGame === game.id ? `${game.color}20` : `${theme.border}40`,
                   },
                 ]}
               >
                 <Ionicons
                   name={game.icon}
                   size={28}
-                  color={selectedGame === game.id ? game.color : THEME.textSecondary}
+                  color={selectedGame === game.id ? game.color : theme.textSecondary}
                 />
               </View>
               <Text
@@ -638,7 +642,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         {/* Strategy Games */}
         <Text style={styles.sectionHeader}>{S.map.defenseSetup.strategyGames}</Text>
         <View style={styles.gameGrid}>
-          {GAME_TYPES.filter((g) => g.category === 'strategy').map((game) => (
+          {gameTypes.filter((g) => g.category === 'strategy').map((game) => (
             <TouchableOpacity
               key={game.id}
               style={[
@@ -656,14 +660,14 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
                   styles.gameIconCircle,
                   {
                     backgroundColor:
-                      selectedGame === game.id ? `${game.color}20` : `${THEME.border}40`,
+                      selectedGame === game.id ? `${game.color}20` : `${theme.border}40`,
                   },
                 ]}
               >
                 <Ionicons
                   name={game.icon}
                   size={28}
-                  color={selectedGame === game.id ? game.color : THEME.textSecondary}
+                  color={selectedGame === game.id ? game.color : theme.textSecondary}
                 />
               </View>
               <Text
@@ -730,10 +734,11 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
 
 // ─── Styles ─────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -746,22 +751,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   headerTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
   },
   scrollContent: {
     paddingBottom: 40,
   },
   sectionHeader: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -779,11 +784,11 @@ const styles = StyleSheet.create({
   gameCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1.5,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     gap: 14,
   },
   gameIconCircle: {
@@ -794,14 +799,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gameName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     flex: 0,
   },
   gameDesc: {
     flex: 1,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     lineHeight: 16,
   },
@@ -810,27 +815,27 @@ const styles = StyleSheet.create({
   configSection: {
     marginHorizontal: 20,
     marginTop: SPACING.xl,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   configTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginBottom: 4,
   },
   configSubtitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
     marginTop: SPACING.lg,
     marginBottom: SPACING.sm,
   },
   configHint: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginBottom: SPACING.md,
   },
@@ -846,7 +851,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: RADIUS.lg,
     borderWidth: 2,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 6,
@@ -855,7 +860,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
   rpsLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
   },
@@ -868,21 +873,21 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: THEME.border,
-    backgroundColor: THEME.bg,
+    borderColor: theme.border,
+    backgroundColor: theme.bg,
     alignItems: 'center',
   },
   roundButtonActive: {
-    borderColor: '#7B61FF',
+    borderColor: theme.secondary,
     backgroundColor: 'rgba(123, 97, 255, 0.1)',
   },
   roundButtonText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
   roundButtonTextActive: {
-    color: '#7B61FF',
+    color: theme.secondary,
   },
 
   // ─── Sprint ─────────────────────────────────────────────────────────
@@ -896,27 +901,27 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: THEME.border,
-    backgroundColor: THEME.bg,
+    borderColor: theme.border,
+    backgroundColor: theme.bg,
     alignItems: 'center',
   },
   distanceChipActive: {
-    borderColor: '#00FF88',
+    borderColor: theme.accent,
     backgroundColor: 'rgba(0, 255, 136, 0.1)',
   },
   distanceChipText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   distanceChipTextActive: {
-    color: '#00FF88',
+    color: theme.accent,
   },
   startBenchmarkBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00FF88',
+    backgroundColor: theme.accent,
     borderRadius: RADIUS.lg,
     paddingVertical: 16,
     gap: 10,
@@ -939,12 +944,12 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 255, 136, 0.2)',
   },
   benchmarkTimeText: {
-    color: '#00FF88',
+    color: theme.accent,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '800',
   },
   benchmarkLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     flex: 1,
   },
@@ -956,10 +961,10 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: RADIUS.sm,
     borderWidth: 1,
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
   },
   rerunText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
@@ -974,7 +979,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sprintTimer: {
-    color: '#FF4757',
+    color: theme.danger,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '800',
   },
@@ -982,16 +987,16 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 10,
     borderRadius: 5,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
     borderRadius: 5,
-    backgroundColor: '#00FF88',
+    backgroundColor: theme.accent,
   },
   progressText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
@@ -1000,22 +1005,22 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: '#FF4757',
+    borderColor: theme.danger,
   },
   cancelBenchmarkText: {
-    color: '#FF4757',
+    color: theme.danger,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
 
   // ─── Trivia ─────────────────────────────────────────────────────────
   triviaInput: {
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     padding: SPACING.lg,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     minHeight: 80,
     textAlignVertical: 'top',
@@ -1026,13 +1031,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFB800',
+    backgroundColor: theme.warning,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: 20,
     marginTop: SPACING.xl,
     gap: SPACING.sm,
-    shadowColor: '#FFB800',
+    shadowColor: theme.warning,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,

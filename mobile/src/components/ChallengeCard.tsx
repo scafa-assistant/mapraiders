@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S, t } from '../i18n';
 import type { Challenge } from '../utils/types';
 
@@ -19,20 +20,20 @@ interface ChallengeCardProps {
 /**
  * Map verification level to icon and label.
  */
-function getVerificationInfo(level: Challenge['verificationLevel']): {
+function getVerificationInfo(level: Challenge['verificationLevel'], theme: Theme): {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   color: string;
 } {
   switch (level) {
     case 'honor':
-      return { icon: 'hand-left-outline', label: S.components.challengeCard.verificationHonor, color: THEME.accent };
+      return { icon: 'hand-left-outline', label: S.components.challengeCard.verificationHonor, color: theme.accent };
     case 'video':
-      return { icon: 'videocam-outline', label: S.components.challengeCard.verificationVideo, color: THEME.warning };
+      return { icon: 'videocam-outline', label: S.components.challengeCard.verificationVideo, color: theme.warning };
     case 'sensor':
-      return { icon: 'hardware-chip-outline', label: S.components.challengeCard.verificationSensor, color: THEME.danger };
+      return { icon: 'hardware-chip-outline', label: S.components.challengeCard.verificationSensor, color: theme.danger };
     default:
-      return { icon: 'shield-outline', label: S.components.challengeCard.verificationUnknown, color: THEME.textSecondary };
+      return { icon: 'shield-outline', label: S.components.challengeCard.verificationUnknown, color: theme.textSecondary };
   }
 }
 
@@ -58,7 +59,9 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   completions = 0,
   movementClass,
 }) => {
-  const verification = getVerificationInfo(challenge.verificationLevel);
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const verification = getVerificationInfo(challenge.verificationLevel, theme);
 
   return (
     <TouchableOpacity
@@ -69,7 +72,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
       {/* Header with icon and title */}
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Ionicons name="trophy-outline" size={22} color={THEME.warning} />
+          <Ionicons name="trophy-outline" size={22} color={theme.warning} />
         </View>
         <View style={styles.headerText}>
           <Text style={styles.templateName} numberOfLines={1}>
@@ -106,7 +109,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
 
         {/* Completions */}
         <View style={styles.completionsContainer}>
-          <Ionicons name="checkmark-circle-outline" size={13} color={THEME.textSecondary} />
+          <Ionicons name="checkmark-circle-outline" size={13} color={theme.textSecondary} />
           <Text style={styles.completionsText}>
             {t(S.components.challengeCard.completionsDone, { count: completions })}
           </Text>
@@ -115,7 +118,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
         {/* Class badge if provided */}
         {movementClass && (
           <View style={styles.classBadge}>
-            <Ionicons name="flash-outline" size={11} color={THEME.primary} />
+            <Ionicons name="flash-outline" size={11} color={theme.primary} />
             <Text style={styles.classText}>
               {movementClass.replace('_', ' ')}
             </Text>
@@ -126,15 +129,16 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
     marginHorizontal: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
@@ -159,12 +163,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   templateName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },
   creatorText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     marginTop: 2,
   },
@@ -175,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   parametersText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     lineHeight: 18,
   },
@@ -203,7 +207,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   completionsText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   classBadge: {
@@ -213,7 +217,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   classText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '500',
     textTransform: 'capitalize',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import { echoApi } from '../../services/api';
 import { socialApi } from '../../services/api';
 import { audioService } from '../../services/audio';
 import { EchoDetailScreenProps } from '../../navigation/types';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { strings as S, t, plural } from '../../i18n';
 
 const { width } = Dimensions.get('window');
@@ -36,6 +38,8 @@ interface EchoDetail {
 }
 
 export default function EchoDetailScreen({ route, navigation }: EchoDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { echoId } = route.params;
   const [echo, setEcho] = useState<EchoDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -161,7 +165,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#7B61FF" />
+        <ActivityIndicator size="large" color={theme.secondary} />
       </SafeAreaView>
     );
   }
@@ -169,7 +173,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
   if (!echo) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Ionicons name="alert-circle" size={48} color="#FF4757" />
+        <Ionicons name="alert-circle" size={48} color={theme.danger} />
         <Text style={styles.errorText}>{S.map.echoDetail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
           <Text style={styles.backLinkText}>{S.map.echoDetail.goBack}</Text>
@@ -184,18 +188,18 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#8892B0" />
+            <Ionicons name="arrow-back" size={24} color={theme.textSecondary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.map.echoDetail.headerTitle}</Text>
           <TouchableOpacity onPress={handleReport}>
-            <Ionicons name="flag-outline" size={22} color="#8892B0" />
+            <Ionicons name="flag-outline" size={22} color={theme.textSecondary} />
           </TouchableOpacity>
         </View>
 
         {/* Creator Info */}
         <View style={styles.creatorSection}>
           <View style={styles.avatarPlaceholder}>
-            <Ionicons name="person" size={28} color="#7B61FF" />
+            <Ionicons name="person" size={28} color={theme.secondary} />
           </View>
           <View>
             <Text style={styles.creatorUsername}>{echo.creatorUsername}</Text>
@@ -219,7 +223,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
                     styles.waveBar,
                     {
                       height: Math.sin((i / 30) * Math.PI * 3) * 20 + 8,
-                      backgroundColor: isActive ? '#7B61FF' : '#2A3450',
+                      backgroundColor: isActive ? theme.secondary : '#2A3450',
                     },
                   ]}
                 />
@@ -268,14 +272,14 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
                 <Ionicons
                   name={volume === 0 ? 'volume-mute' : 'volume-low'}
                   size={20}
-                  color="#8892B0"
+                  color={theme.textSecondary}
                 />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleVolumeChange(Math.min(1, volume + 0.25))}
                 activeOpacity={0.7}
               >
-                <Ionicons name="volume-high" size={20} color="#8892B0" />
+                <Ionicons name="volume-high" size={20} color={theme.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -291,7 +295,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
             <Ionicons
               name={echo.liked ? 'heart' : 'heart-outline'}
               size={22}
-              color={echo.liked ? '#FF4757' : '#8892B0'}
+              color={echo.liked ? theme.danger : theme.textSecondary}
             />
             <Text style={[styles.likeText, echo.liked && styles.likeTextActive]}>
               {plural(echo.likes, S.map.echoDetail.likeOne, S.map.echoDetail.likeOther)}
@@ -302,11 +306,11 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
         {/* Expiry Info */}
         <View style={styles.infoSection}>
           <View style={styles.infoRow}>
-            <Ionicons name="time-outline" size={18} color="#FFB800" />
+            <Ionicons name="time-outline" size={18} color={theme.warning} />
             <Text style={styles.infoText}>{getExpiryText(echo.expiresAt)}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons name="radio-outline" size={18} color="#8892B0" />
+            <Ionicons name="radio-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.infoText}>{t(S.map.echoDetail.radiusM, { radius: echo.radius })}</Text>
           </View>
         </View>
@@ -334,7 +338,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
               }}
               radius={echo.radius}
               fillColor="rgba(123, 97, 255, 0.15)"
-              strokeColor="#7B61FF"
+              strokeColor={theme.secondary}
               strokeWidth={1.5}
             />
             <Marker
@@ -345,7 +349,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
               anchor={{ x: 0.5, y: 0.5 }}
             >
               <View style={styles.echoMapMarker}>
-                <Ionicons name="musical-notes" size={16} color="#7B61FF" />
+                <Ionicons name="musical-notes" size={16} color={theme.secondary} />
               </View>
             </Marker>
           </MapView>
@@ -355,20 +359,21 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
   },
   errorText: {
-    color: '#FF4757',
+    color: theme.danger,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -376,7 +381,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   backLinkText: {
-    color: '#00D4FF',
+    color: theme.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   headerTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -401,7 +406,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: theme.border,
     gap: 14,
   },
   avatarPlaceholder: {
@@ -410,28 +415,28 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     backgroundColor: 'rgba(123, 97, 255, 0.15)',
     borderWidth: 2,
-    borderColor: '#7B61FF',
+    borderColor: theme.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   creatorUsername: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
     marginBottom: 4,
   },
   createdAt: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   playerSection: {
     padding: 20,
     marginHorizontal: 20,
     marginTop: 20,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   waveformContainer: {
     flexDirection: 'row',
@@ -455,7 +460,7 @@ const styles = StyleSheet.create({
   progressBarFill: {
     height: '100%',
     borderRadius: 2,
-    backgroundColor: '#7B61FF',
+    backgroundColor: theme.secondary,
   },
   durationRow: {
     flexDirection: 'row',
@@ -463,7 +468,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   durationText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
@@ -477,10 +482,10 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#7B61FF',
+    backgroundColor: theme.secondary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#7B61FF',
+    shadowColor: theme.secondary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
@@ -500,23 +505,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 16,
     paddingVertical: 14,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   likeButtonActive: {
     backgroundColor: 'rgba(255, 71, 87, 0.1)',
     borderColor: 'rgba(255, 71, 87, 0.3)',
   },
   likeText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 15,
     fontWeight: '600',
   },
   likeTextActive: {
-    color: '#FF4757',
+    color: theme.danger,
   },
   infoSection: {
     paddingHorizontal: 20,
@@ -529,7 +534,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   infoText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   mapContainer: {
@@ -538,7 +543,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   mapPreview: {
     width: '100%',
@@ -550,7 +555,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: 'rgba(123, 97, 255, 0.2)',
     borderWidth: 2,
-    borderColor: '#7B61FF',
+    borderColor: theme.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },

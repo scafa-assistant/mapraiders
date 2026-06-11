@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../store/authStore';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { CLASS_COLORS, CLASS_LABELS } from '../../utils/constants';
 import { useTheme } from '../../hooks/useTheme';
 import { formatArea, formatNumber, formatXP } from '../../utils/formatters';
@@ -26,6 +26,7 @@ import type { ProfileScreenProps, MovementClass } from '../../navigation/types';
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const { user, refreshProfile } = useAuthStore();
   const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [refreshing, setRefreshing] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -402,10 +403,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   headerRow: {
@@ -427,28 +429,28 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 1,
   },
   settingsBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   userCard: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     marginHorizontal: 20,
     marginBottom: SPACING.lg,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   avatarWrapper: {
     position: 'relative',
@@ -482,10 +484,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: THEME.surface,
+    borderColor: theme.surface,
   },
   username: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
     marginBottom: SPACING.sm,
@@ -503,7 +505,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
   },
   levelText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '800',
   },
@@ -529,12 +531,12 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 184, 0, 0.2)',
   },
   titleText: {
-    color: THEME.warning,
+    color: theme.warning,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
   moreText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     alignSelf: 'center',
   },
@@ -548,34 +550,34 @@ const styles = StyleSheet.create({
   statBox: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     alignItems: 'center',
     gap: 6,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   statValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },
   statLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   streakCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: 20,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   streakLeft: {
     flexDirection: 'row',
@@ -583,37 +585,37 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   streakValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },
   streakLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   streakRight: {
     alignItems: 'center',
   },
   bestStreakValue: {
-    color: THEME.warning,
+    color: theme.warning,
     fontSize: FONT_SIZE.xl,
     fontWeight: '900',
   },
   bestStreakLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   sectionCard: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: 20,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   sectionTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginBottom: SPACING.md,
@@ -635,7 +637,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   classLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
   classBarOuter: {
@@ -651,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   classPct: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
     width: 36,
@@ -660,12 +662,12 @@ const styles = StyleSheet.create({
   petButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: 20,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   petIconCircle: {
     width: 44,
@@ -680,25 +682,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   petButtonTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },
   petButtonSubtitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginTop: 2,
   },
   navButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: 20,
     marginTop: 10,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   navIconCircle: {
     width: 44,
@@ -709,7 +711,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.md,
   },
   badge: {
-    backgroundColor: THEME.danger,
+    backgroundColor: theme.danger,
     borderRadius: RADIUS.full,
     minWidth: 22,
     height: 22,
@@ -719,7 +721,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   badgeText: {
-    color: THEME.text,
+    color: '#FFFFFF',
     fontSize: FONT_SIZE.xs,
     fontWeight: '800',
   },

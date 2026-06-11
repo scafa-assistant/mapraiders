@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { artifactApi } from '../../services/api';
 import { ArtifactDetailScreenProps } from '../../navigation/types';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { strings as S, t, plural } from '../../i18n';
 
 const { width } = Dimensions.get('window');
@@ -27,12 +29,12 @@ const RARITY_COLORS: Record<string, string> = {
   legendary: '#FFB800',
 };
 
-const RARITY_LABELS: Record<string, string> = {
+const getRarityLabels = (): Record<string, string> => ({
   common: S.map.artifactDetail.rarityCommon,
   rare: S.map.artifactDetail.rarityRare,
   epic: S.map.artifactDetail.rarityEpic,
   legendary: S.map.artifactDetail.rarityLegendary,
-};
+});
 
 const PERMANENCE_THRESHOLD = 50;
 
@@ -53,6 +55,9 @@ interface Artifact {
 }
 
 export default function ArtifactDetailScreen({ route, navigation }: ArtifactDetailScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const rarityLabels = useMemo(getRarityLabels, []);
   const { artifactId } = route.params;
   const [artifact, setArtifact] = useState<Artifact | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,7 +94,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#7B61FF" />
+        <ActivityIndicator size="large" color={theme.secondary} />
       </SafeAreaView>
     );
   }
@@ -97,7 +102,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
   if (!artifact) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Ionicons name="alert-circle" size={48} color="#FF4757" />
+        <Ionicons name="alert-circle" size={48} color={theme.danger} />
         <Text style={styles.errorText}>{S.map.artifactDetail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
           <Text style={styles.backLinkText}>{S.map.artifactDetail.goBack}</Text>
@@ -107,7 +112,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
   }
 
   const rarityColor = RARITY_COLORS[artifact.rarity] ?? RARITY_COLORS.common;
-  const rarityLabel = RARITY_LABELS[artifact.rarity] ?? artifact.rarity;
+  const rarityLabel = rarityLabels[artifact.rarity] ?? artifact.rarity;
   const permanenceProgress = Math.min(artifact.votes / PERMANENCE_THRESHOLD, 1);
 
   return (
@@ -116,7 +121,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#8892B0" />
+            <Ionicons name="arrow-back" size={24} color={theme.textSecondary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.map.artifactDetail.headerTitle}</Text>
           <View style={{ width: 24 }} />
@@ -140,7 +145,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
           <View style={styles.badgeRow}>
             {/* Type Badge */}
             <View style={styles.typeBadge}>
-              <Ionicons name="cube-outline" size={14} color="#8892B0" />
+              <Ionicons name="cube-outline" size={14} color={theme.textSecondary} />
               <Text style={styles.typeBadgeText}>{artifact.type}</Text>
             </View>
 
@@ -154,7 +159,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
 
             {artifact.permanent && (
               <View style={styles.permanentBadge}>
-                <Ionicons name="shield-checkmark" size={14} color="#00FF88" />
+                <Ionicons name="shield-checkmark" size={14} color={theme.accent} />
                 <Text style={styles.permanentBadgeText}>{S.map.artifactDetail.permanentBadge}</Text>
               </View>
             )}
@@ -164,11 +169,11 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
 
           {/* Creator Info */}
           <View style={styles.creatorRow}>
-            <Ionicons name="person-circle-outline" size={18} color="#8892B0" />
+            <Ionicons name="person-circle-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.creatorText}>{t(S.map.artifactDetail.createdBy, { username: artifact.creatorUsername })}</Text>
           </View>
           <View style={styles.creatorRow}>
-            <Ionicons name="calendar-outline" size={16} color="#8892B0" />
+            <Ionicons name="calendar-outline" size={16} color={theme.textSecondary} />
             <Text style={styles.creatorText}>
               {new Date(artifact.createdAt).toLocaleDateString()}
             </Text>
@@ -193,7 +198,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
                   styles.permanenceBarFill,
                   {
                     width: `${permanenceProgress * 100}%`,
-                    backgroundColor: artifact.permanent ? '#00FF88' : rarityColor,
+                    backgroundColor: artifact.permanent ? theme.accent : rarityColor,
                   },
                 ]}
               />
@@ -234,7 +239,7 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
                   <Ionicons
                     name={artifact.voted ? 'checkmark-circle' : 'arrow-up-circle'}
                     size={22}
-                    color={artifact.voted ? '#8892B0' : '#0A0E17'}
+                    color={artifact.voted ? theme.textSecondary : '#0A0E17'}
                   />
                   <Text
                     style={[
@@ -287,20 +292,21 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
   },
   errorText: {
-    color: '#FF4757',
+    color: theme.danger,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -308,7 +314,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   backLinkText: {
-    color: '#00D4FF',
+    color: theme.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -323,7 +329,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   headerTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -333,7 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     marginBottom: 4,
   },
   photo: {
@@ -343,10 +349,10 @@ const styles = StyleSheet.create({
   infoSection: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: theme.border,
   },
   artifactName: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 24,
     fontWeight: '900',
     marginBottom: 12,
@@ -361,15 +367,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   typeBadgeText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'capitalize',
@@ -396,7 +402,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   permanentBadgeText: {
-    color: '#00FF88',
+    color: theme.accent,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -413,25 +419,25 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   creatorText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
   },
   permanenceSection: {
     padding: 20,
   },
   sectionTitle: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 2,
     marginBottom: 12,
   },
   permanenceCard: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   permanenceHeader: {
     flexDirection: 'row',
@@ -440,12 +446,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   permanenceVotes: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 14,
     fontWeight: '600',
   },
   permanencePercent: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -472,20 +478,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7B61FF',
+    backgroundColor: theme.secondary,
     borderRadius: 16,
     height: 56,
     gap: 10,
-    shadowColor: '#7B61FF',
+    shadowColor: theme.secondary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   voteButtonVoted: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     shadowOpacity: 0,
     elevation: 0,
   },
@@ -499,7 +505,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   voteButtonTextVoted: {
-    color: '#8892B0',
+    color: theme.textSecondary,
   },
   mapSection: {
     paddingHorizontal: 20,
@@ -509,7 +515,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   mapPreview: {
     width: '100%',

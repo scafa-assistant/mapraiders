@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, Text, Animated, Easing, ActivityIndicator, StyleSheet } from 'react-native';
-import { THEME, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE } from '../utils/constants';
 
 interface LoadingOverlayProps {
   /** Whether the overlay is visible. */
@@ -14,6 +15,8 @@ interface LoadingOverlayProps {
  * animated spinner, and optional message text.
  */
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const spinAnim = useRef(new Animated.Value(0)).current;
 
@@ -65,7 +68,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message }) => 
         />
 
         {/* Inner activity indicator */}
-        <ActivityIndicator size="large" color={THEME.primary} style={styles.spinner} />
+        <ActivityIndicator size="large" color={theme.primary} style={styles.spinner} />
 
         {message && <Text style={styles.message}>{message}</Text>}
       </View>
@@ -73,7 +76,8 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message }) => 
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(10, 14, 23, 0.85)',
@@ -82,14 +86,14 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   card: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: 20,
     padding: SPACING.xxl,
     alignItems: 'center',
     minWidth: 160,
     borderWidth: 1,
-    borderColor: THEME.border,
-    shadowColor: THEME.primary,
+    borderColor: theme.border,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
@@ -103,14 +107,14 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 2,
     borderColor: 'transparent',
-    borderTopColor: THEME.primary,
+    borderTopColor: theme.primary,
     borderRightColor: 'rgba(0, 212, 255, 0.3)',
   },
   spinner: {
     marginBottom: SPACING.lg,
   },
   message: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     textAlign: 'center',
     maxWidth: 200,

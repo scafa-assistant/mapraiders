@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE, CLASS_ICONS, CLASS_LABELS, CLASS_COLORS } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE, CLASS_ICONS, CLASS_LABELS, CLASS_COLORS } from '../utils/constants';
 import { strings as S } from '../i18n';
 import { formatDistance, formatDuration } from '../utils/formatters';
 import type { MovementClass } from '../utils/types';
@@ -34,11 +35,13 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
   onStart,
   onStop,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
   const recordingDotOpacity = useRef(new Animated.Value(1)).current;
 
-  const classColor = CLASS_COLORS[detectedClass] ?? THEME.primary;
+  const classColor = CLASS_COLORS[detectedClass] ?? theme.primary;
   const classIcon = (CLASS_ICONS[detectedClass] ?? 'walk-outline') as keyof typeof Ionicons.glyphMap;
   const classLabel = CLASS_LABELS[detectedClass] ?? S.components.classBadge.unknown;
 
@@ -138,7 +141,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
         {/* Stats */}
         <View style={styles.statsSection}>
           <View style={styles.statItem}>
-            <Ionicons name="resize-outline" size={14} color={THEME.textSecondary} />
+            <Ionicons name="resize-outline" size={14} color={theme.textSecondary} />
             <Text style={styles.statValue}>{formatDistance(distance)}</Text>
             <Text style={styles.statLabel}>{S.components.routeRecorder.distance}</Text>
           </View>
@@ -146,7 +149,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
           <View style={styles.statDivider} />
 
           <View style={styles.statItem}>
-            <Ionicons name="time-outline" size={14} color={THEME.textSecondary} />
+            <Ionicons name="time-outline" size={14} color={theme.textSecondary} />
             <Text style={styles.statValue}>{formatDuration(duration)}</Text>
             <Text style={styles.statLabel}>{S.components.routeRecorder.duration}</Text>
           </View>
@@ -172,13 +175,14 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderTopLeftRadius: RADIUS.xl,
     borderTopRightRadius: RADIUS.xl,
     paddingBottom: 34, // Safe area
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 10,
     borderTopWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   recordingBar: {
     flexDirection: 'row',
@@ -201,10 +205,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: THEME.danger,
+    backgroundColor: theme.danger,
   },
   recordingText: {
-    color: THEME.danger,
+    color: theme.danger,
     fontSize: FONT_SIZE.xs,
     fontWeight: '800',
     letterSpacing: 2,
@@ -243,18 +247,18 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   statValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
   },
   statLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   statDivider: {
     width: 1,
     height: 36,
-    backgroundColor: THEME.border,
+    backgroundColor: theme.border,
   },
   actionButton: {
     width: 56,
@@ -269,10 +273,10 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   startButton: {
-    backgroundColor: THEME.accent,
+    backgroundColor: theme.accent,
   },
   stopButton: {
-    backgroundColor: THEME.danger,
+    backgroundColor: theme.danger,
   },
 });
 

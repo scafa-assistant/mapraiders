@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -19,15 +19,17 @@ import * as Location from 'expo-location';
 import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { userApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { useTheme } from '../../hooks/useTheme';
-import { strings as S, t } from '../../i18n';
+import { strings as S, t, getAppLanguage, setAppLanguage, AppLanguage } from '../../i18n';
 import type { SettingsScreenProps } from '../../navigation/types';
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const { logout, user } = useAuthStore();
   const { settings, updateSetting } = useSettingsStore();
   const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const appLanguage = getAppLanguage();
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
@@ -173,8 +175,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
       <Switch
         value={value}
         onValueChange={onToggle}
-        trackColor={{ false: '#1A2340', true: `${color}60` }}
-        thumbColor={value ? color : '#555E78'}
+        trackColor={{ false: settings.darkMapStyle ? '#1A2340' : '#D0D0D0', true: `${color}60` }}
+        thumbColor={value ? color : settings.darkMapStyle ? '#555E78' : '#AAAAAA'}
       />
     </View>
   );
@@ -281,8 +283,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           {renderToggleRow(
             'moon-outline',
-            S.profile.settings.darkMap,
-            S.profile.settings.darkMapSubtitle,
+            S.profile.settings.darkMode,
+            S.profile.settings.darkModeSubtitle,
             settings.darkMapStyle,
             (val) => updateSetting('darkMapStyle', val),
             theme.secondary
@@ -318,6 +320,43 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               </Text>
             </TouchableOpacity>
           )}
+        </View>
+
+        {/* Language */}
+        <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.language}</Text>
+        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          {(
+            [
+              { value: 'system', label: S.profile.settings.languageSystem, subtitle: S.profile.settings.languageSystemSubtitle },
+              { value: 'en', label: S.profile.settings.languageEnglish, subtitle: 'English' },
+              { value: 'de', label: S.profile.settings.languageGerman, subtitle: 'Deutsch' },
+            ] as { value: AppLanguage; label: string; subtitle: string }[]
+          ).map((option, index, all) => (
+            <TouchableOpacity
+              key={option.value}
+              style={[
+                styles.row,
+                { borderBottomColor: theme.border },
+                index === all.length - 1 && { borderBottomWidth: 0 },
+              ]}
+              onPress={() => setAppLanguage(option.value)}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: `${theme.primary}15` }]}>
+                <Ionicons
+                  name={option.value === 'system' ? 'phone-portrait-outline' : 'language'}
+                  size={18}
+                  color={theme.primary}
+                />
+              </View>
+              <View style={styles.rowContent}>
+                <Text style={[styles.rowLabel, { color: theme.text }]}>{option.label}</Text>
+                <Text style={[styles.rowSubtitle, { color: theme.textSecondary }]}>{option.subtitle}</Text>
+              </View>
+              {appLanguage === option.value && (
+                <Ionicons name="checkmark-circle" size={22} color={theme.accent} />
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
 
         {/* Territory Color */}
@@ -467,8 +506,9 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: THEME.bg },
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+  container: { flex: 1, backgroundColor: theme.bg },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -478,38 +518,38 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: THEME.border,
+    borderWidth: 1, borderColor: theme.border,
   },
-  headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '800', color: THEME.text },
+  headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '800', color: theme.text },
   sectionHeader: {
-    color: THEME.textSecondary, fontSize: FONT_SIZE.xs, fontWeight: '700',
+    color: theme.textSecondary, fontSize: FONT_SIZE.xs, fontWeight: '700',
     textTransform: 'uppercase', letterSpacing: 1.5,
     paddingHorizontal: 20, marginTop: SPACING.xl, marginBottom: SPACING.sm,
   },
   card: {
-    backgroundColor: THEME.surface, marginHorizontal: 20,
-    borderRadius: RADIUS.lg, borderWidth: 1, borderColor: THEME.border,
+    backgroundColor: theme.surface, marginHorizontal: 20,
+    borderRadius: RADIUS.lg, borderWidth: 1, borderColor: theme.border,
     overflow: 'hidden',
   },
   row: {
     flexDirection: 'row', alignItems: 'center',
-    padding: SPACING.lg, borderBottomWidth: 1, borderBottomColor: THEME.border,
+    padding: SPACING.lg, borderBottomWidth: 1, borderBottomColor: theme.border,
   },
   iconCircle: {
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md,
   },
   rowContent: { flex: 1 },
-  rowLabel: { color: THEME.text, fontSize: FONT_SIZE.md, fontWeight: '600' },
-  rowSubtitle: { color: THEME.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
+  rowLabel: { color: theme.text, fontSize: FONT_SIZE.md, fontWeight: '600' },
+  rowSubtitle: { color: theme.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
   logoutBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(255, 71, 87, 0.1)', marginHorizontal: 20,
     marginTop: SPACING.xl, padding: SPACING.lg, borderRadius: RADIUS.lg,
     gap: SPACING.sm, borderWidth: 1, borderColor: 'rgba(255, 71, 87, 0.2)',
   },
-  logoutText: { color: THEME.danger, fontSize: FONT_SIZE.md, fontWeight: '700' },
+  logoutText: { color: theme.danger, fontSize: FONT_SIZE.md, fontWeight: '700' },
   version: { color: '#2A3450', fontSize: FONT_SIZE.xs, textAlign: 'center', marginTop: SPACING.xl },
 });

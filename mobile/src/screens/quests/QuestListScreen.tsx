@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import { useQuestStore } from '../../store/questStore';
 import { useLocationStore } from '../../store/locationStore';
 import QuestCard from '../../components/QuestCard';
 import { strings as S, t, plural } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 import { QuestListScreenProps, Quest } from '../../navigation/types';
 import { useWeather } from '../../hooks/useWeather';
 
@@ -21,6 +23,8 @@ type FilterDifficulty = 0 | 1 | 2 | 3 | 4 | 5;
 type FilterDistance = 'any' | '500' | '1000' | '2000';
 
 export default function QuestListScreen({ navigation }: QuestListScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { nearbyQuests, isLoading, fetchNearby } = useQuestStore();
   const { currentLocation } = useLocationStore();
   const { weather } = useWeather(currentLocation?.latitude, currentLocation?.longitude);
@@ -71,7 +75,7 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
     if (isLoading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="compass-outline" size={64} color="#2A3450" />
+        <Ionicons name="compass-outline" size={64} color={theme.textSecondary} />
         <Text style={styles.emptyTitle}>{S.quests.list.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
           {S.quests.list.emptySubtitle}
@@ -168,7 +172,7 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
               <Ionicons
                 name="rainy"
                 size={12}
-                color={filterWeatherActive ? '#00D4FF' : '#8892B0'}
+                color={filterWeatherActive ? '#00D4FF' : theme.textSecondary}
               />
               <Text
                 style={[
@@ -211,10 +215,11 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   header: {
     paddingHorizontal: 20,
@@ -224,12 +229,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: theme.text,
     letterSpacing: 1,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: '#8892B0',
+    color: theme.textSecondary,
     marginTop: 2,
   },
   filterBar: {
@@ -241,19 +246,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   filterChip: {
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   filterChipActive: {
     backgroundColor: 'rgba(0, 212, 255, 0.15)',
     borderColor: '#00D4FF',
   },
   filterChipText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -272,7 +277,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   listContent: {
@@ -287,13 +292,13 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
     marginTop: 16,
   },
   emptySubtext: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 13,
     marginTop: 6,
   },

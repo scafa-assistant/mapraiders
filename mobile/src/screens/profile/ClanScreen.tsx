@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { clanApi } from '../../services/api';
 import { formatArea, formatNumber } from '../../utils/formatters';
 import { useAuthStore } from '../../store/authStore';
@@ -41,6 +42,8 @@ interface ManualClan extends Clan {
 }
 
 export default function ClanScreen({ navigation }: ClanScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const user = useAuthStore((s) => s.user);
   const [manualClan, setManualClan] = useState<ManualClan | null>(null);
   const [organicClans, setOrganicClans] = useState<ManualClan[]>([]);
@@ -106,7 +109,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
     setRefreshing(false);
   }, [fetchData]);
 
-  const clanColor = manualClan?.color || THEME.primary;
+  const clanColor = manualClan?.color || theme.primary;
   const isLeader = myRole === 'leader';
   const isOfficer = myRole === 'officer';
 
@@ -257,7 +260,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
     const rankLabel =
       item.rank === 'leader' ? S.profile.clan.rankLeader : item.rank === 'officer' ? S.profile.clan.rankOfficer : '';
     const rankColor =
-      item.rank === 'leader' ? '#FFB800' : item.rank === 'officer' ? '#8892B0' : 'transparent';
+      item.rank === 'leader' ? '#FFB800' : item.rank === 'officer' ? theme.textSecondary : 'transparent';
     const rankIcon: keyof typeof Ionicons.glyphMap =
       item.rank === 'leader' ? 'star' : item.rank === 'officer' ? 'shield' : 'person-outline';
 
@@ -313,7 +316,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
   const renderNoClan = () => (
     <View style={styles.noClanContainer}>
       <View style={styles.noClanIconCircle}>
-        <Ionicons name="shield-outline" size={56} color="#1E293B" />
+        <Ionicons name="shield-outline" size={56} color={theme.border} />
       </View>
       <Text style={styles.noClanTitle}>{S.profile.clan.noClanTitle}</Text>
       <Text style={styles.noClanSubtext}>
@@ -334,7 +337,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
         onPress={() => Alert.alert(S.profile.clan.searchClan, S.profile.clan.searchComingSoon)}
         activeOpacity={0.8}
       >
-        <Ionicons name="search" size={20} color={THEME.primary} />
+        <Ionicons name="search" size={20} color={theme.primary} />
         <Text style={styles.searchClanBtnText}>{S.profile.clan.searchClan}</Text>
       </TouchableOpacity>
     </View>
@@ -352,7 +355,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           {/* Leader gear icon */}
           {isLeader && (
             <TouchableOpacity style={styles.gearBtn} onPress={handleGearPress}>
-              <Ionicons name="settings-outline" size={20} color={THEME.textSecondary} />
+              <Ionicons name="settings-outline" size={20} color={theme.textSecondary} />
             </TouchableOpacity>
           )}
 
@@ -372,7 +375,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           {/* Member count + privacy */}
           <View style={styles.clanMetaRow}>
             <View style={styles.clanMetaItem}>
-              <Ionicons name="people" size={14} color={THEME.textSecondary} />
+              <Ionicons name="people" size={14} color={theme.textSecondary} />
               <Text style={styles.clanMetaText}>
                 {t(S.profile.clan.membersCount, { count: formatNumber(manualClan.memberCount ?? members.length) })}
               </Text>
@@ -382,7 +385,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
               <Ionicons
                 name={isPrivate ? 'lock-closed' : 'globe-outline'}
                 size={14}
-                color={THEME.textSecondary}
+                color={theme.textSecondary}
               />
               <Text style={styles.clanMetaText}>
                 {isPrivate ? S.profile.clan.private : S.profile.clan.public}
@@ -403,12 +406,12 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
             <Text style={styles.statLabel}>{S.profile.clan.members}</Text>
           </View>
           <View style={styles.statBox}>
-            <Ionicons name="resize-outline" size={20} color={THEME.accent} />
+            <Ionicons name="resize-outline" size={20} color={theme.accent} />
             <Text style={styles.statValue}>{formatArea(manualClan.totalArea)}</Text>
             <Text style={styles.statLabel}>{S.profile.clan.territory}</Text>
           </View>
           <View style={styles.statBox}>
-            <Ionicons name="trending-up-outline" size={20} color={THEME.warning} />
+            <Ionicons name="trending-up-outline" size={20} color={theme.warning} />
             <Text style={styles.statValue}>{manualClan.level}</Text>
             <Text style={styles.statLabel}>{S.profile.clan.level}</Text>
           </View>
@@ -427,14 +430,14 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
             }
             activeOpacity={0.7}
           >
-            <View style={[styles.actionIconCircle, { backgroundColor: `${THEME.primary}15` }]}>
-              <Ionicons name="chatbubbles" size={20} color={THEME.primary} />
+            <View style={[styles.actionIconCircle, { backgroundColor: `${theme.primary}15` }]}>
+              <Ionicons name="chatbubbles" size={20} color={theme.primary} />
             </View>
             <View style={styles.actionBtnContent}>
               <Text style={styles.actionBtnTitle}>{S.profile.clan.chat}</Text>
               <Text style={styles.actionBtnSubtitle}>{S.profile.clan.chatSubtitle}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#1E293B" />
+            <Ionicons name="chevron-forward" size={18} color={theme.border} />
           </TouchableOpacity>
 
           {/* Invite Button (Leader or Officer) */}
@@ -444,14 +447,14 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
               onPress={() => Alert.alert(S.profile.clan.inviteTitle, S.profile.clan.inviteMessage)}
               activeOpacity={0.7}
             >
-              <View style={[styles.actionIconCircle, { backgroundColor: `${THEME.accent}15` }]}>
-                <Ionicons name="person-add" size={20} color={THEME.accent} />
+              <View style={[styles.actionIconCircle, { backgroundColor: `${theme.accent}15` }]}>
+                <Ionicons name="person-add" size={20} color={theme.accent} />
               </View>
               <View style={styles.actionBtnContent}>
                 <Text style={styles.actionBtnTitle}>{S.profile.clan.inviteFriend}</Text>
                 <Text style={styles.actionBtnSubtitle}>{S.profile.clan.inviteFriendSubtitle}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color="#1E293B" />
+              <Ionicons name="chevron-forward" size={18} color={theme.border} />
             </TouchableOpacity>
           )}
         </View>
@@ -472,7 +475,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
     return (
       <View style={styles.organicSection}>
         <View style={styles.sectionHeaderRow}>
-          <Ionicons name="flash" size={18} color={THEME.warning} />
+          <Ionicons name="flash" size={18} color={theme.warning} />
           <Text style={styles.sectionTitle}>{S.profile.clan.organicClans}</Text>
         </View>
         <Text style={styles.organicHint}>
@@ -490,23 +493,23 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
             }
             activeOpacity={0.7}
           >
-            <View style={[styles.organicColorBar, { backgroundColor: clan.color || THEME.secondary }]} />
+            <View style={[styles.organicColorBar, { backgroundColor: clan.color || theme.secondary }]} />
             <View style={styles.organicContent}>
               <View style={styles.organicTopRow}>
                 {clan.tag && (
-                  <View style={[styles.organicTag, { backgroundColor: `${THEME.secondary}20` }]}>
-                    <Text style={[styles.organicTagText, { color: THEME.secondary }]}>[{clan.tag}]</Text>
+                  <View style={[styles.organicTag, { backgroundColor: `${theme.secondary}20` }]}>
+                    <Text style={[styles.organicTagText, { color: theme.secondary }]}>[{clan.tag}]</Text>
                   </View>
                 )}
                 <Text style={styles.organicName} numberOfLines={1}>{clan.name}</Text>
               </View>
               <View style={styles.organicMeta}>
-                <Ionicons name="people-outline" size={12} color={THEME.textSecondary} />
+                <Ionicons name="people-outline" size={12} color={theme.textSecondary} />
                 <Text style={styles.organicMetaText}>{t(S.profile.clan.membersCount, { count: formatNumber(clan.memberCount) })}</Text>
                 <Text style={styles.organicMetaText}>{t(S.profile.clan.levelShort, { level: clan.level })}</Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#1E293B" />
+            <Ionicons name="chevron-forward" size={18} color={theme.border} />
           </TouchableOpacity>
         ))}
       </View>
@@ -519,13 +522,13 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
       {/* Leave Button */}
       {manualClan && !isLeader && (
         <TouchableOpacity style={styles.leaveBtn} onPress={handleLeave} activeOpacity={0.7}>
-          <Ionicons name="exit-outline" size={18} color={THEME.danger} />
+          <Ionicons name="exit-outline" size={18} color={theme.danger} />
           <Text style={styles.leaveBtnText}>{S.profile.clan.leaveClan}</Text>
         </TouchableOpacity>
       )}
       {manualClan && isLeader && (
         <View style={styles.leaderHint}>
-          <Ionicons name="information-circle-outline" size={14} color={THEME.textSecondary} />
+          <Ionicons name="information-circle-outline" size={14} color={theme.textSecondary} />
           <Text style={styles.leaderHintText}>
             {S.profile.clan.leaderHint}
           </Text>
@@ -545,13 +548,13 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={22} color={THEME.text} />
+            <Ionicons name="arrow-back" size={22} color={theme.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.profile.clan.title}</Text>
           <View style={styles.headerSpacer} />
         </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.profile.clan.loadingClan}</Text>
         </View>
       </SafeAreaView>
@@ -564,7 +567,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.profile.clan.title}</Text>
         <View style={styles.headerSpacer} />
@@ -587,8 +590,8 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
         />
@@ -603,15 +606,15 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
           ListHeaderComponent={renderClanHeader()}
           ListFooterComponent={renderFooter()}
           ListEmptyComponent={
             <View style={styles.noMembersContainer}>
-              <Ionicons name="people-outline" size={24} color="#1E293B" />
+              <Ionicons name="people-outline" size={24} color={theme.border} />
               <Text style={styles.noMembersText}>{S.profile.clan.noMembersFound}</Text>
             </View>
           }
@@ -621,10 +624,11 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -637,18 +641,18 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     marginRight: SPACING.md,
   },
   headerTitle: {
     flex: 1,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 1,
   },
   headerSpacer: {
@@ -661,7 +665,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   listContent: {
@@ -681,21 +685,21 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 55,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xl,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   noClanTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
     marginBottom: SPACING.sm,
   },
   noClanSubtext: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     textAlign: 'center',
     lineHeight: 22,
@@ -729,30 +733,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     paddingVertical: 16,
     paddingHorizontal: 32,
     gap: 10,
     width: '100%',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   searchClanBtnText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },
 
   // ─── Clan Card ─────────────────────────────────────
   clanCard: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     marginBottom: SPACING.lg,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     borderTopWidth: 4,
     overflow: 'hidden',
   },
@@ -790,7 +794,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   clanName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
     marginBottom: SPACING.sm,
@@ -810,14 +814,14 @@ const styles = StyleSheet.create({
     width: 3,
     height: 3,
     borderRadius: 1.5,
-    backgroundColor: '#2A3450',
+    backgroundColor: theme.textSecondary,
   },
   clanMetaText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   clanDescription: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     textAlign: 'center',
     lineHeight: 20,
@@ -832,21 +836,21 @@ const styles = StyleSheet.create({
   },
   statBox: {
     flex: 1,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     alignItems: 'center',
     gap: 6,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   statValue: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },
   statLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
 
@@ -858,11 +862,11 @@ const styles = StyleSheet.create({
   actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   actionIconCircle: {
     width: 40,
@@ -876,12 +880,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionBtnTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   actionBtnSubtitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     marginTop: 2,
   },
@@ -894,16 +898,16 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   sectionTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     flex: 1,
   },
   sectionCount: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 2,
     borderRadius: RADIUS.full,
@@ -914,12 +918,12 @@ const styles = StyleSheet.create({
   memberRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   memberRowMe: {
     borderColor: 'rgba(0, 212, 255, 0.2)',
@@ -958,18 +962,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: THEME.surface,
+    borderColor: theme.surface,
   },
   memberInfo: {
     flex: 1,
   },
   memberName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
   memberLevel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     marginTop: 2,
   },
@@ -991,7 +995,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   noMembersText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
 
@@ -1009,7 +1013,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xl,
   },
   leaveBtnText: {
-    color: THEME.danger,
+    color: theme.danger,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
@@ -1019,14 +1023,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     marginTop: SPACING.xl,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   leaderHintText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     flex: 1,
     lineHeight: 16,
@@ -1037,7 +1041,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xxl,
   },
   organicHint: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     marginBottom: SPACING.md,
     marginTop: -SPACING.sm,
@@ -1045,11 +1049,11 @@ const styles = StyleSheet.create({
   organicCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     overflow: 'hidden',
   },
   organicColorBar: {
@@ -1076,7 +1080,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   organicName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
     flex: 1,
@@ -1087,7 +1091,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   organicMetaText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
 });

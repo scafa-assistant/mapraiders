@@ -60,7 +60,7 @@ const CLASS_COLORS: Record<MovementClass, string> = {
   unknown: '#555E78',
 };
 
-const CLASS_LABELS: Record<MovementClass, string> = {
+const getClassLabels = (): Record<MovementClass, string> => ({
   walker: S.map.mapScreen.classWalker,
   runner: S.map.mapScreen.classRunner,
   cyclist: S.map.mapScreen.classCyclist,
@@ -68,7 +68,7 @@ const CLASS_LABELS: Record<MovementClass, string> = {
   dog_walker: S.map.mapScreen.classDogWalker,
   driver: S.map.mapScreen.classDriver,
   unknown: S.map.mapScreen.classDetecting,
-};
+});
 
 const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
   walker: 'walk',
@@ -132,6 +132,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const { user } = useAuthStore();
   const { settings } = useSettingsStore();
   const theme = useTheme();
+  const classLabels = React.useMemo(getClassLabels, []);
 
   const [canCloseClaim, setCanCloseClaim] = useState(false);
   const [hideOverlays, setHideOverlays] = useState(false); // Briefly hides polygons to force native re-render
@@ -1153,7 +1154,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           color={CLASS_COLORS[detectedClass]}
         />
         <Text style={[styles.classBadgeText, { color: CLASS_COLORS[detectedClass] }]}>
-          {CLASS_LABELS[detectedClass]}
+          {classLabels[detectedClass]}
         </Text>
         {isTracking && <View style={styles.recDotSmall} />}
       </View>

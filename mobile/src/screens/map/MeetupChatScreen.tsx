@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { meetupApi } from '../../services/api';
 import { mapRaidersWs } from '../../services/websocket';
 import { useAuthStore } from '../../store/authStore';
@@ -43,6 +44,8 @@ function formatTimestamp(dateStr: string): string {
 }
 
 export default function MeetupChatScreen({ navigation, route }: MeetupChatScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { eventId, eventName } = route.params;
   const { user } = useAuthStore();
   const currentUserId = user?.id;
@@ -186,7 +189,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
     if (!loadingMore) return null;
     return (
       <View style={styles.loadingMore}>
-        <ActivityIndicator size="small" color={THEME.primary} />
+        <ActivityIndicator size="small" color={theme.primary} />
       </View>
     );
   };
@@ -199,7 +202,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle} numberOfLines={1}>{eventName}</Text>
@@ -215,7 +218,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
       >
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={THEME.primary} />
+            <ActivityIndicator size="large" color={theme.primary} />
             <Text style={styles.loadingText}>{S.map.meetupChat.loadingMessages}</Text>
           </View>
         ) : (
@@ -241,7 +244,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
             value={inputText}
             onChangeText={setInputText}
             placeholder={S.map.meetupChat.inputPlaceholder}
-            placeholderTextColor={THEME.textSecondary}
+            placeholderTextColor={theme.textSecondary}
             maxLength={500}
             multiline
             returnKeyType="default"
@@ -256,9 +259,9 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
             activeOpacity={0.7}
           >
             {sending ? (
-              <ActivityIndicator size="small" color={THEME.text} />
+              <ActivityIndicator size="small" color={theme.text} />
             ) : (
-              <Ionicons name="send" size={20} color={THEME.text} />
+              <Ionicons name="send" size={20} color={theme.text} />
             )}
           </TouchableOpacity>
         </View>
@@ -267,10 +270,11 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -279,17 +283,17 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     marginRight: SPACING.md,
   },
   headerInfo: {
@@ -298,11 +302,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
   },
   headerSubtitle: {
     fontSize: FONT_SIZE.xs,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     marginTop: 1,
   },
   headerSpacer: {
@@ -318,7 +322,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   messageList: {
@@ -344,27 +348,27 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4,
   },
   messageBubbleOther: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   senderName: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     marginBottom: 3,
   },
   messageText: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     lineHeight: 20,
   },
   messageTextOwn: {
-    color: THEME.text,
+    color: theme.text,
   },
   messageTime: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: 10,
     marginTop: 4,
     alignSelf: 'flex-end',
@@ -384,7 +388,7 @@ const styles = StyleSheet.create({
     transform: [{ scaleY: -1 }],
   },
   emptyTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginTop: 12,
@@ -401,27 +405,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderTopWidth: 1,
-    borderTopColor: THEME.border,
-    backgroundColor: THEME.bg,
+    borderTopColor: theme.border,
+    backgroundColor: theme.bg,
   },
   textInput: {
     flex: 1,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 10,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     maxHeight: 100,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   sendBtn: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,

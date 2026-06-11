@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { leaderboardApi, userApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS, LEADERBOARD_TYPES } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS, LEADERBOARD_TYPES } from '../../utils/constants';
 import LeaderboardRow from '../../components/LeaderboardRow';
 import { strings as S } from '../../i18n';
 import type { LeaderboardScreenProps, ProfileLeaderboardScreenProps } from '../../navigation/types';
@@ -20,6 +21,8 @@ import type { LeaderboardEntry } from '../../utils/types';
 type LeaderboardType = (typeof LEADERBOARD_TYPES)[number]['key'];
 
 export default function LeaderboardScreen(_props: LeaderboardScreenProps | ProfileLeaderboardScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [activeType, setActiveType] = useState<LeaderboardType>('area');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [myRank, setMyRank] = useState<LeaderboardEntry | null>(null);
@@ -74,7 +77,7 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
         <Ionicons
           name={item.icon as keyof typeof Ionicons.glyphMap}
           size={16}
-          color={isActive ? THEME.primary : THEME.textSecondary}
+          color={isActive ? theme.primary : theme.textSecondary}
         />
         <Text style={[styles.typeTabText, isActive && styles.typeTabTextActive]}>
           {item.label}
@@ -95,7 +98,7 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
     if (isLoading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="trophy-outline" size={64} color="#2A3450" />
+        <Ionicons name="trophy-outline" size={64} color={theme.textSecondary} />
         <Text style={styles.emptyTitle}>{S.leaderboard.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
           {S.leaderboard.emptySubtext}
@@ -142,7 +145,7 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
       {/* Leaderboard List */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.leaderboard.loadingRankings}</Text>
         </View>
       ) : (
@@ -157,8 +160,8 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
         />
@@ -167,10 +170,11 @@ export default function LeaderboardScreen(_props: LeaderboardScreenProps | Profi
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     paddingHorizontal: 20,
@@ -180,12 +184,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 1,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     marginTop: 2,
   },
   typeTabContainer: {
@@ -199,25 +203,25 @@ const styles = StyleSheet.create({
   typeTab: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.full,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     gap: 6,
   },
   typeTabActive: {
     backgroundColor: 'rgba(0, 212, 255, 0.15)',
-    borderColor: THEME.primary,
+    borderColor: theme.primary,
   },
   typeTabText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
   typeTabTextActive: {
-    color: THEME.primary,
+    color: theme.primary,
   },
   myRankBar: {
     flexDirection: 'row',
@@ -232,7 +236,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 212, 255, 0.2)',
   },
   myRankLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
@@ -242,12 +246,12 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   myRankNumber: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.xl,
     fontWeight: '900',
   },
   myRankScore: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   listContent: {
@@ -272,13 +276,13 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   emptyTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: 18,
     fontWeight: '700',
     marginTop: 16,
   },
   emptySubtext: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 13,
     marginTop: 6,
     textAlign: 'center',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { petApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import PetCard from '../../components/PetCard';
 import { strings as S } from '../../i18n';
 import type { PetScreenProps, Pet } from '../../navigation/types';
@@ -23,6 +24,8 @@ import type { PetScreenProps, Pet } from '../../navigation/types';
 type RegisterStep = 'form' | 'loading';
 
 export default function PetScreen({ navigation }: PetScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [pet, setPet] = useState<Pet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -156,13 +159,13 @@ export default function PetScreen({ navigation }: PetScreenProps) {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={22} color={THEME.text} />
+            <Ionicons name="arrow-back" size={22} color={theme.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.profile.pet.title}</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.secondary} />
+          <ActivityIndicator size="large" color={theme.secondary} />
         </View>
       </SafeAreaView>
     );
@@ -174,7 +177,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={22} color={THEME.text} />
+            <Ionicons name="arrow-back" size={22} color={theme.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{S.profile.pet.registerDog}</Text>
           <View style={{ width: 40 }} />
@@ -182,7 +185,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
 
         {registerStep === 'loading' ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={THEME.secondary} />
+            <ActivityIndicator size="large" color={theme.secondary} />
             <Text style={styles.loadingText}>{S.profile.pet.registering}</Text>
           </View>
         ) : (
@@ -198,7 +201,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
                   <Image source={{ uri: photoUri }} style={styles.registerPhotoCircle} />
                 ) : (
                   <View style={styles.registerPawCircle}>
-                    <Ionicons name="camera" size={36} color={THEME.secondary} />
+                    <Ionicons name="camera" size={36} color={theme.secondary} />
                     <Text style={styles.addPhotoHint}>{S.profile.pet.addPhoto}</Text>
                   </View>
                 )}
@@ -214,7 +217,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
             <TextInput
               style={styles.textInput}
               placeholder={S.profile.pet.namePlaceholder}
-              placeholderTextColor="#555E78"
+              placeholderTextColor={theme.textSecondary}
               value={petName}
               onChangeText={setPetName}
               maxLength={24}
@@ -225,7 +228,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
             <TextInput
               style={styles.textInput}
               placeholder={S.profile.pet.breedPlaceholder}
-              placeholderTextColor="#555E78"
+              placeholderTextColor={theme.textSecondary}
               value={petBreed}
               onChangeText={setPetBreed}
               maxLength={40}
@@ -257,7 +260,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Dog</Text>
         <View style={{ width: 40 }} />
@@ -269,8 +272,8 @@ export default function PetScreen({ navigation }: PetScreenProps) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={THEME.secondary}
-            colors={[THEME.secondary]}
+            tintColor={theme.secondary}
+            colors={[theme.secondary]}
           />
         }
       >
@@ -280,19 +283,19 @@ export default function PetScreen({ navigation }: PetScreenProps) {
         <View style={styles.tipsCard}>
           <Text style={styles.tipsTitle}>{S.profile.pet.tipsTitle}</Text>
           <View style={styles.tipRow}>
-            <Ionicons name="footsteps-outline" size={16} color={THEME.primary} />
+            <Ionicons name="footsteps-outline" size={16} color={theme.primary} />
             <Text style={styles.tipText}>{S.profile.pet.tipWalk}</Text>
           </View>
           <View style={styles.tipRow}>
-            <Ionicons name="compass-outline" size={16} color={THEME.accent} />
+            <Ionicons name="compass-outline" size={16} color={theme.accent} />
             <Text style={styles.tipText}>{S.profile.pet.tipExplore}</Text>
           </View>
           <View style={styles.tipRow}>
-            <Ionicons name="diamond-outline" size={16} color={THEME.warning} />
+            <Ionicons name="diamond-outline" size={16} color={theme.warning} />
             <Text style={styles.tipText}>{S.profile.pet.tipItems}</Text>
           </View>
           <View style={styles.tipRow}>
-            <Ionicons name="shield-outline" size={16} color={THEME.secondary} />
+            <Ionicons name="shield-outline" size={16} color={theme.secondary} />
             <Text style={styles.tipText}>{S.profile.pet.tipSpecialization}</Text>
           </View>
         </View>
@@ -303,10 +306,11 @@ export default function PetScreen({ navigation }: PetScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -319,16 +323,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   headerTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
-    color: THEME.text,
+    color: theme.text,
   },
   loadingContainer: {
     flex: 1,
@@ -337,7 +341,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   // Registration
@@ -364,29 +368,29 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: THEME.secondary,
+    borderColor: theme.secondary,
     marginBottom: SPACING.lg,
   },
   addPhotoHint: {
-    color: THEME.secondary,
+    color: theme.secondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
     marginTop: 4,
   },
   registerTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
     marginBottom: SPACING.sm,
   },
   registerSubtitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     textAlign: 'center',
     lineHeight: 20,
   },
   inputLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -395,19 +399,19 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   textInput: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   registerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: THEME.secondary,
+    backgroundColor: theme.secondary,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginTop: SPACING.xxl,
@@ -423,16 +427,16 @@ const styles = StyleSheet.create({
   },
   // Tips
   tipsCard: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginHorizontal: SPACING.lg,
     marginTop: SPACING.xl,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   tipsTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginBottom: SPACING.md,
@@ -444,7 +448,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
   },
   tipText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     flex: 1,
   },

@@ -13,7 +13,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { turnGameApi } from '../../services/api';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { MiniChessGameScreenProps } from '../../navigation/types';
 import { strings as S, t } from '../../i18n';
 
@@ -196,6 +197,8 @@ function needsPromotion(cells: (string | null)[], fromIndex: number, toIndex: nu
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function MiniChessScreen({ route, navigation }: MiniChessGameScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const { gameId, opponentUsername } = route.params;
 
   // Game state
@@ -518,7 +521,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.map.miniChess.loadingGame}</Text>
         </View>
       </SafeAreaView>
@@ -529,7 +532,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centerContent}>
-          <Ionicons name="alert-circle-outline" size={48} color={THEME.danger} />
+          <Ionicons name="alert-circle-outline" size={48} color={theme.danger} />
           <Text style={styles.errorText}>{error || S.map.miniChess.loadGameFailed}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={fetchGame}>
             <Text style={styles.retryBtnText}>{S.common.retry}</Text>
@@ -745,7 +748,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
     const isDraw = result === 'draw';
     const title = isVictory ? S.map.miniChess.victory : isDraw ? S.map.miniChess.draw : S.map.miniChess.defeated;
     const icon = isVictory ? 'trophy' : isDraw ? 'swap-horizontal' : 'close-circle';
-    const color = isVictory ? '#FFB800' : isDraw ? THEME.primary : '#FF4757';
+    const color = isVictory ? '#FFB800' : isDraw ? theme.primary : '#FF4757';
 
     return (
       <Animated.View
@@ -791,12 +794,12 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
           <Ionicons
             name={isYourTurn ? 'flash' : 'hourglass-outline'}
             size={18}
-            color={isYourTurn ? '#FFB800' : THEME.textSecondary}
+            color={isYourTurn ? '#FFB800' : theme.textSecondary}
           />
           <Text
             style={[
               styles.turnBannerText,
-              { color: isYourTurn ? '#FFB800' : THEME.textSecondary },
+              { color: isYourTurn ? '#FFB800' : theme.textSecondary },
             ]}
           >
             {isYourTurn ? S.map.miniChess.yourTurn : S.map.miniChess.waitingOpponent}
@@ -804,7 +807,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         </View>
         {timeLeft ? (
           <View style={styles.timerBadge}>
-            <Ionicons name="time-outline" size={14} color={THEME.textSecondary} />
+            <Ionicons name="time-outline" size={14} color={theme.textSecondary} />
             <Text style={styles.timerText}>{timeLeft}</Text>
           </View>
         ) : null}
@@ -825,12 +828,12 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
           <View style={styles.headerTitleRow}>
-            <Ionicons name="shield-half-outline" size={16} color={THEME.primary} />
+            <Ionicons name="shield-half-outline" size={16} color={theme.primary} />
             <Text style={styles.headerTitle}>{S.map.miniChess.headerTitle}</Text>
           </View>
           <Text style={styles.headerSubtitle}>{t(S.map.miniChess.vsUsername, { username: opponentUsername })}</Text>
@@ -887,17 +890,17 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         {/* Game Info */}
         <View style={styles.gameInfo}>
           <View style={styles.gameInfoItem}>
-            <Ionicons name="layers-outline" size={16} color={THEME.textSecondary} />
+            <Ionicons name="layers-outline" size={16} color={theme.textSecondary} />
             <Text style={styles.gameInfoText}>{t(S.map.miniChess.turnNumber, { number: game.turn_number })}</Text>
           </View>
           <View style={styles.gameInfoDivider} />
           <View style={styles.gameInfoItem}>
-            <Ionicons name="information-circle-outline" size={16} color={THEME.textSecondary} />
+            <Ionicons name="information-circle-outline" size={16} color={theme.textSecondary} />
             <Text style={styles.gameInfoText}>{S.map.miniChess.boardSize}</Text>
           </View>
           <View style={styles.gameInfoDivider} />
           <View style={styles.gameInfoItem}>
-            <Ionicons name="timer-outline" size={16} color={THEME.textSecondary} />
+            <Ionicons name="timer-outline" size={16} color={theme.textSecondary} />
             <Text style={styles.gameInfoText}>{S.map.miniChess.turnLimit}</Text>
           </View>
         </View>
@@ -905,7 +908,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
         {/* Rules */}
         <View style={styles.rulesCard}>
           <View style={styles.rulesHeader}>
-            <Ionicons name="book-outline" size={16} color={THEME.primary} />
+            <Ionicons name="book-outline" size={16} color={theme.primary} />
             <Text style={styles.rulesTitle}>{S.map.miniChess.rulesTitle}</Text>
           </View>
           <Text style={styles.rulesText}>
@@ -917,7 +920,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
       {/* Submitting overlay */}
       {isSubmitting && (
         <View style={styles.submittingOverlay}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
         </View>
       )}
 
@@ -932,10 +935,11 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   centerContent: {
     flex: 1,
@@ -945,24 +949,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
   },
   errorText: {
-    color: THEME.danger,
+    color: theme.danger,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
     textAlign: 'center',
   },
   retryBtn: {
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.md,
   },
   retryBtnText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
@@ -979,11 +983,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   headerCenter: {
     alignItems: 'center',
@@ -995,12 +999,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   headerTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },
   headerSubtitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
@@ -1018,7 +1022,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   colorLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -1051,8 +1055,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 184, 0, 0.25)',
   },
   turnBannerWaiting: {
-    backgroundColor: THEME.surface,
-    borderColor: THEME.border,
+    backgroundColor: theme.surface,
+    borderColor: theme.border,
   },
   turnBannerLeft: {
     flexDirection: 'row',
@@ -1073,7 +1077,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
   },
   timerText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
@@ -1088,7 +1092,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   capturedLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -1199,14 +1203,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   gameInfoText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
   },
   gameInfoDivider: {
     width: 1,
     height: 14,
-    backgroundColor: THEME.border,
+    backgroundColor: theme.border,
   },
 
   // ─── Rules ────────────────────────────────────────────────────────────
@@ -1214,10 +1218,10 @@ const styles = StyleSheet.create({
     marginTop: SPACING.lg,
     marginHorizontal: 20,
     padding: SPACING.lg,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     gap: SPACING.sm,
   },
   rulesHeader: {
@@ -1226,12 +1230,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   rulesTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   rulesText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     lineHeight: 20,
   },
@@ -1245,27 +1249,27 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   promotionDialog: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     alignItems: 'center',
     gap: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     width: 260,
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 20,
     elevation: 16,
   },
   promotionTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
   },
   promotionSubtitle: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
     marginTop: -SPACING.sm,
@@ -1278,9 +1282,9 @@ const styles = StyleSheet.create({
     width: 90,
     height: 100,
     borderRadius: RADIUS.lg,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     borderWidth: 2,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 6,
@@ -1291,7 +1295,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 8,
   },
   promotionLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -1302,7 +1306,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
   },
   promotionCancelText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
@@ -1326,7 +1330,7 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
   },
   resultMessage: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
     textAlign: 'center',
@@ -1343,7 +1347,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   resultButtonText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },

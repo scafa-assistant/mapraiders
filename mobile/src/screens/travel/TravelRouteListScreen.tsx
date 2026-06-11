@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, FONT_SIZE } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, FONT_SIZE } from '../../utils/constants';
 import { strings as S } from '../../i18n';
 
 export default function TravelRouteListScreen() {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.content}>
         <View style={styles.iconCircle}>
-          <Ionicons name="trail-sign-outline" size={48} color={THEME.primary} />
+          <Ionicons name="trail-sign-outline" size={48} color={theme.primary} />
         </View>
         <Text style={styles.title}>{S.travel.list.title}</Text>
         <Text style={styles.subtitle}>{S.common.comingSoon}</Text>
@@ -22,8 +26,9 @@ export default function TravelRouteListScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: THEME.bg },
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+  container: { flex: 1, backgroundColor: theme.bg },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -42,19 +47,19 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
     marginBottom: 8,
   },
   subtitle: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginBottom: 16,
   },
   description: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
     textAlign: 'center',
     lineHeight: 22,

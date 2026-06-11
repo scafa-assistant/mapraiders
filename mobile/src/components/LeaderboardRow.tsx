@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S } from '../i18n';
 import { getRankColor } from '../utils/colors';
 import { formatXP } from '../utils/formatters';
@@ -28,6 +29,8 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   rank,
   isCurrentUser,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const rankColor = getRankColor(rank);
   const isTopThree = rank <= 3;
 
@@ -70,13 +73,13 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
         <View
           style={[
             styles.avatarCircle,
-            { borderColor: isCurrentUser ? THEME.primary : THEME.border },
+            { borderColor: isCurrentUser ? theme.primary : theme.border },
           ]}
         >
           <Ionicons
             name="person"
             size={14}
-            color={isCurrentUser ? THEME.primary : THEME.textSecondary}
+            color={isCurrentUser ? theme.primary : theme.textSecondary}
           />
         </View>
         <View style={styles.nameContainer}>
@@ -115,19 +118,20 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   currentUserContainer: {
     backgroundColor: 'rgba(0, 212, 255, 0.06)',
     borderLeftWidth: 3,
-    borderLeftColor: THEME.primary,
+    borderLeftColor: theme.primary,
   },
   topThreeContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.02)',
@@ -151,7 +155,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -161,12 +165,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   username: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
   currentUserText: {
-    color: THEME.primary,
+    color: theme.primary,
   },
   scoreContainer: {
     marginLeft: SPACING.md,
@@ -174,12 +178,12 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   scoreText: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   currentUserScore: {
-    color: THEME.primary,
+    color: theme.primary,
   },
 });
 

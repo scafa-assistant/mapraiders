@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE } from '../utils/constants';
 
 interface StatBarProps {
   /** Current value. */
@@ -9,7 +10,7 @@ interface StatBarProps {
   max: number;
   /** Optional label shown above the bar. */
   label?: string;
-  /** Bar fill color. Defaults to primary. */
+  /** Bar fill color. Defaults to the theme primary color. */
   color?: string;
   /** Height of the bar. Defaults to 8. */
   height?: number;
@@ -29,12 +30,15 @@ const StatBar: React.FC<StatBarProps> = ({
   current,
   max,
   label,
-  color = THEME.primary,
+  color,
   height = 8,
   showPercentage = true,
   showValues = false,
   animationDuration = 600,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const fillColor = color ?? theme.primary;
   const animatedWidth = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0.4)).current;
 
@@ -90,7 +94,7 @@ const StatBar: React.FC<StatBarProps> = ({
               </Text>
             )}
             {showPercentage && (
-              <Text style={[styles.percentageText, { color }]}>
+              <Text style={[styles.percentageText, { color: fillColor }]}>
                 {Math.round(percentage)}%
               </Text>
             )}
@@ -108,7 +112,7 @@ const StatBar: React.FC<StatBarProps> = ({
               width: widthInterpolated,
               height,
               borderRadius: height / 2,
-              backgroundColor: color,
+              backgroundColor: fillColor,
             },
           ]}
         >
@@ -120,7 +124,8 @@ const StatBar: React.FC<StatBarProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   wrapper: {
     width: '100%',
   },
@@ -131,7 +136,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   label: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '500',
   },
@@ -141,7 +146,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   valueText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   percentageText: {

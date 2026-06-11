@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,26 +10,29 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { notificationApi } from '../../services/api';
 import { formatRelativeTime } from '../../utils/formatters';
 import { strings as S } from '../../i18n';
 import type { NotificationsScreenProps } from '../../navigation/types';
 import type { NotificationData } from '../../utils/types';
 
-const NOTIFICATION_ICONS: Record<
-  NotificationData['type'],
-  { name: keyof typeof Ionicons.glyphMap; color: string }
-> = {
-  territory_contested: { name: 'shield', color: THEME.danger },
-  quest_completed: { name: 'flag', color: THEME.accent },
-  level_up: { name: 'star', color: THEME.warning },
-  challenge_nearby: { name: 'flash', color: THEME.secondary },
+const getNotificationIcons = (
+  theme: Theme
+): Record<NotificationData['type'], { name: keyof typeof Ionicons.glyphMap; color: string }> => ({
+  territory_contested: { name: 'shield', color: theme.danger },
+  quest_completed: { name: 'flag', color: theme.accent },
+  level_up: { name: 'star', color: theme.warning },
+  challenge_nearby: { name: 'flash', color: theme.secondary },
   echo_liked: { name: 'heart', color: '#FF6B8A' },
-  general: { name: 'notifications', color: THEME.primary },
-};
+  general: { name: 'notifications', color: theme.primary },
+});
 
 export default function NotificationsScreen({ navigation }: NotificationsScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const notificationIcons = useMemo(() => getNotificationIcons(theme), [theme]);
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -86,7 +89,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const renderNotification = ({ item }: { item: NotificationData }) => {
-    const iconConfig = NOTIFICATION_ICONS[item.type] ?? NOTIFICATION_ICONS.general;
+    const iconConfig = notificationIcons[item.type] ?? notificationIcons.general;
 
     return (
       <TouchableOpacity
@@ -122,7 +125,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
     if (loading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="notifications-off-outline" size={64} color="#2A3450" />
+        <Ionicons name="notifications-off-outline" size={64} color={theme.textSecondary} />
         <Text style={styles.emptyTitle}>{S.profile.notifications.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
           {S.profile.notifications.emptySubtext}
@@ -139,7 +142,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.profile.notifications.title}</Text>
         {unreadCount > 0 ? (
@@ -147,7 +150,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
             style={styles.markReadBtn}
             onPress={handleMarkAllRead}
           >
-            <Ionicons name="checkmark-done" size={20} color={THEME.primary} />
+            <Ionicons name="checkmark-done" size={20} color={theme.primary} />
             <Text style={styles.markReadText}>{S.profile.notifications.readAll}</Text>
           </TouchableOpacity>
         ) : (
@@ -158,7 +161,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
       {/* Notifications List */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>{S.profile.notifications.loadingNotifications}</Text>
         </View>
       ) : (
@@ -173,8 +176,8 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
         />
@@ -183,10 +186,11 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -199,18 +203,18 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     marginRight: SPACING.md,
   },
   headerTitle: {
     flex: 1,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 1,
   },
   markReadBtn: {
@@ -223,7 +227,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   markReadText: {
-    color: THEME.primary,
+    color: theme.primary,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
   },
@@ -237,7 +241,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.md,
   },
   listContent: {
@@ -249,12 +253,12 @@ const styles = StyleSheet.create({
   notificationCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   notificationUnread: {
     borderColor: 'rgba(0, 212, 255, 0.2)',
@@ -266,7 +270,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
   },
   iconCircle: {
     width: 44,
@@ -280,19 +284,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   notificationTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginBottom: 4,
   },
   notificationBody: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     lineHeight: 18,
     marginBottom: 4,
   },
   notificationTime: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   emptyContainer: {
@@ -302,13 +306,13 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   emptyTitle: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     marginTop: SPACING.lg,
   },
   emptySubtext: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginTop: SPACING.sm,
   },

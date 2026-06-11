@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { clanApi } from '../../services/api';
 import { strings as S } from '../../i18n';
 
@@ -29,6 +30,8 @@ const PRESET_COLORS = [
 ];
 
 export default function CreateClanScreen({ navigation }: { navigation: any }) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [name, setName] = useState('');
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
@@ -71,7 +74,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.profile.createClan.title}</Text>
         <View style={styles.headerSpacer} />
@@ -104,7 +107,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               <Ionicons
                 name={isPublic ? 'globe-outline' : 'lock-closed-outline'}
                 size={12}
-                color={THEME.textSecondary}
+                color={theme.textSecondary}
               />
               <Text style={styles.previewMetaText}>
                 {isPublic ? S.profile.clan.public : S.profile.clan.private}
@@ -116,7 +119,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>{S.profile.createClan.nameLabel} *</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="people" size={18} color={THEME.textSecondary} style={styles.inputIcon} />
+              <Ionicons name="people" size={18} color={theme.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder={S.profile.createClan.namePlaceholder}
@@ -137,7 +140,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>{S.profile.createClan.tagLabel} *</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="pricetag" size={18} color={THEME.textSecondary} style={styles.inputIcon} />
+              <Ionicons name="pricetag" size={18} color={theme.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder={S.profile.createClan.tagPlaceholder}
@@ -223,7 +226,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
                 <Ionicons
                   name="globe-outline"
                   size={20}
-                  color={isPublic ? THEME.bg : THEME.textSecondary}
+                  color={isPublic ? theme.bg : theme.textSecondary}
                 />
                 <Text style={[styles.toggleText, isPublic && styles.toggleTextActive]}>
                   {S.profile.clan.public}
@@ -240,7 +243,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
                 <Ionicons
                   name="lock-closed-outline"
                   size={20}
-                  color={!isPublic ? THEME.bg : THEME.textSecondary}
+                  color={!isPublic ? theme.bg : theme.textSecondary}
                 />
                 <Text style={[styles.toggleText, !isPublic && styles.toggleTextActive]}>
                   {S.profile.clan.private}
@@ -276,10 +279,11 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
   header: {
     flexDirection: 'row',
@@ -292,18 +296,18 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     marginRight: SPACING.md,
   },
   headerTitle: {
     flex: 1,
     fontSize: FONT_SIZE.xxl,
     fontWeight: '900',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 1,
   },
   headerSpacer: {
@@ -317,13 +321,13 @@ const styles = StyleSheet.create({
 
   // ─── Preview Card ──────────────────────────────────
   previewCard: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     marginBottom: SPACING.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     borderTopWidth: 4,
     overflow: 'hidden',
   },
@@ -356,7 +360,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   previewName: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
     textAlign: 'center',
@@ -368,7 +372,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
   },
   previewMetaText: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
 
@@ -377,7 +381,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   label: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
     marginBottom: SPACING.sm,
@@ -387,10 +391,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     paddingHorizontal: SPACING.lg,
     height: 52,
   },
@@ -404,7 +408,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '500',
   },
@@ -419,7 +423,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorHint: {
-    color: THEME.danger,
+    color: theme.danger,
     fontSize: FONT_SIZE.xs,
     marginTop: 4,
     marginLeft: 2,
@@ -431,7 +435,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
   tagPreviewLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
   },
   tagPreviewChip: {
@@ -449,11 +453,11 @@ const styles = StyleSheet.create({
   colorRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   colorCircle: {
     width: 36,
@@ -480,28 +484,28 @@ const styles = StyleSheet.create({
   },
   toggleBtn: {
     flex: 1,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     alignItems: 'center',
     gap: 6,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   toggleBtnActive: {
-    backgroundColor: THEME.primary,
-    borderColor: THEME.primary,
+    backgroundColor: theme.primary,
+    borderColor: theme.primary,
   },
   toggleText: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   toggleTextActive: {
-    color: THEME.bg,
+    color: theme.bg,
   },
   toggleSubtext: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     textAlign: 'center',
   },

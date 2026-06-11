@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { THEME, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
+import { useTheme } from '../hooks/useTheme';
+import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S } from '../i18n';
 import type { Rating } from '../utils/types';
 
@@ -30,6 +31,9 @@ interface StarRowProps {
  * A single row of 5 tappable stars.
  */
 const StarRow: React.FC<StarRowProps> = ({ label, value, onChange }) => {
+  const theme = useTheme();
+  const starStyles = useMemo(() => createStarStyles(theme), [theme]);
+
   return (
     <View style={starStyles.row}>
       <Text style={starStyles.label}>{label}</Text>
@@ -44,7 +48,7 @@ const StarRow: React.FC<StarRowProps> = ({ label, value, onChange }) => {
             <Ionicons
               name={star <= value ? 'star' : 'star-outline'}
               size={28}
-              color={star <= value ? THEME.warning : THEME.textSecondary}
+              color={star <= value ? theme.warning : theme.textSecondary}
             />
           </TouchableOpacity>
         ))}
@@ -53,17 +57,18 @@ const StarRow: React.FC<StarRowProps> = ({ label, value, onChange }) => {
   );
 };
 
-const starStyles = StyleSheet.create({
+const createStarStyles = (theme: Theme) =>
+  StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: SPACING.md,
     borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
+    borderBottomColor: theme.border,
   },
   label: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     fontWeight: '500',
     flex: 1,
@@ -84,6 +89,8 @@ const RatingForm: React.FC<RatingFormProps> = ({
   isSubmitting = false,
   title = S.components.ratingForm.titleDefault,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [creativity, setCreativity] = useState(0);
   const [difficulty, setDifficulty] = useState(0);
   const [worthIt, setWorthIt] = useState(0);
@@ -105,7 +112,7 @@ const RatingForm: React.FC<RatingFormProps> = ({
     <View style={styles.container}>
       {/* Title */}
       <View style={styles.header}>
-        <Ionicons name="star-half-outline" size={20} color={THEME.warning} />
+        <Ionicons name="star-half-outline" size={20} color={theme.warning} />
         <Text style={styles.title}>{title}</Text>
       </View>
 
@@ -124,7 +131,7 @@ const RatingForm: React.FC<RatingFormProps> = ({
           value={comment}
           onChangeText={setComment}
           placeholder={S.components.ratingForm.commentPlaceholder}
-          placeholderTextColor={THEME.textSecondary}
+          placeholderTextColor={theme.textSecondary}
           multiline
           maxLength={500}
           textAlignVertical="top"
@@ -143,7 +150,7 @@ const RatingForm: React.FC<RatingFormProps> = ({
           <Text style={styles.submitText}>{S.components.ratingForm.submitting}</Text>
         ) : (
           <>
-            <Ionicons name="send-outline" size={18} color={THEME.bg} />
+            <Ionicons name="send-outline" size={18} color={theme.bg} />
             <Text style={styles.submitText}>{S.components.ratingForm.submit}</Text>
           </>
         )}
@@ -152,14 +159,15 @@ const RatingForm: React.FC<RatingFormProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     marginHorizontal: SPACING.lg,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
   },
   header: {
     flexDirection: 'row',
@@ -168,7 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   title: {
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
   },
@@ -179,30 +187,30 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   commentLabel: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.sm,
     marginBottom: SPACING.sm,
   },
   commentInput: {
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: THEME.border,
+    borderColor: theme.border,
     padding: SPACING.md,
-    color: THEME.text,
+    color: theme.text,
     fontSize: FONT_SIZE.md,
     minHeight: 80,
     maxHeight: 160,
   },
   charCount: {
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     textAlign: 'right',
     marginTop: SPACING.xs,
   },
   submitButton: {
     flexDirection: 'row',
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     alignItems: 'center',
@@ -213,7 +221,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   submitText: {
-    color: THEME.bg,
+    color: theme.bg,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
   },

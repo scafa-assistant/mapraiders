@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { playerApi, friendApi } from '../../services/api';
 import { strings as S, t, plural } from '../../i18n';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -32,6 +33,8 @@ const DEBOUNCE_MS = 300;
 const MIN_CHARS = 2;
 
 export default function PlayerSearchScreen({ navigation }: Props) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<PlayerResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -139,7 +142,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
             />
           ) : (
             <View style={styles.avatarPlaceholder}>
-              <Ionicons name="person" size={22} color={THEME.textSecondary} />
+              <Ionicons name="person" size={22} color={theme.textSecondary} />
             </View>
           )}
 
@@ -149,7 +152,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
               {item.username}
             </Text>
             <View style={styles.levelBadge}>
-              <Ionicons name="star" size={10} color={THEME.warning} />
+              <Ionicons name="star" size={10} color={theme.warning} />
               <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
             </View>
           </View>
@@ -158,11 +161,11 @@ export default function PlayerSearchScreen({ navigation }: Props) {
         {/* Add Button */}
         {isSending ? (
           <View style={styles.sendingContainer}>
-            <ActivityIndicator size="small" color={THEME.primary} />
+            <ActivityIndicator size="small" color={theme.primary} />
           </View>
         ) : isSent ? (
           <View style={styles.sentBadge}>
-            <Ionicons name="checkmark" size={14} color={THEME.textSecondary} />
+            <Ionicons name="checkmark" size={14} color={theme.textSecondary} />
             <Text style={styles.sentText}>{S.social.playerSearch.requested}</Text>
           </View>
         ) : (
@@ -171,7 +174,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
             activeOpacity={0.7}
             onPress={() => handleSendRequest(item)}
           >
-            <Ionicons name="person-add" size={14} color="#0A0E17" />
+            <Ionicons name="person-add" size={14} color={theme.bg} />
             <Text style={styles.addBtnText}>{S.social.playerSearch.add}</Text>
           </TouchableOpacity>
         )}
@@ -186,7 +189,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
       return (
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
-            <Ionicons name="search-outline" size={48} color={THEME.textSecondary} />
+            <Ionicons name="search-outline" size={48} color={theme.textSecondary} />
           </View>
           <Text style={styles.emptyTitle}>{S.social.playerSearch.emptyInitialTitle}</Text>
           <Text style={styles.emptySubtitle}>
@@ -199,7 +202,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconCircle}>
-          <Ionicons name="sad-outline" size={48} color={THEME.textSecondary} />
+          <Ionicons name="sad-outline" size={48} color={theme.textSecondary} />
         </View>
         <Text style={styles.emptyTitle}>{S.social.playerSearch.noResultsTitle}</Text>
         <Text style={styles.emptySubtitle}>
@@ -217,7 +220,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
           style={styles.headerBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{S.social.playerSearch.title}</Text>
         <View style={{ width: 40 }} />
@@ -226,12 +229,12 @@ export default function PlayerSearchScreen({ navigation }: Props) {
       {/* Search Input */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color={THEME.primary} />
+          <Ionicons name="search" size={20} color={theme.primary} />
           <TextInput
             ref={inputRef}
             style={styles.searchInput}
             placeholder={S.social.playerSearch.placeholder}
-            placeholderTextColor={THEME.textSecondary}
+            placeholderTextColor={theme.textSecondary}
             value={query}
             onChangeText={handleChangeText}
             autoCorrect={false}
@@ -248,7 +251,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
                 inputRef.current?.focus();
               }}
             >
-              <Ionicons name="close-circle" size={20} color={THEME.textSecondary} />
+              <Ionicons name="close-circle" size={20} color={theme.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
@@ -269,7 +272,7 @@ export default function PlayerSearchScreen({ navigation }: Props) {
       {/* Loading overlay for initial search */}
       {loading && !hasSearched ? null : loading ? (
         <View style={styles.inlineLoading}>
-          <ActivityIndicator size="small" color={THEME.primary} />
+          <ActivityIndicator size="small" color={theme.primary} />
           <Text style={styles.loadingText}>{S.social.playerSearch.searching}</Text>
         </View>
       ) : null}
@@ -291,10 +294,11 @@ export default function PlayerSearchScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
 
   // ─── Header ────────────────────────────────────────────────────────────────
@@ -309,16 +313,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: RADIUS.md,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   headerTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 0.3,
   },
 
@@ -332,12 +336,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.xl,
     borderWidth: 1.5,
-    borderColor: `${THEME.primary}30`,
+    borderColor: `${theme.primary}30`,
     gap: SPACING.sm,
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -346,12 +350,12 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: FONT_SIZE.lg,
-    color: THEME.text,
+    color: theme.text,
     paddingVertical: SPACING.xs,
   },
   hintText: {
     fontSize: FONT_SIZE.xs,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     marginTop: SPACING.xs,
     marginLeft: SPACING.lg,
   },
@@ -359,7 +363,7 @@ const styles = StyleSheet.create({
   // ─── Count ─────────────────────────────────────────────────────────────────
   countText: {
     fontSize: FONT_SIZE.sm,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.sm,
   },
@@ -374,7 +378,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: FONT_SIZE.sm,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
   },
 
   // ─── Player Card ───────────────────────────────────────────────────────────
@@ -384,10 +388,10 @@ const styles = StyleSheet.create({
     paddingRight: SPACING.lg,
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.sm,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     overflow: 'hidden',
   },
   playerTappable: {
@@ -405,17 +409,17 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: RADIUS.full,
     borderWidth: 2,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   avatarPlaceholder: {
     width: 48,
     height: 48,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}10`,
+    backgroundColor: `${theme.primary}10`,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
 
   // ─── Player Info ───────────────────────────────────────────────────────────
@@ -426,14 +430,14 @@ const styles = StyleSheet.create({
   playerName: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
-    color: THEME.text,
+    color: theme.text,
   },
   levelBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
     gap: 3,
-    backgroundColor: `${THEME.warning}15`,
+    backgroundColor: `${theme.warning}15`,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 2,
     borderRadius: RADIUS.full,
@@ -441,7 +445,7 @@ const styles = StyleSheet.create({
   levelText: {
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
-    color: THEME.warning,
+    color: theme.warning,
   },
 
   // ─── Add Button ────────────────────────────────────────────────────────────
@@ -449,11 +453,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: RADIUS.lg,
-    shadowColor: THEME.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
@@ -462,7 +466,7 @@ const styles = StyleSheet.create({
   addBtnText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: '700',
-    color: '#0A0E17',
+    color: theme.bg,
   },
 
   // ─── Sent Badge ────────────────────────────────────────────────────────────
@@ -470,17 +474,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: `${THEME.textSecondary}15`,
+    backgroundColor: `${theme.textSecondary}15`,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: `${THEME.textSecondary}20`,
+    borderColor: `${theme.textSecondary}20`,
   },
   sentText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: '600',
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
   },
 
   // ─── Sending ───────────────────────────────────────────────────────────────
@@ -498,22 +502,22 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}08`,
+    backgroundColor: `${theme.primary}08`,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xl,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   emptyTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
-    color: THEME.text,
+    color: theme.text,
     marginBottom: SPACING.sm,
   },
   emptySubtitle: {
     fontSize: FONT_SIZE.md,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },

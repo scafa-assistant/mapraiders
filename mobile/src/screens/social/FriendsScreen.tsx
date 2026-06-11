@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { THEME, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { friendApi } from '../../services/api';
 import { strings as S, t, plural } from '../../i18n';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -33,6 +34,8 @@ interface Friend {
 const AVATAR_BASE = 'https://api.mapraiders.com';
 
 export default function FriendsScreen({ navigation }: Props) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -128,7 +131,7 @@ export default function FriendsScreen({ navigation }: Props) {
           />
         ) : (
           <View style={styles.avatarPlaceholder}>
-            <Ionicons name="person" size={22} color={THEME.textSecondary} />
+            <Ionicons name="person" size={22} color={theme.textSecondary} />
           </View>
         )}
         {item.is_online && <View style={styles.onlineDot} />}
@@ -141,7 +144,7 @@ export default function FriendsScreen({ navigation }: Props) {
         </Text>
         <View style={styles.levelRow}>
           <View style={styles.levelBadge}>
-            <Ionicons name="star" size={10} color={THEME.warning} />
+            <Ionicons name="star" size={10} color={theme.warning} />
             <Text style={styles.levelText}>{t(S.social.levelShort, { level: item.level ?? 1 })}</Text>
           </View>
           {item.is_online ? (
@@ -153,7 +156,7 @@ export default function FriendsScreen({ navigation }: Props) {
       </View>
 
       {/* Chevron */}
-      <Ionicons name="chevron-forward" size={18} color={THEME.textSecondary} />
+      <Ionicons name="chevron-forward" size={18} color={theme.textSecondary} />
     </TouchableOpacity>
   );
 
@@ -162,7 +165,7 @@ export default function FriendsScreen({ navigation }: Props) {
     return (
       <View style={styles.emptyContainer}>
         <View style={styles.emptyIconCircle}>
-          <Ionicons name="people-outline" size={48} color={THEME.textSecondary} />
+          <Ionicons name="people-outline" size={48} color={theme.textSecondary} />
         </View>
         <Text style={styles.emptyTitle}>{S.social.friends.emptyTitle}</Text>
         <Text style={styles.emptySubtitle}>
@@ -173,7 +176,7 @@ export default function FriendsScreen({ navigation }: Props) {
           activeOpacity={0.8}
           onPress={() => navigation.navigate('PlayerSearch')}
         >
-          <Ionicons name="search" size={18} color="#0A0E17" />
+          <Ionicons name="search" size={18} color={theme.bg} />
           <Text style={styles.emptySearchBtnText}>{S.social.friends.searchPlayers}</Text>
         </TouchableOpacity>
       </View>
@@ -188,7 +191,7 @@ export default function FriendsScreen({ navigation }: Props) {
           style={styles.headerBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={22} color={THEME.text} />
+          <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{S.social.friends.title}</Text>
@@ -197,7 +200,7 @@ export default function FriendsScreen({ navigation }: Props) {
           style={styles.headerBtn}
           onPress={() => navigation.navigate('PlayerSearch')}
         >
-          <Ionicons name="search" size={22} color={THEME.primary} />
+          <Ionicons name="search" size={22} color={theme.primary} />
           {pendingCount > 0 && (
             <View style={styles.headerBadge}>
               <Text style={styles.headerBadgeText}>
@@ -216,7 +219,7 @@ export default function FriendsScreen({ navigation }: Props) {
       >
         <View style={styles.requestsBtnLeft}>
           <View style={styles.requestsIconCircle}>
-            <Ionicons name="mail-outline" size={18} color={THEME.primary} />
+            <Ionicons name="mail-outline" size={18} color={theme.primary} />
           </View>
           <Text style={styles.requestsBtnText}>{S.social.friends.requests}</Text>
           {pendingCount > 0 && (
@@ -225,17 +228,17 @@ export default function FriendsScreen({ navigation }: Props) {
             </View>
           )}
         </View>
-        <Ionicons name="chevron-forward" size={18} color={THEME.textSecondary} />
+        <Ionicons name="chevron-forward" size={18} color={theme.textSecondary} />
       </TouchableOpacity>
 
       {/* Search Bar */}
       {friends.length > 0 && (
         <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={18} color={THEME.textSecondary} />
+          <Ionicons name="search-outline" size={18} color={theme.textSecondary} />
           <TextInput
             style={styles.searchInput}
             placeholder={S.social.friends.filterPlaceholder}
-            placeholderTextColor={THEME.textSecondary}
+            placeholderTextColor={theme.textSecondary}
             value={searchText}
             onChangeText={setSearchText}
             autoCorrect={false}
@@ -243,7 +246,7 @@ export default function FriendsScreen({ navigation }: Props) {
           />
           {searchText.length > 0 && (
             <TouchableOpacity onPress={() => setSearchText('')}>
-              <Ionicons name="close-circle" size={18} color={THEME.textSecondary} />
+              <Ionicons name="close-circle" size={18} color={theme.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
@@ -259,7 +262,7 @@ export default function FriendsScreen({ navigation }: Props) {
       {/* List */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={THEME.primary} />
+          <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
         <FlatList
@@ -276,8 +279,8 @@ export default function FriendsScreen({ navigation }: Props) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={THEME.primary}
-              colors={[THEME.primary]}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
             />
           }
           showsVerticalScrollIndicator={false}
@@ -287,10 +290,11 @@ export default function FriendsScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.bg,
+    backgroundColor: theme.bg,
   },
 
   // ─── Header ────────────────────────────────────────────────────────────────
@@ -305,23 +309,23 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: RADIUS.md,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   headerTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
-    color: THEME.text,
+    color: theme.text,
     letterSpacing: 0.5,
   },
   headerBadge: {
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: THEME.danger,
+    backgroundColor: theme.danger,
     borderRadius: RADIUS.full,
     minWidth: 18,
     height: 18,
@@ -329,7 +333,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 4,
     borderWidth: 2,
-    borderColor: THEME.bg,
+    borderColor: theme.bg,
   },
   headerBadgeText: {
     fontSize: 9,
@@ -346,10 +350,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   requestsBtnLeft: {
     flexDirection: 'row',
@@ -360,17 +364,17 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}15`,
+    backgroundColor: `${theme.primary}15`,
     alignItems: 'center',
     justifyContent: 'center',
   },
   requestsBtnText: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
-    color: THEME.text,
+    color: theme.text,
   },
   requestsBadge: {
-    backgroundColor: THEME.danger,
+    backgroundColor: theme.danger,
     borderRadius: RADIUS.full,
     minWidth: 22,
     height: 22,
@@ -393,23 +397,23 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: SPACING.sm,
   },
   searchInput: {
     flex: 1,
     fontSize: FONT_SIZE.md,
-    color: THEME.text,
+    color: theme.text,
     paddingVertical: SPACING.xs,
   },
 
   // ─── Count ─────────────────────────────────────────────────────────────────
   countText: {
     fontSize: FONT_SIZE.sm,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.sm,
   },
@@ -422,10 +426,10 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.sm,
-    backgroundColor: THEME.surface,
+    backgroundColor: theme.surface,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     gap: SPACING.md,
   },
 
@@ -438,17 +442,17 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: RADIUS.full,
     borderWidth: 2,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   avatarPlaceholder: {
     width: 48,
     height: 48,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}10`,
+    backgroundColor: `${theme.primary}10`,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   onlineDot: {
     position: 'absolute',
@@ -457,9 +461,9 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: RADIUS.full,
-    backgroundColor: THEME.accent,
+    backgroundColor: theme.accent,
     borderWidth: 3,
-    borderColor: THEME.surface,
+    borderColor: theme.surface,
   },
 
   // ─── Friend Info ───────────────────────────────────────────────────────────
@@ -470,7 +474,7 @@ const styles = StyleSheet.create({
   friendName: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '600',
-    color: THEME.text,
+    color: theme.text,
   },
   levelRow: {
     flexDirection: 'row',
@@ -481,7 +485,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    backgroundColor: `${THEME.warning}15`,
+    backgroundColor: `${theme.warning}15`,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 2,
     borderRadius: RADIUS.full,
@@ -489,16 +493,16 @@ const styles = StyleSheet.create({
   levelText: {
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
-    color: THEME.warning,
+    color: theme.warning,
   },
   onlineText: {
     fontSize: FONT_SIZE.xs,
-    color: THEME.accent,
+    color: theme.accent,
     fontWeight: '600',
   },
   offlineText: {
     fontSize: FONT_SIZE.xs,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
   },
 
   // ─── Empty State ───────────────────────────────────────────────────────────
@@ -511,22 +515,22 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: RADIUS.full,
-    backgroundColor: `${THEME.primary}08`,
+    backgroundColor: `${theme.primary}08`,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xl,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
   },
   emptyTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '700',
-    color: THEME.text,
+    color: theme.text,
     marginBottom: SPACING.sm,
   },
   emptySubtitle: {
     fontSize: FONT_SIZE.md,
-    color: THEME.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: SPACING.xl,
@@ -535,7 +539,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: THEME.primary,
+    backgroundColor: theme.primary,
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.lg,
@@ -543,7 +547,7 @@ const styles = StyleSheet.create({
   emptySearchBtnText: {
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
-    color: '#0A0E17',
+    color: theme.bg,
   },
 
   // ─── Loading ───────────────────────────────────────────────────────────────

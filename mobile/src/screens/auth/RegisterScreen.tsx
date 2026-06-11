@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,8 @@ import { useAuthStore } from '../../store/authStore';
 import { RegisterScreenProps } from '../../navigation/types';
 import { web3authService } from '../../services/web3auth';
 import { strings as S } from '../../i18n';
+import { useTheme } from '../../hooks/useTheme';
+import { Theme } from '../../utils/constants';
 
 const { width } = Dimensions.get('window');
 
@@ -30,6 +32,8 @@ interface ValidationErrors {
 }
 
 export default function RegisterScreen({ navigation }: RegisterScreenProps) {
+  const theme = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -165,7 +169,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="arrow-back" size={24} color="#8892B0" />
+            <Ionicons name="arrow-back" size={24} color={theme.textSecondary} />
           </TouchableOpacity>
 
           {/* Header */}
@@ -254,11 +258,11 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 validationErrors.username ? styles.inputError : null,
               ]}
             >
-              <Ionicons name="person-outline" size={20} color="#8892B0" style={styles.inputIcon} />
+              <Ionicons name="person-outline" size={20} color={theme.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder={S.auth.register.usernamePlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={username}
                 onChangeText={(text) => {
                   setUsername(text);
@@ -286,12 +290,12 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 validationErrors.email ? styles.inputError : null,
               ]}
             >
-              <Ionicons name="mail-outline" size={20} color="#8892B0" style={styles.inputIcon} />
+              <Ionicons name="mail-outline" size={20} color={theme.textSecondary} style={styles.inputIcon} />
               <TextInput
                 ref={emailRef}
                 style={styles.input}
                 placeholder={S.auth.register.emailPlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
@@ -323,14 +327,14 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <Ionicons
                 name="lock-closed-outline"
                 size={20}
-                color="#8892B0"
+                color={theme.textSecondary}
                 style={styles.inputIcon}
               />
               <TextInput
                 ref={passwordRef}
                 style={styles.input}
                 placeholder={S.auth.register.passwordPlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={password}
                 onChangeText={(text) => {
                   setPassword(text);
@@ -349,7 +353,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 <Ionicons
                   name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                   size={20}
-                  color="#8892B0"
+                  color={theme.textSecondary}
                 />
               </TouchableOpacity>
             </View>
@@ -382,12 +386,12 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 validationErrors.confirmPassword ? styles.inputError : null,
               ]}
             >
-              <Ionicons name="shield-checkmark-outline" size={20} color="#8892B0" style={styles.inputIcon} />
+              <Ionicons name="shield-checkmark-outline" size={20} color={theme.textSecondary} style={styles.inputIcon} />
               <TextInput
                 ref={confirmRef}
                 style={styles.input}
                 placeholder={S.auth.register.confirmPasswordPlaceholder}
-                placeholderTextColor="#555E78"
+                placeholderTextColor={theme.textSecondary}
                 value={confirmPassword}
                 onChangeText={(text) => {
                   setConfirmPassword(text);
@@ -473,10 +477,11 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: theme.bg,
   },
   keyboardView: {
     flex: 1,
@@ -490,7 +495,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -501,12 +506,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: theme.text,
     letterSpacing: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#8892B0',
+    color: theme.textSecondary,
     marginTop: 6,
   },
   errorBanner: {
@@ -582,10 +587,10 @@ const styles = StyleSheet.create({
   orDivider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
   },
   orDividerText: {
-    color: '#555E78',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
@@ -595,7 +600,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   label: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
@@ -604,10 +609,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: theme.border,
     paddingHorizontal: 16,
     height: 56,
   },
@@ -619,7 +624,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#FFFFFF',
+    color: theme.text,
     fontSize: 16,
     height: '100%',
   },
@@ -642,7 +647,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#1A2340',
+    backgroundColor: theme.border,
     overflow: 'hidden',
   },
   strengthBarFill: {
@@ -681,7 +686,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   loginLinkText: {
-    color: '#8892B0',
+    color: theme.textSecondary,
     fontSize: 14,
   },
   loginLinkAction: {
@@ -702,7 +707,7 @@ const styles = StyleSheet.create({
   checkboxText: {
     flex: 1,
     fontSize: 13,
-    color: '#8892B0',
+    color: theme.textSecondary,
     lineHeight: 20,
   },
   legalLink: {
