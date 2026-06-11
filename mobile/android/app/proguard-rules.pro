@@ -11,4 +11,8 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
+# expo-av references KeepAwakeManager which was removed from expo-modules-core 55.x.
+# Only the fullscreen-video keep-awake path touches it; safe to suppress for R8.
+-dontwarn expo.modules.core.interfaces.services.KeepAwakeManager
+
 # Add any project specific keep options here:
