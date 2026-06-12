@@ -33,6 +33,7 @@ import { recordCronRun, acquireCronLock, releaseCronLock } from '../services/cro
 import { runH3Backfill, runOsmPrefetch } from './phase0Jobs';
 import { runPveSpawnTick, runAetherLeechTick } from './phaseAJobs';
 import { runEnergyTick, runBuildingCompletion } from './phaseBJobs';
+import { runTroopArrivalTick, runVisibilityCleanup } from './phaseC1Jobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -953,6 +954,73 @@ export function setupCronJobs(): void {
       });
     } finally {
       await releaseCronLock('building_completion');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 5 minutes - Troop arrival tick: resolve due scout movements (Phase C.1)
+  // Short interval keeps scout reports + auto-returns prompt. Gated on the
+  // `commander` flag (runTroopArrivalTick no-ops while the flag is off).
+  // ------------------------------------------------------------------
+  cron.schedule('*/5 * * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('troop_arrival_tick', 240);
+    if (!locked) return;
+
+    try {
+      const processed = await runTroopArrivalTick();
+      await recordCronRun({
+        job: 'troop_arrival_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Troop arrival tick failed:', err);
+      await recordCronRun({
+        job: 'troop_arrival_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('troop_arrival_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 03:45 UTC - Visibility cleanup: delete expired fog-of-war rows (Phase C.1)
+  // No flag gate — removing expired rows is always safe.
+  // ------------------------------------------------------------------
+  cron.schedule('45 3 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('visibility_cleanup', 600);
+    if (!locked) return;
+
+    try {
+      const processed = await runVisibilityCleanup();
+      await recordCronRun({
+        job: 'visibility_cleanup',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Visibility cleanup failed:', err);
+      await recordCronRun({
+        job: 'visibility_cleanup',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('visibility_cleanup');
     }
   }, { timezone: 'UTC' });
 

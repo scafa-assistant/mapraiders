@@ -99,3 +99,31 @@ export function boundary(
 export function parent(cell: string, res: number): string {
   return h3.cellToParent(cell, res) as string;
 }
+
+/**
+ * Return the geographic center of an H3 cell as {latitude, longitude}.
+ *
+ * @param cell  H3 cell index string.
+ */
+export function centerOf(cell: string): { latitude: number; longitude: number } {
+  const [lat, lng] = h3.cellToLatLng(cell) as [number, number];
+  return { latitude: lat, longitude: lng };
+}
+
+/**
+ * Return the line of H3 cells between two cells (inclusive of both ends).
+ *
+ * gridPathCells throws for pentagon-adjacent cells or when the two cells are
+ * too far apart / at differing resolutions; in those cases we rethrow a plain
+ * Error('PATH_FAILED') so the caller can map it onto a domain error.
+ *
+ * @param a  Origin H3 cell index string.
+ * @param b  Destination H3 cell index string.
+ */
+export function pathBetween(a: string, b: string): string[] {
+  try {
+    return h3.gridPathCells(a, b) as string[];
+  } catch {
+    throw new Error('PATH_FAILED');
+  }
+}

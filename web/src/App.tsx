@@ -1,6 +1,7 @@
 // ============================================================
 // App shell — restore session, load feature flags, then render either the
-// login screen or the tabbed cockpit (Map / Inventory / Profile).
+// login screen or the tabbed cockpit (Map / Inventory / Profile / Commander).
+// Commander tab is only shown when the 'commander' feature flag is enabled.
 // ============================================================
 
 import { useEffect, useState } from 'react';
@@ -17,6 +18,7 @@ import TerritoryPanel from './components/TerritoryPanel';
 import TerminalPanel from './components/TerminalPanel';
 import InventoryList from './components/InventoryList';
 import ProfilePanel from './components/ProfilePanel';
+import CommanderView from './components/CommanderView';
 
 export default function App() {
   const status = useAuthStore((s) => s.status);
@@ -25,6 +27,7 @@ export default function App() {
   const loadFlags = useFeatureStore((s) => s.load);
   const flagsLoaded = useFeatureStore((s) => s.loaded);
   const resourcesEnabled = useFeatureStore((s) => s.isEnabled('resources'));
+  const commanderEnabled = useFeatureStore((s) => s.isEnabled('commander'));
   const refreshResources = useResourceStore((s) => s.refresh);
 
   const selectedId = useMapStore((s) => s.selectedId);
@@ -57,6 +60,13 @@ export default function App() {
       void refreshResources();
     }
   }, [tab, status, resourcesEnabled, refreshResources]);
+
+  // If the commander tab is active but the flag gets disabled, fall back to map.
+  useEffect(() => {
+    if (tab === 'commander' && !commanderEnabled) {
+      setTab('map');
+    }
+  }, [tab, commanderEnabled]);
 
   if (status === 'idle' || status === 'restoring') {
     return <div className="center-fill">Loading…</div>;
@@ -99,9 +109,20 @@ export default function App() {
             <ProfilePanel />
           </div>
         )}
+
+        {/* Commander tab — only rendered when the flag is on */}
+        {commanderEnabled && tab === 'commander' && (
+          <div className="tab-pane">
+            <CommanderView />
+          </div>
+        )}
       </div>
 
-      <TabBar active={tab} onChange={setTab} />
+      <TabBar
+        active={tab}
+        onChange={setTab}
+        showCommander={commanderEnabled}
+      />
     </div>
   );
 }

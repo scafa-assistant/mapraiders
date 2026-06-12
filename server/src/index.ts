@@ -62,6 +62,7 @@ import { resourcesRouter } from './routes/resources';
 import pveRouter from './routes/pve';
 import { buildingsRouter } from './routes/buildings';
 import { terminalsRouter } from './routes/terminals';
+import { commanderRouter } from './routes/commander';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -196,6 +197,7 @@ app.use('/api/resources', resourcesRouter);
 app.use('/api/pve', pveRouter);
 app.use('/api/buildings', buildingsRouter);
 app.use('/api/terminals', terminalsRouter);
+app.use('/api/commander', commanderRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {

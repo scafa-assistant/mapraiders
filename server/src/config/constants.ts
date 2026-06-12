@@ -674,3 +674,23 @@ export const TERMINALS = {
   PLAY_RADIUS_M: 75,
   LEADERBOARD_TTL_BUFFER_SEC: 604_800,
 } as const;
+
+// ============================================================
+// COMMANDER (Phase C.1) — Fog of War + Scouts.
+// The commander layer adds per-user map visibility (fog of war) revealed
+// by own territories, radars and dispatched scouts, plus generic troop
+// movement plumbing (C.1 ships scouts only). All gated behind the
+// `commander` feature flag.
+// ============================================================
+
+export const COMMANDER = {
+  SCOUT_MIN_PER_CELL: 4,        // travel minutes per res-8 cell
+  SCOUT_ENERGY_PER_CELL: 2,     // energy cost per one-way path cell
+  SCOUT_VISION_K: 1,            // disk radius revealed around scout target
+  SCOUT_VISION_TTL_HOURS: 24,
+  RADAR_VISION_K: 2,            // disk radius around a radar's territory cells
+  TERRITORY_VISION_K: 1,        // base vision around own territory cells
+  MAX_ACTIVE_SCOUTS: 3,
+  MAX_PATH_CELLS: 60,
+  MAX_VISIBLE_CELLS: 1500,      // hard response cap
+} as const;

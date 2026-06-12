@@ -55,7 +55,7 @@ router.get('/territory/:territoryId', authenticate, async (req: Request, res: Re
       return res.status(400).json({ success: false, message: 'Invalid territory ID' });
     }
 
-    const buildings = await buildingEngine.getBuildings(territoryId);
+    const buildings = await buildingEngine.getBuildings(territoryId, userId);
     return res.json({ success: true, data: { buildings } });
   } catch (err: any) {
     console.error('[Buildings] GET /territory/:territoryId error:', err);

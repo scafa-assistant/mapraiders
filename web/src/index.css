@@ -511,6 +511,25 @@ a {
   color: var(--text-dim);
 }
 
+/* ---- Commander: extra-dimmed tiles for "radar" look ---- */
+
+.commander-tiles {
+  filter: brightness(0.35) invert(1) contrast(0.85) hue-rotate(180deg)
+    saturate(0.5) brightness(0.85);
+}
+
+/* ---- Commander: animated dashed polyline ---- */
+
+@keyframes dash-march {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.leaflet-interactive[stroke-dasharray] {
+  animation: dash-march 1.2s linear infinite;
+}
+
 /* ---- Terminal marker pulse animation ---- */
 
 @keyframes terminal-pulse {

@@ -115,16 +115,27 @@ class BuildingEngine {
 
   /**
    * Return all non-destroyed buildings on a territory (building/active/damaged).
+   * COVERT buildings (scout-planted radars, Phase C.1) are only visible to
+   * their own owner — without the filter the territory owner could trivially
+   * unmask every spy radar by polling this listing.
    */
-  async getBuildings(territoryId: string, client?: PoolClient): Promise<Building[]> {
+  async getBuildings(
+    territoryId: string,
+    viewerId?: string,
+    client?: PoolClient,
+  ): Promise<Building[]> {
     return withClient(client, async (c) => {
       const res = await c.query<Building>(
         `SELECT id, territory_id, owner_id, type, tier, status, hp,
                 completes_at, config, created_at
            FROM buildings
           WHERE territory_id = $1 AND status <> 'destroyed'
+            AND (
+              COALESCE((config->>'covert')::boolean, FALSE) IS NOT TRUE
+              OR owner_id = $2
+            )
           ORDER BY created_at ASC`,
-        [territoryId],
+        [territoryId, viewerId ?? null],
       );
       return res.rows;
     });
