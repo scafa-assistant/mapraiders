@@ -255,7 +255,7 @@ CREATE INDEX IF NOT EXISTS idx_buildings_territory ON buildings(territory_id, st
 
 **Ziel:** Der Indoor-Strategie-Layer. Größtes Paket — intern in C.1 (Sicht & Späher), C.2 (Truppen & Würfel-Kampf), C.3 (Stufe-2/3-Gebäude & Luftschläge) geschnitten, jeweils einzeln shipbar.
 
-### C.1 — Commander-Karte + Fog of War + Späher
+### C.1 — Commander-Karte + Fog of War + Späher ✅ FERTIG (2026-06-12, Commits f7c1c39 + 60956b0, produktiv; Mobile-Commander-Tab kommt gebündelt mit C.2)
 - **Sichtbarkeits-Modell:** sichtbar = gridDisk(eigene Territorium-Zellen, 1) ∪ aktive Radar-Zellen ∪ aktive Späher-Pfade (TTL 24 h). Persistiert als `player_visibility (user_id, h3_cell, source, expires_at)` — Abfrage ist ein simpler Index-Lookup, kein PostGIS.
 - **Späher:** Item-Instanz (`unit_scout`), Entsendung kostet Energie ("Proviant"), bewegt sich entlang H3-Pfad (`gridPathCells`) mit realer Laufzeit, muss zurückkehren. 1× pro Reise: verdecktes Radar beim Feind bauen (`buildings.type='radar', config.covert=true`). Abfangbar durch gegnerische schnelle Einheiten (C.2).
 - **Intel-Drops:** Cron `scout_vision_tick` (alle 15 min): kreuzt eine gegnerische Truppenbewegung eine Späher-Sichtzelle → Push an Besitzer mit Ziel + ETA. (Verkauf von Intel: Stretch, NICHT in C.)
