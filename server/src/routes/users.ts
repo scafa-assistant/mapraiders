@@ -348,6 +348,14 @@ router.delete('/me', authenticate, async (req: Request, res: Response) => {
       await client.query('DELETE FROM reports WHERE reporter_id = $1', [userId]);
       await client.query('DELETE FROM refresh_tokens WHERE user_id = $1', [userId]);
 
+      // Phase 0/A tables: personal data deleted, game records anonymized
+      // (player_resources cascades; item_instances.owner_id sets NULL via FK)
+      await client.query('DELETE FROM hack_attempts WHERE user_id = $1', [userId]);
+      await client.query('DELETE FROM resource_transactions WHERE user_id = $1', [userId]);
+      await client.query('UPDATE pve_spawns SET hacked_by = NULL WHERE hacked_by = $1', [userId]);
+      await client.query('UPDATE item_events SET from_user = NULL WHERE from_user = $1', [userId]);
+      await client.query('UPDATE item_events SET to_user = NULL WHERE to_user = $1', [userId]);
+
       // Finally delete the user row itself
       await client.query('DELETE FROM users WHERE id = $1', [userId]);
     });

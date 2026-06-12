@@ -20,6 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usePveStore, HackLoot } from '../../store/pveStore';
+import { useLocationStore } from '../../store/locationStore';
 import { useTheme } from '../../hooks/useTheme';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -297,10 +298,16 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
 
   const handleSubmit = useCallback(async () => {
     if (result || isHacking) return;
+    // Real GPS position — the server enforces the 75 m proximity check
+    const playerLocation = useLocationStore.getState().currentLocation;
+    if (!playerLocation) {
+      setResult({ success: false, message: 'Kein GPS-Signal — Standort wird benötigt.' });
+      return;
+    }
     const trace: HackInputTrace = {
-      playerLocation: { latitude: spawn.latitude, longitude: spawn.longitude },
+      playerLocation,
       samples: [...samplesRef.current],
-      durationMs: Date.now() - gameStartTime.current,
+      durationS: (Date.now() - gameStartTime.current) / 1000,
     };
     const res = await submitHack(spawn.id, trace);
     setResult(res);
@@ -310,13 +317,16 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
   const glowAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (result?.success) {
-      Animated.loop(
+      const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: false }),
           Animated.timing(glowAnim, { toValue: 0.4, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: false }),
         ])
-      ).start();
+      );
+      loop.start();
+      return () => loop.stop();
     }
+    return undefined;
   }, [result]);
 
   const glowColor = glowAnim.interpolate({

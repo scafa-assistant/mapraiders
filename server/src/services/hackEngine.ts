@@ -33,7 +33,7 @@ export interface InputTrace {
 export interface HackResult {
   success: boolean;
   message?: string;
-  loot?: { resources: Partial<Record<ResourceType, number>>; items: string[] };
+  loot?: { resources: Partial<Record<ResourceType, number>>; items: Array<{ definition_id: string; rarity: string }> };
   spawn?: {
     id: string;
     npc_type: string;
@@ -164,7 +164,7 @@ export async function attemptHack(
     const success = roll < successProb;
 
     const grantedResources: Partial<Record<ResourceType, number>> = {};
-    const grantedItems: string[] = [];
+    const grantedItems: Array<{ definition_id: string; rarity: string }> = [];
 
     if (success) {
       // ---- (e) Consume the spawn ----
@@ -203,7 +203,14 @@ export async function attemptHack(
             { spawn_id: spawn.id },
             c,
           );
-          grantedItems.push(item.definitionId);
+          const defRow = await c.query(
+            'SELECT rarity FROM item_definitions WHERE id = $1',
+            [item.definitionId],
+          );
+          grantedItems.push({
+            definition_id: item.definitionId,
+            rarity: defRow.rows[0]?.rarity ?? 'common',
+          });
         }
       }
     }

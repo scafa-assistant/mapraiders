@@ -675,7 +675,7 @@ export const resourceApi = {
 export interface HackInputTrace {
   playerLocation: { latitude: number; longitude: number };
   samples: Array<{ t: number; freq: number; amp: number }>;
-  durationMs: number;
+  durationS: number;
 }
 
 export const pveApi = {

@@ -1,8 +1,7 @@
 // ============================================================
 // Phase 0 Jobs
 // Two cron-callable async functions for H3 backfill and OSM
-// pre-fetch. These functions are NOT registered here —
-// registration happens in decayCron.ts by the main agent.
+// pre-fetch, registered in decayCron.ts (01:30 / 02:30 UTC).
 // ============================================================
 
 import { queryMany, query } from '../config/database';

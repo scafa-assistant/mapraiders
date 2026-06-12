@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS pve_spawns (
   level       INT NOT NULL DEFAULT 1,
   biome       VARCHAR(15) NOT NULL,
   status      VARCHAR(15) NOT NULL DEFAULT 'active',  -- active|hacked|expired
-  hacked_by   UUID REFERENCES users(id),
+  hacked_by   UUID REFERENCES users(id) ON DELETE SET NULL,
   anchored_territory_id UUID REFERENCES territories(id),  -- nur aether_leech
   loot        JSONB NOT NULL DEFAULT '{}',  -- {items:[def_ids], resources:{tech:5,intel:2}}
   spawned_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -35,7 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_pve_spawns_loc ON pve_spawns USING GIST(location)
 CREATE TABLE IF NOT EXISTS hack_attempts (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   spawn_id    UUID NOT NULL REFERENCES pve_spawns(id),
-  user_id     UUID NOT NULL REFERENCES users(id),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   success     BOOLEAN NOT NULL,
   input_trace JSONB NOT NULL DEFAULT '{}',   -- Anti-Cheat-Plausibilitaet
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()

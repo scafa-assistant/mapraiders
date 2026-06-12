@@ -6,7 +6,7 @@
 // Both routes are feature-gated behind the `pve_spawns` flag. When the
 // flag is off for the user, GET returns an empty list and POST returns
 // 403. Response format: { success, data } / { success: false, message }.
-// NOTE: not registered in index.ts (additive, opt-in).
+// Registered in index.ts under /api/pve.
 // ============================================================
 
 import { Router, Request, Response } from 'express';
