@@ -1,12 +1,11 @@
 // ============================================================
-// Commander store — fog-of-war hex map state + scout dispatch.
-// Dispatch flow state machine:
-//   idle → picking-unit → picking-target → confirming → idle
+// Commander store — fog-of-war hex map state + scout dispatch +
+// troop garrison/march/battle actions (Phase C.2).
 // ============================================================
 
 import { create } from 'zustand';
-import { api, errorMessage } from '../api/client';
-import type { ApiEnvelope, InventoryItem } from '../api/types';
+import { api, battlesApi, errorMessage, troopsApi } from '../api/client';
+import type { ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, InventoryItem } from '../api/types';
 
 // ---- API shapes ----------------------------------------------------------------
 
@@ -30,6 +29,11 @@ export interface CommanderMovement {
   arrives_at: string;
   progress: number;
   instance_ids: string[];
+  is_own: boolean;
+  /** present only on own movements */
+  current_cell?: string;
+  /** eta for foreign spotted movements */
+  eta?: string;
   config?: Record<string, unknown>;
 }
 
@@ -45,7 +49,12 @@ export interface CommanderMapData {
   territories: CommanderTerritory[];
   movements: CommanderMovement[];
   radars: CommanderRadar[];
+  /** Extended in Phase C.2 */
+  garrisons?: CommanderGarrison[];
 }
+
+// Re-export for convenience
+export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail };
 
 // ---- Dispatch state machine types -----------------------------------------------
 
@@ -64,6 +73,14 @@ interface CommanderState {
   error: string | null;
   dispatch: DispatchStep;
 
+  // Battles
+  battles: BattleSummary[];
+  battlesLoading: boolean;
+  battlesError: string | null;
+
+  // Optimistic equipped die tracking (client-side, no server echo)
+  equippedDieInstanceId: string | null;
+
   // Actions
   fetchMap: () => Promise<void>;
   setDispatch: (step: DispatchStep) => void;
@@ -75,9 +92,39 @@ interface CommanderState {
     buildRadar: boolean;
   }) => Promise<{ ok: boolean; error?: string }>;
   recallScout: (movementId: string) => Promise<{ ok: boolean; error?: string }>;
+
+  // Phase C.2 actions
+  deployUnit: (instanceId: string, territoryId: string) => Promise<{ ok: boolean; error?: string }>;
+  undeployUnit: (instanceId: string) => Promise<{ ok: boolean; error?: string }>;
+  marchTroops: (params: {
+    instanceIds: string[];
+    fromTerritoryId: string;
+    targetTerritoryId: string;
+    purpose: 'attack' | 'reinforce';
+  }) => Promise<{ ok: boolean; error?: string }>;
+  equipDie: (instanceId: string) => Promise<{ ok: boolean; error?: string }>;
+  fetchBattles: () => Promise<void>;
+  fetchBattleDetail: (id: string) => Promise<BattleDetail | null>;
 }
 
-// ---- Error code → human message -------------------------------------------------
+// ---- Error code → human messages ------------------------------------------------
+
+export function marchErrorLabel(code: string): string {
+  switch (code) {
+    case 'TARGET_NOT_FOUND':       return 'Target territory not found.';
+    case 'CANNOT_ATTACK_SELF':     return 'You cannot attack your own territory.';
+    case 'NAVAL_REQUIRES_WATER':   return 'Naval units can only attack water territories.';
+    case 'NO_BASE':                return 'Select one of your territories as origin.';
+    case 'TARGET_TOO_FAR':         return 'Target is out of range.';
+    case 'TOO_MANY_UNITS':         return 'You can march at most 6 units at once.';
+    case 'INVALID_UNITS':          return 'One or more selected units are invalid.';
+    case 'UNIT_BUSY':              return 'One or more units are already deployed or marching.';
+    case 'INSUFFICIENT_RESOURCES': return 'Not enough Energy for this march.';
+    case 'GARRISON_FULL':          return 'Garrison is full (max 6).';
+    case 'FEATURE_DISABLED':       return 'Commander mode is not enabled for your account.';
+    default:                       return code;
+  }
+}
 
 export function scoutErrorLabel(code: string): string {
   switch (code) {
@@ -115,6 +162,10 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
   loading: false,
   error: null,
   dispatch: { phase: 'idle' },
+  battles: [],
+  battlesLoading: false,
+  battlesError: null,
+  equippedDieInstanceId: null,
 
   fetchMap: async () => {
     set({ loading: true, error: null });
@@ -181,6 +232,98 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
         return '';
       })();
       return { ok: false, error: raw || errorMessage(err, 'Recall failed') };
+    }
+  },
+
+  deployUnit: async (instanceId, territoryId) => {
+    try {
+      await troopsApi.deploy(instanceId, territoryId);
+      await get().fetchMap();
+      return { ok: true };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? marchErrorLabel(raw) : errorMessage(err, 'Deploy failed') };
+    }
+  },
+
+  undeployUnit: async (instanceId) => {
+    try {
+      await troopsApi.undeploy(instanceId);
+      await get().fetchMap();
+      return { ok: true };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw || errorMessage(err, 'Undeploy failed') };
+    }
+  },
+
+  marchTroops: async ({ instanceIds, fromTerritoryId, targetTerritoryId, purpose }) => {
+    try {
+      await troopsApi.march({
+        instance_ids: instanceIds,
+        from_territory_id: fromTerritoryId,
+        target_territory_id: targetTerritoryId,
+        purpose,
+      });
+      await get().fetchMap();
+      return { ok: true };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? marchErrorLabel(raw) : errorMessage(err, 'March failed') };
+    }
+  },
+
+  equipDie: async (instanceId) => {
+    try {
+      await troopsApi.equipDie(instanceId);
+      // Optimistically mark as equipped client-side (server may not expose state in inventory)
+      set({ equippedDieInstanceId: instanceId });
+      return { ok: true };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw || errorMessage(err, 'Equip failed') };
+    }
+  },
+
+  fetchBattles: async () => {
+    set({ battlesLoading: true, battlesError: null });
+    try {
+      const battles = await battlesApi.list();
+      set({ battles, battlesLoading: false });
+    } catch (err) {
+      set({ battlesLoading: false, battlesError: errorMessage(err, 'Failed to load battles') });
+    }
+  },
+
+  fetchBattleDetail: async (id) => {
+    try {
+      return await battlesApi.getById(id);
+    } catch {
+      return null;
     }
   },
 }));

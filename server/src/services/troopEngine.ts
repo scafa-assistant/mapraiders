@@ -24,12 +24,16 @@
 import { PoolClient } from 'pg';
 import * as h3 from 'h3-js';
 import { transaction, query } from '../config/database';
-import { COMMANDER } from '../config/constants';
+import { COMMANDER, COMBAT } from '../config/constants';
 import { RES_SPAWN, cellForPoint, pathBetween } from './h3Service';
 import { resourceService } from './resourceService';
 import { visionService } from './visionService';
 import { isInSilentZone } from './silentZoneService';
 import { wsService } from './wsService';
+import { getContext } from './osmContextService';
+import { featureService } from './featureService';
+import { battleEngine } from './battleEngine';
+import redis from '../config/redis';
 
 /** Domain error carrying a stable machine-readable `code`. */
 export class TroopError extends Error {
@@ -219,6 +223,390 @@ class TroopEngine {
     });
   }
 
+  // ---- Deployment (garrison) ----------------------------------------
+
+  /**
+   * Deploy a unit instance into a territory's garrison (inventory -> deployed).
+   * One atomic tx: lock the instance (owned, category 'unit', status
+   * 'inventory'), verify the territory is owned by the user, enforce the
+   * garrison cap, flip the instance to 'deployed', insert the garrison row.
+   */
+  async deployUnit(
+    userId: string,
+    opts: { instanceId: string; territoryId: string },
+  ): Promise<{
+    id: string;
+    instance_id: string;
+    territory_id: string;
+    owner_id: string;
+    role: string;
+    created_at: Date;
+  }> {
+    return transaction(async (c) => {
+      const inst = await c.query<{
+        id: string;
+        owner_id: string | null;
+        status: string;
+        category: string | null;
+      }>(
+        `SELECT i.id, i.owner_id, i.status, d.category
+           FROM item_instances i
+           LEFT JOIN item_definitions d ON d.id = i.definition_id
+          WHERE i.id = $1
+          FOR UPDATE OF i`,
+        [opts.instanceId],
+      );
+      if (inst.rowCount === 0) {
+        throw new TroopError('INSTANCE_NOT_FOUND', 'Unit instance does not exist');
+      }
+      const unit = inst.rows[0];
+      if (unit.owner_id !== userId) {
+        throw new TroopError('NOT_OWNER', 'You do not own this unit');
+      }
+      if (unit.category !== 'unit') {
+        throw new TroopError('NOT_A_UNIT', 'This item is not a deployable unit');
+      }
+      if (unit.status !== 'inventory') {
+        throw new TroopError('UNIT_BUSY', `Unit is not in inventory (status '${unit.status}')`);
+      }
+
+      const terr = await c.query<{ id: string }>(
+        `SELECT id FROM territories WHERE id = $1 AND owner_id = $2 FOR UPDATE`,
+        [opts.territoryId, userId],
+      );
+      if (terr.rowCount === 0) {
+        throw new TroopError('NOT_TERRITORY_OWNER', 'Territory not found or not owned');
+      }
+
+      const cnt = await c.query<{ cnt: string }>(
+        `SELECT COUNT(*)::bigint AS cnt FROM troop_deployments WHERE territory_id = $1`,
+        [opts.territoryId],
+      );
+      if (parseInt(cnt.rows[0].cnt, 10) >= COMBAT.MAX_GARRISON) {
+        throw new TroopError('GARRISON_FULL', 'Territory garrison is full');
+      }
+
+      await c.query(
+        `UPDATE item_instances SET status = 'deployed', updated_at = NOW() WHERE id = $1`,
+        [unit.id],
+      );
+
+      const inserted = await c.query(
+        `INSERT INTO troop_deployments (instance_id, territory_id, owner_id, role)
+         VALUES ($1, $2, $3, 'garrison')
+         RETURNING id, instance_id, territory_id, owner_id, role, created_at`,
+        [unit.id, opts.territoryId, userId],
+      );
+      return inserted.rows[0];
+    });
+  }
+
+  /**
+   * Remove a unit from a garrison (deployed -> inventory). One atomic tx:
+   * lock the deployment by instance id, verify ownership, delete it, flip the
+   * instance back to inventory.
+   */
+  async undeployUnit(userId: string, opts: { instanceId: string }): Promise<void> {
+    return transaction(async (c) => {
+      const dep = await c.query<{ id: string; owner_id: string }>(
+        `SELECT id, owner_id FROM troop_deployments WHERE instance_id = $1 FOR UPDATE`,
+        [opts.instanceId],
+      );
+      if (dep.rowCount === 0) {
+        throw new TroopError('DEPLOYMENT_NOT_FOUND', 'No garrison deployment for this unit');
+      }
+      if (dep.rows[0].owner_id !== userId) {
+        throw new TroopError('NOT_OWNER', 'You do not own this deployment');
+      }
+
+      await c.query(`DELETE FROM troop_deployments WHERE id = $1`, [dep.rows[0].id]);
+      await c.query(
+        `UPDATE item_instances SET status = 'inventory', updated_at = NOW() WHERE id = $1`,
+        [opts.instanceId],
+      );
+    });
+  }
+
+  // ---- Equip dice ---------------------------------------------------
+
+  /**
+   * Equip a die: clears `equipped` on all of the user's other dice (only one
+   * die is active at a time), sets `equipped=true` on the chosen one. The
+   * instance must be owned, category 'dice', status 'inventory'.
+   */
+  async equipDie(userId: string, instanceId: string): Promise<void> {
+    return transaction(async (c) => {
+      const inst = await c.query<{
+        id: string;
+        owner_id: string | null;
+        status: string;
+        category: string | null;
+      }>(
+        `SELECT i.id, i.owner_id, i.status, d.category
+           FROM item_instances i
+           LEFT JOIN item_definitions d ON d.id = i.definition_id
+          WHERE i.id = $1
+          FOR UPDATE OF i`,
+        [instanceId],
+      );
+      if (inst.rowCount === 0) {
+        throw new TroopError('INSTANCE_NOT_FOUND', 'Die instance does not exist');
+      }
+      const die = inst.rows[0];
+      if (die.owner_id !== userId) {
+        throw new TroopError('NOT_OWNER', 'You do not own this die');
+      }
+      if (die.category !== 'dice') {
+        throw new TroopError('NOT_A_DIE', 'This item is not a die');
+      }
+      if (die.status !== 'inventory') {
+        throw new TroopError('DIE_BUSY', `Die is not in inventory (status '${die.status}')`);
+      }
+
+      // Clear 'equipped' on every other die of this user (JSONB minus operator).
+      await c.query(
+        `UPDATE item_instances i
+            SET state = i.state - 'equipped', updated_at = NOW()
+           FROM item_definitions d
+          WHERE i.definition_id = d.id
+            AND i.owner_id = $1
+            AND d.category = 'dice'
+            AND i.id <> $2`,
+        [userId, instanceId],
+      );
+      // Set 'equipped' on the chosen die.
+      await c.query(
+        `UPDATE item_instances
+            SET state = jsonb_set(state, '{equipped}', 'true'::jsonb), updated_at = NOW()
+          WHERE id = $1`,
+        [instanceId],
+      );
+    });
+  }
+
+  // ---- March (attack / reinforce) -----------------------------------
+
+  /**
+   * March 1..MAX_MARCH_UNITS units from an owned territory to a target.
+   *
+   * PRE-TX (pool ok): resolve + validate the target territory and the naval
+   * water rule (getContext queries the pool — never while holding a tx). attack
+   * requires an enemy-owned target; reinforce requires a self-owned target.
+   * TX: lock instances, debit energy, flip to 'deployed', insert the movement.
+   * Post-tx: on attack dispatch, notify the DEFENDER (`under_attack`).
+   */
+  async marchUnits(
+    userId: string,
+    opts: {
+      instanceIds: string[];
+      fromTerritoryId: string;
+      targetTerritoryId: string;
+      purpose: 'attack' | 'reinforce';
+    },
+  ): Promise<TroopMovement> {
+    const { instanceIds, fromTerritoryId, targetTerritoryId, purpose } = opts;
+
+    if (purpose !== 'attack' && purpose !== 'reinforce') {
+      throw new TroopError('INVALID_PURPOSE', "purpose must be 'attack' or 'reinforce'");
+    }
+    if (!Array.isArray(instanceIds) || instanceIds.length === 0) {
+      throw new TroopError('INVALID_UNITS', 'At least one unit is required');
+    }
+    if (instanceIds.length > COMBAT.MAX_MARCH_UNITS) {
+      throw new TroopError('TOO_MANY_UNITS', `At most ${COMBAT.MAX_MARCH_UNITS} units may march`);
+    }
+
+    // ---- PRE-TX: target territory (pool ok) ----
+    const targetRes = await query<{
+      id: string;
+      owner_id: string | null;
+      h3_cells: string[] | null;
+    }>(
+      `SELECT id, owner_id, h3_cells FROM territories WHERE id = $1`,
+      [targetTerritoryId],
+    );
+    if (targetRes.rowCount === 0) {
+      throw new TroopError('TARGET_NOT_FOUND', 'Target territory does not exist');
+    }
+    const target = targetRes.rows[0];
+    const targetCells = target.h3_cells;
+    if (!targetCells || targetCells.length === 0) {
+      throw new TroopError('TARGET_NOT_FOUND', 'Target territory has no H3 cells (not backfilled)');
+    }
+    const targetCell0 = targetCells[0];
+    const defenderId = target.owner_id;
+
+    if (purpose === 'attack') {
+      if (!defenderId) {
+        // Unowned land cannot be assaulted (nothing to take from a battle).
+        throw new TroopError('TARGET_NOT_FOUND', 'Target territory is unowned');
+      }
+      if (defenderId === userId) {
+        throw new TroopError('CANNOT_ATTACK_SELF', 'You cannot attack your own territory');
+      }
+    } else {
+      if (defenderId !== userId) {
+        throw new TroopError('NOT_TERRITORY_OWNER', 'You can only reinforce your own territory');
+      }
+    }
+
+    // ---- PRE-TX: origin territory (own, has cells) ----
+    const originRes = await query<{ id: string; h3_cells: string[] | null }>(
+      `SELECT id, h3_cells FROM territories WHERE id = $1 AND owner_id = $2`,
+      [fromTerritoryId, userId],
+    );
+    if (originRes.rowCount === 0) {
+      throw new TroopError('NO_BASE', 'Origin territory not found or not owned');
+    }
+    const originCells = originRes.rows[0].h3_cells;
+    if (!originCells || originCells.length === 0) {
+      throw new TroopError('NO_BASE', 'Origin territory has no H3 cells (not backfilled)');
+    }
+    const originCell = originCells[0];
+
+    // ---- PRE-TX: naval rule (getContext queries the pool) ----
+    // Load the units' domains to decide if any unit is naval. This is a plain
+    // pool read; the authoritative lock happens later in the tx.
+    const domainRes = await query<{ domain: string | null }>(
+      `SELECT d.stats->>'domain' AS domain
+         FROM item_instances i
+         JOIN item_definitions d ON d.id = i.definition_id
+        WHERE i.id = ANY($1) AND i.owner_id = $2`,
+      [instanceIds, userId],
+    );
+    const hasNaval = domainRes.rows.some((r) => r.domain === 'naval');
+    if (hasNaval) {
+      const ctx = await getContext(targetCell0);
+      if (ctx.biome !== 'water') {
+        throw new TroopError('NAVAL_REQUIRES_WATER', 'Naval units can only target water cells');
+      }
+    }
+
+    // ---- PRE-TX: path ----
+    let path: string[];
+    try {
+      path = pathBetween(originCell, targetCell0);
+    } catch {
+      throw new TroopError('TARGET_TOO_FAR', 'No valid path to the target');
+    }
+    if (path.length === 0 || path.length > COMMANDER.MAX_PATH_CELLS) {
+      throw new TroopError('TARGET_TOO_FAR', 'Target is too far to march to');
+    }
+
+    const result = await transaction(async (c) => {
+      // ---- Lock all instances (owned, category 'unit', status 'inventory') ----
+      const locked = await c.query<{
+        id: string;
+        owner_id: string | null;
+        status: string;
+        category: string | null;
+      }>(
+        `SELECT i.id, i.owner_id, i.status, d.category
+           FROM item_instances i
+           LEFT JOIN item_definitions d ON d.id = i.definition_id
+          WHERE i.id = ANY($1)
+          FOR UPDATE OF i`,
+        [instanceIds],
+      );
+      if (locked.rowCount !== instanceIds.length) {
+        throw new TroopError('INVALID_UNITS', 'One or more units do not exist');
+      }
+      for (const u of locked.rows) {
+        if (u.owner_id !== userId) {
+          throw new TroopError('NOT_OWNER', 'You do not own one of these units');
+        }
+        if (u.category !== 'unit') {
+          throw new TroopError('INVALID_UNITS', 'One of these items is not a unit');
+        }
+        if (u.status !== 'inventory') {
+          throw new TroopError('UNIT_BUSY', 'One of these units is not in inventory');
+        }
+      }
+
+      // ---- Debit energy: path length × unit count × per-cell-per-unit ----
+      await resourceService.debit(
+        userId,
+        'energy',
+        path.length * instanceIds.length * COMBAT.MARCH_ENERGY_PER_CELL_PER_UNIT,
+        'troop_march',
+        { targetTerritoryId, purpose },
+        c,
+      );
+
+      // ---- Flip instances to deployed (in flight) ----
+      await c.query(
+        `UPDATE item_instances SET status = 'deployed', updated_at = NOW()
+          WHERE id = ANY($1)`,
+        [instanceIds],
+      );
+
+      // ---- Insert the movement ----
+      const travelMin = path.length * COMBAT.MARCH_MIN_PER_CELL;
+      const inserted = await c.query<TroopMovement>(
+        `INSERT INTO troop_movements
+           (owner_id, instance_ids, from_cell, to_cell, path, purpose, config,
+            departs_at, arrives_at, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7,
+                 NOW(), NOW() + ($8 || ' minutes')::interval, 'marching')
+         RETURNING ${MOVEMENT_COLS}`,
+        [
+          userId,
+          instanceIds,
+          originCell,
+          targetCell0,
+          path,
+          purpose,
+          JSON.stringify({ target_territory_id: targetTerritoryId }),
+          String(travelMin),
+        ],
+      );
+      return inserted.rows[0];
+    });
+
+    // ---- Post-tx WS: warn the defender of an inbound assault ----
+    if (purpose === 'attack' && defenderId) {
+      try {
+        wsService.sendToUser(defenderId, 'under_attack', {
+          territory_id: targetTerritoryId,
+          eta: result.arrives_at,
+          units: instanceIds.length,
+        });
+      } catch {
+        /* non-critical */
+      }
+    }
+
+    return result;
+  }
+
+  // ---- Reads (garrison) ---------------------------------------------
+
+  /**
+   * Garrison units defending a territory. Accepts an optional client so callers
+   * holding a tx can read consistently.
+   */
+  async getGarrison(
+    territoryId: string,
+    client?: PoolClient,
+  ): Promise<{ instance_id: string; definition_id: string }[]> {
+    const sql = `
+      SELECT td.instance_id, i.definition_id
+        FROM troop_deployments td
+        JOIN item_instances i ON i.id = td.instance_id
+       WHERE td.territory_id = $1
+       ORDER BY td.created_at ASC`;
+    if (client) {
+      const res = await client.query<{ instance_id: string; definition_id: string }>(sql, [
+        territoryId,
+      ]);
+      return res.rows;
+    }
+    const res = await transaction((c) =>
+      c.query<{ instance_id: string; definition_id: string }>(sql, [territoryId]),
+    );
+    return res.rows;
+  }
+
   // ---- Recall -------------------------------------------------------
 
   /**
@@ -341,22 +729,77 @@ class TroopEngine {
       [movementId],
     );
     if (peek.rowCount === 0) return false;
+    const peekPurpose = peek.rows[0].purpose;
     const visionCells =
-      peek.rows[0].purpose === 'scout'
+      peekPurpose === 'scout'
         ? await visionService.filterScoutVisionCells(peek.rows[0].to_cell)
         : [];
 
+    // PRE-TX pool read: for an attack arrival, the live winner dice-drop
+    // probability comes from the `commander` flag's config (battleEngine stays
+    // pool-free, so we read it here and pass it in).
+    let diceDropP: number = COMBAT.DICE_DROP_P;
+    if (peekPurpose === 'attack') {
+      try {
+        const flags = await featureService.getAllFlags();
+        const commander = flags.find((f) => f.key === 'commander');
+        const cfg = (commander?.config ?? {}) as Record<string, unknown>;
+        if (typeof cfg.dice_drop_p === 'number') diceDropP = cfg.dice_drop_p;
+      } catch {
+        /* keep default */
+      }
+
+      // Anti-farm: cap dice-drop chances per (attacker, target territory) per
+      // day. Beyond the cap battles still resolve, but with drop chance 0 —
+      // grinding a parked second-account garrison stops yielding dice.
+      try {
+        const targetTerritoryId = String(
+          (peek.rows[0].config ?? {}).target_territory_id ?? '',
+        );
+        if (targetTerritoryId) {
+          const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+          const capKey = `battle:dropcap:${peek.rows[0].owner_id}:${targetTerritoryId}:${day}`;
+          const wins = parseInt((await redis.get(capKey)) ?? '0', 10);
+          if (wins >= COMBAT.DROP_CAP_PER_TARGET_PER_DAY) diceDropP = 0;
+        }
+      } catch {
+        /* Redis hiccup: keep the configured probability (fail open) */
+      }
+    }
+
     // SINGLE atomic tx: lock + re-check, flip status, and ALL side effects
-    // (inventory flip / vision upsert / covert radar / auto-return). A
-    // failure rolls everything back together — the movement stays
-    // unresolved and the next tick retries; no scout unit can be lost.
-    type ResolveCtx = {
-      ownerId: string;
-      toCell: string;
-      instanceIds: string[];
-      purpose: string;
-      buildResult: 'placed' | 'no_target' | 'skipped';
-    } | null;
+    // (inventory flip / vision upsert / covert radar / battle / auto-return).
+    // A failure rolls everything back together — the movement stays unresolved
+    // and the next tick retries; no unit can be lost or duplicated.
+    type ResolveCtx =
+      | {
+          kind: 'scout';
+          ownerId: string;
+          toCell: string;
+          instanceIds: string[];
+          buildResult: 'placed' | 'no_target' | 'skipped';
+        }
+      | {
+          kind: 'return';
+          ownerId: string;
+          toCell: string;
+          instanceIds: string[];
+        }
+      | {
+          kind: 'battle';
+          ownerId: string;
+          defenderId: string;
+          territoryId: string;
+          battleId: string;
+          winnerSide: 'attacker' | 'defender';
+        }
+      | {
+          kind: 'reinforce';
+          ownerId: string;
+          toCell: string;
+          instanceIds: string[];
+        }
+      | null;
 
     const ctx: ResolveCtx = await transaction(async (c) => {
       const locked = await c.query<TroopMovement>(
@@ -370,11 +813,15 @@ class TroopEngine {
       if (locked.rowCount === 0) return null; // already taken / not due
       const mv = locked.rows[0];
 
-      if (mv.purpose !== 'scout' && mv.purpose !== 'return') {
-        // 'attack' / 'reinforce' are NOT implemented in C.1. Forward-compat
-        // no-op: mark resolved so they don't pile up, and warn.
+      const knownPurpose =
+        mv.purpose === 'scout' ||
+        mv.purpose === 'return' ||
+        mv.purpose === 'attack' ||
+        mv.purpose === 'reinforce';
+      if (!knownPurpose) {
+        // Unknown future purpose — forward-compat no-op so it does not pile up.
         console.warn(
-          `[Troop] purpose '${mv.purpose}' not implemented in C.1 — marking arrived (no-op). id=${mv.id}`,
+          `[Troop] purpose '${mv.purpose}' not implemented — marking arrived (no-op). id=${mv.id}`,
         );
         await c.query(
           `UPDATE troop_movements SET status = 'arrived', resolved = TRUE WHERE id = $1`,
@@ -397,11 +844,118 @@ class TroopEngine {
           [mv.instance_ids],
         );
         return {
+          kind: 'return' as const,
           ownerId: mv.owner_id,
           toCell: mv.to_cell,
           instanceIds: mv.instance_ids,
-          purpose: mv.purpose,
-          buildResult: 'skipped' as const,
+        };
+      }
+
+      // ---- 'attack' arrival ----
+      if (mv.purpose === 'attack') {
+        const targetTerritoryId =
+          mv.config && typeof mv.config.target_territory_id === 'string'
+            ? mv.config.target_territory_id
+            : null;
+
+        // Re-load the target FOR UPDATE: ownership may have changed in transit.
+        const terr = targetTerritoryId
+          ? await c.query<{ id: string; owner_id: string | null }>(
+              `SELECT id, owner_id FROM territories WHERE id = $1 FOR UPDATE`,
+              [targetTerritoryId],
+            )
+          : { rowCount: 0, rows: [] as { id: string; owner_id: string | null }[] };
+
+        const defenderId =
+          terr.rowCount && terr.rowCount > 0 ? terr.rows[0].owner_id : null;
+
+        // Walkover-no-battle: target gone, now unowned, or now owned by the
+        // attacker (e.g. taken by decay/another assault). No battle row — just
+        // send everyone home.
+        if (!defenderId || defenderId === mv.owner_id) {
+          await this.insertAutoReturnMarch(c, mv, mv.instance_ids);
+          return null;
+        }
+
+        const result = await battleEngine.resolveAssault(c, {
+          attackerId: mv.owner_id,
+          defenderId,
+          territoryId: terr.rows[0].id,
+          attackerInstanceIds: mv.instance_ids,
+          diceDropP,
+        });
+
+        // Surviving attacker units march home; destroyed ones are already
+        // status='destroyed' and excluded.
+        await this.insertAutoReturnMarch(c, mv, result.survivorsAttacker);
+
+        return {
+          kind: 'battle' as const,
+          ownerId: mv.owner_id,
+          defenderId,
+          territoryId: terr.rows[0].id,
+          battleId: result.battleId,
+          winnerSide: result.winnerSide,
+        };
+      }
+
+      // ---- 'reinforce' arrival ----
+      if (mv.purpose === 'reinforce') {
+        const targetTerritoryId =
+          mv.config && typeof mv.config.target_territory_id === 'string'
+            ? mv.config.target_territory_id
+            : null;
+
+        const terr = targetTerritoryId
+          ? await c.query<{ id: string; owner_id: string | null }>(
+              `SELECT id, owner_id FROM territories WHERE id = $1 FOR UPDATE`,
+              [targetTerritoryId],
+            )
+          : { rowCount: 0, rows: [] as { id: string; owner_id: string | null }[] };
+
+        const stillOwn =
+          terr.rowCount && terr.rowCount > 0 && terr.rows[0].owner_id === mv.owner_id;
+
+        if (!stillOwn) {
+          // Territory lost in transit — all units march home.
+          await this.insertAutoReturnMarch(c, mv, mv.instance_ids);
+          return {
+            kind: 'reinforce' as const,
+            ownerId: mv.owner_id,
+            toCell: mv.to_cell,
+            instanceIds: [],
+          };
+        }
+
+        // Respect MAX_GARRISON: fill remaining slots, overflow marches home.
+        const cntRes = await c.query<{ cnt: string }>(
+          `SELECT COUNT(*)::bigint AS cnt FROM troop_deployments WHERE territory_id = $1`,
+          [terr.rows[0].id],
+        );
+        const used = parseInt(cntRes.rows[0].cnt, 10);
+        const freeSlots = Math.max(0, COMBAT.MAX_GARRISON - used);
+        const toGarrison = mv.instance_ids.slice(0, freeSlots);
+        const overflow = mv.instance_ids.slice(freeSlots);
+
+        for (const instId of toGarrison) {
+          // Garrisoned instances stay 'deployed'; just add the deployment row.
+          await c.query(
+            `INSERT INTO troop_deployments (instance_id, territory_id, owner_id, role)
+             VALUES ($1, $2, $3, 'garrison')
+             ON CONFLICT (instance_id) DO NOTHING`,
+            [instId, terr.rows[0].id, mv.owner_id],
+          );
+        }
+
+        if (overflow.length > 0) {
+          await this.insertAutoReturnMarch(c, mv, overflow);
+        }
+
+        return {
+          kind: 'reinforce' as const,
+          ownerId: mv.owner_id,
+          toCell: mv.to_cell,
+          instanceIds: toGarrison,
         };
       }
 
@@ -468,10 +1022,10 @@ class TroopEngine {
       );
 
       return {
+        kind: 'scout' as const,
         ownerId: mv.owner_id,
         toCell: mv.to_cell,
         instanceIds: mv.instance_ids,
-        purpose: mv.purpose,
         buildResult,
       };
     });
@@ -480,11 +1034,37 @@ class TroopEngine {
 
     // Post-commit notifications only — never inside the tx.
     try {
-      if (ctx.purpose === 'return') {
+      if (ctx.kind === 'return') {
         wsService.sendToUser(ctx.ownerId, 'troops_arrived', {
           to_cell: ctx.toCell,
           instance_ids: ctx.instanceIds,
         });
+      } else if (ctx.kind === 'reinforce') {
+        wsService.sendToUser(ctx.ownerId, 'troops_arrived', {
+          to_cell: ctx.toCell,
+          instance_ids: ctx.instanceIds,
+        });
+      } else if (ctx.kind === 'battle') {
+        // Anti-farm counter: attacker wins vs this territory today (drives
+        // the pre-tx DROP_CAP_PER_TARGET_PER_DAY check on future attacks).
+        if (ctx.winnerSide === 'attacker') {
+          try {
+            const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const capKey = `battle:dropcap:${ctx.ownerId}:${ctx.territoryId}:${day}`;
+            const n = await redis.incr(capKey);
+            if (n === 1) await redis.expire(capKey, 86_400);
+          } catch {
+            /* non-critical */
+          }
+        }
+        // Notify BOTH sides of the outcome.
+        for (const uid of [ctx.ownerId, ctx.defenderId]) {
+          wsService.sendToUser(uid, 'battle_resolved', {
+            battle_id: ctx.battleId,
+            winner_side: ctx.winnerSide,
+            territory_id: ctx.territoryId,
+          });
+        }
       } else {
         wsService.sendToUser(ctx.ownerId, 'scout_report', {
           movement_id: movementId,
@@ -497,6 +1077,40 @@ class TroopEngine {
     }
 
     return true;
+  }
+
+  /**
+   * Insert an auto-return movement for the given instances along the reversed
+   * outbound path (same march speed). Departs at the outbound arrival time.
+   * Client-bound: runs inside the caller's tx. Pass an empty `instanceIds` to
+   * skip (no row inserted).
+   */
+  private async insertAutoReturnMarch(
+    c: PoolClient,
+    mv: TroopMovement,
+    instanceIds: string[],
+  ): Promise<void> {
+    if (!instanceIds || instanceIds.length === 0) return;
+    const returnPath = [...mv.path].reverse();
+    const safePath = returnPath.length > 0 ? returnPath : [mv.to_cell];
+    const travelMin = safePath.length * COMBAT.MARCH_MIN_PER_CELL;
+    await c.query(
+      `INSERT INTO troop_movements
+         (owner_id, instance_ids, from_cell, to_cell, path, purpose, config,
+          departs_at, arrives_at, status)
+       VALUES ($1, $2, $3, $4, $5, 'return', $6,
+               $7::timestamptz, $7::timestamptz + ($8 || ' minutes')::interval, 'marching')`,
+      [
+        mv.owner_id,
+        instanceIds,
+        mv.to_cell,
+        mv.from_cell,
+        safePath,
+        JSON.stringify({ auto_return: true, from_movement: mv.id }),
+        new Date(mv.arrives_at).toISOString(),
+        String(travelMin),
+      ],
+    );
   }
 
   // ---- Reads --------------------------------------------------------

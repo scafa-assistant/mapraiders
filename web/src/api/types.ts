@@ -197,3 +197,96 @@ export interface TerminalLeaderboardResponse {
   entries: LeaderboardEntry[];
   me: { rank: number; score: number } | null;
 }
+
+// ---- Commander: Troops & Battles ---------------------------------------------
+
+export interface CommanderGarrisonUnit {
+  instance_id: string;
+  definition_id: string;
+}
+
+export interface CommanderGarrison {
+  territory_id: string;
+  count: number;
+  is_own: boolean;
+  /** null for foreign territories (fog of war) */
+  units: CommanderGarrisonUnit[] | null;
+}
+
+export interface CommanderForeignMovement {
+  id: string;
+  purpose: string;
+  current_cell: string;
+  eta: string;
+  is_own: false;
+}
+
+export interface BattleRoundDiceSide {
+  rolls: number[];
+  bonus: number;
+  modifier: number;
+  total: number;
+  unit: string;
+}
+
+export interface BattleRoundEffect {
+  side: 'atk' | 'def';
+  effect: string;
+  cancelled?: number;
+}
+
+export interface BattleCasualty {
+  side: 'atk' | 'def';
+  definition_id: string;
+}
+
+export interface BattleRound {
+  round: number;
+  atk: BattleRoundDiceSide;
+  def: BattleRoundDiceSide;
+  effects: BattleRoundEffect[];
+  casualty: BattleCasualty | null;
+}
+
+export interface BattleLog {
+  attacker_units_start: number;
+  defender_units_start: number;
+  walkover: boolean;
+  rounds: BattleRound[];
+  winner_side: 'attacker' | 'defender';
+  survivors: { attacker: string[]; defender: string[] };
+  loot: { dice_drop?: string };
+}
+
+export interface BattleSummary {
+  id: string;
+  type: string;
+  attacker_id: string;
+  defender_id: string;
+  territory_id: string;
+  winner: string | null;
+  winner_side: 'attacker' | 'defender' | null;
+  created_at: string;
+}
+
+export interface BattleDetail extends BattleSummary {
+  log: BattleLog;
+}
+
+export interface TroopDeployment {
+  id?: string;
+  instance_id: string;
+  territory_id: string;
+  deployed_at?: string;
+}
+
+export interface TroopMovement {
+  id: string;
+  purpose: 'attack' | 'reinforce';
+  status: string;
+  from_territory_id: string;
+  target_territory_id: string;
+  instance_ids: string[];
+  departs_at: string;
+  arrives_at: string;
+}

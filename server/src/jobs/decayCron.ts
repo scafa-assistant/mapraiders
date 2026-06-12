@@ -34,6 +34,7 @@ import { runH3Backfill, runOsmPrefetch } from './phase0Jobs';
 import { runPveSpawnTick, runAetherLeechTick } from './phaseAJobs';
 import { runEnergyTick, runBuildingCompletion } from './phaseBJobs';
 import { runTroopArrivalTick, runVisibilityCleanup } from './phaseC1Jobs';
+import { runScoutVisionTick } from './phaseC2Jobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -1021,6 +1022,41 @@ export function setupCronJobs(): void {
       });
     } finally {
       await releaseCronLock('visibility_cleanup');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 15 minutes - Scout vision tick: report in-flight attack/reinforce
+  // movements to non-owner watchers who can see the movement's current cell
+  // (Phase C.2). Gated on the `commander` flag (runScoutVisionTick no-ops
+  // while the flag is off). Per-(watcher, movement) Redis dedup (2h TTL).
+  // ------------------------------------------------------------------
+  cron.schedule('*/15 * * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('scout_vision_tick', 600);
+    if (!locked) return;
+
+    try {
+      const processed = await runScoutVisionTick();
+      await recordCronRun({
+        job: 'scout_vision_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Scout vision tick failed:', err);
+      await recordCronRun({
+        job: 'scout_vision_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('scout_vision_tick');
     }
   }, { timezone: 'UTC' });
 

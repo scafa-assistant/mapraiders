@@ -13,7 +13,7 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { featureService } from '../services/featureService';
-import { transaction } from '../config/database';
+import { transaction, query } from '../config/database';
 import { troopEngine } from '../services/troopEngine';
 import { visionService } from '../services/visionService';
 
@@ -92,7 +92,106 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       });
     }
 
-    const movements = await troopEngine.getMovements(userId);
+    const ownMovements = await troopEngine.getMovements(userId);
+    const movements = ownMovements.map((mv) => ({ ...mv, is_own: true }));
+
+    // ---- Garrisons of all territories with a visible cell ----
+    // `units` detail ONLY for own garrisons; foreign garrisons leak count
+    // only (fog of war).
+    let garrisons: Array<{
+      territory_id: string;
+      count: number;
+      is_own: boolean;
+      units: { instance_id: string; definition_id: string }[] | null;
+    }> = [];
+
+    if (visibleCells.length > 0) {
+      const garrisonRows = await query<{
+        territory_id: string;
+        owner_id: string | null;
+        instance_id: string;
+        definition_id: string;
+      }>(
+        `SELECT td.territory_id, t.owner_id, td.instance_id, i.definition_id
+           FROM troop_deployments td
+           JOIN territories t ON t.id = td.territory_id
+           JOIN item_instances i ON i.id = td.instance_id
+          WHERE t.h3_cells && $1::text[]
+          ORDER BY td.created_at ASC`,
+        [visibleCells],
+      );
+
+      const byTerritory = new Map<
+        string,
+        { owner_id: string | null; units: { instance_id: string; definition_id: string }[] }
+      >();
+      for (const row of garrisonRows.rows) {
+        let entry = byTerritory.get(row.territory_id);
+        if (!entry) {
+          entry = { owner_id: row.owner_id, units: [] };
+          byTerritory.set(row.territory_id, entry);
+        }
+        entry.units.push({ instance_id: row.instance_id, definition_id: row.definition_id });
+      }
+
+      garrisons = Array.from(byTerritory.entries()).map(([territoryId, entry]) => {
+        const isOwn = entry.owner_id === userId;
+        return {
+          territory_id: territoryId,
+          count: entry.units.length,
+          is_own: isOwn,
+          units: isOwn ? entry.units : null,
+        };
+      });
+    }
+
+    // ---- Foreign movements whose CURRENT path cell is visible ----
+    // Stripped to {id, purpose, current_cell, eta, is_own:false} — no path or
+    // origin leak. Current cell derived from elapsed-time progress.
+    const foreignMovements: Array<{
+      id: string;
+      purpose: string;
+      current_cell: string;
+      eta: Date;
+      is_own: false;
+    }> = [];
+
+    if (visibleCells.length > 0) {
+      const fmRows = await query<{
+        id: string;
+        purpose: string;
+        path: string[];
+        departs_at: Date;
+        arrives_at: Date;
+      }>(
+        `SELECT id, purpose, path, departs_at, arrives_at
+           FROM troop_movements
+          WHERE owner_id <> $1
+            AND status = 'marching' AND resolved = FALSE
+            AND purpose IN ('attack', 'reinforce', 'scout', 'return')`,
+        [userId],
+      );
+
+      const now = Date.now();
+      for (const mv of fmRows.rows) {
+        const departs = new Date(mv.departs_at).getTime();
+        const arrives = new Date(mv.arrives_at).getTime();
+        const span = Math.max(1, arrives - departs);
+        const progress = Math.min(1, Math.max(0, (now - departs) / span));
+        const len = mv.path.length;
+        const idx = len <= 1 ? 0 : Math.floor(progress * (len - 1));
+        const currentCell = mv.path[idx];
+        if (visibleSet.has(currentCell)) {
+          foreignMovements.push({
+            id: mv.id,
+            purpose: mv.purpose,
+            current_cell: currentCell,
+            eta: mv.arrives_at,
+            is_own: false,
+          });
+        }
+      }
+    }
 
     // Own active radars (incl. covert), with their territory's cells.
     const radarRows = await transaction((c) =>
@@ -121,7 +220,8 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       data: {
         visible_cells: visibleCells,
         territories,
-        movements,
+        movements: [...movements, ...foreignMovements],
+        garrisons,
         radars,
       },
     });
@@ -199,6 +299,223 @@ router.post('/scouts/:movementId/recall', authenticate, async (req: Request, res
     }
     console.error('[Commander] POST /scouts/:movementId/recall error:', err);
     return res.status(500).json({ success: false, message: 'Failed to recall scout' });
+  }
+});
+
+// ---- POST /troops/deploy -----------------------------------------------------
+
+router.post('/troops/deploy', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const instanceId = body.instance_id;
+    const territoryId = body.territory_id;
+    if (typeof instanceId !== 'string' || typeof territoryId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: 'instance_id and territory_id are required',
+      });
+    }
+
+    const deployment = await troopEngine.deployUnit(userId, { instanceId, territoryId });
+    return res.json({ success: true, data: { deployment } });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /troops/deploy error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to deploy unit' });
+  }
+});
+
+// ---- POST /troops/undeploy ---------------------------------------------------
+
+router.post('/troops/undeploy', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const instanceId = body.instance_id;
+    if (typeof instanceId !== 'string') {
+      return res.status(400).json({ success: false, message: 'instance_id is required' });
+    }
+
+    await troopEngine.undeployUnit(userId, { instanceId });
+    return res.json({ success: true, data: {} });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /troops/undeploy error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to undeploy unit' });
+  }
+});
+
+// ---- POST /troops/march ------------------------------------------------------
+
+router.post('/troops/march', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const instanceIds = body.instance_ids;
+    const fromTerritoryId = body.from_territory_id;
+    const targetTerritoryId = body.target_territory_id;
+    const purpose = body.purpose;
+
+    if (
+      !Array.isArray(instanceIds) ||
+      !instanceIds.every((x) => typeof x === 'string') ||
+      typeof fromTerritoryId !== 'string' ||
+      typeof targetTerritoryId !== 'string' ||
+      (purpose !== 'attack' && purpose !== 'reinforce')
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'instance_ids[], from_territory_id, target_territory_id and purpose (attack|reinforce) are required',
+      });
+    }
+
+    const movement = await troopEngine.marchUnits(userId, {
+      instanceIds,
+      fromTerritoryId,
+      targetTerritoryId,
+      purpose,
+    });
+    return res.json({ success: true, data: { movement } });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /troops/march error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to march units' });
+  }
+});
+
+// ---- POST /dice/equip --------------------------------------------------------
+
+router.post('/dice/equip', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const instanceId = body.instance_id;
+    if (typeof instanceId !== 'string') {
+      return res.status(400).json({ success: false, message: 'instance_id is required' });
+    }
+
+    await troopEngine.equipDie(userId, instanceId);
+    return res.json({ success: true, data: {} });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /dice/equip error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to equip die' });
+  }
+});
+
+// ---- GET /battles ------------------------------------------------------------
+// Last 20 battles where the user is attacker or defender, WITHOUT the full log
+// (only the winner_side is lifted out of it).
+
+router.get('/battles', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const rows = await query<{
+      id: string;
+      type: string;
+      winner: string | null;
+      attacker_id: string | null;
+      defender_id: string | null;
+      territory_id: string | null;
+      created_at: Date;
+      winner_side: string | null;
+    }>(
+      `SELECT id, type, winner, attacker_id, defender_id, territory_id, created_at,
+              log->>'winner_side' AS winner_side
+         FROM battles
+        WHERE attacker_id = $1 OR defender_id = $1
+        ORDER BY created_at DESC
+        LIMIT 20`,
+      [userId],
+    );
+
+    return res.json({ success: true, data: { battles: rows.rows } });
+  } catch (err: any) {
+    console.error('[Commander] GET /battles error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load battles' });
+  }
+});
+
+// ---- GET /battles/:id --------------------------------------------------------
+// Full battle row incl. log. Only the attacker or defender may read it; anyone
+// else (or a missing row) gets 404.
+
+router.get('/battles/:id', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const battleId = req.params.id as string;
+    const rows = await query<{
+      id: string;
+      attacker_id: string | null;
+      defender_id: string | null;
+      territory_id: string | null;
+      type: string;
+      log: any;
+      winner: string | null;
+      loot: any;
+      created_at: Date;
+    }>(
+      `SELECT id, attacker_id, defender_id, territory_id, type, log, winner, loot, created_at
+         FROM battles
+        WHERE id = $1`,
+      [battleId],
+    );
+
+    const battle = rows.rows[0];
+    if (!battle || (battle.attacker_id !== userId && battle.defender_id !== userId)) {
+      return res.status(404).json({ success: false, message: 'BATTLE_NOT_FOUND' });
+    }
+
+    return res.json({ success: true, data: { battle } });
+  } catch (err: any) {
+    console.error('[Commander] GET /battles/:id error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load battle' });
   }
 });
 

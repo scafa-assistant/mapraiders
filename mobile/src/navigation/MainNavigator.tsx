@@ -7,9 +7,11 @@ import MapStack from './MapStack';
 import QuestStack from './QuestStack';
 import CreateStack from './CreateStack';
 import TravelStack from './TravelStack';
+import CommanderStack from './CommanderStack';
 import ProfileStack from './ProfileStack';
 import { useTheme } from '../hooks/useTheme';
 import { useSettingsStore } from '../store/settingsStore';
+import { useFeatureStore } from '../store/featureStore';
 import { strings as S } from '../i18n';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -22,6 +24,7 @@ const TAB_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   Quests: 'compass',
   Create: 'add-circle',
   Travel: 'trail-sign',
+  Commander: 'scan-circle',
   Profile: 'person',
 };
 
@@ -29,6 +32,12 @@ export default function MainNavigator() {
   const theme = useTheme();
   const { settings } = useSettingsStore();
   const isDark = settings.darkMapStyle;
+
+  // Commander ships DARK behind a double gate: feature flag AND capability,
+  // mirroring the resources-HUD pattern in MapScreen.
+  const isCommanderEnabled = useFeatureStore(
+    (s) => s.isEnabled('commander') && s.capabilities.commander
+  );
 
   const tabBarStyle = useMemo(() => ({
     backgroundColor: isDark ? '#0D1220' : '#FFFFFF',
@@ -103,6 +112,13 @@ export default function MainNavigator() {
           name="Travel"
           component={TravelStack}
           options={{ tabBarLabel: S.nav.tabs.travel }}
+        />
+      )}
+      {isCommanderEnabled && (
+        <Tab.Screen
+          name="Commander"
+          component={CommanderStack}
+          options={{ tabBarLabel: S.nav.tabs.commander }}
         />
       )}
       <Tab.Screen

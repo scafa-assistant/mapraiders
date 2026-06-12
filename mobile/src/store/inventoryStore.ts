@@ -10,6 +10,8 @@ export interface ItemInstance {
   rarity: string;
   status: string;
   stats: Record<string, number | string>;
+  /** Per-instance mutable state (e.g. dice carry `{equipped: true}`). */
+  state?: Record<string, unknown> | null;
   lore: string | null;
   mint_number: number | null;
 }

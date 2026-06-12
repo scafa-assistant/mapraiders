@@ -320,6 +320,24 @@ export type TravelRoutePlayScreenProps = NativeStackScreenProps<
   'TravelRoutePlay'
 >;
 
+// ─── Commander Stack ───────────────────────────────────────────────────────────
+
+export type CommanderStackParamList = {
+  CommanderMap: undefined;
+  BattleReplay: { battleId: string };
+  DicePouch: undefined;
+};
+
+export type CommanderMapScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<CommanderStackParamList, 'CommanderMap'>,
+  BottomTabScreenProps<MainTabParamList>
+>;
+export type BattleReplayScreenProps = NativeStackScreenProps<
+  CommanderStackParamList,
+  'BattleReplay'
+>;
+export type DicePouchScreenProps = NativeStackScreenProps<CommanderStackParamList, 'DicePouch'>;
+
 // ─── Main Tab Navigator ────────────────────────────────────────────────────────
 
 export type MainTabParamList = {
@@ -327,6 +345,7 @@ export type MainTabParamList = {
   Quests: NavigatorScreenParams<QuestStackParamList>;
   Create: NavigatorScreenParams<CreateStackParamList>;
   Travel: NavigatorScreenParams<TravelStackParamList>;
+  Commander: NavigatorScreenParams<CommanderStackParamList>;
   Profile: NavigatorScreenParams<ProfileStackParamList>;
 };
 

@@ -694,3 +694,34 @@ export const COMMANDER = {
   MAX_PATH_CELLS: 60,
   MAX_VISIBLE_CELLS: 1500,      // hard response cap
 } as const;
+
+// ============================================================
+// COMBAT (Phase C.2) — Troop deployment + dice battle engine.
+// Units march to a target territory and resolve an assault against its
+// garrison via a dice-driven round loop. The winner may drop a die.
+// All randomness is server-side (crypto.randomInt). The DICE_DROP_P value
+// here is the default; the `commander` flag's config.dice_drop_p overrides
+// it live (read by the route BEFORE the tx, passed into the battle engine).
+// ============================================================
+
+export type CombatDomain = 'ground' | 'armor' | 'air' | 'aa' | 'naval';
+
+export const COMBAT = {
+  MARCH_MIN_PER_CELL: 6,
+  MARCH_ENERGY_PER_CELL_PER_UNIT: 1,
+  MAX_MARCH_UNITS: 6,
+  MAX_GARRISON: 6,
+  MAX_ROUNDS: 20,
+  DICE_DROP_P: 0.35,            // winner dice-drop chance, flags.config 'dice_drop_p' overrides
+  DROP_CAP_PER_TARGET_PER_DAY: 3, // attacker wins per territory/day that still roll for a drop
+  // attacker-domain beats defender-domain -> +1 (and the reverse check gives -1)
+  DOMAIN_MATRIX: {
+    ground: { aa: 1 }, armor: { ground: 1 }, air: { armor: 1 }, aa: { air: 1 }, naval: {},
+  } as Record<CombatDomain, Partial<Record<CombatDomain, number>>>,
+  // dice-drop rarity table by DEFEATED side's starting unit count
+  DROP_RARITY: [
+    { minUnits: 5, weights: { dice_d6: 0, dice_d8: 60, dice_shield: 40 } },
+    { minUnits: 3, weights: { dice_d6: 50, dice_d8: 40, dice_shield: 10 } },
+    { minUnits: 0, weights: { dice_d6: 80, dice_d8: 20, dice_shield: 0 } },
+  ],
+} as const;

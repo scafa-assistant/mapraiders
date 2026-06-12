@@ -9,6 +9,8 @@
 import axios, { AxiosError } from 'axios';
 import type {
   ApiEnvelope,
+  BattleDetail,
+  BattleSummary,
   Building,
   BuildingType,
   ClientFeatureFlag,
@@ -25,6 +27,8 @@ import type {
   TerminalStartResponse,
   TerminalSubmitBody,
   TerminalSubmitResponse,
+  TroopDeployment,
+  TroopMovement,
 } from './types';
 
 const DEFAULT_PROD = 'https://api.mapraiders.com/api';
@@ -256,6 +260,74 @@ export const terminalApi = {
       throw new Error(res.data.message ?? 'Failed to load leaderboard');
     }
     return res.data.data;
+  },
+};
+
+// ---- Commander: Troops & Battles API -----------------------------------------
+
+export const troopsApi = {
+  async deploy(instanceId: string, territoryId: string): Promise<TroopDeployment> {
+    const res = await api.post<ApiEnvelope<{ deployment: TroopDeployment }>>(
+      '/commander/troops/deploy',
+      { instance_id: instanceId, territory_id: territoryId },
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Deploy failed');
+    }
+    return res.data.data.deployment;
+  },
+
+  async undeploy(instanceId: string): Promise<void> {
+    const res = await api.post<ApiEnvelope<unknown>>('/commander/troops/undeploy', {
+      instance_id: instanceId,
+    });
+    if (!res.data.success) {
+      throw new Error(res.data.message ?? 'Undeploy failed');
+    }
+  },
+
+  async march(params: {
+    instance_ids: string[];
+    from_territory_id: string;
+    target_territory_id: string;
+    purpose: 'attack' | 'reinforce';
+  }): Promise<TroopMovement> {
+    const res = await api.post<ApiEnvelope<{ movement: TroopMovement }>>(
+      '/commander/troops/march',
+      params,
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'March failed');
+    }
+    return res.data.data.movement;
+  },
+
+  async equipDie(instanceId: string): Promise<void> {
+    const res = await api.post<ApiEnvelope<unknown>>('/commander/dice/equip', {
+      instance_id: instanceId,
+    });
+    if (!res.data.success) {
+      throw new Error(res.data.message ?? 'Equip failed');
+    }
+  },
+};
+
+export const battlesApi = {
+  async list(): Promise<BattleSummary[]> {
+    const res = await api.get<ApiEnvelope<{ battles: BattleSummary[] }>>(
+      '/commander/battles',
+    );
+    return res.data.data?.battles ?? [];
+  },
+
+  async getById(id: string): Promise<BattleDetail> {
+    const res = await api.get<ApiEnvelope<{ battle: BattleDetail }>>(
+      `/commander/battles/${id}`,
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Failed to load battle');
+    }
+    return res.data.data.battle;
   },
 };
 

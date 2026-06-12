@@ -4,6 +4,7 @@ export const nav = {
     quests: 'Quests',
     create: 'Create',
     travel: 'Travel',
+    commander: 'Commander',
     profile: 'Profile',
   },
 };

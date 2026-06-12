@@ -727,6 +727,192 @@ export const pveApi = {
     api.post(`/pve/spawns/${spawnId}/hack`, { inputTrace }),
 };
 
+// ─── Commander API ─────────────────────────────────────────────────────────────
+//
+// Indoor strategy layer: fog-of-war hex map (H3 res-8), scout dispatch (C.1)
+// and troop deployment / attacks / dice battles (C.2). All combat is resolved
+// server-side; the mobile client only renders the result.
+// Envelope: { success: true, data } | { success: false, message }.
+
+export interface CommanderTerritory {
+  id: string;
+  owner_id: string | null;
+  owner_username: string | null;
+  claim_value: number;
+  h3_cells: string[];
+  is_own: boolean;
+}
+
+export interface CommanderOwnMovement {
+  id: string;
+  purpose: 'scout' | 'return' | 'attack' | 'reinforce';
+  status: string;
+  from_cell: string;
+  to_cell: string;
+  path: string[];
+  departs_at: string;
+  arrives_at: string;
+  progress: number;
+  instance_ids: string[];
+  config?: Record<string, unknown>;
+  is_own: true;
+}
+
+export interface CommanderForeignMovement {
+  id: string;
+  purpose: 'scout' | 'return' | 'attack' | 'reinforce';
+  current_cell: string;
+  eta: string;
+  is_own: false;
+}
+
+export type CommanderMovement = CommanderOwnMovement | CommanderForeignMovement;
+
+export interface CommanderRadar {
+  building_id: string;
+  territory_id: string;
+  covert: boolean;
+  cells: string[];
+}
+
+export interface CommanderGarrisonUnit {
+  instance_id: string;
+  definition_id: string;
+}
+
+export interface CommanderGarrison {
+  territory_id: string;
+  count: number;
+  is_own: boolean;
+  units: CommanderGarrisonUnit[] | null;
+}
+
+export interface CommanderMapData {
+  visible_cells: string[];
+  territories: CommanderTerritory[];
+  movements: CommanderMovement[];
+  radars: CommanderRadar[];
+  garrisons: CommanderGarrison[];
+}
+
+export interface CommanderBattleSummary {
+  id: string;
+  type: string;
+  attacker_id: string;
+  defender_id: string;
+  territory_id: string;
+  winner: string | null;
+  winner_side: 'attacker' | 'defender' | null;
+  created_at: string;
+}
+
+export interface CommanderBattleRoundSide {
+  rolls: number[];
+  bonus: number;
+  modifier: number;
+  total: number;
+  unit: string;
+}
+
+export interface CommanderBattleEffect {
+  side: 'atk' | 'def';
+  effect: string;
+  /** The cancelled die VALUE (e.g. 5), not a flag. */
+  cancelled?: number;
+}
+
+export interface CommanderBattleCasualty {
+  side: 'atk' | 'def';
+  definition_id: string;
+}
+
+export interface CommanderBattleRound {
+  round: number;
+  atk: CommanderBattleRoundSide;
+  def: CommanderBattleRoundSide;
+  effects: CommanderBattleEffect[];
+  casualty: CommanderBattleCasualty | null;
+}
+
+/** The full battle narrative lives INSIDE the `log` JSONB column. */
+export interface CommanderBattleLog {
+  rounds: CommanderBattleRound[];
+  attacker_units_start: number;
+  defender_units_start: number;
+  walkover: boolean;
+  winner_side: 'attacker' | 'defender';
+  survivors: { attacker: string[]; defender: string[] };
+  loot: { dice_drop?: string | null };
+}
+
+export interface CommanderBattleDetail {
+  id: string;
+  type: string;
+  attacker_id: string | null;
+  defender_id: string | null;
+  territory_id: string | null;
+  winner: string | null;
+  created_at: string;
+  log: CommanderBattleLog;
+  loot: { dice_drop?: string | null } | null;
+}
+
+export const commanderApi = {
+  /** Fetch the fog-of-war strategic map (visible cells, territories, movements, radars, garrisons). */
+  getMap: () =>
+    api.get<{ success: boolean; data: CommanderMapData }>('/commander/map'),
+
+  /** Dispatch a scout unit to a target H3 cell, optionally planting a covert radar. */
+  sendScout: (body: {
+    instance_id: string;
+    from_territory_id: string;
+    target_cell: string;
+    build_radar?: boolean;
+  }) =>
+    api.post<{ success: boolean; data: { movement: CommanderOwnMovement } }>(
+      '/commander/scouts/send',
+      body
+    ),
+
+  /** Recall a scout movement back to its base. */
+  recallScout: (movementId: string) =>
+    api.post<{ success: boolean; data: { movement: CommanderOwnMovement } }>(
+      `/commander/scouts/${movementId}/recall`
+    ),
+
+  /** Deploy a unit into a territory garrison. */
+  deployTroop: (body: { instance_id: string; territory_id: string }) =>
+    api.post<{ success: boolean; data: { deployment: unknown } }>('/commander/troops/deploy', body),
+
+  /** Recall a deployed unit back to inventory. */
+  undeployTroop: (body: { instance_id: string }) =>
+    api.post<{ success: boolean; data: Record<string, never> }>('/commander/troops/undeploy', body),
+
+  /** March a stack of units from one territory to another (attack or reinforce). */
+  march: (body: {
+    instance_ids: string[];
+    from_territory_id: string;
+    target_territory_id: string;
+    purpose: 'attack' | 'reinforce';
+  }) =>
+    api.post<{ success: boolean; data: { movement: CommanderOwnMovement } }>(
+      '/commander/troops/march',
+      body
+    ),
+
+  /** Equip a die into the active pouch slot. */
+  equipDie: (body: { instance_id: string }) =>
+    api.post<{ success: boolean; data: Record<string, never> }>('/commander/dice/equip', body),
+
+  /** List recent battles involving the player. */
+  getBattles: () =>
+    api.get<{ success: boolean; data: { battles: CommanderBattleSummary[] } }>('/commander/battles'),
+
+  /** Fetch full battle detail with the round-by-round dice log. */
+  getBattle: (id: string) =>
+    api.get<{ success: boolean; data: { battle: CommanderBattleDetail } }>(`/commander/battles/${id}`),
+};
+
 // ─── Terminals API ───────────────────────────────────────────────────────────
 
 export interface TerminalStartData {
