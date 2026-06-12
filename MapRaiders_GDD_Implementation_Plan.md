@@ -266,7 +266,7 @@ CREATE INDEX IF NOT EXISTS idx_buildings_territory ON buildings(territory_id, st
 - **Würfel-Resolution (backend-only):** Angreifer & Verteidiger: 2×W6 + 1 Bonus-Würfel (equippte Dice-Item-Instanz). Domains-Matrix gibt ±1-Modifier. Höchste Summe gewinnt Runde, Verlierer verliert 1 Einheit; best-of-N nach Truppengröße. **Sieger-Drop statt Pink Slip (Entscheidung 2026-06-12):** Der Verlierer behält seine Würfel — der Sieger bekommt mit Wahrscheinlichkeit p (config) einen system-geminteten Würfel-Drop (Rarität skaliert mit Gegner-Stärke). Kein Item-Verlust zwischen Spielern → IARC-sicher. Komplettes Wurf-Log in `battles.log` (JSONB) → Client spielt Animation ab.
 - **Schild-Würfel:** annulliert höchsten gegnerischen Wurf — nur ein Stats-Flag `{effect:'cancel_highest'}`, Resolution-Engine wertet Effekte generisch aus (TCG-ready).
 
-### C.3 — Stufe-2/3-Gebäude + Luftschläge
+### C.3 — Stufe-2/3-Gebäude + Luftschläge ✅ FERTIG (2026-06-12, Commit 510e400, produktiv live-getestet: Silo-Bau → Strike (Raffinerie 100→50 HP) → SILO_COOLDOWN → Tier-2-Upgrade)
 - Radar (permanent Sicht), Garnison (gehackte Einheiten als Wachen = Auto-Defender), Silo (Luftschlag: hohe Energie-Kosten, zerstört Schilde/Gebäude-HP aus Distanz, KEIN Truppenmarsch nötig), Teleporter (Truppen-Schnellreise zwischen eigenen Pads).
 
 ### DB (Kern)
