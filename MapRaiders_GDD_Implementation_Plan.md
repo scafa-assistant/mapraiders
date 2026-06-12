@@ -11,7 +11,7 @@
 Diese 10 Entscheidungen sind das Fundament. Wer eine davon kippt, kippt den Plan.
 
 ### E1 — Ein Item-System für ALLES (Würfel, Truppen, Karten, Relikte)
-Würfel (Phase C), Einheiten (A/C), TCG-Karten (E) und Ruinen-Relikte (A) sind **dasselbe Datenmodell**: ein Katalog (`item_definitions`) + Instanzen (`item_instances`). Die Burn-Mechanik des TCG, der Pink-Slip-Würfelverlust und das "Karte wird Truppe"-Einlösen sind dann nur Status-Übergänge derselben Tabelle — kein zweites Inventarsystem, keine Migration.
+Würfel (Phase C), Einheiten (A/C), TCG-Karten (E) und Ruinen-Relikte (A) sind **dasselbe Datenmodell**: ein Katalog (`item_definitions`) + Instanzen (`item_instances`). Die Burn-Mechanik des TCG, system-belohnte Match-Drops und das "Karte wird Truppe"-Einlösen sind dann nur Status-Übergänge derselben Tabelle — kein zweites Inventarsystem, keine Migration. (Pink-Slip-Item-Verlust zwischen Spielern: per Entscheidung 2026-06-12 GESTRICHEN — das Transfer-Event-Modell bleibt trotzdem, es trägt Marktplatz-Trades in Phase E.)
 
 ### E2 — Ressourcen als Append-only-Ledger, nicht als Spalten
 Energie/Bauteile/Daten werden NICHT als `INT`-Spalten auf `users` geführt, sondern als Kontostand (`player_resources`) + unveränderliches Transaktionslog (`resource_transactions`). Grund: Der Marktplatz (E), Wager-Matches (E) und die KI-Ökonomie (D) brauchen auditierbare Geldflüsse — nachträglich ein Ledger einzuziehen wäre die teuerste Migration des Projekts. Anti-Cheat und Balancing bekommen das Log gratis.
@@ -261,7 +261,7 @@ CREATE INDEX IF NOT EXISTS idx_buildings_territory ON buildings(territory_id, st
 ### C.2 — Truppen + Würfel-Kampf (2+1)
 - **Deployment:** `item_instances.status='deployed'` + Eintrag in `troop_deployments (instance_id, territory_id, role)`— Einheiten verteidigen Territorien oder marschieren (`troop_movements` mit `departs_at/arrives_at`, materialisiert lazy, E7).
 - **Kampfdreieck:** `stats.domain` (ground/armor/air/aa/naval) + Matrix in constants.ts (ground>aa, armor>ground, air>armor, aa>air; naval nur auf `biome='water'`-Zellen).
-- **Würfel-Resolution (backend-only):** Angreifer & Verteidiger: 2×W6 + 1 Bonus-Würfel (equippte Dice-Item-Instanz). Domains-Matrix gibt ±1-Modifier. Höchste Summe gewinnt Runde, Verlierer verliert 1 Einheit; best-of-N nach Truppengröße. **Pink Slip:** Verlierer-Bonus-Würfel wechselt mit Wahrscheinlichkeit p (config) den Besitzer → `itemService.transfer()` + `item_events`. Komplettes Wurf-Log in `battles.log` (JSONB) → Client spielt Animation ab.
+- **Würfel-Resolution (backend-only):** Angreifer & Verteidiger: 2×W6 + 1 Bonus-Würfel (equippte Dice-Item-Instanz). Domains-Matrix gibt ±1-Modifier. Höchste Summe gewinnt Runde, Verlierer verliert 1 Einheit; best-of-N nach Truppengröße. **Sieger-Drop statt Pink Slip (Entscheidung 2026-06-12):** Der Verlierer behält seine Würfel — der Sieger bekommt mit Wahrscheinlichkeit p (config) einen system-geminteten Würfel-Drop (Rarität skaliert mit Gegner-Stärke). Kein Item-Verlust zwischen Spielern → IARC-sicher. Komplettes Wurf-Log in `battles.log` (JSONB) → Client spielt Animation ab.
 - **Schild-Würfel:** annulliert höchsten gegnerischen Wurf — nur ein Stats-Flag `{effect:'cancel_highest'}`, Resolution-Engine wertet Effekte generisch aus (TCG-ready).
 
 ### C.3 — Stufe-2/3-Gebäude + Luftschläge
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS ruins (
 - **Match-Engine:** asynchron turn-basiert auf dem BESTEHENDEN turnGameEngine-Muster (board_state JSONB, turn_deadline) — Leader, Vril-Energie-Kurve, Counter-Phase als State-Machine; komplette Regelvalidierung server-seitig.
 - **Booster ("Daten-Tresore"):** nur erspielbar (Loot, Terminals, Invasions-Siege). **KEIN IAP in E.** Drop-Tabellen in flags.config.
 - **Marktplatz:** `market_listings` + Escrow über item_events; Tausch Karte↔Karte und Karte↔Ressourcen.
-- **Wager-Matches:** NUR mit non-tradeable Ressourcen-Pots (Anhang B!). Würfel/Karten-Wetten bleiben AUS, bis IARC-Neubewertung aktiv entschieden wird — das ist eine Gigi-Entscheidung, kein Default.
+- **Ranked-/High-Stakes-Matches (Entscheidung 2026-06-12 — final):** KEINE Item-Wetten, kein Item-Verlust. Einsatz nur als non-tradeable Ressourcen-Pot; der Sieger erhält zusätzlich einen system-geminteten epischen Drop. Verlierer behalten alle Items. Damit bleibt das IARC-Rating bei USK 6/12 / PEGI 7/12.
 - **Saisons:** `season`-Spalte existiert ab Phase 0; Set-Rotation = neue Definitionen + Drop-Tabellen-Switch.
 - Holo/Gyroskop & Secret-Art: reine Client-Kosmetik (expo-sensors existiert).
 
@@ -418,10 +418,31 @@ Server-Deploys sind jederzeit möglich (additive Routes brechen vc2 nicht; `capa
 3. Kreuzanalyse-Pass nach jeder Phase (Skill `/kreuzanalyse`): besonders Decay×Gebäude, Ledger×Konto-Löschung (Soft-Delete: item_instances.owner_id SET NULL — bereits im DDL berücksichtigt), Home-Zone×Späher-Sicht.
 4. Migrationen idempotent (`IF NOT EXISTS`), eine Datei pro Phase in `server/src/db/migrations/`.
 
-### Offene Entscheidungen für Gigi (blockieren nichts vor Phase C)
-1. **"Crew" als UI-Anzeigename** statt "Clan"? (5-Min-i18n-Änderung, Branding-Frage.)
-2. **Wager mit Items** (→ IARC-Neubewertung nötig) oder dauerhaft nur Ressourcen-Pots? Default in diesem Plan: nur Ressourcen.
-3. **Icon/Brand-Ästhetik:** bleibt Cyan `#00D4FF` oder Schwenk Richtung Vril-Violett mit dem Lore-Update? (Betrifft das offene App-Icon-Thema.)
+### Entscheidungen (von Gigi, 2026-06-12, ASO/SEO-getrieben — FINAL)
+1. **"Clan" bleibt** — im UI UND im Schema. Begründung: riesiges ASO-Suchvolumen ("Clan Wars", "Spiel mit Clans"); "Crew" assoziiert Rennspiele/Tanz. GEO-Hebel: Website-Headings wie "Gründe deinen eigenen Clan und erobere reale Territorien in deiner Stadt" (→ SEO-Backlog).
+2. **Item-Wetten & Pink-Slip GESTRICHEN.** Kein Spieler verliert je ein Item per Wette/Einsatz an einen anderen Spieler (IARC würde auf 16+/18+ hochstufen → organische Reichweite tot, CPI explodiert). Stattdessen: **System-belohnte Ranked-/High-Stakes-Matches** — der Gewinner bekommt einen system-geminteten epischen Drop, der Verlierer behält sein Inventar. Wager-Pots nur mit nicht-handelbaren Ressourcen. Ziel-Rating: USK 6/12, PEGI 7/12.
+   **Klarstellung (Gigi, 2026-06-12): Verlieren bleibt echt!** Siehe "Verlust-Ökonomie" unten — Territorien, Gebäude und Truppen im Feld gehen bei Niederlagen verloren, Ruinen kann der Eroberer recyceln. Die IARC-Grenze betrifft NUR Wett-Transfers von Inventar-Items, nicht normale Spielverluste (Truppen-Zerstörung im Kampf = Spielmechanik wie bei Clash of Clans, IARC-unkritisch).
+3. **Brand-Farbe wechselt auf Vril-Violett** (Neon-Lila auf Obsidian/Dunkel) — App-Icon, Feature Graphic, App-Akzentfarbe, Website-Akzente. Begründung: Geolocation-Top-Charts sind blau/grün — Violett = maximaler Kontrast + Mystery/Sci-Fi/AI-Assoziation (Twitch/Discord-Psychologie), höhere Store-CTR. Rollout: Icon + Feature Graphic VOR Launch; App-Theme (`#00D4FF` → Vril-Akzent) und Website-Akzente phasenweise danach (Cyan bleibt als Sekundärfarbe im Farbsystem erhalten).
+
+### Verlust-Ökonomie (Klarstellung Gigi 2026-06-12: "Man muss schon was verlieren")
+
+**Was man verlieren KANN (volle Härte, gewollt):**
+- **Territorien** — durch Eroberung oder Decay. Wie heute, bleibt der Kern des Spiels.
+- **Gebäude auf eroberten Territorien** — werden bei feindlicher Übernahme zu **Ruinen auf dem Gebiet**. Der Eroberer entscheidet: **recyceln** (50 % der Baukosten als Tech/Energie zurück) oder **wieder aufbauen** (50 % der Neubaukosten statt 100 % — GDD-Renovierungsregel). Der Verlierer bekommt nichts zurück.
+- **Deployed Truppen** — Einheiten, die im Kampf fallen, sind zerstört (`item_instances.status='burned'`, `acquired_via`-Historie bleibt im Log). Wer seine Armee in eine verlorene Schlacht schickt, hat sie nicht mehr.
+- **Eingesetzte Ressourcen-Pots** in Ranked-Matches.
+- **TCG-Karten, die als Truppe eingelöst wurden** (Burn-Mechanik) — wenn die Truppe fällt, ist die Karte für immer weg. Das deflationäre Risiko trägt der Besitzer bewusst.
+
+**Was man NIE an andere Spieler verliert (IARC-Grenze):**
+- Inventar-Items (Würfel, Karten, Relikte im Lager), solange sie nicht als Truppe deployed sind. Verlust durch eigene Deployment-Entscheidung = Spielmechanik; Verlust durch Wette = Glücksspiel-Optik. Diese Linie hält das 6/12er-Rating.
+
+**OFFEN (Design-Entscheidung von Gigi, vor Phase C nötig): Total-Verlust & Neustart.**
+Wie weit kann ein Spieler ALLES verlieren, und wie sieht der Neuanfang aus? Vorschlag als Diskussionsgrundlage — **"Phönix-Protokoll"**:
+1. Es gibt keinen geschützten Besitz außer der Home-Zone-Privatsphäre (die ist Datenschutz, kein Gameplay-Schild) — ein Spieler kann auf 0 Territorien, 0 Gebäude, 0 Truppen fallen.
+2. Wer auf null fällt, behält: Inventar (nicht-deployte Items), XP/Level, Titel, Clan-Mitgliedschaft, Ressourcen-Restbestand.
+3. Comeback-Paket (automatisch, einmal pro 30 Tage): 7 Tage Angriffs-Schutz auf den ersten neuen Claim, 2× Aufbau-Ressourcen (dockt an bestehenden Return-Bonus in `balanceService` an), Start-Trupp (3 Common-Einheiten system-gemintet).
+4. Bestehende Schutzmechaniken bleiben darunter aktiv: Daily-Loss-Cap 30 % (verhindert Overnight-Totalverlust), Newcomer-Protection 1.5×.
+→ Damit ist Verlieren hart, aber nie ein Account-Ende — der Frust-Exit ("App deinstallieren") wird zum Revanche-Loop.
 
 ### Gesamt-Timeline (1 Entwickler + Agents, realistisch)
 Phase 0: 1 W → A: 4 W → B: 2 W → C: 7 W → D: 3 W → E: 4–6 W ≈ **5–6 Monate** bis Voll-Vision; erster sichtbarer GDD-Content (Phase A.1) ist **~5 Wochen** nach Start live — feature-geflaggt und unabhängig vom v1-Review.
