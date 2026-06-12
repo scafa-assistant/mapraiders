@@ -1,0 +1,23 @@
+-- ============================================================
+-- Phase C.3 — Tier-2/3 buildings + radar/garrison/silo/teleporter + airstrikes
+-- (2026-06-12)
+--
+-- NO SCHEMA CHANGES. Phase C.3 is config/code only:
+--   * The new building types (radar/garrison/silo/teleporter) reuse the
+--     existing `buildings` table — `type` is already VARCHAR(30) and `tier`
+--     already supports 1..3 (CHECK tier BETWEEN 1 AND 3 from Phase B).
+--   * Airstrike battle rows reuse the existing `battles` table — `type` already
+--     documents 'airstrike' as a valid value.
+--   * Per-tier effects, costs, cooldowns and teleport tuning live in
+--     src/config/constants.ts (BUILDINGS.TIERS / TIER_EFFECTS, AIRSTRIKE,
+--     TELEPORT), overridable live via the `resources` / `commander` flags.
+--   * Shield multi-block uses config.block_times JSONB on territory_defenses —
+--     no column change, backward-compatible with legacy config.last_blocked_at.
+--   * Building upgrades stash config.upgrading_to JSONB and complete through the
+--     existing building_completion cron — no column change.
+--
+-- This file exists only to keep the migration sequence complete. There is
+-- nothing to run. Do NOT add tables here.
+-- ============================================================
+
+SELECT 'phaseC3: no schema changes (config/code only)' AS note;

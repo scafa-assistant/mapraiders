@@ -24,10 +24,11 @@
 import { PoolClient } from 'pg';
 import * as h3 from 'h3-js';
 import { transaction, query } from '../config/database';
-import { COMMANDER, COMBAT } from '../config/constants';
+import { COMMANDER, COMBAT, TELEPORT } from '../config/constants';
 import { RES_SPAWN, cellForPoint, pathBetween } from './h3Service';
 import { resourceService } from './resourceService';
 import { visionService } from './visionService';
+import { buildingEngine } from './buildingEngine';
 import { isInSilentZone } from './silentZoneService';
 import { wsService } from './wsService';
 import { getContext } from './osmContextService';
@@ -278,11 +279,17 @@ class TroopEngine {
         throw new TroopError('NOT_TERRITORY_OWNER', 'Territory not found or not owned');
       }
 
+      // C.3: an active garrison building raises the cap by its tier's bonus
+      // slots. Effects are read INSIDE this tx (client passed) so we never
+      // open a second pool connection while holding the territory lock.
+      const effects = await buildingEngine.getTerritoryEffects(opts.territoryId, c);
+      const cap = COMBAT.MAX_GARRISON + effects.garrisonBonusSlots;
+
       const cnt = await c.query<{ cnt: string }>(
         `SELECT COUNT(*)::bigint AS cnt FROM troop_deployments WHERE territory_id = $1`,
         [opts.territoryId],
       );
-      if (parseInt(cnt.rows[0].cnt, 10) >= COMBAT.MAX_GARRISON) {
+      if (parseInt(cnt.rows[0].cnt, 10) >= cap) {
         throw new TroopError('GARRISON_FULL', 'Territory garrison is full');
       }
 
@@ -493,6 +500,28 @@ class TroopEngine {
       throw new TroopError('TARGET_TOO_FAR', 'Target is too far to march to');
     }
 
+    // ---- PRE-TX: teleporter fast-path eligibility (pool read) ----
+    // A reinforce between two of the user's OWN territories that BOTH have an
+    // active teleporter travels in a flat TELEPORT.TRAVEL_MIN minutes for a
+    // flat per-unit energy cost. Attacks never teleport. This is only a hint:
+    // the authoritative re-check happens inside the tx (TOCTOU guard).
+    let teleportCandidate = false;
+    if (purpose === 'reinforce' && defenderId === userId) {
+      const tp = await query<{ cnt: string }>(
+        `SELECT COUNT(*)::bigint AS cnt
+           FROM buildings
+          WHERE territory_id = ANY($1)
+            AND owner_id = $2
+            AND type = 'teleporter'
+            AND status = 'active'
+            AND COALESCE((config->>'covert')::boolean, FALSE) IS NOT TRUE`,
+        [[fromTerritoryId, targetTerritoryId], userId],
+      );
+      // Need one active teleporter on EACH of the two distinct territories.
+      teleportCandidate =
+        fromTerritoryId !== targetTerritoryId && parseInt(tp.rows[0].cnt, 10) >= 2;
+    }
+
     const result = await transaction(async (c) => {
       // ---- Lock all instances (owned, category 'unit', status 'inventory') ----
       const locked = await c.query<{
@@ -523,13 +552,37 @@ class TroopEngine {
         }
       }
 
-      // ---- Debit energy: path length × unit count × per-cell-per-unit ----
+      // ---- Re-verify teleporter eligibility under lock (TOCTOU guard) ----
+      // Ownership or a teleporter could have changed between the pre-tx read
+      // and now; re-check with the tx client before granting the fast-path.
+      let teleport = false;
+      if (teleportCandidate) {
+        const tpRes = await c.query<{ cnt: string }>(
+          `SELECT COUNT(DISTINCT b.territory_id)::bigint AS cnt
+             FROM buildings b
+             JOIN territories t ON t.id = b.territory_id
+            WHERE b.territory_id = ANY($1)
+              AND b.owner_id = $2
+              AND b.type = 'teleporter'
+              AND b.status = 'active'
+              AND COALESCE((b.config->>'covert')::boolean, FALSE) IS NOT TRUE
+              AND t.owner_id = $2`,
+          [[fromTerritoryId, targetTerritoryId], userId],
+        );
+        teleport = parseInt(tpRes.rows[0].cnt, 10) >= 2;
+      }
+
+      // ---- Debit energy ----
+      // Teleport: flat per-unit cost. March: path length × unit count × rate.
+      const energyCost = teleport
+        ? instanceIds.length * TELEPORT.ENERGY_PER_UNIT
+        : path.length * instanceIds.length * COMBAT.MARCH_ENERGY_PER_CELL_PER_UNIT;
       await resourceService.debit(
         userId,
         'energy',
-        path.length * instanceIds.length * COMBAT.MARCH_ENERGY_PER_CELL_PER_UNIT,
+        energyCost,
         'troop_march',
-        { targetTerritoryId, purpose },
+        { targetTerritoryId, purpose, teleport },
         c,
       );
 
@@ -541,7 +594,14 @@ class TroopEngine {
       );
 
       // ---- Insert the movement ----
-      const travelMin = path.length * COMBAT.MARCH_MIN_PER_CELL;
+      // Teleport collapses the path to [origin, target] and the travel time to
+      // a flat TELEPORT.TRAVEL_MIN minutes.
+      const movePath = teleport ? [originCell, targetCell0] : path;
+      const travelMin = teleport
+        ? TELEPORT.TRAVEL_MIN
+        : path.length * COMBAT.MARCH_MIN_PER_CELL;
+      const moveConfig: Record<string, any> = { target_territory_id: targetTerritoryId };
+      if (teleport) moveConfig.teleport = true;
       const inserted = await c.query<TroopMovement>(
         `INSERT INTO troop_movements
            (owner_id, instance_ids, from_cell, to_cell, path, purpose, config,
@@ -554,9 +614,9 @@ class TroopEngine {
           instanceIds,
           originCell,
           targetCell0,
-          path,
+          movePath,
           purpose,
-          JSON.stringify({ target_territory_id: targetTerritoryId }),
+          JSON.stringify(moveConfig),
           String(travelMin),
         ],
       );
@@ -927,13 +987,20 @@ class TroopEngine {
           };
         }
 
-        // Respect MAX_GARRISON: fill remaining slots, overflow marches home.
+        // Respect the garrison cap: fill remaining slots, overflow marches
+        // home. C.3: the cap includes a garrison building's tier bonus slots —
+        // effects read via the held client (no second pool connection).
+        const reinforceEffects = await buildingEngine.getTerritoryEffects(
+          terr.rows[0].id,
+          c,
+        );
+        const reinforceCap = COMBAT.MAX_GARRISON + reinforceEffects.garrisonBonusSlots;
         const cntRes = await c.query<{ cnt: string }>(
           `SELECT COUNT(*)::bigint AS cnt FROM troop_deployments WHERE territory_id = $1`,
           [terr.rows[0].id],
         );
         const used = parseInt(cntRes.rows[0].cnt, 10);
-        const freeSlots = Math.max(0, COMBAT.MAX_GARRISON - used);
+        const freeSlots = Math.max(0, reinforceCap - used);
         const toGarrison = mv.instance_ids.slice(0, freeSlots);
         const overflow = mv.instance_ids.slice(freeSlots);
 

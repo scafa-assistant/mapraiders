@@ -20,7 +20,14 @@ const router = Router();
 const RESOURCES_FLAG = 'resources';
 
 /** Valid building types the client may request. */
-const VALID_TYPES = ['shield_generator', 'refinery'] as const;
+const VALID_TYPES = [
+  'shield_generator',
+  'refinery',
+  'radar',
+  'garrison',
+  'silo',
+  'teleporter',
+] as const;
 type BuildingType = (typeof VALID_TYPES)[number];
 
 /**
@@ -104,6 +111,40 @@ router.post('/territory/:territoryId', authenticate, async (req: Request, res: R
     }
     console.error('[Buildings] POST /territory/:territoryId error:', err);
     return res.status(500).json({ success: false, message: 'Failed to construct building' });
+  }
+});
+
+// ---- POST /:id/upgrade ----------------------------------------------------------
+
+/**
+ * POST /api/buildings/:id/upgrade
+ * Upgrades the building to its next tier (caller must own it). Feature-gated:
+ * flag off → 403. Domain failures map: *_NOT_FOUND → 404, the rest → 400
+ * (NOT_OWNER, NOT_UPGRADABLE, MAX_TIER, INSUFFICIENT_RESOURCES).
+ */
+router.post('/:id/upgrade', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, RESOURCES_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'Feature not available' });
+    }
+
+    const buildingId = req.params.id as string;
+    if (!looksLikeUuid(buildingId)) {
+      return res.status(400).json({ success: false, message: 'Invalid building ID' });
+    }
+
+    const building = await buildingEngine.upgrade(userId, buildingId);
+    return res.json({ success: true, data: { building } });
+  } catch (err: any) {
+    if (err?.code) {
+      const status = String(err.code).endsWith('NOT_FOUND') ? 404 : 400;
+      return res.status(status).json({ success: false, message: err.code });
+    }
+    console.error('[Buildings] POST /:id/upgrade error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to upgrade building' });
   }
 });
 

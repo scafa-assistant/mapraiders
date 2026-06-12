@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import * as h3 from 'h3-js';
 import { useCommanderStore } from '../store/commanderStore';
-import type { CommanderMovement } from '../store/commanderStore';
+import type { AirstrikeResult, CommanderMovement, SiloInfo } from '../store/commanderStore';
 import { useInventoryStore } from '../store/inventoryStore';
 import { useAuthStore } from '../store/authStore';
 import { theme, colorForRarity } from '../theme';
@@ -142,6 +142,7 @@ export default function CommanderView() {
     deployUnit, undeployUnit, marchTroops,
     equipDie, equippedDieInstanceId,
     battles, battlesLoading, fetchBattles,
+    launchStrike,
   } = useCommanderStore();
   const { items: inventoryItems, refresh: refreshInventory } = useInventoryStore();
   const userId = useAuthStore((s) => s.user?.id);
@@ -175,6 +176,15 @@ export default function CommanderView() {
   // ---- Dice pouch UI ----------------------------------------------------------
   const [diceError, setDiceError]   = useState<string | null>(null);
   const [dicePending, setDicePending] = useState<string | null>(null);
+
+  // ---- Airstrike flow UI (Phase C.3) ------------------------------------------
+  const [strikeMode, setStrikeMode]           = useState(false);
+  const [strikeOriginId, setStrikeOriginId]   = useState<string>('');
+  const [strikeTargetId, setStrikeTargetId]   = useState<string>('');
+  const [siloPickerId, setSiloPickerId]       = useState<string | null>(null); // selected silo territory_id
+  const [strikeError, setStrikeError]         = useState<string | null>(null);
+  const [strikePending, setStrikePending]     = useState(false);
+  const [strikeToast, setStrikeToast]         = useState<string | null>(null);
 
   // ---- Boot -------------------------------------------------------------------
   useEffect(() => {
@@ -402,6 +412,41 @@ export default function CommanderView() {
   const allTerrs    = mapData?.territories ?? [];
   const activeMovements = mapData?.movements ?? [];
   const garrisons   = mapData?.garrisons ?? [];
+  const silos       = mapData?.silos ?? [];
+
+  /** Own silos that are ready now (ready_at null or in the past) */
+  function getReadySilos(): SiloInfo[] {
+    return silos.filter((s) => {
+      if (!s.ready_at) return true;
+      return new Date(s.ready_at).getTime() <= Date.now();
+    });
+  }
+
+  /** Format silo damage for a given tier: 50/75/100 */
+  function siloDamage(tier: number): number {
+    return [0, 50, 75, 100][tier] ?? 50;
+  }
+
+  function formatReadyAt(readyAt: string | null): string {
+    if (!readyAt) return 'Ready';
+    const ms = new Date(readyAt).getTime() - Date.now();
+    if (ms <= 0) return 'Ready';
+    const totalSec = Math.ceil(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  }
+
+  function resultToastMessage(result: AirstrikeResult['result']): string {
+    if ('shield_broken' in result && result.shield_broken) return '🛡 Shield destroyed!';
+    if ('building_hit' in result) {
+      const hit = result.building_hit;
+      if (hit.destroyed) return `🏚 ${hit.type.replace(/_/g, ' ')} destroyed!`;
+      return `🏚 ${hit.type.replace(/_/g, ' ')} hit — ${hit.hp_after} HP left.`;
+    }
+    return '☁ No targets — strike wasted.';
+  }
 
   function garrisonForTerritory(terrId: string) {
     return garrisons.find((g) => g.territory_id === terrId) ?? null;
@@ -539,6 +584,10 @@ export default function CommanderView() {
     } else {
       setAttackMode(false);
       setAttackSelectedIds(new Set());
+      if (result.teleport) {
+        setStrikeToast('🌀 Teleported.');
+        window.setTimeout(() => setStrikeToast(null), 4000);
+      }
     }
   }
 
@@ -549,6 +598,38 @@ export default function CommanderView() {
     const result = await equipDie(instanceId);
     setDicePending(null);
     if (!result.ok) setDiceError(result.error ?? 'Equip failed');
+  }
+
+  // ---- Airstrike handlers (Phase C.3) -----------------------------------------
+  function openStrikeFlow(targetTerritoryId: string) {
+    const readySilos = getReadySilos();
+    setStrikeTargetId(targetTerritoryId);
+    setStrikeOriginId(readySilos[0]?.territory_id ?? ownTerrs[0]?.id ?? '');
+    setSiloPickerId(readySilos.length === 1 ? readySilos[0].territory_id : null);
+    setStrikeError(null);
+    setStrikeMode(true);
+    setTerrPanel({ type: 'none' });
+  }
+
+  async function handleStrike() {
+    const selectedSiloTerrId = siloPickerId ?? strikeOriginId;
+    if (!selectedSiloTerrId || !strikeTargetId) {
+      setStrikeError('Select a silo origin and a target territory.');
+      return;
+    }
+    setStrikePending(true);
+    setStrikeError(null);
+    const res = await launchStrike(selectedSiloTerrId, strikeTargetId);
+    setStrikePending(false);
+    if (!res.ok) {
+      setStrikeError(res.error);
+    } else {
+      setStrikeMode(false);
+      setSiloPickerId(null);
+      const msg = resultToastMessage(res.result.result);
+      setStrikeToast(msg);
+      window.setTimeout(() => setStrikeToast(null), 5000);
+    }
   }
 
   // ---- Styles -----------------------------------------------------------------
@@ -683,6 +764,29 @@ export default function CommanderView() {
         {availableUnits.length === 0 && garrisonCount < 6 && (
           <div className="muted" style={{ fontSize: 12 }}>No units in inventory.</div>
         )}
+
+        {/* Silo status for this territory */}
+        {silos.filter((s) => s.territory_id === territoryId).map((s) => (
+          <div key={s.territory_id} style={{
+            ...mvCard, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+            borderColor: !s.ready_at || new Date(s.ready_at).getTime() <= Date.now()
+              ? theme.color.accent : theme.color.border,
+          }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 12 }}>☄ Silo Tier {'I'.repeat(s.tier)}</div>
+              <div style={{ fontSize: 10, color: theme.color.textDim }}>
+                {siloDamage(s.tier)} damage on hit
+              </div>
+            </div>
+            <span style={{
+              fontSize: 11, fontWeight: 700,
+              color: !s.ready_at || new Date(s.ready_at).getTime() <= Date.now()
+                ? theme.color.success : theme.color.amber,
+            }}>
+              {formatReadyAt(s.ready_at)}
+            </span>
+          </div>
+        ))}
       </>
     );
   }
@@ -711,12 +815,27 @@ export default function CommanderView() {
           Garrison: {garrisonCount > 0 ? `${garrisonCount} unit${garrisonCount !== 1 ? 's' : ''}` : 'Unknown'} (fog of war)
         </div>
 
-        <button
-          style={{ ...btnAccent, background: theme.color.danger, marginTop: 6 }}
-          onClick={() => openAttackFlow(territoryId)}
-        >
-          ⚔ Attack
-        </button>
+        <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+          <button
+            style={{ ...btnAccent, background: theme.color.danger, flex: 1 }}
+            onClick={() => openAttackFlow(territoryId)}
+          >
+            ⚔ Attack
+          </button>
+          {getReadySilos().length > 0 && (
+            <button
+              style={{ ...btnAccent, background: '#7B2D8B', flex: 1 }}
+              onClick={() => openStrikeFlow(territoryId)}
+            >
+              ☄ Airstrike
+            </button>
+          )}
+        </div>
+        {silos.length > 0 && getReadySilos().length === 0 && (
+          <div style={{ fontSize: 11, color: theme.color.textDim, marginTop: 4 }}>
+            ☄ Silo is reloading…
+          </div>
+        )}
       </>
     );
   }
@@ -833,6 +952,84 @@ export default function CommanderView() {
     );
   }
 
+  // ---- Airstrike flow panel ---------------------------------------------------
+  function renderStrikeFlow() {
+    const targetTerr = allTerrs.find((t) => t.id === strikeTargetId);
+    const readySilos = getReadySilos();
+    const selectedSilo = readySilos.find((s) => s.territory_id === (siloPickerId ?? strikeOriginId));
+    const damage = selectedSilo ? siloDamage(selectedSilo.tier) : '?';
+
+    return (
+      <>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: '#D4A5FF' }}>
+            ☄ Airstrike
+          </div>
+          <button style={btnSmall} onClick={() => setStrikeMode(false)}>✕</button>
+        </div>
+
+        <div style={{ fontSize: 12, color: theme.color.textDim }}>
+          Target: <strong style={{ color: theme.color.foreign }}>
+            {targetTerr?.owner_username ?? strikeTargetId.slice(0, 8)}…
+          </strong>
+        </div>
+
+        {strikeError && (
+          <div style={{ color: theme.color.danger, fontSize: 12 }}>{strikeError}</div>
+        )}
+
+        {/* Silo picker — show when >1 ready silo */}
+        {readySilos.length > 1 && (
+          <>
+            <div style={sectionLabel}>Select Silo</div>
+            {readySilos.map((s) => {
+              const siloTerrName = ownTerrs.find((t) => t.id === s.territory_id)?.owner_username ?? s.territory_id.slice(0, 8);
+              const selected = (siloPickerId ?? strikeOriginId) === s.territory_id;
+              return (
+                <div
+                  key={s.territory_id}
+                  style={selected ? itemCardSelected : itemCard}
+                  onClick={() => { setSiloPickerId(s.territory_id); setStrikeOriginId(s.territory_id); }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: 12 }}>
+                    ☄ Tier {'I'.repeat(s.tier)} — {siloTerrName}
+                  </div>
+                  <div style={{ fontSize: 11, color: theme.color.textDim }}>
+                    {siloDamage(s.tier)} dmg · Ready
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+
+        {/* Range / cost hint */}
+        <div style={{
+          background: theme.color.panelAlt, border: `1px solid ${theme.color.border}`,
+          borderRadius: 8, padding: '8px 10px', fontSize: 12,
+        }}>
+          <div style={{ color: theme.color.amber }}>⚡ Cost: 150 Energy · Range: 40 cells</div>
+          <div style={{ color: theme.color.textDim, marginTop: 2 }}>
+            Damage: {damage} HP · Cooldown: 6h after launch
+          </div>
+        </div>
+
+        <button
+          style={{
+            ...btnAccent, background: '#7B2D8B',
+            opacity: (strikePending || readySilos.length === 0) ? 0.5 : 1,
+          }}
+          disabled={strikePending || readySilos.length === 0}
+          onClick={() => void handleStrike()}
+        >
+          {strikePending ? 'Launching…' : '☄ Launch Strike'}
+        </button>
+
+        <button style={btnOutline} onClick={() => setStrikeMode(false)}>Cancel</button>
+      </>
+    );
+  }
+
   // ---- Dice pouch panel -------------------------------------------------------
   function renderDicePouch() {
     if (diceItems.length === 0) return null;
@@ -878,7 +1075,10 @@ export default function CommanderView() {
 
   // ---- Left panel content switch ----------------------------------------------
   function renderLeftPanel() {
-    // Attack flow takes priority
+    // Strike flow takes priority over attack
+    if (strikeMode) return renderStrikeFlow();
+
+    // Attack flow
     if (attackMode) return renderAttackFlow();
 
     // Territory panel
@@ -971,13 +1171,23 @@ export default function CommanderView() {
         ) : (
           ownTerrs.map((t) => {
             const g = garrisonForTerritory(t.id);
+            const hasSilo = silos.some((s) => s.territory_id === t.id);
+            const siloReady = hasSilo && getReadySilos().some((s) => s.territory_id === t.id);
             return (
               <div
                 key={t.id}
                 style={{ ...itemCard }}
                 onClick={() => setTerrPanel({ type: 'own', territoryId: t.id })}
               >
-                <div style={{ fontWeight: 600 }}>{t.owner_username ?? 'Yours'}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 600 }}>{t.owner_username ?? 'Yours'}</span>
+                  {hasSilo && (
+                    <span style={{ fontSize: 12, color: siloReady ? theme.color.success : theme.color.textDim }}
+                      title={siloReady ? 'Silo ready' : 'Silo reloading'}>
+                      ☄
+                    </span>
+                  )}
+                </div>
                 <div className="muted" style={{ fontSize: 11 }}>
                   {t.h3_cells.length} hex · {t.claim_value} cv
                   {g ? ` · 🏰 ${g.count}/6` : ''}
@@ -1063,6 +1273,7 @@ export default function CommanderView() {
             )}
             {battles.map((b) => {
               const isAtk = b.attacker_id === userId;
+              const isAirstrike = b.type === 'airstrike';
               const won = b.winner_side != null && (
                 (isAtk && b.winner_side === 'attacker') ||
                 (!isAtk && b.winner_side === 'defender')
@@ -1078,10 +1289,10 @@ export default function CommanderView() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontWeight: 700, fontSize: 12 }}>
-                      {isAtk ? '⚔ Attack' : '🛡 Defense'}
+                      {isAirstrike ? '☄ Airstrike' : (isAtk ? '⚔ Attack' : '🛡 Defense')}
                     </span>
                     <span style={{ fontSize: 11, color: won ? theme.color.success : theme.color.danger, fontWeight: 700 }}>
-                      {b.winner_side == null ? '—' : won ? 'WIN' : 'LOSS'}
+                      {isAirstrike ? '☄' : (b.winner_side == null ? '—' : won ? 'WIN' : 'LOSS')}
                     </span>
                   </div>
                   <div style={{ fontSize: 11, color: theme.color.textDim }}>
@@ -1100,6 +1311,20 @@ export default function CommanderView() {
           battleId={replayBattleId}
           onClose={() => setReplayBattleId(null)}
         />
+      )}
+
+      {/* Airstrike result toast */}
+      {strikeToast && (
+        <div style={{
+          position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          background: theme.color.panel, border: `1px solid ${theme.color.border}`,
+          borderRadius: 12, padding: '10px 20px', zIndex: 800,
+          fontWeight: 700, fontSize: 14, color: theme.color.text,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+          pointerEvents: 'none',
+        }}>
+          {strikeToast}
+        </div>
       )}
     </div>
   );

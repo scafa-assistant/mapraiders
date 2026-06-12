@@ -103,7 +103,14 @@ export interface ResourcesResponse {
 
 // ---- Buildings ---------------------------------------------------------------
 
-export type BuildingType = 'shield_generator' | 'refinery';
+export type BuildingType =
+  | 'shield_generator'
+  | 'refinery'
+  | 'radar'
+  | 'garrison'
+  | 'silo'
+  | 'teleporter';
+
 export type BuildingStatus = 'building' | 'active' | 'damaged' | 'destroyed';
 
 export interface Building {
@@ -256,6 +263,11 @@ export interface BattleLog {
   winner_side: 'attacker' | 'defender';
   survivors: { attacker: string[]; defender: string[] };
   loot: { dice_drop?: string };
+  /** Present when this battle is an airstrike (type field on BattleSummary = 'airstrike') */
+  type?: 'airstrike';
+  silo_tier?: number;
+  damage?: number;
+  result?: AirstrikeResultPayload;
 }
 
 export interface BattleSummary {
@@ -289,4 +301,33 @@ export interface TroopMovement {
   instance_ids: string[];
   departs_at: string;
   arrives_at: string;
+  config?: Record<string, unknown>;
+}
+
+// ---- Airstrikes (Phase C.3) --------------------------------------------------
+
+/** One own silo returned in GET /commander/map */
+export interface SiloInfo {
+  territory_id: string;
+  tier: number;
+  /** ISO timestamp or null when the silo is ready now */
+  ready_at: string | null;
+}
+
+export type AirstrikeResultPayload =
+  | { shield_broken: true }
+  | { building_hit: { id: string; type: string; hp_after: number; destroyed: boolean } }
+  | { no_effect: true };
+
+export interface AirstrikeResult {
+  battle_id: string;
+  result: AirstrikeResultPayload;
+}
+
+/** Airstrike log shape returned inside BattleDetail.log for type==='airstrike' */
+export interface AirstrikeLog {
+  type: 'airstrike';
+  silo_tier: number;
+  damage: number;
+  result: AirstrikeResultPayload;
 }

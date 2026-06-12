@@ -9,6 +9,7 @@
 import axios, { AxiosError } from 'axios';
 import type {
   ApiEnvelope,
+  AirstrikeResult,
   BattleDetail,
   BattleSummary,
   Building,
@@ -205,6 +206,28 @@ export const buildingApi = {
   },
   async demolish(buildingId: string): Promise<void> {
     await api.delete<ApiEnvelope<unknown>>(`/buildings/${buildingId}`);
+  },
+  async upgrade(buildingId: string): Promise<Building> {
+    const res = await api.post<ApiEnvelope<{ building: Building }>>(
+      `/buildings/${buildingId}/upgrade`,
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Upgrade failed');
+    }
+    return res.data.data.building;
+  },
+};
+
+export const strikeApi = {
+  async launch(fromTerritoryId: string, targetTerritoryId: string): Promise<AirstrikeResult> {
+    const res = await api.post<ApiEnvelope<AirstrikeResult>>(
+      '/commander/strike',
+      { from_territory_id: fromTerritoryId, target_territory_id: targetTerritoryId },
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Strike failed');
+    }
+    return res.data.data;
   },
 };
 

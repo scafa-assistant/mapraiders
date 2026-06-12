@@ -28,7 +28,7 @@
 
 import { PoolClient } from 'pg';
 import { transaction } from '../config/database';
-import { COMMANDER } from '../config/constants';
+import { COMMANDER, BUILDINGS } from '../config/constants';
 import { disk, centerOf } from './h3Service';
 import { isInSilentZone } from './silentZoneService';
 
@@ -82,18 +82,24 @@ class VisionService {
       }
 
       // ---- 3. Radar vision (own active radars, incl. covert on foreign land) ----
-      const radars = await c.query<{ id: string; h3_cells: string[] | null }>(
-        `SELECT b.id, t.h3_cells
+      // C.3: the radar disk radius is tier-aware — TIER_EFFECTS.radar_vision_k
+      // indexed by tier-1 (clamped). Covert scout radars are tier 1, so they
+      // keep the original k=2 disk (radar_vision_k[0]).
+      const radars = await c.query<{ id: string; tier: number; h3_cells: string[] | null }>(
+        `SELECT b.id, b.tier, t.h3_cells
            FROM buildings b
            JOIN territories t ON t.id = b.territory_id
           WHERE b.owner_id = $1 AND b.type = 'radar' AND b.status = 'active'`,
         [userId],
       );
+      const radarKTable = BUILDINGS.TIER_EFFECTS.radar_vision_k;
       for (const row of radars.rows) {
         const cells = row.h3_cells;
         if (!cells || cells.length === 0) continue;
+        const idx = Math.max(0, Math.min(radarKTable.length - 1, (row.tier || 1) - 1));
+        const k = radarKTable[idx];
         for (const cell of cells) {
-          for (const d of disk(cell, COMMANDER.RADAR_VISION_K)) push(d);
+          for (const d of disk(cell, k)) push(d);
         }
       }
 

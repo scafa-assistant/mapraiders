@@ -11,7 +11,7 @@ import { readableBuildingError } from '../api/buildingErrors';
 import { useAuthStore } from '../store/authStore';
 import { useFeatureStore } from '../store/featureStore';
 import { useResourceStore } from '../store/resourceStore';
-import { buildingLabel, countdownTo, formatArea } from '../utils';
+import { buildingLabel, countdownTo, formatArea, tierNumeral, upgradeCost } from '../utils';
 import type { Building, BuildingType, TerritoryDetail } from '../api/types';
 
 interface Props {
@@ -22,6 +22,19 @@ interface Props {
 const BUILD_COSTS: Record<BuildingType, { energy: number; tech: number }> = {
   shield_generator: { energy: 200, tech: 100 },
   refinery: { energy: 150, tech: 80 },
+  radar: { energy: 180, tech: 120 },
+  garrison: { energy: 250, tech: 150 },
+  silo: { energy: 400, tech: 250 },
+  teleporter: { energy: 300, tech: 200 },
+};
+
+const BUILDING_ICONS: Record<BuildingType, string> = {
+  shield_generator: '🛡',
+  refinery: '⚗',
+  radar: '📡',
+  garrison: '🏰',
+  silo: '☄',
+  teleporter: '🌀',
 };
 
 // Re-render countdowns once a second so "building" timers tick down live.
@@ -127,6 +140,19 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
     }
   }
 
+  async function onUpgrade(building: Building) {
+    setBusy(true);
+    setActionError(null);
+    try {
+      await buildingApi.upgrade(building.id);
+      await Promise.all([loadBuildings(), refreshResources()]);
+    } catch (err) {
+      reportActionError(err);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const existingTypes = new Set(
     buildings.filter((b) => b.status !== 'destroyed').map((b) => b.type),
   );
@@ -188,35 +214,66 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
                 </div>
               )}
 
-              {buildings.map((b) => (
-                <div className="building-card" key={b.id}>
-                  <div className="row">
-                    <span className="building-name">{buildingLabel(b.type)}</span>
-                    <span className={`badge ${b.status === 'active' ? 'active' : b.status === 'building' ? 'building' : 'neutral'}`}>
-                      {b.status}
-                    </span>
-                  </div>
-                  <div className="row" style={{ marginTop: 6 }}>
-                    {b.status === 'building' && b.completes_at ? (
-                      <span className="countdown">Ready in {countdownTo(b.completes_at)}</span>
-                    ) : (
-                      <span className="muted">HP {b.hp}</span>
+              {buildings.map((b) => {
+                const tierLabel = b.tier > 0 ? tierNumeral(b.tier) : '';
+                const canUpgrade = b.status === 'active' && b.tier < 3;
+                // New builds also sit in status 'building' with tier 1 — the
+                // upgrade marker is config.upgrading_to, never the tier.
+                const upgrading = b.status === 'building' &&
+                  Boolean((b.config as Record<string, unknown> | undefined)?.upgrading_to);
+                const upCost = canUpgrade ? upgradeCost(BUILD_COSTS[b.type as BuildingType] ?? { energy: 0, tech: 0 }, b.tier) : null;
+                return (
+                  <div className="building-card" key={b.id}>
+                    <div className="row">
+                      <span className="building-name">
+                        {BUILDING_ICONS[b.type as BuildingType] ?? '🏗'} {buildingLabel(b.type)}
+                        {tierLabel && (
+                          <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, opacity: 0.75 }}>
+                            Tier {tierLabel}
+                          </span>
+                        )}
+                      </span>
+                      <span className={`badge ${b.status === 'active' ? 'active' : b.status === 'building' ? 'building' : 'neutral'}`}>
+                        {b.status}
+                      </span>
+                    </div>
+                    <div className="row" style={{ marginTop: 6 }}>
+                      {b.status === 'building' && b.completes_at ? (
+                        <span className="countdown">
+                          {upgrading ? `Upgrading → Tier ${tierNumeral(b.tier + 1)} — ` : 'Ready in '}
+                          {countdownTo(b.completes_at)}
+                        </span>
+                      ) : (
+                        <span className="muted">HP {b.hp}</span>
+                      )}
+                      {(b.status === 'building' || b.status === 'active') && (
+                        <button
+                          className="btn-demolish"
+                          disabled={busy}
+                          onClick={() => void onDemolish(b)}
+                        >
+                          Demolish
+                        </button>
+                      )}
+                    </div>
+                    {canUpgrade && upCost && (
+                      <div className="row" style={{ marginTop: 4 }}>
+                        <button
+                          className="build-btn"
+                          style={{ fontSize: 11, padding: '4px 8px' }}
+                          disabled={busy}
+                          onClick={() => void onUpgrade(b)}
+                        >
+                          Upgrade → Tier {tierNumeral(b.tier + 1)} ({upCost.energy}⚡ {upCost.tech}⚙)
+                        </button>
+                      </div>
                     )}
-                    {(b.status === 'building' || b.status === 'active') && (
-                      <button
-                        className="btn-demolish"
-                        disabled={busy}
-                        onClick={() => onDemolish(b)}
-                      >
-                        Demolish
-                      </button>
-                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
-              <div className="build-options">
-                {(['shield_generator', 'refinery'] as BuildingType[]).map((type) => {
+              <div className="build-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                {(Object.keys(BUILD_COSTS) as BuildingType[]).map((type) => {
                   const cost = BUILD_COSTS[type];
                   const already = existingTypes.has(type);
                   return (
@@ -224,11 +281,14 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
                       key={type}
                       className="build-btn"
                       disabled={busy || already}
-                      onClick={() => onBuild(type)}
+                      onClick={() => void onBuild(type)}
                       title={already ? 'Already built here' : undefined}
+                      style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2, padding: '7px 8px' }}
                     >
-                      <span>{already ? `${buildingLabel(type)} (built)` : `Build ${buildingLabel(type)}`}</span>
-                      <span className="cost">
+                      <span style={{ fontSize: 13 }}>
+                        {BUILDING_ICONS[type]} {already ? `${buildingLabel(type)} ✓` : `Build ${buildingLabel(type)}`}
+                      </span>
+                      <span className="cost" style={{ fontSize: 10 }}>
                         {cost.energy}⚡ {cost.tech}⚙
                       </span>
                     </button>

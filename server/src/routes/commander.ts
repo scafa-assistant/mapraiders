@@ -16,6 +16,8 @@ import { featureService } from '../services/featureService';
 import { transaction, query } from '../config/database';
 import { troopEngine } from '../services/troopEngine';
 import { visionService } from '../services/visionService';
+import { airstrikeService } from '../services/airstrikeService';
+import { AIRSTRIKE } from '../config/constants';
 
 const router = Router();
 
@@ -215,6 +217,26 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       cells: r.h3_cells ?? [],
     }));
 
+    // Own active silos with strike-readiness (C.3). ready_at = last_strike_at +
+    // cooldown, or null if the silo has never fired (immediately ready).
+    const siloRows = await query<{
+      territory_id: string;
+      tier: number;
+      config: Record<string, any>;
+    }>(
+      `SELECT territory_id, tier, config
+         FROM buildings
+        WHERE owner_id = $1 AND type = 'silo' AND status = 'active'`,
+      [userId],
+    );
+    const silos = siloRows.rows.map((s) => {
+      const last = s.config && s.config.last_strike_at ? new Date(s.config.last_strike_at) : null;
+      const readyAt = last
+        ? new Date(last.getTime() + AIRSTRIKE.COOLDOWN_HOURS * 60 * 60 * 1000).toISOString()
+        : null;
+      return { territory_id: s.territory_id, tier: s.tier, ready_at: readyAt };
+    });
+
     return res.json({
       success: true,
       data: {
@@ -223,6 +245,7 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
         movements: [...movements, ...foreignMovements],
         garrisons,
         radars,
+        silos,
       },
     });
   } catch (err: any) {
@@ -516,6 +539,50 @@ router.get('/battles/:id', authenticate, async (req: Request, res: Response) => 
   } catch (err: any) {
     console.error('[Commander] GET /battles/:id error:', err);
     return res.status(500).json({ success: false, message: 'Failed to load battle' });
+  }
+});
+
+// ---- POST /strike ------------------------------------------------------------
+// Launch a silo airstrike at a foreign territory.
+// Body: { from_territory_id, target_territory_id }
+// Returns { battle_id, result }. Error mapping: *_NOT_FOUND → 404,
+// SILO_COOLDOWN → 429, everything else → 400.
+
+router.post('/strike', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const fromTerritoryId = body.from_territory_id;
+    const targetTerritoryId = body.target_territory_id;
+    if (typeof fromTerritoryId !== 'string' || typeof targetTerritoryId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: 'from_territory_id and target_territory_id are required',
+      });
+    }
+
+    const outcome = await airstrikeService.strike(userId, {
+      fromTerritoryId,
+      targetTerritoryId,
+    });
+    return res.json({
+      success: true,
+      data: { battle_id: outcome.battle_id, result: outcome.result },
+    });
+  } catch (err: any) {
+    if (err?.code) {
+      const code = String(err.code);
+      const status = code.endsWith('NOT_FOUND') ? 404 : code === 'SILO_COOLDOWN' ? 429 : 400;
+      return res.status(status).json({ success: false, message: code });
+    }
+    console.error('[Commander] POST /strike error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to launch airstrike' });
   }
 });
 

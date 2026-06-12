@@ -4,8 +4,8 @@
 // ============================================================
 
 import { create } from 'zustand';
-import { api, battlesApi, errorMessage, troopsApi } from '../api/client';
-import type { ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, InventoryItem } from '../api/types';
+import { api, battlesApi, errorMessage, strikeApi, troopsApi } from '../api/client';
+import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, InventoryItem, SiloInfo } from '../api/types';
 
 // ---- API shapes ----------------------------------------------------------------
 
@@ -51,10 +51,12 @@ export interface CommanderMapData {
   radars: CommanderRadar[];
   /** Extended in Phase C.2 */
   garrisons?: CommanderGarrison[];
+  /** Own active silos (Phase C.3) */
+  silos?: SiloInfo[];
 }
 
 // Re-export for convenience
-export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail };
+export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail, SiloInfo, AirstrikeResult };
 
 // ---- Dispatch state machine types -----------------------------------------------
 
@@ -101,10 +103,11 @@ interface CommanderState {
     fromTerritoryId: string;
     targetTerritoryId: string;
     purpose: 'attack' | 'reinforce';
-  }) => Promise<{ ok: boolean; error?: string }>;
+  }) => Promise<{ ok: boolean; error?: string; teleport?: boolean }>;
   equipDie: (instanceId: string) => Promise<{ ok: boolean; error?: string }>;
   fetchBattles: () => Promise<void>;
   fetchBattleDetail: (id: string) => Promise<BattleDetail | null>;
+  launchStrike: (fromTerritoryId: string, targetTerritoryId: string) => Promise<{ ok: true; result: AirstrikeResult } | { ok: false; error: string }>;
 }
 
 // ---- Error code → human messages ------------------------------------------------
@@ -121,6 +124,20 @@ export function marchErrorLabel(code: string): string {
     case 'UNIT_BUSY':              return 'One or more units are already deployed or marching.';
     case 'INSUFFICIENT_RESOURCES': return 'Not enough Energy for this march.';
     case 'GARRISON_FULL':          return 'Garrison is full (max 6).';
+    case 'FEATURE_DISABLED':       return 'Commander mode is not enabled for your account.';
+    default:                       return code;
+  }
+}
+
+export function strikeErrorLabel(code: string): string {
+  switch (code) {
+    case 'NO_BASE':                return 'Select one of your territories as origin.';
+    case 'NO_SILO':                return 'No active silo in the origin territory.';
+    case 'SILO_COOLDOWN':          return 'Silo is reloading.';
+    case 'TARGET_NOT_FOUND':       return 'Target territory not found.';
+    case 'CANNOT_STRIKE_SELF':     return 'You cannot airstrike your own territory.';
+    case 'TARGET_TOO_FAR':         return 'Target is out of silo range (max 40 cells).';
+    case 'INSUFFICIENT_RESOURCES': return 'Not enough Energy (150⚡ required).';
     case 'FEATURE_DISABLED':       return 'Commander mode is not enabled for your account.';
     default:                       return code;
   }
@@ -271,14 +288,15 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
 
   marchTroops: async ({ instanceIds, fromTerritoryId, targetTerritoryId, purpose }) => {
     try {
-      await troopsApi.march({
+      const movement = await troopsApi.march({
         instance_ids: instanceIds,
         from_territory_id: fromTerritoryId,
         target_territory_id: targetTerritoryId,
         purpose,
       });
       await get().fetchMap();
-      return { ok: true };
+      const teleport = movement.config?.teleport === true;
+      return { ok: true, teleport };
     } catch (err) {
       const raw = (() => {
         if (typeof err === 'object' && err !== null && 'response' in err) {
@@ -324,6 +342,26 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       return await battlesApi.getById(id);
     } catch {
       return null;
+    }
+  },
+
+  launchStrike: async (fromTerritoryId, targetTerritoryId) => {
+    try {
+      const result = await strikeApi.launch(fromTerritoryId, targetTerritoryId);
+      // Refresh map (silo cooldown) and battles list after a successful strike
+      await Promise.all([get().fetchMap(), get().fetchBattles()]);
+      return { ok: true, result };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string }; status?: number } };
+          // 429 = SILO_COOLDOWN
+          if (axErr.response?.status === 429) return 'SILO_COOLDOWN';
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? strikeErrorLabel(raw) : errorMessage(err, 'Strike failed') };
     }
   },
 }));

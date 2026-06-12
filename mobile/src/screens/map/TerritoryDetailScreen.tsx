@@ -23,6 +23,7 @@ import { useFeatureStore } from '../../store/featureStore';
 import { useBuildingStore } from '../../store/buildingStore';
 import { useResourceStore } from '../../store/resourceStore';
 import BuildingPickerSheet from '../../components/BuildingPickerSheet';
+import type { Building } from '../../services/api';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
   walker: '#00D4FF', runner: '#FF4757', cyclist: '#00FF88',
@@ -163,7 +164,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
   // ─── Buildings (resources feature flag) ────────────────────────────────────
   const isResourcesEnabled = useFeatureStore((s) => s.isEnabled('resources') && s.capabilities.resources);
-  const { buildingsByTerritory, loading: buildingLoading, build, demolish } = useBuildingStore();
+  const { buildingsByTerritory, loading: buildingLoading, build, upgrade, demolish } = useBuildingStore();
   const { balances, fetchResources } = useResourceStore();
   const [showBuildPicker, setShowBuildPicker] = useState(false);
   const buildings = buildingsByTerritory[territory.id] ?? [];
@@ -214,10 +215,50 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   }, [demolish, territory.id]);
 
   const getBuildingName = (type: BuildingType): string => {
-    if (type === 'shield_generator') return 'Shield Generator';
-    if (type === 'refinery') return 'Refinery';
-    return type;
+    const names: Record<BuildingType, string> = {
+      shield_generator: 'Shield Generator',
+      refinery: 'Refinery',
+      radar: 'Radar',
+      garrison: 'Garrison',
+      silo: 'Silo',
+      teleporter: 'Teleporter',
+    };
+    return names[type] ?? type;
   };
+
+  /** Upgrade cost = base_energy × 2^currentTier (presented simply). */
+  const getUpgradeCost = (b: Building): string => {
+    const BASE_COSTS: Record<BuildingType, { e: number; t: number }> = {
+      shield_generator: { e: 200, t: 100 },
+      refinery: { e: 150, t: 80 },
+      radar: { e: 180, t: 120 },
+      garrison: { e: 250, t: 150 },
+      silo: { e: 400, t: 250 },
+      teleporter: { e: 300, t: 200 },
+    };
+    const base = BASE_COSTS[b.type] ?? { e: 0, t: 0 };
+    const mult = Math.pow(2, b.tier);
+    return `⚡${base.e * mult} ⚙${base.t * mult}`;
+  };
+
+  const handleUpgrade = useCallback((buildingId: string, buildingName: string) => {
+    Alert.alert(
+      'Upgrade building?',
+      `Upgrade "${buildingName}" to tier ${/* shown below via cost */''} next tier?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Upgrade',
+          onPress: async () => {
+            const result = await upgrade(buildingId, territory.id);
+            if (!result.success && result.message) {
+              Alert.alert('Upgrade failed', result.message);
+            }
+          },
+        },
+      ]
+    );
+  }, [upgrade, territory.id]);
 
   const getCountdownText = (completesAt: string | null): string => {
     if (!completesAt) return '';
@@ -481,11 +522,22 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                     building.status === 'building' ? '#9D4EDD' :
                     building.status === 'damaged' ? '#FFB800' :
                     '#FF4757';
+                  const canUpgrade = building.status === 'active' && building.tier < 3;
+                  const TIER_LABELS = ['', 'I', 'II', 'III'];
 
                   return (
                     <View key={building.id} style={styles.buildingCard}>
                       <View style={styles.buildingCardContent}>
-                        <Text style={styles.buildingName}>{getBuildingName(building.type)}</Text>
+                        <View style={styles.buildingNameRow}>
+                          <Text style={styles.buildingName}>{getBuildingName(building.type)}</Text>
+                          {building.tier > 0 && (
+                            <View style={styles.tierBadge}>
+                              <Text style={styles.tierBadgeText}>
+                                {TIER_LABELS[building.tier] ?? `T${building.tier}`}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
                         <View style={styles.buildingStatusRow}>
                           <View style={[styles.buildingStatusDot, { backgroundColor: statusColor }]} />
                           <Text style={[styles.buildingStatusText, { color: statusColor }]}>
@@ -494,6 +546,23 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                               : building.status.charAt(0).toUpperCase() + building.status.slice(1)}
                           </Text>
                         </View>
+                        {/* Upgrade button — visible when active and tier < 3 */}
+                        {canUpgrade && (
+                          <TouchableOpacity
+                            style={styles.upgradeBtn}
+                            onPress={() => handleUpgrade(building.id, getBuildingName(building.type))}
+                            disabled={buildingLoading}
+                          >
+                            <Ionicons name="arrow-up-circle-outline" size={13} color="#9D4EDD" />
+                            <Text style={styles.upgradeBtnText}>
+                              Upgrade · {getUpgradeCost(building)}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                        {/* Upgrading countdown */}
+                        {isUnderConstruction && building.tier > 1 && (
+                          <Text style={styles.upgradingText}>Upgrading…</Text>
+                        )}
                       </View>
                       <TouchableOpacity
                         style={styles.buildingDemolishBtn}
@@ -609,12 +678,18 @@ const createStyles = (theme: Theme) =>
   buildingsSectionTitle: { marginTop: 28, color: '#9D4EDD' },
   buildingsEmpty: { backgroundColor: theme.surface, borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#1A2340' },
   buildingsEmptyText: { color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
-  buildingCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#3A2060', padding: 14, marginBottom: 8, gap: 12 },
+  buildingCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#3A2060', padding: 14, marginBottom: 8, gap: 12 },
   buildingCardContent: { flex: 1 },
-  buildingName: { color: theme.text, fontSize: 14, fontWeight: '700', marginBottom: 4 },
+  buildingNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  buildingName: { color: theme.text, fontSize: 14, fontWeight: '700' },
+  tierBadge: { backgroundColor: 'rgba(157,78,221,0.2)', borderRadius: 5, paddingHorizontal: 5, paddingVertical: 1, borderWidth: 1, borderColor: 'rgba(157,78,221,0.5)' },
+  tierBadgeText: { color: '#9D4EDD', fontSize: 10, fontWeight: '800' },
   buildingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   buildingStatusDot: { width: 7, height: 7, borderRadius: 3.5 },
   buildingStatusText: { fontSize: 11, fontWeight: '600' },
+  upgradeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6, backgroundColor: 'rgba(157,78,221,0.1)', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: 'rgba(157,78,221,0.3)', alignSelf: 'flex-start' },
+  upgradeBtnText: { color: '#9D4EDD', fontSize: 10, fontWeight: '700' },
+  upgradingText: { color: '#9D4EDD', fontSize: 10, fontWeight: '600', marginTop: 4, fontStyle: 'italic' },
   buildingDemolishBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,71,87,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,71,87,0.25)' },
   buildNewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#9D4EDD', borderRadius: 14, height: 48, gap: 8, marginTop: 4, shadowColor: '#9D4EDD', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
   buildNewBtnText: { color: '#0A0E17', fontSize: 14, fontWeight: '800', letterSpacing: 1 },

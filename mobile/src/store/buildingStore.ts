@@ -14,6 +14,8 @@ const BUILD_ERROR_MESSAGES: Record<string, string> = {
   TERRITORY_NOT_FOUND: 'Territory not found.',
   BUILDING_NOT_FOUND: 'Building not found.',
   NOT_DEMOLISHABLE: 'This building cannot be demolished.',
+  MAX_TIER: 'Already at maximum tier.',
+  NOT_UPGRADABLE: 'Building must be active to upgrade.',
 };
 
 function resolveBuildError(message: string): string {
@@ -30,6 +32,7 @@ interface BuildingState {
   // Actions
   fetchBuildings: (territoryId: string) => Promise<void>;
   build: (territoryId: string, type: BuildingType) => Promise<{ success: boolean; message?: string }>;
+  upgrade: (buildingId: string, territoryId: string) => Promise<{ success: boolean; message?: string }>;
   demolish: (buildingId: string, territoryId: string) => Promise<{ success: boolean; message?: string }>;
   clearError: () => void;
 }
@@ -68,6 +71,26 @@ export const useBuildingStore = create<BuildingState>((set, get) => ({
     try {
       await buildingApi.build(territoryId, type);
       // Refetch both buildings and resource balances
+      await get().fetchBuildings(territoryId);
+      useResourceStore.getState().fetchResources();
+      set({ loading: false });
+      return { success: true };
+    } catch (err: unknown) {
+      const raw = err instanceof Error ? err.message : 'UNKNOWN_ERROR';
+      const message = resolveBuildError(raw);
+      set({ loading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  /**
+   * Upgrade a building to the next tier.
+   * Status will be 'building' on the returned building until completes_at.
+   */
+  upgrade: async (buildingId: string, territoryId: string) => {
+    set({ loading: true, error: null });
+    try {
+      await buildingApi.upgrade(buildingId);
       await get().fetchBuildings(territoryId);
       useResourceStore.getState().fetchResources();
       set({ loading: false });

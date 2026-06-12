@@ -7,7 +7,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   Pressable,
+  ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BuildingType } from '../services/api';
 import type { ResourceBalances } from '../store/resourceStore';
@@ -26,28 +28,67 @@ const TEXT_SECONDARY = '#8892B0';
 interface BuildingDef {
   type: BuildingType;
   name: string;
-  description: string;
+  effect: string;
   costEnergy: number;
   costTech: number;
   buildTimeHours: number;
+  icon: keyof typeof Ionicons.glyphMap;
 }
 
 const BUILDING_DEFS: BuildingDef[] = [
   {
     type: 'shield_generator',
     name: 'Shield Generator',
-    description: 'Blocks the first takeover attempt every 24h.',
+    effect: 'Blocks first takeover attempt every 24h.',
     costEnergy: 200,
     costTech: 100,
     buildTimeHours: 2,
+    icon: 'shield',
   },
   {
     type: 'refinery',
     name: 'Refinery',
-    description: '+25% energy generation for this territory.',
+    effect: '+25% energy generation for this territory.',
     costEnergy: 150,
     costTech: 80,
     buildTimeHours: 2,
+    icon: 'flash',
+  },
+  {
+    type: 'radar',
+    name: 'Radar',
+    effect: 'Reveals 2/3/4 cell vision ring (by tier).',
+    costEnergy: 180,
+    costTech: 120,
+    buildTimeHours: 4,
+    icon: 'radio',
+  },
+  {
+    type: 'garrison',
+    name: 'Garrison',
+    effect: '+4/+6/+8 garrison slots (by tier).',
+    costEnergy: 250,
+    costTech: 150,
+    buildTimeHours: 4,
+    icon: 'people',
+  },
+  {
+    type: 'silo',
+    name: 'Silo',
+    effect: 'Airstrike 50/75/100 dmg, 6h cooldown (by tier).',
+    costEnergy: 400,
+    costTech: 250,
+    buildTimeHours: 4,
+    icon: 'rocket',
+  },
+  {
+    type: 'teleporter',
+    name: 'Teleporter',
+    effect: 'Instant reinforce between own teleporter pads.',
+    costEnergy: 300,
+    costTech: 200,
+    buildTimeHours: 4,
+    icon: 'swap-horizontal',
   },
 ];
 
@@ -65,7 +106,8 @@ interface BuildingPickerSheetProps {
 
 /**
  * Modal bottom-sheet for picking a building type.
- * Uses React Native built-in Modal — no new dependencies.
+ * Renders all 6 types as compact list rows: icon, name, one-line effect, cost.
+ * Disabled rows when balance is too low.
  * Gated externally by the 'resources' feature flag.
  */
 const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
@@ -105,38 +147,57 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
           <Text style={styles.balanceItem}>⚙ {balances.tech}</Text>
         </View>
 
-        {/* Building cards */}
-        {BUILDING_DEFS.map((def) => {
-          const canAfford = balances.energy >= def.costEnergy && balances.tech >= def.costTech;
-          return (
-            <View key={def.type} style={[styles.card, !canAfford && styles.cardDisabled]}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardName}>{def.name}</Text>
-                <View style={styles.costBadge}>
-                  <Text style={styles.costText}>⚡{def.costEnergy}  ⚙{def.costTech}</Text>
+        {/* Building list rows */}
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.list}>
+          {BUILDING_DEFS.map((def) => {
+            const canAfford =
+              balances.energy >= def.costEnergy && balances.tech >= def.costTech;
+            return (
+              <TouchableOpacity
+                key={def.type}
+                style={[styles.row, !canAfford && styles.rowDisabled]}
+                onPress={() => canAfford && !loading && onBuild(def.type)}
+                disabled={!canAfford || loading}
+                activeOpacity={0.75}
+              >
+                {/* Icon */}
+                <View style={[styles.iconWrap, !canAfford && styles.iconWrapDisabled]}>
+                  <Ionicons
+                    name={def.icon}
+                    size={20}
+                    color={canAfford ? VRIL_ACCENT : TEXT_SECONDARY}
+                  />
                 </View>
-              </View>
-              <Text style={styles.cardDesc}>{def.description}</Text>
-              <View style={styles.cardFooter}>
-                <Text style={styles.buildTime}>Build time: {def.buildTimeHours}h</Text>
-                <TouchableOpacity
-                  style={[styles.buildBtn, !canAfford && styles.buildBtnDisabled]}
-                  onPress={() => canAfford && onBuild(def.type)}
-                  disabled={!canAfford || loading}
-                  activeOpacity={0.8}
-                >
+
+                {/* Text block */}
+                <View style={styles.rowText}>
+                  <Text style={[styles.rowName, !canAfford && styles.rowNameDisabled]}>
+                    {def.name}
+                  </Text>
+                  <Text style={styles.rowEffect} numberOfLines={1}>
+                    {def.effect}
+                  </Text>
+                </View>
+
+                {/* Cost + build btn */}
+                <View style={styles.rowRight}>
+                  <Text style={[styles.rowCost, !canAfford && styles.rowCostInsufficient]}>
+                    ⚡{def.costEnergy} ⚙{def.costTech}
+                  </Text>
                   {loading ? (
-                    <ActivityIndicator size="small" color={OBSIDIAN} />
+                    <ActivityIndicator size="small" color={OBSIDIAN} style={styles.buildBtn} />
                   ) : (
-                    <Text style={styles.buildBtnText}>
-                      {canAfford ? 'Build' : 'Not enough'}
-                    </Text>
+                    <View style={[styles.buildBtn, !canAfford && styles.buildBtnDisabled]}>
+                      <Text style={styles.buildBtnText}>
+                        {canAfford ? 'Build' : '—'}
+                      </Text>
+                    </View>
                   )}
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        })}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -157,6 +218,7 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     paddingHorizontal: 20,
     paddingTop: 8,
+    maxHeight: '80%',
     // Vril glow on top edge
     shadowColor: VRIL_ACCENT,
     shadowOffset: { width: 0, height: -4 },
@@ -200,7 +262,7 @@ const styles = StyleSheet.create({
   balanceRow: {
     flexDirection: 'row',
     gap: 16,
-    marginBottom: 16,
+    marginBottom: 12,
     paddingHorizontal: 4,
   },
   balanceItem: {
@@ -208,70 +270,75 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
-  card: {
-    backgroundColor: OBSIDIAN,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: VRIL_PRIMARY,
-    padding: 16,
-    marginBottom: 12,
+  list: {
+    flexGrow: 0,
   },
-  cardDisabled: {
-    borderColor: BORDER,
-    opacity: 0.55,
-  },
-  cardHeader: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 6,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: BORDER,
+    gap: 12,
   },
-  cardName: {
-    color: TEXT,
-    fontSize: 15,
-    fontWeight: '800',
+  rowDisabled: {
+    opacity: 0.5,
   },
-  costBadge: {
-    backgroundColor: `${VRIL_ACCENT}20`,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+  iconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: `${VRIL_ACCENT}18`,
     borderWidth: 1,
     borderColor: `${VRIL_ACCENT}40`,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  costText: {
-    color: VRIL_ACCENT,
-    fontSize: 11,
+  iconWrapDisabled: {
+    backgroundColor: `${BORDER}`,
+    borderColor: BORDER,
+  },
+  rowText: {
+    flex: 1,
+    gap: 2,
+  },
+  rowName: {
+    color: TEXT,
+    fontSize: 14,
     fontWeight: '700',
   },
-  cardDesc: {
+  rowNameDisabled: {
     color: TEXT_SECONDARY,
-    fontSize: 13,
-    lineHeight: 18,
-    marginBottom: 12,
   },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  buildTime: {
+  rowEffect: {
     color: TEXT_SECONDARY,
     fontSize: 11,
-    fontWeight: '600',
+    lineHeight: 15,
+  },
+  rowRight: {
+    alignItems: 'flex-end',
+    gap: 6,
+  },
+  rowCost: {
+    color: VRIL_ACCENT,
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  rowCostInsufficient: {
+    color: '#FF4757',
   },
   buildBtn: {
     backgroundColor: VRIL_ACCENT,
-    borderRadius: 10,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    minWidth: 80,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    minWidth: 52,
     alignItems: 'center',
     shadowColor: VRIL_ACCENT,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   buildBtnDisabled: {
     backgroundColor: BORDER,
@@ -280,7 +347,7 @@ const styles = StyleSheet.create({
   },
   buildBtnText: {
     color: TEXT,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
   },
 });

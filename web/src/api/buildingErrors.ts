@@ -13,6 +13,9 @@ const MESSAGES: Record<string, string> = {
   NOT_DEMOLISHABLE: 'This building cannot be demolished right now.',
   TERRITORY_NOT_FOUND: 'Territory not found.',
   BUILDING_NOT_FOUND: 'Building not found.',
+  // Upgrade-specific codes
+  MAX_TIER: 'Already at maximum tier.',
+  NOT_UPGRADABLE: 'Building must be active to upgrade.',
 };
 
 export function readableBuildingError(code: string | undefined, fallback: string): string {

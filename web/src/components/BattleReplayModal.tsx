@@ -13,11 +13,11 @@
 // Walkover: shows a single 'Undefended — walkover.' frame.
 // ============================================================
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCommanderStore } from '../store/commanderStore';
 import { useAuthStore } from '../store/authStore';
 import { theme } from '../theme';
-import type { BattleDetail, BattleRound } from '../api/types';
+import type { AirstrikeResultPayload, BattleDetail, BattleRound } from '../api/types';
 
 interface Props {
   battleId: string;
@@ -207,6 +207,89 @@ function RoundFrame({ round, animated, isAttacker }: RoundFrameProps) {
   );
 }
 
+// ---- Airstrike result summary card -------------------------------------------
+
+function airstrikeResultLine(result: AirstrikeResultPayload): string {
+  if ('shield_broken' in result && result.shield_broken) return '🛡 Shield destroyed!';
+  if ('building_hit' in result) {
+    const hit = result.building_hit;
+    if (hit.destroyed) return `🏚 ${hit.type.replace(/_/g, ' ')} destroyed!`;
+    return `🏚 ${hit.type.replace(/_/g, ' ')} hit — ${hit.hp_after} HP remaining.`;
+  }
+  return '☁ No targets — strike wasted.';
+}
+
+interface AirstrikeCardProps {
+  battle: BattleDetail;
+  onClose: () => void;
+}
+
+function AirstrikeCard({ battle, onClose }: AirstrikeCardProps) {
+  const log = battle.log;
+  const siloTier = log.silo_tier ?? 1;
+  const damage = log.damage ?? 0;
+  const result = log.result;
+
+  const overlay: React.CSSProperties = {
+    position: 'fixed', inset: 0, zIndex: 9999,
+    background: 'rgba(12,9,20,0.92)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  };
+  const modal: React.CSSProperties = {
+    background: theme.color.panel, border: `1px solid ${theme.color.border}`,
+    borderRadius: 14, width: 'min(420px, 95vw)', overflow: 'hidden',
+  };
+  const header: React.CSSProperties = {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    padding: '14px 18px', borderBottom: `1px solid ${theme.color.border}`,
+  };
+  const body: React.CSSProperties = {
+    padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12,
+  };
+  const closeBtn: React.CSSProperties = {
+    background: 'transparent', border: `1px solid ${theme.color.border}`,
+    color: theme.color.textDim, borderRadius: 8, padding: '5px 12px',
+    cursor: 'pointer', fontSize: 12,
+  };
+  const resultLine = result ? airstrikeResultLine(result) : '—';
+
+  return (
+    <div style={overlay} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div style={modal}>
+        <div style={header}>
+          <div style={{ fontWeight: 700, fontSize: 15, color: theme.color.accentBright }}>☄ Airstrike</div>
+          <button style={closeBtn} onClick={onClose}>✕ Close</button>
+        </div>
+        <div style={body}>
+          <div style={{ fontSize: 11, color: theme.color.textDim }}>
+            Territory {battle.territory_id.slice(0, 8)}…
+          </div>
+          <div style={{
+            background: theme.color.panelAlt, border: `1px solid ${theme.color.border}`,
+            borderRadius: 10, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 8,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: theme.color.textDim }}>Silo Tier</span>
+              <span style={{ fontWeight: 700, color: theme.color.amber }}>{'I'.repeat(siloTier)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12, color: theme.color.textDim }}>Damage</span>
+              <span style={{ fontWeight: 700, color: theme.color.danger }}>{damage} HP</span>
+            </div>
+          </div>
+          <div style={{
+            background: `${theme.color.accent}18`, border: `1px solid ${theme.color.border}`,
+            borderRadius: 10, padding: '14px 16px',
+            fontWeight: 700, fontSize: 14, textAlign: 'center', color: theme.color.text,
+          }}>
+            {resultLine}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ---- Main modal --------------------------------------------------------------
 
 export default function BattleReplayModal({ battleId, onClose }: Props) {
@@ -329,6 +412,11 @@ export default function BattleReplayModal({ battleId, onClose }: Props) {
     cursor: 'pointer',
     fontSize: 12,
   };
+
+  // Guard: airstrike battles use a different summary card
+  if (battle && battle.log.type === 'airstrike') {
+    return <AirstrikeCard battle={battle} onClose={onClose} />;
+  }
 
   return (
     <div style={overlay} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>

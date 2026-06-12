@@ -6,7 +6,7 @@
 // Attacker must beat ALL active defenses to conquer territory.
 // ============================================================
 
-import { query, queryOne, queryMany } from '../config/database';
+import { query, queryOne, queryMany, transaction } from '../config/database';
 import { awardXp } from './progressionEngine';
 import { notifyTerritoryAttack } from './notificationService';
 import { wsService } from './wsService';
@@ -280,37 +280,103 @@ class DefenseGameEngine {
 
   /**
    * Handle an attack against a passive shield defense.
-   * - Fresh shield (never blocked, or last block older than the cooldown):
-   *   absorb the attempt, stamp config.last_blocked_at = NOW(), return
-   *   SHIELD_BLOCKED. The shield is NOT a playable game and stays 'active'.
-   * - Exhausted shield (blocked within the cooldown): auto-break this layer
-   *   so the attacker can continue against the remaining defense stack.
+   * - Below the daily block quota: absorb the attempt, record the block
+   *   timestamp, return SHIELD_BLOCKED. The shield is NOT a playable game and
+   *   stays 'active'.
+   * - Quota exhausted (blocks within the last 24h ≥ the shield's tier quota):
+   *   auto-break this layer so the attacker can continue against the rest.
+   *
+   * C.3 — blocks-per-day equals the shield_generator building's tier
+   * (TIER_EFFECTS.shield_blocks_per_day[tier-1]); with no building row the
+   * quota is 1, preserving the legacy single-block behavior. Block timestamps
+   * are tracked in config.block_times (ISO strings, pruned to the last 24h).
+   *
+   * BACKWARD COMPAT: a legacy config with last_blocked_at but no block_times is
+   * treated as a single recent block entry. A tier-1 shield therefore behaves
+   * exactly as before (quota 1, one block per 24h window).
    */
   private async handleShieldDefense(defense: any, userId: string): Promise<any> {
     const config = typeof defense.config === 'string' ? JSON.parse(defense.config) : (defense.config ?? {});
     const cooldownMs = BUILDINGS.SHIELD_BLOCK_COOLDOWN_HOURS * 60 * 60 * 1000;
-    const lastBlocked = config?.last_blocked_at ? new Date(config.last_blocked_at).getTime() : null;
-    const isFresh = lastBlocked === null || Date.now() - lastBlocked >= cooldownMs;
+    const now = Date.now();
+    const windowStart = now - cooldownMs;
 
-    if (isFresh) {
-      await query(
-        `UPDATE territory_defenses
-            SET config = jsonb_set(config, '{last_blocked_at}', to_jsonb(NOW()::text), true)
-          WHERE id = $1`,
-        [defense.id]
-      );
-      try {
-        wsService.sendToUser(defense.owner_id, 'shield_blocked', {
-          territory_id: defense.territory_id,
-          challenger_id: userId,
-        });
-      } catch { /* non-critical */ }
-      return {
-        attempt_id: null,
-        result: 'blocked',
-        defense_game_type: 'shield',
-        message: 'SHIELD_BLOCKED',
-      };
+    // Resolve the daily block quota from the shield building's tier.
+    const shieldRow = await queryOne<{ tier: number }>(
+      `SELECT tier FROM buildings
+        WHERE territory_id = $1 AND type = 'shield_generator' AND status = 'active'
+        ORDER BY tier DESC
+        LIMIT 1`,
+      [defense.territory_id]
+    );
+    const quotaTable = BUILDINGS.TIER_EFFECTS.shield_blocks_per_day;
+    const tier = shieldRow?.tier ?? 1;
+    const quotaIdx = Math.max(0, Math.min(quotaTable.length - 1, tier - 1));
+    const allowed = shieldRow ? quotaTable[quotaIdx] : 1;
+
+    // Extract recent (last-24h) block timestamps from a config object,
+    // falling back to legacy last_blocked_at as a single entry.
+    const recentBlocks = (cfg: any): string[] => {
+      let times: string[] = Array.isArray(cfg?.block_times)
+        ? cfg.block_times.filter((t: unknown): t is string => typeof t === 'string')
+        : [];
+      if (times.length === 0 && cfg?.last_blocked_at) {
+        times = [new Date(cfg.last_blocked_at).toISOString()];
+      }
+      return times.filter((t) => {
+        const ms = new Date(t).getTime();
+        return Number.isFinite(ms) && ms >= windowStart;
+      });
+    };
+
+    if (recentBlocks(config).length < allowed) {
+      // Looks fresh — but two simultaneous attackers must not overwrite each
+      // other's block entries (the quota would under-count). Re-read the
+      // config under a row lock and re-check before appending.
+      const blockedTimes = await transaction(async (c) => {
+        const row = await c.query<{ config: any }>(
+          `SELECT config FROM territory_defenses
+            WHERE id = $1 AND status = 'active'
+            FOR UPDATE`,
+          [defense.id],
+        );
+        if (row.rowCount === 0) return null; // broken meanwhile
+        const lockedCfg =
+          typeof row.rows[0].config === 'string'
+            ? JSON.parse(row.rows[0].config)
+            : (row.rows[0].config ?? {});
+        const recent = recentBlocks(lockedCfg);
+        if (recent.length >= allowed) return null; // quota consumed concurrently
+        const updatedTimes = [...recent, new Date(now).toISOString()];
+        await c.query(
+          `UPDATE territory_defenses
+              SET config = jsonb_set(
+                             jsonb_set(config, '{block_times}', $2::jsonb, true),
+                             '{last_blocked_at}', to_jsonb(NOW()::text), true)
+            WHERE id = $1`,
+          [defense.id, JSON.stringify(updatedTimes)],
+        );
+        return updatedTimes;
+      });
+
+      if (blockedTimes) {
+        try {
+          wsService.sendToUser(defense.owner_id, 'shield_blocked', {
+            territory_id: defense.territory_id,
+            challenger_id: userId,
+            blocks_used: blockedTimes.length,
+            blocks_allowed: allowed,
+          });
+        } catch { /* non-critical */ }
+        return {
+          attempt_id: null,
+          result: 'blocked',
+          defense_game_type: 'shield',
+          message: 'SHIELD_BLOCKED',
+        };
+      }
+      // Fall through: the quota was consumed (or the layer broke) while we
+      // were checking — treat as exhausted below.
     }
 
     // Exhausted shield → break this layer (no playable game, no XP).

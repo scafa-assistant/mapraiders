@@ -5,6 +5,7 @@ import {
   CommanderBattleSummary,
   CommanderBattleDetail,
   CommanderOwnMovement,
+  AirstrikeResult,
 } from '../services/api';
 
 // ─── Error code → user-readable message map (terminalStore style) ─────────────
@@ -27,6 +28,11 @@ const COMMANDER_ERROR_MESSAGES: Record<string, string> = {
   NAVAL_REQUIRES_WATER: 'Naval units need a water route to march.',
   TOO_MANY_UNITS: 'Too many units in this stack (max 6).',
   BATTLE_NOT_FOUND: 'That battle could not be found.',
+  // Airstrike-specific
+  NO_SILO: 'You have no silo on that territory.',
+  SILO_COOLDOWN: 'Silo is reloading.',
+  TARGET_NOT_FOUND: 'Target territory not found.',
+  CANNOT_STRIKE_SELF: 'You cannot airstrike your own territory.',
 };
 
 export function resolveCommanderError(message: string): string {
@@ -38,6 +44,11 @@ export function resolveCommanderError(message: string): string {
 interface ActionResult {
   success: boolean;
   message?: string;
+}
+
+interface StrikeResult extends ActionResult {
+  battle_id?: string;
+  result?: AirstrikeResult;
 }
 
 interface CommanderState {
@@ -71,6 +82,7 @@ interface CommanderState {
     purpose: 'attack' | 'reinforce'
   ) => Promise<ActionResult>;
   equipDie: (instanceId: string) => Promise<ActionResult>;
+  strike: (fromTerritoryId: string, targetTerritoryId: string) => Promise<StrikeResult>;
   fetchBattles: () => Promise<void>;
   fetchBattle: (id: string) => Promise<void>;
   clearBattleDetail: () => void;
@@ -94,6 +106,7 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
   /**
    * Fetch the fog-of-war strategic map. Keeps the previous mapData on error so
    * the periodic 30s refresh never blanks the screen on a transient failure.
+   * The `silos` array is normalised to [] if absent (older server).
    */
   fetchMap: async () => {
     set({ loading: true, error: null });
@@ -101,7 +114,9 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       const response = await commanderApi.getMap();
       const data = response.data?.data;
       if (data) {
-        set({ mapData: data, loading: false });
+        // Back-fill silos array if the server omits it (graceful degradation).
+        const normalised = { ...data, silos: data.silos ?? [] };
+        set({ mapData: normalised, loading: false });
       } else {
         set({ loading: false });
       }
@@ -203,6 +218,29 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       const raw = err instanceof Error ? err.message : 'UNKNOWN_ERROR';
       const message = resolveCommanderError(raw);
       set({ equippedDieId: previous, error: message });
+      return { success: false, message };
+    }
+  },
+
+  /**
+   * Launch an airstrike from fromTerritoryId onto targetTerritoryId.
+   * Refreshes both the map (silo cooldown updated) and the battle list.
+   */
+  strike: async (fromTerritoryId, targetTerritoryId) => {
+    set({ error: null });
+    try {
+      const response = await commanderApi.strike({
+        from_territory_id: fromTerritoryId,
+        target_territory_id: targetTerritoryId,
+      });
+      const { battle_id, result } = response.data.data;
+      // Refresh map (cooldown) + battle log in parallel.
+      await Promise.all([get().fetchMap(), get().fetchBattles()]);
+      return { success: true, battle_id, result };
+    } catch (err: unknown) {
+      const raw = err instanceof Error ? err.message : 'UNKNOWN_ERROR';
+      const message = resolveCommanderError(raw);
+      set({ error: message });
       return { success: false, message };
     }
   },

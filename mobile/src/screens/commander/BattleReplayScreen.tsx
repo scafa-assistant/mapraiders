@@ -18,6 +18,8 @@ import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import type {
   CommanderBattleRound,
   CommanderBattleEffect,
+  CommanderAirstrikeBattleLog,
+  AirstrikeResult,
 } from '../../services/api';
 
 const C = COMMANDER_COLORS;
@@ -106,6 +108,84 @@ function effectLabel(e: CommanderBattleEffect): string {
   return `${who}: ${prettifyDefinitionId(e.effect)}`;
 }
 
+// ─── Airstrike result summary card ────────────────────────────────────────────
+
+function airstrikeResultLine(result: AirstrikeResult): string {
+  if ('shield_broken' in result && result.shield_broken) {
+    return 'Shield destroyed!';
+  }
+  if ('building_hit' in result) {
+    const h = result.building_hit;
+    return h.destroyed
+      ? `${h.type} destroyed!`
+      : `${h.type} hit — ${h.hp_after} HP remaining.`;
+  }
+  return 'No targets — strike wasted.';
+}
+
+function AirstrikeCard({
+  log,
+  playerIsAttacker,
+  onBack,
+}: {
+  log: CommanderAirstrikeBattleLog;
+  playerIsAttacker: boolean;
+  onBack: () => void;
+}) {
+  const hit = 'shield_broken' in log.result || 'building_hit' in log.result;
+  const playerWon = playerIsAttacker && hit;
+  const resultLine = airstrikeResultLine(log.result);
+
+  return (
+    <View style={styles.scroll}>
+      {/* Airstrike banner */}
+      <View style={styles.airstrikeHeader}>
+        <Ionicons name="rocket" size={40} color={C.warning} />
+        <Text style={styles.airstrikeTitle}>Airstrike</Text>
+        <Text style={styles.airstrikeMeta}>Silo Tier {log.silo_tier} · {log.damage} damage</Text>
+      </View>
+
+      {/* Result line */}
+      <View style={[styles.airstrikeResultCard, { borderColor: hit ? C.own : C.border }]}>
+        <Ionicons
+          name={hit ? 'checkmark-circle' : 'alert-circle'}
+          size={24}
+          color={hit ? C.own : C.textSecondary}
+        />
+        <Text style={[styles.airstrikeResultText, { color: hit ? C.text : C.textSecondary }]}>
+          {resultLine}
+        </Text>
+      </View>
+
+      {/* Victory-style banner */}
+      <View style={styles.finalWrap}>
+        <View
+          style={[
+            styles.finalBanner,
+            {
+              borderColor: playerWon ? C.own : C.enemy,
+              backgroundColor: playerWon ? `${C.own}1A` : `${C.enemy}1A`,
+            },
+          ]}
+        >
+          <Ionicons
+            name={playerWon ? 'trophy' : 'sad'}
+            size={40}
+            color={playerWon ? C.warning : C.enemy}
+          />
+          <Text style={[styles.finalText, { color: playerWon ? C.own : C.enemy }]}>
+            {playerWon ? 'VICTORY' : 'DEFEAT'}
+          </Text>
+        </View>
+
+        <TouchableOpacity style={styles.doneBtn} onPress={onBack} activeOpacity={0.8}>
+          <Text style={styles.doneBtnText}>Done</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 export default function BattleReplayScreen({ navigation, route }: BattleReplayScreenProps) {
   const { battleId } = route.params;
   const { battleDetail, battleDetailLoading, fetchBattle, clearBattleDetail } = useCommanderStore();
@@ -123,12 +203,25 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
     };
   }, [battleId, fetchBattle, clearBattleDetail]);
 
-  const rounds = battleDetail?.log?.rounds ?? [];
-  const walkover = battleDetail?.log?.walkover === true;
+  // Airstrike guard: if log.type === 'airstrike', render summary card instead of dice replay.
+  const isAirstrike =
+    battleDetail?.log != null &&
+    'type' in battleDetail.log &&
+    battleDetail.log.type === 'airstrike';
 
-  // Drive the sequential replay
+  const airstrikeLog = isAirstrike
+    ? (battleDetail!.log as CommanderAirstrikeBattleLog)
+    : null;
+
+  const diceBattleLog =
+    !isAirstrike && battleDetail?.log != null ? battleDetail.log : null;
+
+  const rounds = (diceBattleLog as { rounds?: CommanderBattleRound[] } | null)?.rounds ?? [];
+  const walkover = (diceBattleLog as { walkover?: boolean } | null)?.walkover === true;
+
+  // Drive the sequential replay (dice battles only)
   useEffect(() => {
-    if (!battleDetail) return;
+    if (!battleDetail || isAirstrike) return;
     if (walkover || rounds.length === 0) {
       setFinished(true);
       return;
@@ -149,7 +242,7 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [battleDetail, roundIndex, finished, rounds.length, walkover]);
+  }, [battleDetail, roundIndex, finished, rounds.length, walkover, isAirstrike]);
 
   const handleSkip = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -159,7 +252,7 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
 
   // Determine victory from the player's perspective.
   const playerIsAttacker = battleDetail?.attacker_id === userId;
-  const winnerSide = battleDetail?.log?.winner_side;
+  const winnerSide = (diceBattleLog as { winner_side?: 'attacker' | 'defender' } | null)?.winner_side;
   const playerWon =
     winnerSide != null &&
     ((playerIsAttacker && winnerSide === 'attacker') ||
@@ -178,10 +271,10 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
           <Ionicons name="close" size={24} color={C.textSecondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Ionicons name="flash" size={18} color={C.accent} />
-          <Text style={styles.headerTitle}>Battle Replay</Text>
+          <Ionicons name={isAirstrike ? 'rocket' : 'flash'} size={18} color={C.accent} />
+          <Text style={styles.headerTitle}>{isAirstrike ? 'Airstrike Report' : 'Battle Replay'}</Text>
         </View>
-        {!finished && !walkover ? (
+        {!finished && !walkover && !isAirstrike ? (
           <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
@@ -194,18 +287,32 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
         <View style={styles.loader}>
           <ActivityIndicator color={C.accent} size="large" />
         </View>
+      ) : isAirstrike && airstrikeLog ? (
+        /* ── Airstrike summary card (no dice) ── */
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+          <AirstrikeCard
+            log={airstrikeLog}
+            playerIsAttacker={playerIsAttacker}
+            onBack={() => navigation.goBack()}
+          />
+        </ScrollView>
       ) : (
+        /* ── Standard dice-battle replay ── */
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {/* Force counts */}
           <View style={styles.forcesRow}>
             <View style={styles.forceBox}>
               <Text style={[styles.forceLabel, { color: C.own }]}>ATTACKER</Text>
-              <Text style={styles.forceCount}>{battleDetail.log?.attacker_units_start ?? 0} units</Text>
+              <Text style={styles.forceCount}>
+                {(diceBattleLog as { attacker_units_start?: number } | null)?.attacker_units_start ?? 0} units
+              </Text>
             </View>
             <Text style={styles.vs}>VS</Text>
             <View style={styles.forceBox}>
               <Text style={[styles.forceLabel, { color: C.foreign }]}>DEFENDER</Text>
-              <Text style={styles.forceCount}>{battleDetail.log?.defender_units_start ?? 0} units</Text>
+              <Text style={styles.forceCount}>
+                {(diceBattleLog as { defender_units_start?: number } | null)?.defender_units_start ?? 0} units
+              </Text>
             </View>
           </View>
 
@@ -466,4 +573,38 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
   doneBtnText: { fontSize: FONT_SIZE.md, fontWeight: '700', color: C.accent, letterSpacing: 0.5 },
+
+  // Airstrike summary card
+  airstrikeHeader: {
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+    paddingTop: SPACING.md,
+  },
+  airstrikeTitle: {
+    fontSize: FONT_SIZE.xxl,
+    fontWeight: '900',
+    color: C.text,
+    letterSpacing: 1.5,
+  },
+  airstrikeMeta: {
+    fontSize: FONT_SIZE.sm,
+    color: C.textSecondary,
+    fontWeight: '600',
+  },
+  airstrikeResultCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+    backgroundColor: C.surface,
+    borderRadius: RADIUS.md,
+    borderWidth: 1.5,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+  },
+  airstrikeResultText: {
+    flex: 1,
+    fontSize: FONT_SIZE.md,
+    fontWeight: '700',
+  },
 });

@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Modal,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -47,6 +48,8 @@ import type {
   CommanderOwnMovement,
   CommanderForeignMovement,
   CommanderGarrison,
+  SiloInfo,
+  AirstrikeResult,
 } from '../../services/api';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 
@@ -81,6 +84,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     deploy,
     undeploy,
     march,
+    strike,
     battles,
     fetchBattles,
     clearError,
@@ -259,6 +263,31 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     setSubmitting(false);
     if (res.success) setFlow({ kind: 'none' });
   }, [flow, march]);
+
+  const handleStrike = useCallback(
+    async (fromTerritoryId: string, targetTerritoryId: string) => {
+      setSubmitting(true);
+      const res = await strike(fromTerritoryId, targetTerritoryId);
+      setSubmitting(false);
+      if (!res.success) return;
+      // Show result alert
+      const r = res.result;
+      if (!r) return;
+      if ('shield_broken' in r && r.shield_broken) {
+        Alert.alert('Airstrike', 'Shield destroyed!');
+      } else if ('building_hit' in r) {
+        const hit = r.building_hit;
+        if (hit.destroyed) {
+          Alert.alert('Airstrike', `${hit.type} destroyed!`);
+        } else {
+          Alert.alert('Airstrike', `${hit.type} hit — ${hit.hp_after} HP left.`);
+        }
+      } else {
+        Alert.alert('Airstrike', 'No targets — strike wasted.');
+      }
+    },
+    [strike]
+  );
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -480,6 +509,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
         }
         units={unitItems}
         ownTerritories={ownTerritories}
+        silos={mapData?.silos ?? []}
         submitting={submitting}
         onClose={closeSheet}
         onDeploy={handleDeploy}
@@ -492,6 +522,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
           closeSheet();
           setFlow({ kind: 'attack', instanceIds: [], fromTerritoryId: from.id, targetTerritoryId: target.id });
         }}
+        onStrike={handleStrike}
       />
 
       {/* Scout confirm card */}
@@ -539,30 +570,70 @@ function TerritoryActionSheet({
   garrison,
   units,
   ownTerritories,
+  silos,
   submitting,
   onClose,
   onDeploy,
   onUndeploy,
   onStartScout,
   onStartAttack,
+  onStrike,
 }: {
   territory: CommanderTerritory | null;
   garrison: CommanderGarrison | null;
   units: ItemInstance[];
   ownTerritories: CommanderTerritory[];
+  silos: SiloInfo[];
   submitting: boolean;
   onClose: () => void;
   onDeploy: (instanceId: string, territoryId: string) => void;
   onUndeploy: (instanceId: string) => void;
   onStartScout: (instanceId: string, fromTerritoryId: string) => void;
   onStartAttack: (target: CommanderTerritory) => void;
+  onStrike: (fromTerritoryId: string, targetTerritoryId: string) => void;
 }) {
   const [deployPickerOpen, setDeployPickerOpen] = useState(false);
   const [scoutPickerOpen, setScoutPickerOpen] = useState(false);
+  const [siloPickerOpen, setSiloPickerOpen] = useState(false);
+  const [showAirstrikeConfirm, setShowAirstrikeConfirm] = useState(false);
+  const [selectedSiloTerritoryId, setSelectedSiloTerritoryId] = useState<string | null>(null);
 
   if (!territory) return null;
   const isOwn = territory.is_own;
   const scoutBase = ownTerritories[0];
+
+  // Ready silos: ready_at is null OR ready_at is in the past.
+  const readySilos = silos.filter(
+    (s) => s.ready_at === null || new Date(s.ready_at).getTime() <= Date.now()
+  );
+  const hasReadySilo = readySilos.length > 0;
+
+  const SILO_DAMAGE: Record<number, number> = { 1: 50, 2: 75, 3: 100 };
+
+  const handleAirstrikePress = () => {
+    if (readySilos.length === 1) {
+      // Only one ready silo — skip picker, go straight to confirm.
+      setSelectedSiloTerritoryId(readySilos[0].territory_id);
+      setShowAirstrikeConfirm(true);
+    } else {
+      setSiloPickerOpen((v) => !v);
+    }
+  };
+
+  const handleSiloSelect = (siloTerritoryId: string) => {
+    setSelectedSiloTerritoryId(siloTerritoryId);
+    setSiloPickerOpen(false);
+    setShowAirstrikeConfirm(true);
+  };
+
+  const handleAirstrikeConfirm = () => {
+    if (!selectedSiloTerritoryId) return;
+    setShowAirstrikeConfirm(false);
+    onClose();
+    onStrike(selectedSiloTerritoryId, territory.id);
+  };
+
+  const selectedSilo = readySilos.find((s) => s.territory_id === selectedSiloTerritoryId);
 
   return (
     <Modal transparent visible animationType="slide" onRequestClose={onClose}>
@@ -681,11 +752,74 @@ function TerritoryActionSheet({
             </>
           ) : (
             <>
-              {/* Foreign: attack + send scout here */}
+              {/* Foreign: attack + airstrike + send scout here */}
               <TouchableOpacity style={styles.attackBtn} onPress={() => onStartAttack(territory)}>
                 <Ionicons name="flash" size={18} color="#FFFFFF" />
                 <Text style={styles.attackBtnText}>Attack this territory</Text>
               </TouchableOpacity>
+
+              {/* Airstrike button — only shown when commander flag is active (silos exist in map data) */}
+              <TouchableOpacity
+                style={[styles.airstrikeBtn, !hasReadySilo && styles.airstrikeBtnDisabled]}
+                onPress={hasReadySilo ? handleAirstrikePress : undefined}
+                disabled={!hasReadySilo || submitting}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="rocket" size={18} color={hasReadySilo ? '#FFFFFF' : C.textSecondary} />
+                <Text style={[styles.airstrikeBtnText, !hasReadySilo && { color: C.textSecondary }]}>
+                  {hasReadySilo ? 'Airstrike' : 'Airstrike (no silo ready)'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Silo picker — multi-silo scenario */}
+              {siloPickerOpen ? (
+                readySilos.map((s) => {
+                  const dmg = SILO_DAMAGE[s.tier] ?? 50;
+                  const shortId = s.territory_id.slice(0, 6);
+                  return (
+                    <TouchableOpacity
+                      key={s.territory_id}
+                      style={styles.pickRow}
+                      onPress={() => handleSiloSelect(s.territory_id)}
+                    >
+                      <Ionicons name="rocket" size={14} color={C.warning} />
+                      <Text style={styles.pickName}>Silo T{s.tier} · #{shortId}</Text>
+                      <Text style={styles.pickDomain}>{dmg} dmg</Text>
+                    </TouchableOpacity>
+                  );
+                })
+              ) : null}
+
+              {/* Airstrike confirm card */}
+              {showAirstrikeConfirm && selectedSilo ? (
+                <View style={styles.airstrikeConfirmCard}>
+                  <Text style={styles.airstrikeConfirmTitle}>Confirm Airstrike</Text>
+                  <Text style={styles.airstrikeConfirmMeta}>
+                    Silo Tier {selectedSilo.tier} · {SILO_DAMAGE[selectedSilo.tier] ?? 50} dmg · Cost 150⚡
+                  </Text>
+                  <View style={styles.confirmActions}>
+                    <TouchableOpacity
+                      style={styles.ghostBtn}
+                      onPress={() => setShowAirstrikeConfirm(false)}
+                    >
+                      <Text style={styles.ghostBtnText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.airstrikeConfirmBtn}
+                      onPress={handleAirstrikeConfirm}
+                      disabled={submitting}
+                      activeOpacity={0.85}
+                    >
+                      {submitting ? (
+                        <ActivityIndicator color="#FFFFFF" size="small" />
+                      ) : (
+                        <Text style={styles.attackConfirmText}>Launch</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : null}
+
               {scoutBase ? (
                 <TouchableOpacity
                   style={styles.actionBtn}
@@ -968,16 +1102,19 @@ function BattleLogModal({
                 b.winner_side != null &&
                 ((playerIsAttacker && b.winner_side === 'attacker') ||
                   (!playerIsAttacker && b.winner_side === 'defender'));
+              const isAirstrike = b.type === 'airstrike';
               return (
                 <TouchableOpacity key={b.id} style={styles.battleRow} onPress={() => onOpen(b.id)}>
                   <Ionicons
-                    name={won ? 'trophy' : 'skull'}
+                    name={isAirstrike ? 'rocket' : won ? 'trophy' : 'skull'}
                     size={16}
-                    color={won ? C.warning : C.enemy}
+                    color={isAirstrike ? C.warning : won ? C.warning : C.enemy}
                   />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.battleType}>
-                      {playerIsAttacker ? 'Attack' : 'Defense'} · {prettifyDefinitionId(b.type)}
+                      {isAirstrike
+                        ? 'Airstrike'
+                        : `${playerIsAttacker ? 'Attack' : 'Defense'} · ${prettifyDefinitionId(b.type)}`}
                     </Text>
                     <Text style={styles.battleDate}>{new Date(b.created_at).toLocaleString()}</Text>
                   </View>
@@ -1195,6 +1332,41 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
   },
   attackBtnText: { color: '#FFFFFF', fontWeight: '800', fontSize: FONT_SIZE.md },
+
+  airstrikeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    backgroundColor: '#B45309', // amber-700
+    borderRadius: RADIUS.md,
+    paddingVertical: 12,
+    marginTop: SPACING.sm,
+  },
+  airstrikeBtnDisabled: {
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  airstrikeBtnText: { color: '#FFFFFF', fontWeight: '800', fontSize: FONT_SIZE.md },
+
+  airstrikeConfirmCard: {
+    marginTop: SPACING.md,
+    backgroundColor: C.bg,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: SPACING.md,
+  },
+  airstrikeConfirmTitle: { color: C.text, fontWeight: '800', fontSize: FONT_SIZE.md, marginBottom: 4 },
+  airstrikeConfirmMeta: { color: C.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm },
+  airstrikeConfirmBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: RADIUS.md,
+    backgroundColor: '#B45309',
+  },
 
   // Confirm card
   confirmCard: {

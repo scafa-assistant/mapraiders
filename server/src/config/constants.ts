@@ -603,7 +603,38 @@ export const BUILDINGS = {
   COSTS: {
     shield_generator: { energy: 200, tech: 100 },
     refinery: { energy: 150, tech: 80 },
+    // Phase C.3 — tier-2/3 capable structures.
+    radar: { energy: 180, tech: 120 },
+    garrison: { energy: 250, tech: 150 },
+    silo: { energy: 400, tech: 250 },
+    teleporter: { energy: 300, tech: 200 },
   } as Record<string, { energy: number; tech: number }>,
+
+  /**
+   * Phase C.3 — building tiers. Buildings start at tier 1 and may be upgraded
+   * up to MAX_TIER. The upgrade cost is the base COSTS[type] scaled by
+   * UPGRADE_COST_MULT^(currentTier); the upgrade duration is indexed by the
+   * CURRENT tier (1→2 from index 1, 2→3 from index 2; index 0 unused).
+   */
+  TIERS: {
+    MAX_TIER: 3,
+    UPGRADE_COST_MULT: 2,
+    UPGRADE_TIME_HOURS: [0, 4, 8],
+  },
+
+  /**
+   * Phase C.3 — per-tier gameplay effects (index by tier-1). These are the
+   * code defaults; the refinery_bonus is additionally overridable at tier 1
+   * via the `resources` flag (config.buildings.refinery_energy_bonus) for
+   * backward compatibility with the Phase-B flat bonus.
+   */
+  TIER_EFFECTS: {
+    refinery_bonus: [0.25, 0.4, 0.5],
+    shield_blocks_per_day: [1, 2, 3],
+    radar_vision_k: [2, 3, 4],
+    garrison_bonus_slots: [4, 6, 8],
+    silo_damage: [50, 75, 100],
+  },
 
   /** Construction time before a building flips building → active. */
   BUILD_TIME_HOURS: 2,
@@ -724,4 +755,32 @@ export const COMBAT = {
     { minUnits: 3, weights: { dice_d6: 50, dice_d8: 40, dice_shield: 10 } },
     { minUnits: 0, weights: { dice_d6: 80, dice_d8: 20, dice_shield: 0 } },
   ],
+} as const;
+
+// ============================================================
+// AIRSTRIKE (Phase C.3) — Silo-launched ranged strikes.
+// A 'silo' building lets its owner strike a foreign territory within range,
+// breaking a shield, damaging the highest-HP building, or (recon-by-fire)
+// hitting nothing — always at the energy + cooldown cost. Damage scales with
+// the silo's tier (BUILDINGS.TIER_EFFECTS.silo_damage). Gated behind the
+// `commander` feature flag.
+// ============================================================
+
+export const AIRSTRIKE = {
+  ENERGY_COST: 150,
+  RANGE_CELLS: 40,     // max h3 gridDistance from a silo cell to the target cell
+  COOLDOWN_HOURS: 6,
+} as const;
+
+// ============================================================
+// TELEPORT (Phase C.3) — Teleporter fast-path for reinforcements.
+// When BOTH the origin and target territory are owned by the user and each
+// has an active teleporter, a reinforce march travels in TRAVEL_MIN minutes
+// flat (instead of per-cell), at a flat per-unit energy cost. Attacks never
+// teleport. Gated behind the `commander` feature flag.
+// ============================================================
+
+export const TELEPORT = {
+  TRAVEL_MIN: 2,
+  ENERGY_PER_UNIT: 5,
 } as const;

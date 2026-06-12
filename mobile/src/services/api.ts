@@ -679,7 +679,14 @@ export const resourceApi = {
 
 // ─── Buildings API ───────────────────────────────────────────────────────────
 
-export type BuildingType = 'shield_generator' | 'refinery';
+export type BuildingType =
+  | 'shield_generator'
+  | 'refinery'
+  | 'radar'
+  | 'garrison'
+  | 'silo'
+  | 'teleporter';
+
 export type BuildingStatus = 'building' | 'active' | 'damaged' | 'destroyed';
 
 export interface Building {
@@ -707,6 +714,10 @@ export const buildingApi = {
   /** Demolish a building — server refunds 50% of costs. */
   demolish: (buildingId: string) =>
     api.delete<{ success: boolean; data: { refunded: { energy?: number; tech?: number } } }>(`/buildings/${buildingId}`),
+
+  /** Upgrade a building to the next tier. Status → 'building' until completes_at. */
+  upgrade: (buildingId: string) =>
+    api.post<{ success: boolean; data: { building: Building } }>(`/buildings/${buildingId}/upgrade`),
 };
 
 // ─── PvE API ─────────────────────────────────────────────────────────────────
@@ -787,12 +798,22 @@ export interface CommanderGarrison {
   units: CommanderGarrisonUnit[] | null;
 }
 
+/** Info about an own silo available for airstrikes. ready_at null = ready now. */
+export interface SiloInfo {
+  territory_id: string;
+  tier: number;
+  /** ISO timestamp of when the cooldown ends, or null if the silo is ready. */
+  ready_at: string | null;
+}
+
 export interface CommanderMapData {
   visible_cells: string[];
   territories: CommanderTerritory[];
   movements: CommanderMovement[];
   radars: CommanderRadar[];
   garrisons: CommanderGarrison[];
+  /** Own silo cooldown states — present when commander flag is enabled. */
+  silos: SiloInfo[];
 }
 
 export interface CommanderBattleSummary {
@@ -834,8 +855,8 @@ export interface CommanderBattleRound {
   casualty: CommanderBattleCasualty | null;
 }
 
-/** The full battle narrative lives INSIDE the `log` JSONB column. */
-export interface CommanderBattleLog {
+/** Standard dice-battle log. */
+export interface CommanderDiceBattleLog {
   rounds: CommanderBattleRound[];
   attacker_units_start: number;
   defender_units_start: number;
@@ -844,6 +865,23 @@ export interface CommanderBattleLog {
   survivors: { attacker: string[]; defender: string[] };
   loot: { dice_drop?: string | null };
 }
+
+/** Airstrike result variants (union). */
+export type AirstrikeResult =
+  | { shield_broken: true }
+  | { building_hit: { id: string; type: string; hp_after: number; destroyed: boolean } }
+  | { no_effect: true };
+
+/** Airstrike battle log — replaces round-by-round dice narrative. */
+export interface CommanderAirstrikeBattleLog {
+  type: 'airstrike';
+  silo_tier: number;
+  damage: number;
+  result: AirstrikeResult;
+}
+
+/** The full battle narrative lives INSIDE the `log` JSONB column. */
+export type CommanderBattleLog = CommanderDiceBattleLog | CommanderAirstrikeBattleLog;
 
 export interface CommanderBattleDetail {
   id: string;
@@ -858,7 +896,7 @@ export interface CommanderBattleDetail {
 }
 
 export const commanderApi = {
-  /** Fetch the fog-of-war strategic map (visible cells, territories, movements, radars, garrisons). */
+  /** Fetch the fog-of-war strategic map (visible cells, territories, movements, radars, garrisons, silos). */
   getMap: () =>
     api.get<{ success: boolean; data: CommanderMapData }>('/commander/map'),
 
@@ -903,6 +941,13 @@ export const commanderApi = {
   /** Equip a die into the active pouch slot. */
   equipDie: (body: { instance_id: string }) =>
     api.post<{ success: boolean; data: Record<string, never> }>('/commander/dice/equip', body),
+
+  /** Launch an airstrike from a silo territory onto a target territory. */
+  strike: (body: { from_territory_id: string; target_territory_id: string }) =>
+    api.post<{ success: boolean; data: { battle_id: string; result: AirstrikeResult } }>(
+      '/commander/strike',
+      body
+    ),
 
   /** List recent battles involving the player. */
   getBattles: () =>

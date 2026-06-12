@@ -28,10 +28,33 @@ export function formatArea(m2: number | undefined): string {
 const BUILDING_LABELS: Record<string, string> = {
   shield_generator: 'Shield Generator',
   refinery: 'Refinery',
+  radar: 'Radar',
+  garrison: 'Garrison',
+  silo: 'Silo',
+  teleporter: 'Teleporter',
 };
 
 export function buildingLabel(type: string): string {
   return BUILDING_LABELS[type] ?? type;
+}
+
+const TIER_NUMERALS = ['', 'I', 'II', 'III'];
+
+/** Returns Roman numeral for tier 1–3, or empty string for 0. */
+export function tierNumeral(tier: number): string {
+  return TIER_NUMERALS[tier] ?? String(tier);
+}
+
+/** Upgrade cost = baseCost × 2^currentTier (energy and tech rounded). */
+export function upgradeCost(
+  base: { energy: number; tech: number },
+  currentTier: number,
+): { energy: number; tech: number } {
+  const factor = Math.pow(2, currentTier);
+  return {
+    energy: Math.round(base.energy * factor),
+    tech: Math.round(base.tech * factor),
+  };
 }
 
 /** Title-case a snake/kebab token: "shield_generator" → "Shield Generator". */

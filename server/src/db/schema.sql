@@ -1436,3 +1436,22 @@ VALUES
     '{"kind":"effect","effect":"cancel_highest"}',
     '{"name_key":"dice_shield","faction":"archive"}')
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Phase C.3 — Tier-2/3 buildings + radar/garrison/silo/teleporter + airstrikes
+-- (2026-06-12)
+--
+-- NO SCHEMA CHANGES. C.3 is config/code only and reuses existing tables:
+--   * buildings.type (VARCHAR(30)) already holds the new types radar /
+--     garrison / silo / teleporter; buildings.tier already CHECKs 1..3.
+--   * Upgrades stash config.upgrading_to (JSONB) and complete through the
+--     existing building_completion cron, which advances tier on completion.
+--   * battles.type already documents 'airstrike'; the airstrike service fills
+--     it with the same insert shape as assaults.
+--   * Shield multi-block tracks config.block_times (JSONB string[]) on
+--     territory_defenses, backward-compatible with legacy config.last_blocked_at.
+--   * Silo cooldown lives in buildings.config.last_strike_at (JSONB).
+-- All per-tier tuning is in src/config/constants.ts (BUILDINGS.TIERS /
+-- TIER_EFFECTS, AIRSTRIKE, TELEPORT). See the matching migration file
+-- src/db/migrations/2026-06-12_phaseC3_buildings.sql.
+-- ============================================================
