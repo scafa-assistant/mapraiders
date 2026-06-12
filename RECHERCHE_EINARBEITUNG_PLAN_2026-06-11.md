@@ -118,11 +118,17 @@ FAQ-Schema, interne Links auf vs-Seiten + Nischen-Seiten + Play-CTA mit UTM.
   MapRaiders EINE Option unter mehreren ist — Glaubwürdigkeit > Pitch).
 - Ziel-Queries: "pokemon go saudi arabia", "niantic scopely buyout explained",
   "wer besitzt pokemon go".
-- [ ] Alle vs-Seiten (außer AR) verlinken intern hierauf.
+- [x] Alle vs-Seiten (außer AR) verlinken intern hierauf ✅
+      (`_apply_explainer_links.py`, 30 Seiten, DE→DE-Artikel, Rest→EN).
+- [x] **2.1 KOMPLETT** ✅ Commit `a5c8f1d`, live verifiziert:
+      /en/niantic-scopely-buyout.html + /niantic-scopely-verkauf.html
+      (DE im Site-Root statt /de/ — Site-Konvention).
 
 ### 2.2 Geocaching-Listicle (MOFU, Prio 2)
-- [ ] `/en/free-geocaching-alternatives.html` +
-      `/de/geocaching-alternative-kostenlos.html`
+- [x] `/en/free-geocaching-alternatives.html` +
+      `/geocaching-alternative-kostenlos.html` ✅ Commit `a5c8f1d`, live.
+      Roundup Munzee/Adventure Lab/Waymarking/Gratis-Tier/MapRaiders mit
+      Offenlegung + ItemList-Schema.
 - Roundup-Format (rankt für "alternatives"-Queries besser als vs-Seiten):
   ehrlicher Vergleich Munzee / Adventure Lab / Waymarking / MapRaiders mit
   Tabelle (Paywall? Werbung? UGC?). MapRaiders-Stärke: keine Premium-Stufe,
@@ -134,7 +140,7 @@ FAQ-Schema, interne Links auf vs-Seiten + Nischen-Seiten + Play-CTA mit UTM.
 - [ ] `/en/adhd-walking-motivation.html` (EN zuerst; DE nach Performance-Check)
 - Frame: Gamification, sichtbarer Fortschritt, Streaks, "der Spaziergang hat
   ein Ziel" — KEINE Therapie-/Gesundheits-Claims, keine Heilversprechen.
-- [ ] Nischen-Memory um Nische 16 (ADHS) + Soundmap-Wettbewerber ergänzen.
+- [x] Nischen-Memory um Nische 16 (ADHS) + Soundmap-Wettbewerber ergänzt ✅
 
 ### 2.4 Early-Adopter / "Claim your empty city" (BOFU, Prio 4)
 - [ ] `/en/claim-your-city.html` + `/de/erobere-deine-stadt.html`
@@ -143,8 +149,8 @@ FAQ-Schema, interne Links auf vs-Seiten + Nischen-Seiten + Play-CTA mit UTM.
 - Direktester Install-Intent → prominenter Play-CTA, UTM `utm_campaign=pioneer`.
 
 ### 2.5 Soundmap-Abgrenzung (klein, Prio 5)
-- [ ] KEINE neue Seite: Abschnitt auf `/en/audio-graffiti/` ergänzen
-      ("Music-GPS-Apps wie Soundmap vs. eigene Stimme auf der Karte").
+- [x] Abschnitt "Soundmap and Music-GPS Apps" auf `/en/audio-graffiti/`
+      (Marker `GEO-SOUNDMAP-SECTION`, Sammeln-vs-Publizieren-Frame) ✅
 
 **Phase-Abschluss:** Humanizer-Pass (EN), FAQ-Schema-Validierung, Sitemap-
 Einträge, hreflang DE↔EN, Deploy, Commit pro Asset.
