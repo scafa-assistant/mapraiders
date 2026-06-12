@@ -77,17 +77,26 @@ export async function runH3Backfill(): Promise<number> {
   let totalFilled = 0;
   let totalErrors = 0;
 
+  // Rows whose polygon cannot be parsed still get '{}' written and would
+  // otherwise be re-selected forever by the empty-array filter below —
+  // exclude them explicitly within this run.
+  const failedIds: string[] = [];
+
   // No OFFSET: processed rows drop out of the WHERE filter, so we always
   // take the next batch from the start until nothing is left.
   // eslint-disable-next-line no-constant-condition
   while (true) {
+    // Also re-process rows that ended up with an EMPTY array: earlier runs
+    // wrote '{}' when polygonToCells found no cell center inside a small
+    // polygon (territories are usually far smaller than a res-8 cell).
     const rows = await queryMany<TerritoryRow>(
       `SELECT id, ST_AsGeoJSON(polygon) AS geojson
        FROM territories
-       WHERE h3_cells IS NULL
+       WHERE (h3_cells IS NULL OR array_length(h3_cells, 1) IS NULL)
+         AND id <> ALL($2::uuid[])
        ORDER BY id
        LIMIT $1`,
-      [H3_BACKFILL_BATCH_SIZE],
+      [H3_BACKFILL_BATCH_SIZE, failedIds],
     );
 
     if (rows.length === 0) {
@@ -103,10 +112,12 @@ export async function runH3Backfill(): Promise<number> {
           cells = cellsForPolygon(points);
         } else {
           console.warn(`[Phase0] H3 backfill: territory ${row.id} has no parseable polygon`);
+          failedIds.push(row.id);
         }
       } catch (err: any) {
         console.warn(`[Phase0] H3 backfill: error for territory ${row.id}: ${err.message}`);
         totalErrors++;
+        failedIds.push(row.id);
         // Fall through: cells stays [] so we still write h3_cells = '{}'
       }
 

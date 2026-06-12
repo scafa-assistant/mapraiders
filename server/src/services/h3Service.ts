@@ -51,19 +51,35 @@ export function cellsForPolygon(
   points: { latitude: number; longitude: number }[],
   res: number = RES_SPAWN,
 ): string[] {
+  if (points.length === 0) return [];
+
   // Build a closed ring: [[lat, lng], ...]
   const ring = points.map((p) => [p.latitude, p.longitude] as [number, number]);
   // Ensure the ring is closed (last point === first point)
   if (
-    ring.length > 0 &&
-    (ring[0][0] !== ring[ring.length - 1][0] ||
-      ring[0][1] !== ring[ring.length - 1][1])
+    ring[0][0] !== ring[ring.length - 1][0] ||
+    ring[0][1] !== ring[ring.length - 1][1]
   ) {
     ring.push(ring[0]);
   }
 
-  // polygonToCells([outerRing, ...holes], resolution)
-  return h3.polygonToCells([ring], res) as string[];
+  // polygonToCells only returns cells whose CENTER lies inside the polygon.
+  // Player territories (~0.03 km²) are far smaller than a res-8 cell
+  // (~0.7 km²), so that alone is almost always EMPTY. Union it with the
+  // cells of every vertex plus the centroid so each polygon always maps to
+  // at least one cell and boundary-straddling cells are covered.
+  const cells = new Set<string>(h3.polygonToCells([ring], res) as string[]);
+
+  let latSum = 0;
+  let lngSum = 0;
+  for (const p of points) {
+    cells.add(h3.latLngToCell(p.latitude, p.longitude, res));
+    latSum += p.latitude;
+    lngSum += p.longitude;
+  }
+  cells.add(h3.latLngToCell(latSum / points.length, lngSum / points.length, res));
+
+  return [...cells];
 }
 
 /**
