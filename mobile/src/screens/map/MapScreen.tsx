@@ -25,6 +25,9 @@ import * as Haptics from 'expo-haptics';
 import { echoProximityService } from '../../services/echoProximity';
 import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi, meetupApi } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
+import PvESpawnMarker from '../../components/PvESpawnMarker';
+import { useFeatureStore } from '../../store/featureStore';
+import { usePveStore } from '../../store/pveStore';
 import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
 import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
@@ -121,6 +124,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const { user } = useAuthStore();
   const { settings } = useSettingsStore();
   const theme = useTheme();
+
+  // PvE feature gate — spawns only rendered when flag + capability are both active
+  const isPveEnabled = useFeatureStore((s) => s.isEnabled('pve_spawns') && s.capabilities.pve);
+  const { spawns: pveSpawns, fetchSpawns: fetchPveSpawns } = usePveStore();
   const classLabels = React.useMemo(getClassLabels, []);
 
   const [canCloseClaim, setCanCloseClaim] = useState(false);
@@ -365,13 +372,24 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     }
   }, [getMapBounds]);
 
+  // PvE spawns — only fetched when feature flag is active
+  const fetchNearbyPveSpawns = useCallback(async () => {
+    if (!isPveEnabled) return;
+    const bounds = await getMapBounds();
+    if (!bounds) return;
+    // Build "minLng,minLat,maxLng,maxLat" bbox string expected by /api/pve/spawns
+    const bboxStr = `${bounds.west},${bounds.south},${bounds.east},${bounds.north}`;
+    fetchPveSpawns(bboxStr);
+  }, [isPveEnabled, getMapBounds, fetchPveSpawns]);
+
   useEffect(() => {
     fetchNearbyEchos();
     fetchNearbyArtifacts();
     fetchNearbySilentZones();
     fetchNearbyResonance();
     fetchNearbyMeetups();
-  }, [fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]);
+    fetchNearbyPveSpawns();
+  }, [fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups, fetchNearbyPveSpawns]);
 
   // Initial location fetch - request permission and center map on user
   const initialLocationDone = useRef(false);
@@ -425,8 +443,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       fetchNearbySilentZones();
       fetchNearbyResonance();
       fetchNearbyMeetups();
+      fetchNearbyPveSpawns();
     },
-    [fetchTerritories, fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups]
+    [fetchTerritories, fetchQuestsInBounds, fetchNearbyEchos, fetchNearbyArtifacts, fetchNearbySilentZones, fetchNearbyResonance, fetchNearbyMeetups, fetchNearbyPveSpawns]
   );
 
   // City/place search
@@ -921,6 +940,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             </Marker>
           );
         })}
+
+        {/* PvE Spawn Markers — only rendered when feature flag 'pve_spawns' + capability.pve are active */}
+        {isPveEnabled && pveSpawns.map((spawn) => (
+          <PvESpawnMarker
+            key={`pve-${spawn.id}`}
+            spawn={spawn}
+            onPress={() => navigation.navigate('HackingScreen', { spawn })}
+          />
+        ))}
 
         {/* Custom Current Location Marker */}
         {currentLocation && (

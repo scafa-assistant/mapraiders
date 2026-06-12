@@ -509,3 +509,83 @@ export const POLYGON = {
   KALMAN_Q: 0.00001,
   KALMAN_R: 0.0001,
 } as const;
+
+// ---- PvE Spawns + Hacking (Phase A) ---------------------------------
+// Context-driven NPC spawns: Erdriss portals, Vril scouts, Aether-Leeches.
+// Biome decides which NPC types can appear; each type carries a loot table.
+
+/** NPC archetypes that can spawn in the world. */
+export type PveNpcType = 'scout_disc' | 'aether_leech' | 'tech_drone' | 'obsidian_guard';
+
+/** Biomes returned by osmContextService.getContext(). */
+export type Biome = 'water' | 'forest' | 'industrial' | 'rural' | 'urban' | 'landmark';
+
+/** A single loot drop entry for an NPC type. */
+export interface PveLootTable {
+  /** Flat resource grant on a successful hack. */
+  resources: Partial<Record<'energy' | 'tech' | 'intel', number>>;
+  /** Optional unit item dropped with the given probability (0..1). */
+  unit?: { definitionId: string; chance: number };
+}
+
+export const PVE = {
+  // ---- Spawn lifecycle ----
+  SPAWN_TTL_HOURS_MIN: 24,
+  SPAWN_TTL_HOURS_MAX: 72,
+  MAX_SPAWNS_PER_CELL: 3,
+
+  // ---- Hacking ----
+  HACK_RADIUS_M: 75,
+  HACK_DAILY_CAP: 30,
+
+  // ---- Spawn engine throttling ----
+  CELL_COOLDOWN_SEC: 600, // 10 min Redis cooldown per cell
+
+  // ---- Aether-Leech debuff (applied in Phase B, surfaced now) ----
+  LEECH_YIELD_PENALTY: 0.2, // -20% claim_value yield while anchored
+
+  /**
+   * Biome -> candidate NPC types. The engine picks from this set when
+   * filling a cell. Terminals (landmark) follow in Phase A.2; for now a
+   * landmark cell behaves like urban (scout discs).
+   */
+  BIOME_SPAWN_MATRIX: {
+    water: ['scout_disc', 'water_strider_source'],
+    forest: ['aether_leech', 'forest_construct_source'],
+    industrial: ['tech_drone'],
+    urban: ['scout_disc'],
+    rural: ['scout_disc'],
+    landmark: ['scout_disc'],
+  } as Record<Biome, string[]>,
+
+  /**
+   * Loot table per NPC type. `scout_disc` and `tech_drone` carry their own
+   * unit drop. Biome-flavoured drops (water -> water_strider, forest ->
+   * forest_construct) are layered on top by the engine via BIOME_UNIT_DROP.
+   */
+  LOOT: {
+    scout_disc: {
+      resources: { intel: 3 },
+      unit: { definitionId: 'unit_scout_disc', chance: 0.6 },
+    },
+    tech_drone: {
+      resources: { tech: 5 },
+      unit: { definitionId: 'unit_tech_drone', chance: 0.5 },
+    },
+    aether_leech: {
+      resources: { tech: 3, energy: 5 },
+      // no unit drop
+    },
+  } as Record<string, PveLootTable>,
+
+  /**
+   * Biome-specific bonus unit drops, layered onto the base loot table of a
+   * spawn that was created in that biome.
+   *   water  spawns drop unit_water_strider   @ 40%
+   *   forest spawns drop unit_forest_construct @ 40%
+   */
+  BIOME_UNIT_DROP: {
+    water: { definitionId: 'unit_water_strider', chance: 0.4 },
+    forest: { definitionId: 'unit_forest_construct', chance: 0.4 },
+  } as Partial<Record<Biome, { definitionId: string; chance: number }>>,
+} as const;

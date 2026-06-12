@@ -182,6 +182,17 @@ export type MapStackParamList = {
     territoryId: string;
     opponentUsername: string;
   };
+  HackingScreen: {
+    spawn: {
+      id: string;
+      npc_type: 'scout_disc' | 'tech_drone' | 'aether_leech' | 'water_strider_source' | 'forest_construct_source';
+      level: 1 | 2 | 3;
+      latitude: number;
+      longitude: number;
+      biome: string;
+      expires_at: string;
+    };
+  };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -207,6 +218,7 @@ export type MeetupDetailScreenProps = NativeStackScreenProps<MapStackParamList, 
 export type MeetupChatScreenProps = NativeStackScreenProps<MapStackParamList, 'MeetupChat'>;
 export type TicTacToeGameScreenProps = NativeStackScreenProps<MapStackParamList, 'TicTacToeGame'>;
 export type MiniChessGameScreenProps = NativeStackScreenProps<MapStackParamList, 'MiniChessGame'>;
+export type HackingScreenProps = NativeStackScreenProps<MapStackParamList, 'HackingScreen'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 

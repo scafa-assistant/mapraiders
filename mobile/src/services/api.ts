@@ -670,4 +670,22 @@ export const resourceApi = {
     api.get('/resources'),
 };
 
+// ─── PvE API ─────────────────────────────────────────────────────────────────
+
+export interface HackInputTrace {
+  playerLocation: { latitude: number; longitude: number };
+  samples: Array<{ t: number; freq: number; amp: number }>;
+  durationMs: number;
+}
+
+export const pveApi = {
+  /** Fetch PvE spawns visible in the given bbox string "minLng,minLat,maxLng,maxLat". */
+  getSpawnsInBounds: (bbox: string) =>
+    api.get('/pve/spawns', { params: { bbox } }),
+
+  /** Submit a frequency-trace hack attempt for a spawn. */
+  hack: (spawnId: string, inputTrace: HackInputTrace) =>
+    api.post(`/pve/spawns/${spawnId}/hack`, { inputTrace }),
+};
+
 export default api;

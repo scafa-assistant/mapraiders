@@ -31,6 +31,7 @@ import { checkAutoBounty } from '../services/bountyService';
 import { meetupService } from '../services/meetupService';
 import { recordCronRun, acquireCronLock, releaseCronLock } from '../services/cronMonitor';
 import { runH3Backfill, runOsmPrefetch } from './phase0Jobs';
+import { runPveSpawnTick, runAetherLeechTick } from './phaseAJobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -816,6 +817,72 @@ export function setupCronJobs(): void {
       });
     } finally {
       await releaseCronLock('osm_prefetch');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 06:00 UTC - PvE spawn expire + refill (Phase A)
+  // ------------------------------------------------------------------
+  cron.schedule('0 6 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('pve_spawn_tick', 1800);
+    if (!locked) return;
+
+    console.log('[CRON] Running PvE spawn tick...');
+    try {
+      const processed = await runPveSpawnTick();
+      await recordCronRun({
+        job: 'pve_spawn_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] PvE spawn tick failed:', err);
+      await recordCronRun({
+        job: 'pve_spawn_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('pve_spawn_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 04:10 UTC - Aether leech tick (Phase A, right after decay)
+  // ------------------------------------------------------------------
+  cron.schedule('10 4 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('aether_leech_tick', 900);
+    if (!locked) return;
+
+    console.log('[CRON] Running aether leech tick...');
+    try {
+      const processed = await runAetherLeechTick();
+      await recordCronRun({
+        job: 'aether_leech_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Aether leech tick failed:', err);
+      await recordCronRun({
+        job: 'aether_leech_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('aether_leech_tick');
     }
   }, { timezone: 'UTC' });
 

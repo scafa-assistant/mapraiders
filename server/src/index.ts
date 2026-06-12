@@ -59,6 +59,7 @@ import { healthRouter } from './routes/health';
 import { featuresRouter } from './routes/features';
 import { inventoryRouter } from './routes/inventory';
 import { resourcesRouter } from './routes/resources';
+import pveRouter from './routes/pve';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -171,6 +172,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/features', featuresRouter);
 app.use('/api/inventory', inventoryRouter);
 app.use('/api/resources', resourcesRouter);
+app.use('/api/pve', pveRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {

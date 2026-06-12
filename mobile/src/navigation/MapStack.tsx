@@ -15,6 +15,7 @@ import MeetupDetailScreen from '../screens/map/MeetupDetailScreen';
 import MeetupChatScreen from '../screens/map/MeetupChatScreen';
 import TicTacToeScreen from '../screens/map/TicTacToeScreen';
 import MiniChessScreen from '../screens/map/MiniChessScreen';
+import HackingScreen from '../screens/map/HackingScreen';
 
 const Stack = createNativeStackNavigator<MapStackParamList>();
 
@@ -112,6 +113,14 @@ export default function MapStack() {
       <Stack.Screen
         name="MiniChessGame"
         component={MiniChessScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="HackingScreen"
+        component={HackingScreen}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
