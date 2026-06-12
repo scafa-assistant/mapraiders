@@ -400,6 +400,31 @@ CREATE TABLE IF NOT EXISTS ruins (
 
 ---
 
+## TRACK W — WEB-CLIENT (Gigi, 2026-06-12: "gewisse Schichten auch ohne Handy spielbar")
+
+**Ziel:** Spielbare/einsehbare Web-Oberfläche auf mapraiders.com mit Login — läuft PARALLEL zu den Phasen, kein App-Build nötig. Doppelnutzen:
+1. **Test-Cockpit für Gigi:** Neue Features (Phase 0/A/B+) sofort im Browser sichtbar — kein APK-Download/Neuinstallation pro Build. Die Store-AAB (vc2) enthält die neue UI ohnehin nicht; der Web-Client ist bis vc3 die EINZIGE Sicht auf den neuen Content.
+2. **Produkt-Feature:** Der Commander-Layer (Phase C) ist per GDD ein INDOOR-Layer — prädestiniert für Web. Langfristig: draußen Handy (Explorer), zuhause Browser (Commander). Genau die GDD-Vision.
+
+### Architektur
+- **Neues Verzeichnis `web/`:** Vite + React + TypeScript (KEIN Expo-Web — react-native-maps ist web-inkompatibel; sauberer separater Client ist robuster). Karte: Leaflet + OSM-Tiles (kein API-Key nötig). State: Zustand (gleiche Patterns wie Mobile).
+- **Gleiche API:** api.mapraiders.com, gleiches Token-Auth (`token`-Feld), gleiche Feature-Flags/Capabilities — der Web-Client ist NUR ein weiterer Client, null Server-Sonderlogik. Einzige Server-Änderung: CORS-Origin für die Web-Domain erlauben.
+- **Deploy:** statischer Build (`vite build` → `dist/`) per SCP auf den Hetzner-VPS, nginx-Location auf mapraiders.com (z. B. `/play`) oder Subdomain `play.mapraiders.com`. Kein Node-Prozess für den Client nötig.
+- **GPS-Grenze (Design-Wahrheit):** Alles, was echte Bewegung erfordert (Territorium claimen, Hacking-Proximity ≤ 75 m, Quests laufen), bleibt handy-exklusiv — der Server prüft das eh (Anti-Cheat). Web zeigt diese Aktionen read-only an.
+
+### W.1 — Beobachter-Cockpit (SOFORT, ~2–4 Tage)
+Login (E-Mail/Passwort) → Karte mit Territorien (eigene hervorgehoben) + PvE-Spawns (Flag) → Ressourcen-HUD → Inventar-Liste → Profil/XP. Read-only plus die Aktionen, die KEINE GPS-Position brauchen: **Gebäude bauen/abreißen** (Phase B), Feature-Flag-Sicht. Vril-Violett-Theme von Anfang an.
+
+### W.2 — Indoor-Aktionen (nach Phase C-Start)
+Commander-Karte (Fog of War), Späher entsenden, Truppen verwalten, Würfel-Kampf-Replays — der komplette Indoor-Layer nativ im Web. Ranked Jump&Run (A.2) läuft als server-gehostetes HTML5-Spiel ohnehin im Browser → im Web-Client direkt einbettbar.
+
+### W.3 — Später
+TCG-Sammlung + Marktplatz (Phase E), Clan-Verwaltung, Replay-Sharing (SEO-Hebel: öffentliche Territorial-Karten pro Stadt = organische Landing Pages).
+
+**Explizit NICHT im Web:** GPS-Aktionen simulieren (Anti-Cheat-Grenze), eigener Web-Account-Typ (ein Account, zwei Clients).
+
+---
+
 ## QUERSCHNITT
 
 ### Rollout & v1-Schutz

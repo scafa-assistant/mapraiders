@@ -1,0 +1,524 @@
+/* ============================================================
+   MapRaiders Web Cockpit — Vril violet on obsidian.
+   Plain CSS, no framework. Tokens mirror src/theme.ts.
+   ============================================================ */
+
+:root {
+  --bg: #0c0914;
+  --panel: #161022;
+  --panel-alt: #1f1733;
+  --border: #2a2140;
+  --accent: #9d4edd;
+  --accent-bright: #d4a5ff;
+  --text: #ece6f5;
+  --text-dim: #9a8fb0;
+  --amber: #ffb300;
+  --danger: #ff5470;
+  --success: #56d364;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+a {
+  color: var(--accent-bright);
+}
+
+/* ---- App shell ---- */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.tab-pane {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+}
+
+/* ---- Resource HUD ---- */
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  z-index: 500;
+  flex-wrap: wrap;
+}
+
+.hud-brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent-bright);
+  margin-right: auto;
+}
+
+.hud-res {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.hud-res .glyph {
+  font-size: 15px;
+}
+
+.hud-res.energy {
+  color: var(--amber);
+}
+.hud-res.tech {
+  color: var(--accent-bright);
+}
+.hud-res.intel {
+  color: var(--success);
+}
+
+/* ---- Tab bar ---- */
+
+.tabbar {
+  display: flex;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  z-index: 500;
+}
+
+.tabbar button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 12px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border-top: 2px solid transparent;
+}
+
+.tabbar button.active {
+  color: var(--accent-bright);
+  border-top-color: var(--accent);
+  background: var(--panel-alt);
+}
+
+/* ---- Map ---- */
+
+.map-root {
+  position: absolute;
+  inset: 0;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #0c0914;
+}
+
+/* Dark look for OSM tiles. */
+.dark-tiles {
+  filter: brightness(0.55) invert(1) contrast(0.9) hue-rotate(180deg)
+    saturate(0.7) brightness(0.95);
+}
+
+.leaflet-control-attribution {
+  background: rgba(22, 16, 34, 0.85) !important;
+  color: var(--text-dim) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--accent-bright) !important;
+}
+
+.map-loading {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+  z-index: 600;
+}
+
+/* ---- Side panel (territory details) ---- */
+
+.side-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  max-width: 92vw;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  z-index: 700;
+  overflow-y: auto;
+  padding: 18px;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.side-panel h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  line-height: 1;
+  font-size: 16px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.meta-row .k {
+  color: var(--text-dim);
+}
+
+.meta-row .v {
+  font-weight: 600;
+  text-align: right;
+}
+
+.section-title {
+  margin: 20px 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+/* ---- Buildings ---- */
+
+.building-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.building-card .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.building-name {
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge.building {
+  background: rgba(255, 179, 0, 0.18);
+  color: var(--amber);
+}
+.badge.active {
+  background: rgba(86, 211, 100, 0.18);
+  color: var(--success);
+}
+.badge.damaged {
+  background: rgba(255, 84, 112, 0.18);
+  color: var(--danger);
+}
+.badge.neutral {
+  background: var(--border);
+  color: var(--text-dim);
+}
+
+.countdown {
+  font-size: 12px;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+
+.build-options {
+  margin-top: 10px;
+}
+
+.build-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  background: var(--panel-alt);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.build-btn .cost {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-demolish {
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.panel-error {
+  background: rgba(255, 84, 112, 0.12);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+.muted {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* ---- Login ---- */
+
+.login-root {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.login-card h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  color: var(--accent-bright);
+}
+
+.login-card p.sub {
+  margin: 0 0 22px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.field input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 11px 12px;
+  font-size: 15px;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-bright);
+  color: #1a0f2b;
+}
+
+/* ---- Inventory ---- */
+
+.list-pane {
+  padding: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.inv-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.inv-item .inv-name {
+  font-weight: 600;
+}
+
+.inv-item .inv-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.inv-item .spacer {
+  margin-left: auto;
+}
+
+/* ---- Profile ---- */
+
+.profile-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.profile-card h2 {
+  margin: 0 0 2px;
+}
+
+.xp-bar {
+  height: 8px;
+  background: var(--bg);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+
+.xp-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+}
+
+.btn-logout {
+  width: 100%;
+  margin-top: 22px;
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 11px;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 48px 20px;
+}
+
+.empty-state .big {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.center-fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+}
+
+/* ---- Responsive: narrow viewport ---- */
+
+@media (max-width: 560px) {
+  .side-panel {
+    width: 100%;
+  }
+  .hud-brand {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+}
