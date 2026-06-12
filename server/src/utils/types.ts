@@ -590,3 +590,107 @@ declare global {
     }
   }
 }
+
+// ====================================================================
+// Phase 0 Foundations — Item System (E1) + Resource Ledger (E2)
+// ====================================================================
+
+// ---- Item System (E1) -----------------------------------------------
+
+/** Item category. Drives which `stats`/`state` shape an item carries. */
+export type ItemCategory = 'dice' | 'unit' | 'card' | 'relic' | 'blueprint';
+
+/** Lifecycle status of a concrete item instance. */
+export type ItemStatus =
+  | 'inventory'
+  | 'equipped'
+  | 'deployed'
+  | 'staked'
+  | 'burned'
+  | 'listed';
+
+/** How an instance entered a player's possession (provenance). */
+export type ItemAcquiredVia =
+  | 'hack'
+  | 'loot'
+  | 'scavenge'
+  | 'booster'
+  | 'trade'
+  | 'wager'
+  | 'seed';
+
+/** Audit event recorded against an item instance. */
+export type ItemEvent =
+  | 'minted'
+  | 'transferred'
+  | 'burned'
+  | 'deployed'
+  | 'recalled'
+  | 'staked'
+  | 'won'
+  | 'lost';
+
+/**
+ * Item catalogue row (`item_definitions`). The template/blueprint shared by
+ * every instance of a given item. snake_case mirrors the DB columns.
+ */
+export interface ItemDefinition {
+  id: string;
+  category: ItemCategory;
+  rarity: string;
+  season: string | null;
+  tradeable: boolean;
+  stats: Record<string, any>;
+  lore: Record<string, any>;
+  created_at: Date;
+}
+
+/**
+ * Concrete owned item (`item_instances`). snake_case mirrors the DB columns.
+ */
+export interface ItemInstance {
+  id: string;
+  definition_id: string;
+  owner_id: string | null;
+  status: ItemStatus;
+  mint_number: number | null;
+  acquired_via: ItemAcquiredVia;
+  state: Record<string, any>;
+  created_at: Date;
+  updated_at: Date;
+}
+
+/**
+ * Item instance joined with its definition fields — the shape returned by
+ * `getInventory()` (instance columns + selected definition columns).
+ */
+export interface ItemInstanceWithDefinition extends ItemInstance {
+  category: ItemCategory;
+  rarity: string;
+  tradeable: boolean;
+  def_stats: Record<string, any>;
+  lore: Record<string, any>;
+}
+
+// ---- Resource Ledger (E2) -------------------------------------------
+
+/** The three player resources tracked in the ledger. */
+export type ResourceType = 'energy' | 'tech' | 'intel';
+
+/** Resource balance row (`player_resources`). */
+export interface PlayerResource {
+  user_id: string;
+  resource: ResourceType;
+  balance: number;
+}
+
+/** Append-only resource ledger entry (`resource_transactions`). */
+export interface ResourceTransaction {
+  id: number;
+  user_id: string;
+  resource: ResourceType;
+  amount: number;
+  reason: string;
+  context: Record<string, any>;
+  created_at: Date;
+}

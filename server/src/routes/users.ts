@@ -14,6 +14,7 @@ import { validateBody } from '../middleware/validation';
 import { updateSettingsSchema } from '../middleware/validation';
 import { queryOne, queryMany, query, transaction } from '../config/database';
 import { balanceService } from '../services/balanceService';
+import { featureService } from '../services/featureService';
 import { xpForLevel } from '../config/constants';
 import multer from 'multer';
 import path from 'path';
@@ -54,9 +55,10 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
       [req.userId]
     );
 
-    // Get aggregate stats in parallel
-    const [territoryCount, territoryArea, questCount, routeCount, echoCount, totalDistanceKm] =
+    // Get capabilities and aggregate stats in parallel
+    const [capabilities, territoryCount, territoryArea, questCount, routeCount, echoCount, totalDistanceKm] =
       await Promise.all([
+        featureService.getCapabilities(req.userId!),
         queryOne<{ count: string }>(
           'SELECT COUNT(*) as count FROM territories WHERE owner_id = $1',
           [req.userId]
@@ -108,6 +110,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
           total_echos: parseInt(echoCount?.count || '0', 10),
           total_distance_km: parseFloat(parseFloat(totalDistanceKm?.total || '0').toFixed(2)),
         },
+        capabilities,
       },
     });
   } catch (err: any) {

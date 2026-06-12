@@ -646,4 +646,28 @@ export const turnGameApi = {
     api.get(`/games/${id}/moves`),
 };
 
+// ─── Features API ────────────────────────────────────────────────────────────
+
+export const featureApi = {
+  getAll: () =>
+    api.get('/features'),
+};
+
+// ─── Inventory API ────────────────────────────────────────────────────────────
+
+export const inventoryApi = {
+  getAll: (filters?: { category?: string; status?: string }) =>
+    api.get('/inventory', { params: filters }),
+
+  getById: (id: string) =>
+    api.get(`/inventory/${id}`),
+};
+
+// ─── Resources API ────────────────────────────────────────────────────────────
+
+export const resourceApi = {
+  get: () =>
+    api.get('/resources'),
+};
+
 export default api;

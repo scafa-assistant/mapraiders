@@ -17,6 +17,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken, authenti
 import { authLimiter } from '../middleware/rateLimit';
 import { sanitizeText } from '../utils/sanitize';
 import redis from '../config/redis';
+import { featureService } from '../services/featureService';
 
 const router = Router();
 
@@ -93,6 +94,8 @@ router.post(
         [user.id, refreshHash]
       );
 
+      const capabilities = await featureService.getCapabilities(user.id);
+
       return res.status(201).json({
         success: true,
         data: {
@@ -107,6 +110,7 @@ router.post(
           },
           token: accessToken,
           refreshToken,
+          capabilities,
         },
       });
     } catch (err: any) {
@@ -192,6 +196,8 @@ router.post(
         [user.id, refreshHash]
       );
 
+      const capabilities = await featureService.getCapabilities(user.id);
+
       return res.json({
         success: true,
         data: {
@@ -206,6 +212,7 @@ router.post(
           },
           token: accessToken,
           refreshToken,
+          capabilities,
         },
       });
     } catch (err: any) {
@@ -323,6 +330,8 @@ router.post(
         [user.id, refreshHash]
       );
 
+      const capabilities = await featureService.getCapabilities(user.id);
+
       return res.json({
         success: true,
         data: {
@@ -337,6 +346,7 @@ router.post(
           },
           token: accessToken,
           refreshToken,
+          capabilities,
         },
       });
     } catch (err: any) {

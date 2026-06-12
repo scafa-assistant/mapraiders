@@ -30,6 +30,7 @@ import { balanceService } from '../services/balanceService';
 import { checkAutoBounty } from '../services/bountyService';
 import { meetupService } from '../services/meetupService';
 import { recordCronRun, acquireCronLock, releaseCronLock } from '../services/cronMonitor';
+import { runH3Backfill, runOsmPrefetch } from './phase0Jobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -749,6 +750,72 @@ export function setupCronJobs(): void {
       }
     } catch (err) {
       console.error('[CRON] Archival warning check failed:', err);
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 01:30 UTC - H3 cell backfill for territories (Phase 0)
+  // ------------------------------------------------------------------
+  cron.schedule('30 1 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('h3_backfill', 1800);
+    if (!locked) return;
+
+    console.log('[CRON] Running H3 backfill...');
+    try {
+      const processed = await runH3Backfill();
+      await recordCronRun({
+        job: 'h3_backfill',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] H3 backfill failed:', err);
+      await recordCronRun({
+        job: 'h3_backfill',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('h3_backfill');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 02:30 UTC - OSM context prefetch for active cells (Phase 0)
+  // ------------------------------------------------------------------
+  cron.schedule('30 2 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('osm_prefetch', 1800);
+    if (!locked) return;
+
+    console.log('[CRON] Running OSM context prefetch...');
+    try {
+      const processed = await runOsmPrefetch();
+      await recordCronRun({
+        job: 'osm_prefetch',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] OSM prefetch failed:', err);
+      await recordCronRun({
+        job: 'osm_prefetch',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('osm_prefetch');
     }
   }, { timezone: 'UTC' });
 

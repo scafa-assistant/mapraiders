@@ -1116,4 +1116,111 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS visibility VARCHAR(10) DEFAULT 'publi
 
 -- Trigram index for fuzzy player search
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- ===== PHASE 0: GDD Foundations (2026-06-12) =====
+
+-- ============================================================
+-- FEATURE FLAGS (E4)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS feature_flags (
+  key             VARCHAR(50) PRIMARY KEY,
+  enabled         BOOLEAN NOT NULL DEFAULT FALSE,
+  rollout_percent INT NOT NULL DEFAULT 100 CHECK (rollout_percent BETWEEN 0 AND 100),
+  config          JSONB NOT NULL DEFAULT '{}',
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- ITEM DEFINITIONS (E1)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS item_definitions (
+  id           VARCHAR(60) PRIMARY KEY,
+  category     VARCHAR(20) NOT NULL,
+  rarity       VARCHAR(15) NOT NULL DEFAULT 'common',
+  season       VARCHAR(20),
+  tradeable    BOOLEAN NOT NULL DEFAULT FALSE,
+  stats        JSONB NOT NULL DEFAULT '{}',
+  lore         JSONB NOT NULL DEFAULT '{}',
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- ITEM INSTANCES (E1)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS item_instances (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  definition_id VARCHAR(60) NOT NULL REFERENCES item_definitions(id),
+  owner_id      UUID REFERENCES users(id) ON DELETE SET NULL,
+  status        VARCHAR(15) NOT NULL DEFAULT 'inventory',
+  mint_number   INT,
+  acquired_via  VARCHAR(20) NOT NULL,
+  state         JSONB NOT NULL DEFAULT '{}',
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_item_instances_owner ON item_instances(owner_id, status);
+
+-- ============================================================
+-- ITEM EVENTS (E1)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS item_events (
+  id          BIGSERIAL PRIMARY KEY,
+  instance_id UUID NOT NULL REFERENCES item_instances(id),
+  event       VARCHAR(20) NOT NULL,
+  from_user   UUID,
+  to_user     UUID,
+  context     JSONB NOT NULL DEFAULT '{}',
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- PLAYER RESOURCES LEDGER (E2)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS player_resources (
+  user_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  resource  VARCHAR(15) NOT NULL,
+  balance   BIGINT NOT NULL DEFAULT 0 CHECK (balance >= 0),
+  PRIMARY KEY (user_id, resource)
+);
+
+CREATE TABLE IF NOT EXISTS resource_transactions (
+  id         BIGSERIAL PRIMARY KEY,
+  user_id    UUID NOT NULL,
+  resource   VARCHAR(15) NOT NULL,
+  amount     BIGINT NOT NULL,
+  reason     VARCHAR(30) NOT NULL,
+  context    JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_restx_user ON resource_transactions(user_id, created_at DESC);
+
+-- ============================================================
+-- OSM CONTEXT (E3, E8)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS osm_context (
+  h3_cell    TEXT PRIMARY KEY,
+  biome      VARCHAR(15) NOT NULL DEFAULT 'urban',
+  tags       JSONB NOT NULL DEFAULT '{}',
+  landmarks  JSONB NOT NULL DEFAULT '[]',
+  fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- TERRITORIES: H3 cells column (E3)
+-- ============================================================
+ALTER TABLE territories ADD COLUMN IF NOT EXISTS h3_cells TEXT[];
+CREATE INDEX IF NOT EXISTS idx_territories_h3 ON territories USING GIN (h3_cells);
+
+-- ============================================================
+-- SEEDS: Feature Flags
+-- ============================================================
+INSERT INTO feature_flags (key, enabled)
+VALUES
+  ('pve_spawns',  FALSE),
+  ('resources',   FALSE),
+  ('commander',   FALSE),
+  ('tcg',         FALSE)
+ON CONFLICT (key) DO NOTHING;
 CREATE INDEX IF NOT EXISTS idx_users_username_trgm ON users USING GIN (username gin_trgm_ops);
