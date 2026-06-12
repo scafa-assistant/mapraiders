@@ -139,30 +139,45 @@ def v2_rift():
     return img.convert("RGB")
 
 
-def v3_flag_violet():
-    img = draw_territory(base_canvas(), VRIL)
-    fx, fy = 460, 150
-    pole_btm = 560
+def v3_flag_violet(scale=1.0):
+    """scale < 1 shrinks the composition toward center (adaptive-icon safe zone)."""
+    c = S / 2
+
+    def sc(v, axis_center=c):
+        return int(axis_center + (v - axis_center) * scale)
+
+    global POLY
+    poly_orig = POLY
+    POLY = [(sc(x), sc(y)) for x, y in poly_orig]
+    try:
+        img = draw_territory(base_canvas(), VRIL)
+    finally:
+        POLY = poly_orig
+    fx, fy = sc(460), sc(150)
+    pole_btm = sc(560)
+    fw = scale  # flag size factor
     # vril core at pole base (anchors flag in the lore)
-    for r, blur, a in [(160, 70, 130), (90, 30, 200)]:
+    for r, blur, a in [(int(160 * fw), int(70 * fw) or 1, 130), (int(90 * fw), int(30 * fw) or 1, 200)]:
         img.alpha_composite(glow_layer(
             lambda d, r=r: d.ellipse([fx - r, pole_btm - r, fx + r, pole_btm + r],
                                      fill=VRIL + (255,)), blur, a))
     # pole glow + pole
     img.alpha_composite(glow_layer(
-        lambda d: d.line([(fx, fy), (fx, pole_btm)], fill=WHITE + (255,), width=26), 18, 150))
+        lambda d: d.line([(fx, fy), (fx, pole_btm)], fill=WHITE + (255,),
+                         width=int(26 * fw)), int(18 * fw) or 1, 150))
     d = ImageDraw.Draw(img)
-    d.line([(fx, fy), (fx, pole_btm)], fill=WHITE, width=20)
-    d.ellipse([fx - 42, pole_btm - 36, fx + 42, pole_btm + 48], fill=VRIL_DEEP)
-    d.ellipse([fx - 28, pole_btm - 22, fx + 28, pole_btm + 34], fill=VRIL)
-    d.ellipse([fx - 14, pole_btm - 8, fx + 14, pole_btm + 20], fill=VRIL_HI)
+    d.line([(fx, fy), (fx, pole_btm)], fill=WHITE, width=int(20 * fw))
+    d.ellipse([fx - 42 * fw, pole_btm - 36 * fw, fx + 42 * fw, pole_btm + 48 * fw], fill=VRIL_DEEP)
+    d.ellipse([fx - 28 * fw, pole_btm - 22 * fw, fx + 28 * fw, pole_btm + 34 * fw], fill=VRIL)
+    d.ellipse([fx - 14 * fw, pole_btm - 8 * fw, fx + 14 * fw, pole_btm + 20 * fw], fill=VRIL_HI)
     # big amber flag — hero element, high contrast on violet brand
-    flag = [(fx + 10, fy), (fx + 400, fy + 105), (fx + 10, fy + 225)]
-    img.alpha_composite(glow_layer(lambda d: d.polygon(flag, fill=AMBER + (255,)), 36, 150))
+    flag = [(fx + 10 * fw, fy), (fx + 400 * fw, fy + 105 * fw), (fx + 10 * fw, fy + 225 * fw)]
+    img.alpha_composite(glow_layer(lambda d: d.polygon(flag, fill=AMBER + (255,)),
+                                   int(36 * fw) or 1, 150))
     d = ImageDraw.Draw(img)
     d.polygon(flag, fill=AMBER)
-    d.polygon([(fx + 10, fy + 30), (fx + 280, fy + 102), (fx + 10, fy + 182)],
-              fill=(255, 214, 96))
+    d.polygon([(fx + 10 * fw, fy + 30 * fw), (fx + 280 * fw, fy + 102 * fw),
+               (fx + 10 * fw, fy + 182 * fw)], fill=(255, 214, 96))
     return img.convert("RGB")
 
 

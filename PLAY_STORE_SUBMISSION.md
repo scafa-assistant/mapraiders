@@ -103,8 +103,8 @@ Die Karte ist leer. Hol sie dir.
 
 | Asset | Datei | Format | Status |
 |---|---|---|---|
-| App-Icon | `store-assets/icon-512.png` | 512×512 PNG | ✅ |
-| Feature Graphic | `store-assets/feature-graphic-1024x500.png` | 1024×500 PNG | ✅ ("MAPRAIDERS — GPS Territory Game / Walk. Claim. Conquer.") |
+| App-Icon | `store-assets/icon-512.png` | 512×512 PNG | ✅ **NEU 2026-06-12: Vril-Violett V3** (Fahne + Vril-Kern auf Obsidian, Entscheidung Gigi; reproduzierbar via `finalize_icon_v3.py`) |
+| Feature Graphic | `store-assets/feature-graphic-1024x500.png` | 1024×500 PNG | ✅ **NEU 2026-06-12: Vril-Violett-Rebrand** ("MAPRAIDERS — GPS Territory Game / Walk. Claim. Conquer.") |
 | Screenshot 1 | `store-assets/screenshot-01.png` | 1080×1920 (9:16) | ✅ Karte dunkel — "Claim real territory" |
 | Screenshot 2 | `store-assets/screenshot-02.png` | 1080×1920 | ✅ Karte hell — "Your city is the board" |
 | Screenshot 3 | `store-assets/screenshot-03.png` | 1080×1920 | ✅ Erstellen-Hub — "Create quests, echoes & events" |
@@ -115,6 +115,7 @@ Die Karte ist leer. Hol sie dir.
 | Tablet 10" 1–6 | `store-assets/tablet10-01..06.png` | 1600×2560 | ✅ aus Handy-Shots erzeugt (skaliert) |
 
 Hinweise:
+- **Icon-Hinweis:** Das Store-Listing-Icon (icon-512) ist unabhängig vom Launcher-Icon im AAB. `mobile/assets/` (icon, adaptive-icon, favicon, notification-icon) + app.json-Farben sind bereits auf Vril-Violett umgestellt — greift ab dem NÄCHSTEN Build (vc3). Das vc2-AAB trägt noch das alte Launcher-Icon (akzeptiert, kein Blocker).
 - Geräte-Statusbar ist aus allen Screenshots herausgeschnitten (keine Uhrzeit/Akku/System-Icons im Listing)
 - Keine Gesichter, keine echten Namen — nur Usernames (DopeRunner, Gigi_Beule), per IARC ok
 - Reproduzierbar via `store-assets/generate_screenshots.py` (braucht die test_*/lt_*-Quell-Screenshots im Projekt-Root, untracked)
