@@ -13,6 +13,7 @@ import { territoryApi } from '../api/client';
 import { useMapStore } from '../store/mapStore';
 import { useFeatureStore } from '../store/featureStore';
 import { useAuthStore } from '../store/authStore';
+import { useTerminalStore } from '../store/terminalStore';
 import { theme } from '../theme';
 import type { BBox } from '../store/mapStore';
 import type { GeoJsonGeometry, Territory } from '../api/types';
@@ -60,9 +61,13 @@ export default function MapView() {
   const loading = useMapStore((s) => s.loading);
   const loadViewport = useMapStore((s) => s.loadViewport);
   const select = useMapStore((s) => s.select);
+  const selectSpawn = useMapStore((s) => s.selectSpawn);
 
   const userId = useAuthStore((s) => s.user?.id);
   const pveEnabled = useFeatureStore((s) => s.isEnabled('pve_spawns'));
+  const terminalsEnabled = useFeatureStore((s) => s.isEnabled('terminals'));
+
+  const terminalSelectSpawn = useTerminalStore((s) => s.selectSpawn);
 
   // ---- Initialise the map once ----
   useEffect(() => {
@@ -141,21 +146,47 @@ export default function MapView() {
     if (!pveEnabled) return;
 
     for (const s of spawns) {
-      const marker = L.circleMarker([s.latitude, s.longitude], {
-        radius: 7,
-        color: theme.color.amber,
-        fillColor: theme.color.amber,
-        fillOpacity: 0.8,
-        weight: 2,
-      });
-      marker.bindTooltip(
-        `<strong>${s.npc_type}</strong> · Lvl ${s.level}<br/>` +
-          'Hacking requires the mobile app (GPS proximity)',
-        { direction: 'top' },
-      );
-      marker.addTo(layer);
+      if (terminalsEnabled && s.npc_type === 'terminal') {
+        // Terminal: amber diamond divIcon with subtle CSS pulse animation.
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="
+            width:18px;height:18px;
+            background:${theme.color.amber};
+            transform:rotate(45deg);
+            border:2px solid #fff4;
+            border-radius:3px;
+            box-shadow:0 0 0 0 ${theme.color.amber}88;
+            animation:terminal-pulse 2s ease-in-out infinite;
+          "></div>`,
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
+        });
+        const marker = L.marker([s.latitude, s.longitude], { icon });
+        marker.bindTooltip('Hyperborean Terminal', { direction: 'top' });
+        marker.on('click', () => {
+          terminalSelectSpawn(s);
+          selectSpawn(s.id);
+        });
+        marker.addTo(layer);
+      } else {
+        // Regular PvE spawn: violet circle (original behaviour).
+        const marker = L.circleMarker([s.latitude, s.longitude], {
+          radius: 7,
+          color: theme.color.amber,
+          fillColor: theme.color.amber,
+          fillOpacity: 0.8,
+          weight: 2,
+        });
+        marker.bindTooltip(
+          `<strong>${s.npc_type}</strong> · Lvl ${s.level}<br/>` +
+            'Hacking requires the mobile app (GPS proximity)',
+          { direction: 'top' },
+        );
+        marker.addTo(layer);
+      }
     }
-  }, [spawns, pveEnabled]);
+  }, [spawns, pveEnabled, terminalsEnabled, selectSpawn, terminalSelectSpawn]);
 
   return (
     <div className="map-root">

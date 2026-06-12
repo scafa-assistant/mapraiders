@@ -25,12 +25,12 @@ import * as Haptics from 'expo-haptics';
 import { echoProximityService } from '../../services/echoProximity';
 import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi, meetupApi } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
-import PvESpawnMarker from '../../components/PvESpawnMarker';
+import PvESpawnMarker, { TerminalMarker } from '../../components/PvESpawnMarker';
 import { useFeatureStore } from '../../store/featureStore';
 import { usePveStore } from '../../store/pveStore';
 import { useResourceStore } from '../../store/resourceStore';
 import ResourceBar from '../../components/ResourceBar';
-import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
+import { MapScreenProps, MovementClass, Territory, Echo, MapStackParamList } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
 import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
 import { getMapStyle } from '../../utils/mapStyles';
@@ -130,6 +130,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   // PvE feature gate — spawns only rendered when flag + capability are both active
   const isPveEnabled = useFeatureStore((s) => s.isEnabled('pve_spawns') && s.capabilities.pve);
   const { spawns: pveSpawns, fetchSpawns: fetchPveSpawns } = usePveStore();
+
+  // Terminals feature gate — Terminal markers only when flag + capability are both active
+  const isTerminalsEnabled = useFeatureStore((s) => s.isEnabled('terminals') && s.capabilities.terminals);
 
   // Resources feature gate — ResourceBar only when flag + capability are both active
   const isResourcesEnabled = useFeatureStore((s) => s.isEnabled('resources') && s.capabilities.resources);
@@ -957,13 +960,43 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* PvE Spawn Markers — only rendered when feature flag 'pve_spawns' + capability.pve are active */}
-        {isPveEnabled && pveSpawns.map((spawn) => (
-          <PvESpawnMarker
-            key={`pve-${spawn.id}`}
-            spawn={spawn}
-            onPress={() => navigation.navigate('HackingScreen', { spawn })}
-          />
-        ))}
+        {isPveEnabled && pveSpawns
+          .filter((spawn) => spawn.npc_type !== 'terminal')
+          .map((spawn) => (
+            <PvESpawnMarker
+              key={`pve-${spawn.id}`}
+              spawn={spawn}
+              onPress={() =>
+                navigation.navigate('HackingScreen', {
+                  // Runtime filter guarantees npc_type is never 'terminal' here.
+                  spawn: spawn as MapStackParamList['HackingScreen']['spawn'],
+                })
+              }
+            />
+          ))}
+
+        {/* Terminal Spawn Markers — only rendered when feature flag 'terminals' + capability.terminals are active */}
+        {isTerminalsEnabled && pveSpawns
+          .filter((spawn) => spawn.npc_type === 'terminal')
+          .map((spawn) => (
+            <TerminalMarker
+              key={`terminal-${spawn.id}`}
+              spawn={spawn}
+              onPress={() =>
+                navigation.navigate('TerminalScreen', {
+                  spawn: {
+                    id: spawn.id,
+                    npc_type: 'terminal',
+                    level: spawn.level,
+                    latitude: spawn.latitude,
+                    longitude: spawn.longitude,
+                    biome: spawn.biome,
+                    expires_at: spawn.expires_at,
+                  },
+                })
+              }
+            />
+          ))}
 
         {/* Custom Current Location Marker */}
         {currentLocation && (

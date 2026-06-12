@@ -8,11 +8,13 @@ import { useAuthStore } from './store/authStore';
 import { useFeatureStore } from './store/featureStore';
 import { useResourceStore } from './store/resourceStore';
 import { useMapStore } from './store/mapStore';
+import { useTerminalStore } from './store/terminalStore';
 import LoginScreen from './components/LoginScreen';
 import ResourceHud from './components/ResourceHud';
 import TabBar, { TabKey } from './components/TabBar';
 import MapView from './components/MapView';
 import TerritoryPanel from './components/TerritoryPanel';
+import TerminalPanel from './components/TerminalPanel';
 import InventoryList from './components/InventoryList';
 import ProfilePanel from './components/ProfilePanel';
 
@@ -27,6 +29,12 @@ export default function App() {
 
   const selectedId = useMapStore((s) => s.selectedId);
   const select = useMapStore((s) => s.select);
+  const selectedSpawnId = useMapStore((s) => s.selectedSpawnId);
+  const selectSpawn = useMapStore((s) => s.selectSpawn);
+
+  const terminalsEnabled = useFeatureStore((s) => s.isEnabled('terminals'));
+  const selectedTerminalSpawn = useTerminalStore((s) => s.selectedSpawn);
+  const terminalSelectSpawn = useTerminalStore((s) => s.selectSpawn);
 
   const [tab, setTab] = useState<TabKey>('map');
 
@@ -68,6 +76,15 @@ export default function App() {
           <MapView />
           {selectedId && (
             <TerritoryPanel territoryId={selectedId} onClose={() => select(null)} />
+          )}
+          {terminalsEnabled && selectedSpawnId && selectedTerminalSpawn && (
+            <TerminalPanel
+              spawn={selectedTerminalSpawn}
+              onClose={() => {
+                selectSpawn(null);
+                terminalSelectSpawn(null);
+              }}
+            />
           )}
         </div>
 

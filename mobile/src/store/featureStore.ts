@@ -13,6 +13,7 @@ export interface Capabilities {
   resources: boolean;
   commander: boolean;
   tcg: boolean;
+  terminals: boolean;
 }
 
 const DEFAULT_CAPABILITIES: Capabilities = {
@@ -20,6 +21,7 @@ const DEFAULT_CAPABILITIES: Capabilities = {
   resources: false,
   commander: false,
   tcg: false,
+  terminals: false,
 };
 
 interface FeatureState {

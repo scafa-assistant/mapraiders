@@ -12,7 +12,7 @@ import { PoolClient } from 'pg';
 import { randomInt } from 'crypto';
 import { transaction, query, queryMany } from '../config/database';
 import redis from '../config/redis';
-import { PVE, Biome, PveLootTable } from '../config/constants';
+import { PVE, TERMINALS, Biome, PveLootTable } from '../config/constants';
 import { cellForPoint, boundary, disk, RES_SPAWN } from './h3Service';
 import { getContext } from './osmContextService';
 import { wsService } from './wsService';
@@ -163,12 +163,35 @@ export async function ensureCellSpawns(h3Cell: string): Promise<void> {
 async function createSpawn(h3Cell: string, npcType: string, biome: Biome): Promise<void> {
   const { lat, lng } = randomPointInCell(h3Cell);
   const level = randomInt(1, 4); // 1..3
-  const ttlHours = randomInt(PVE.SPAWN_TTL_HOURS_MIN, PVE.SPAWN_TTL_HOURS_MAX + 1);
-  const loot = buildLoot(npcType, biome);
+  // Terminals get a fixed long TTL (leaderboards need time); everyone else
+  // gets the random 24-72h lifetime. Terminals carry no hack loot.
+  const ttlHours =
+    npcType === 'terminal'
+      ? TERMINALS.TTL_HOURS
+      : randomInt(PVE.SPAWN_TTL_HOURS_MIN, PVE.SPAWN_TTL_HOURS_MAX + 1);
+  const loot =
+    npcType === 'terminal' ? { resources: {}, items: [] } : buildLoot(npcType, biome);
 
   await transaction(async (c: PoolClient) => {
     let anchoredTerritoryId: string | null = null;
     let ownerId: string | null = null;
+
+    // Max one active terminal per cell — skip quietly if one already stands.
+    if (npcType === 'terminal') {
+      const existing = await c.query(
+        `SELECT 1
+           FROM pve_spawns
+          WHERE h3_cell = $1
+            AND npc_type = 'terminal'
+            AND status = 'active'
+            AND expires_at > NOW()
+          LIMIT 1`,
+        [h3Cell],
+      );
+      if ((existing.rowCount ?? 0) > 0) {
+        return; // a terminal already exists in this cell
+      }
+    }
 
     if (npcType === 'aether_leech') {
       // Anchor only onto a FOREIGN active territory intersecting this cell.

@@ -61,6 +61,7 @@ import { inventoryRouter } from './routes/inventory';
 import { resourcesRouter } from './routes/resources';
 import pveRouter from './routes/pve';
 import { buildingsRouter } from './routes/buildings';
+import { terminalsRouter } from './routes/terminals';
 
 // Import cron jobs (created by another agent)
 import { setupCronJobs } from './jobs/decayCron';
@@ -76,6 +77,25 @@ const app = express();
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
+
+// ---- Static HTML5 game hosting (BEFORE helmet) ----
+// The runner minigame (Phase A.2) must be embeddable as an iframe from
+// https://mapraiders.com. Mounting it before helmet means helmet's global
+// CSP / X-Frame-Options never touch it; we set a permissive iframe policy
+// here instead. __dirname is server/dist in prod, so ../public resolves to
+// server/public (tsc does not copy public/, which is why it lives outside src/).
+app.use(
+  '/games',
+  (_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self' https://mapraiders.com http://localhost:5173",
+    );
+    res.removeHeader('X-Frame-Options');
+    next();
+  },
+  express.static(path.join(__dirname, '../public/games'), { maxAge: '5m' }),
+);
 
 // ---- Security middleware ----
 app.use(helmet({
@@ -175,6 +195,7 @@ app.use('/api/inventory', inventoryRouter);
 app.use('/api/resources', resourcesRouter);
 app.use('/api/pve', pveRouter);
 app.use('/api/buildings', buildingsRouter);
+app.use('/api/terminals', terminalsRouter);
 
 // ---- 404 handler for unknown API routes ----
 app.use('/api/*', (_req: Request, res: Response) => {

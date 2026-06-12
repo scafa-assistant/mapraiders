@@ -1,13 +1,17 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, Easing, StyleSheet, Text } from 'react-native';
+import { View, Animated, Easing, StyleSheet } from 'react-native';
 import { Marker } from 'react-native-maps';
-import Svg, { Ellipse, Polygon as SvgPolygon, Circle as SvgCircle, Line, Path } from 'react-native-svg';
+import Svg, { Ellipse, Polygon as SvgPolygon, Circle as SvgCircle, Line, Rect } from 'react-native-svg';
 import type { PvESpawn, NpcType } from '../store/pveStore';
 
 // Vril brand palette
 const VRIL_PRIMARY = '#7B61FF';
 const VRIL_ACCENT = '#9D4EDD';
 const VRIL_GLOW = 'rgba(123, 97, 255, 0.18)';
+
+// Terminal brand palette — amber diamond
+const TERMINAL_COLOR = '#FFB300';
+const TERMINAL_GLOW = 'rgba(255, 179, 0, 0.18)';
 
 /** SVG icon for each NPC type, rendered at 24×24 */
 function NpcIcon({ npcType }: { npcType: NpcType }) {
@@ -226,3 +230,172 @@ const styles = StyleSheet.create({
 });
 
 export default React.memo(PvESpawnMarker);
+
+// ─── Terminal Marker ─────────────────────────────────────────────────────────
+
+interface TerminalMarkerProps {
+  spawn: {
+    id: string;
+    latitude: number;
+    longitude: number;
+    level: 1 | 2 | 3;
+  };
+  onPress: () => void;
+}
+
+/**
+ * Map marker for a Terminal spawn.
+ * Amber diamond shape instead of the violet PvE glow — clearly distinct from
+ * regular PvE spawns, flags this as a minigame terminal.
+ */
+export const TerminalMarker: React.FC<TerminalMarkerProps> = ({ spawn, onPress }) => {
+  const pulseAnim = useRef(new Animated.Value(0.55)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1200,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0.55,
+          duration: 1200,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    const scaleAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.15,
+          duration: 1400,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 1400,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulseAnimation.start();
+    scaleAnimation.start();
+    return () => {
+      pulseAnimation.stop();
+      scaleAnimation.stop();
+    };
+  }, [pulseAnim, scaleAnim]);
+
+  return (
+    <Marker
+      coordinate={{ latitude: spawn.latitude, longitude: spawn.longitude }}
+      onPress={onPress}
+      anchor={{ x: 0.5, y: 0.5 }}
+    >
+      <View style={terminalStyles.wrapper}>
+        <Animated.View
+          style={[
+            terminalStyles.markerContainer,
+            {
+              opacity: pulseAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
+        >
+          {/* Outer glow ring — square rotated 45° = diamond */}
+          <View style={terminalStyles.glowRing}>
+            {/* Inner icon — amber diamond SVG */}
+            <View style={terminalStyles.iconCircle}>
+              <Svg width={22} height={22} viewBox="0 0 22 22">
+                {/* Diamond (rotated square) */}
+                <SvgPolygon
+                  points="11,2 20,11 11,20 2,11"
+                  fill={TERMINAL_COLOR}
+                  opacity={0.95}
+                />
+                <SvgPolygon
+                  points="11,5 17,11 11,17 5,11"
+                  fill="#1A0E00"
+                  opacity={0.5}
+                />
+                {/* Grid lines inside — "terminal" feel */}
+                <Rect x={9} y={8} width={4} height={1.5} rx={0.5} fill={TERMINAL_COLOR} />
+                <Rect x={9} y={11} width={4} height={1.5} rx={0.5} fill={TERMINAL_COLOR} />
+              </Svg>
+            </View>
+          </View>
+        </Animated.View>
+        {/* Level dots reused from PvE, amber color */}
+        <View style={terminalStyles.dotsRow}>
+          {([1, 2, 3] as const).map((i) => (
+            <View
+              key={i}
+              style={[
+                terminalStyles.dot,
+                i <= spawn.level ? terminalStyles.dotActive : terminalStyles.dotInactive,
+              ]}
+            />
+          ))}
+        </View>
+      </View>
+    </Marker>
+  );
+};
+
+const terminalStyles = StyleSheet.create({
+  wrapper: {
+    alignItems: 'center',
+  },
+  markerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glowRing: {
+    width: 46,
+    height: 46,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: TERMINAL_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: TERMINAL_GLOW,
+    // Rotated 45° = diamond outline
+    transform: [{ rotate: '45deg' }],
+  },
+  iconCircle: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Counter-rotate so the SVG inside is upright
+    transform: [{ rotate: '-45deg' }],
+    shadowColor: TERMINAL_COLOR,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.7,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  dotsRow: {
+    flexDirection: 'row',
+    gap: 3,
+    marginTop: 5,
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+  },
+  dotActive: {
+    backgroundColor: TERMINAL_COLOR,
+  },
+  dotInactive: {
+    backgroundColor: 'rgba(255, 179, 0, 0.25)',
+  },
+});

@@ -8,7 +8,8 @@ export type NpcType =
   | 'tech_drone'
   | 'aether_leech'
   | 'water_strider_source'
-  | 'forest_construct_source';
+  | 'forest_construct_source'
+  | 'terminal';
 
 export interface PvESpawn {
   id: string;

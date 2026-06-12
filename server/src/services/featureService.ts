@@ -21,6 +21,7 @@ export interface FeatureFlag {
 export interface Capabilities {
   pve: boolean;
   resources: boolean;
+  terminals: boolean;
   commander: boolean;
   tcg: boolean;
 }
@@ -135,17 +136,18 @@ export async function isEnabledFor(userId: string, key: string): Promise<boolean
  */
 export async function getCapabilities(userId: string): Promise<Capabilities> {
   try {
-    const [pve, resources, commander, tcg] = await Promise.all([
+    const [pve, resources, terminals, commander, tcg] = await Promise.all([
       isEnabledFor(userId, 'pve_spawns'),
       isEnabledFor(userId, 'resources'),
+      isEnabledFor(userId, 'terminals'),
       isEnabledFor(userId, 'commander'),
       isEnabledFor(userId, 'tcg'),
     ]);
 
-    return { pve, resources, commander, tcg };
+    return { pve, resources, terminals, commander, tcg };
   } catch (err: any) {
     console.warn('[FeatureService] getCapabilities failed:', err?.message);
-    return { pve: false, resources: false, commander: false, tcg: false };
+    return { pve: false, resources: false, terminals: false, commander: false, tcg: false };
   }
 }
 

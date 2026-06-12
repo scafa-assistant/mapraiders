@@ -193,6 +193,17 @@ export type MapStackParamList = {
       expires_at: string;
     };
   };
+  TerminalScreen: {
+    spawn: {
+      id: string;
+      npc_type: 'terminal';
+      level: 1 | 2 | 3;
+      latitude: number;
+      longitude: number;
+      biome: string;
+      expires_at: string;
+    };
+  };
 };
 
 export type MapScreenProps = CompositeScreenProps<
@@ -219,6 +230,7 @@ export type MeetupChatScreenProps = NativeStackScreenProps<MapStackParamList, 'M
 export type TicTacToeGameScreenProps = NativeStackScreenProps<MapStackParamList, 'TicTacToeGame'>;
 export type MiniChessGameScreenProps = NativeStackScreenProps<MapStackParamList, 'MiniChessGame'>;
 export type HackingScreenProps = NativeStackScreenProps<MapStackParamList, 'HackingScreen'>;
+export type TerminalScreenProps = NativeStackScreenProps<MapStackParamList, 'TerminalScreen'>;
 
 // ─── Quest Stack ───────────────────────────────────────────────────────────────
 

@@ -21,16 +21,19 @@ interface MapState {
   territories: Territory[];
   spawns: PveSpawn[];
   selectedId: string | null;
+  selectedSpawnId: string | null;
   loading: boolean;
 
   loadViewport: (bbox: BBox) => Promise<void>;
   select: (id: string | null) => void;
+  selectSpawn: (id: string | null) => void;
 }
 
 export const useMapStore = create<MapState>((set) => ({
   territories: [],
   spawns: [],
   selectedId: null,
+  selectedSpawnId: null,
   loading: false,
 
   loadViewport: async (bbox) => {
@@ -50,5 +53,6 @@ export const useMapStore = create<MapState>((set) => ({
     set({ territories, spawns, loading: false });
   },
 
-  select: (id) => set({ selectedId: id }),
+  select: (id) => set({ selectedId: id, selectedSpawnId: null }),
+  selectSpawn: (id) => set({ selectedSpawnId: id, selectedId: null }),
 }));

@@ -130,6 +130,11 @@ export async function attemptHack(
     }
     const spawn = spawnRes.rows[0];
 
+    // Terminals are Jump&Run minigames, not hack targets — no loot here.
+    if (spawn.npc_type === 'terminal') {
+      return { success: false, message: 'NOT_HACKABLE' };
+    }
+
     if (spawn.status !== 'active' || spawn.expired) {
       return { success: false, message: 'SPAWN_UNAVAILABLE' };
     }

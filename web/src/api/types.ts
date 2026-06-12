@@ -152,3 +152,48 @@ export interface PveSpawn {
   spawned_at?: string;
   expires_at?: string;
 }
+
+// ---- Terminals (Jump&Run minigame) -------------------------------------------
+
+/**
+ * Opaque level descriptor passed through to the game iframe.
+ * The only field we may read locally is par.maxScore for display.
+ */
+export interface RunnerLevel extends Record<string, unknown> {
+  par?: { maxScore?: number };
+}
+
+export interface TerminalStartResponse {
+  run_token: string;
+  level: RunnerLevel;
+  expires_at: number;
+}
+
+export interface TerminalSubmitBody {
+  run_token: string;
+  score: number;
+  duration_ms: number;
+  orbs_collected: number;
+  finished: boolean;
+  trace: unknown;
+}
+
+export interface TerminalSubmitResponse {
+  accepted: true;
+  score: number;
+  best_score: number;
+  rank: number;
+  reward: { intel: number } | null;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  user_id: string;
+  username: string;
+  score: number;
+}
+
+export interface TerminalLeaderboardResponse {
+  entries: LeaderboardEntry[];
+  me: { rank: number; score: number } | null;
+}

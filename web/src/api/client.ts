@@ -13,12 +13,18 @@ import type {
   BuildingType,
   ClientFeatureFlag,
   InventoryItem,
+  LeaderboardEntry,
   LoginResponse,
   MeResponse,
   PveSpawn,
   ResourcesResponse,
+  RunnerLevel,
   Territory,
   TerritoryDetail,
+  TerminalLeaderboardResponse,
+  TerminalStartResponse,
+  TerminalSubmitBody,
+  TerminalSubmitResponse,
 } from './types';
 
 const DEFAULT_PROD = 'https://api.mapraiders.com/api';
@@ -207,3 +213,51 @@ export const pveApi = {
     return res.data.data?.spawns ?? [];
   },
 };
+
+/**
+ * Origin of the game host (API_BASE_URL with /api stripped).
+ * e.g. "https://api.mapraiders.com" or "http://localhost:3000"
+ */
+export const gameOrigin: string = API_BASE_URL.replace(/\/api\/?$/, '');
+
+export const terminalApi = {
+  async start(
+    spawnId: string,
+    coords?: { latitude: number; longitude: number },
+  ): Promise<TerminalStartResponse> {
+    const res = await api.post<ApiEnvelope<TerminalStartResponse>>(
+      `/terminals/${spawnId}/start`,
+      coords ?? {},
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Failed to start terminal run');
+    }
+    return res.data.data;
+  },
+
+  async submit(spawnId: string, body: TerminalSubmitBody): Promise<TerminalSubmitResponse> {
+    const res = await api.post<ApiEnvelope<TerminalSubmitResponse>>(
+      `/terminals/${spawnId}/submit`,
+      body,
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Failed to submit run');
+    }
+    return res.data.data;
+  },
+
+  async getLeaderboard(
+    spawnId: string,
+  ): Promise<TerminalLeaderboardResponse> {
+    const res = await api.get<ApiEnvelope<TerminalLeaderboardResponse>>(
+      `/terminals/${spawnId}/leaderboard`,
+    );
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Failed to load leaderboard');
+    }
+    return res.data.data;
+  },
+};
+
+// Re-export types that components need without reaching into api/types directly.
+export type { LeaderboardEntry, RunnerLevel };

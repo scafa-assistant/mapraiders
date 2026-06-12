@@ -511,6 +511,17 @@ a {
   color: var(--text-dim);
 }
 
+/* ---- Terminal marker pulse animation ---- */
+
+@keyframes terminal-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 179, 0, 0);
+  }
+}
+
 /* ---- Responsive: narrow viewport ---- */
 
 @media (max-width: 560px) {

@@ -6,6 +6,13 @@ import type { GpsPoint } from '../utils/types';
 
 const API_BASE = 'https://api.mapraiders.com/api';
 
+/**
+ * The raw API base URL without the '/api' suffix.
+ * Used by TerminalScreen to build the WebView game URL:
+ *   `${API_BASE_ORIGIN}/games/runner/index.html`
+ */
+export const API_BASE_ORIGIN = API_BASE.replace(/\/api$/, '');
+
 const TOKEN_KEY = '@mapraiders_token';
 const REFRESH_TOKEN_KEY = '@mapraiders_refresh_token';
 
@@ -718,6 +725,60 @@ export const pveApi = {
   /** Submit a frequency-trace hack attempt for a spawn. */
   hack: (spawnId: string, inputTrace: HackInputTrace) =>
     api.post(`/pve/spawns/${spawnId}/hack`, { inputTrace }),
+};
+
+// ─── Terminals API ───────────────────────────────────────────────────────────
+
+export interface TerminalStartData {
+  run_token: string;
+  level: Record<string, unknown>;
+  expires_at: number;
+}
+
+export interface TerminalSubmitBody {
+  run_token: string;
+  score: number;
+  duration_ms: number;
+  orbs_collected: number;
+  finished: boolean;
+  trace: Record<string, unknown>;
+}
+
+export interface TerminalSubmitData {
+  accepted: boolean;
+  score: number;
+  best_score: number;
+  rank: number;
+  reward: { intel: number } | null;
+}
+
+export interface TerminalLeaderboardEntry {
+  rank: number;
+  user_id: string;
+  username: string;
+  score: number;
+}
+
+export interface TerminalLeaderboardData {
+  entries: TerminalLeaderboardEntry[];
+  me: { rank: number; score: number } | null;
+}
+
+export const terminalApi = {
+  /** Start a terminal run. Sends current GPS coords (proximity-checked server-side). */
+  start: (spawnId: string, coords: { latitude: number; longitude: number }) =>
+    api.post<{ success: boolean; data: TerminalStartData }>(`/terminals/${spawnId}/start`, {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    }),
+
+  /** Submit a completed or aborted run. */
+  submit: (spawnId: string, body: TerminalSubmitBody) =>
+    api.post<{ success: boolean; data: TerminalSubmitData }>(`/terminals/${spawnId}/submit`, body),
+
+  /** Fetch the top-10 leaderboard for a terminal spawn. */
+  leaderboard: (spawnId: string) =>
+    api.get<{ success: boolean; data: TerminalLeaderboardData }>(`/terminals/${spawnId}/leaderboard`),
 };
 
 export default api;

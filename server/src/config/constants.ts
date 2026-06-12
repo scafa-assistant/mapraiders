@@ -515,7 +515,7 @@ export const POLYGON = {
 // Biome decides which NPC types can appear; each type carries a loot table.
 
 /** NPC archetypes that can spawn in the world. */
-export type PveNpcType = 'scout_disc' | 'aether_leech' | 'tech_drone' | 'obsidian_guard';
+export type PveNpcType = 'scout_disc' | 'aether_leech' | 'tech_drone' | 'obsidian_guard' | 'terminal';
 
 /** Biomes returned by osmContextService.getContext(). */
 export type Biome = 'water' | 'forest' | 'industrial' | 'rural' | 'urban' | 'landmark';
@@ -546,8 +546,8 @@ export const PVE = {
 
   /**
    * Biome -> candidate NPC types. The engine picks from this set when
-   * filling a cell. Terminals (landmark) follow in Phase A.2; for now a
-   * landmark cell behaves like urban (scout discs).
+   * filling a cell. Phase A.2 has arrived: landmark cells now host
+   * 'terminal' spawns (the Jump&Run minigame) alongside scout discs.
    */
   BIOME_SPAWN_MATRIX: {
     water: ['scout_disc', 'water_strider_source'],
@@ -555,7 +555,7 @@ export const PVE = {
     industrial: ['tech_drone'],
     urban: ['scout_disc'],
     rural: ['scout_disc'],
-    landmark: ['scout_disc'],
+    landmark: ['terminal', 'scout_disc'],
   } as Record<Biome, string[]>,
 
   /**
@@ -649,4 +649,28 @@ export const BUILDINGS = {
     /** Cap on accrual hours to prevent a windfall after long absence. */
     MAX_ACCRUAL_HOURS: 168,
   },
+} as const;
+
+// ============================================================
+// TERMINALS (Phase A.2) — Jump&Run terminals on landmark cells.
+// A 'terminal' pve_spawn hosts a deterministic HTML5 runner game.
+// The server is the single source of truth for the level (seeded
+// from the spawn id) and validates submitted scores. Finished runs
+// post to a per-spawn Redis leaderboard and grant intel (capped).
+// The `terminals` feature flag's `config` block can override
+// require_proximity and runs_per_day live (no deploy).
+// ============================================================
+
+export const TERMINALS = {
+  TTL_HOURS: 168,              // terminal spawns live 7 days (leaderboards need time)
+  RUNS_PER_DAY: 10,            // max starts per user/day
+  REWARD_RUNS_PER_DAY: 3,      // only first N finished runs/day grant intel
+  RUN_TOKEN_TTL_SEC: 600,
+  ORB_POINTS: 10,
+  FINISH_BONUS: 100,
+  TIME_BONUS_MAX: 50,
+  REWARD_INTEL_MIN: 5,
+  REWARD_INTEL_MAX: 15,
+  PLAY_RADIUS_M: 75,
+  LEADERBOARD_TTL_BUFFER_SEC: 604_800,
 } as const;
