@@ -436,13 +436,12 @@ Server-Deploys sind jederzeit möglich (additive Routes brechen vc2 nicht; `capa
 **Was man NIE an andere Spieler verliert (IARC-Grenze):**
 - Inventar-Items (Würfel, Karten, Relikte im Lager), solange sie nicht als Truppe deployed sind. Verlust durch eigene Deployment-Entscheidung = Spielmechanik; Verlust durch Wette = Glücksspiel-Optik. Diese Linie hält das 6/12er-Rating.
 
-**OFFEN (Design-Entscheidung von Gigi, vor Phase C nötig): Total-Verlust & Neustart.**
-Wie weit kann ein Spieler ALLES verlieren, und wie sieht der Neuanfang aus? Vorschlag als Diskussionsgrundlage — **"Phönix-Protokoll"**:
-1. Es gibt keinen geschützten Besitz außer der Home-Zone-Privatsphäre (die ist Datenschutz, kein Gameplay-Schild) — ein Spieler kann auf 0 Territorien, 0 Gebäude, 0 Truppen fallen.
-2. Wer auf null fällt, behält: Inventar (nicht-deployte Items), XP/Level, Titel, Clan-Mitgliedschaft, Ressourcen-Restbestand.
-3. Comeback-Paket (automatisch, einmal pro 30 Tage): 7 Tage Angriffs-Schutz auf den ersten neuen Claim, 2× Aufbau-Ressourcen (dockt an bestehenden Return-Bonus in `balanceService` an), Start-Trupp (3 Common-Einheiten system-gemintet).
-4. Bestehende Schutzmechaniken bleiben darunter aktiv: Daily-Loss-Cap 30 % (verhindert Overnight-Totalverlust), Newcomer-Protection 1.5×.
-→ Damit ist Verlieren hart, aber nie ein Account-Ende — der Frust-Exit ("App deinstallieren") wird zum Revanche-Loop.
+**ENTSCHIEDEN (Gigi, 2026-06-12): Total-Verlust & Neustart — "Die Karten-Reserve + der Weg zurück führt über die Straße".**
+1. Es gibt keinen geschützten Besitz außer der Home-Zone-Privatsphäre (die ist Datenschutz, kein Gameplay-Schild) — ein Spieler kann auf 0 Territorien, 0 Gebäude, 0 Truppen fallen. Verlieren ist echt.
+2. **Die Karten-Reserve:** Gefundene und gewonnene Karten (Inventar, nicht-deployte Items, Würfel, Relikte) behält der Verlierer IMMER. Sie sind seine eiserne Reserve — wer alles verloren hat, kann seine Karten als Truppen einlösen (Burn-Mechanik) und damit sofort wieder kämpfen. Hochriskant (Karten sind dann für immer weg), aber seine Entscheidung.
+3. **Der Weg zurück wird GELAUFEN, nicht geschenkt:** Kein Gratis-Start-Trupp, kein Geschenk-Paket. Wer keine Karten (mehr) hat oder sie nicht opfern will, arbeitet sich über den Explorer-Layer zurück — Territorien erlaufen/erradeln, Quests abschließen, an Events teilnehmen, PvE hacken. Der Totalverlust drückt den Spieler zurück auf die Straße — das IST das Spiel.
+4. Bestehende Schutzmechaniken bleiben darunter aktiv (kein neues System nötig): Daily-Loss-Cap 30 % (verhindert Overnight-Totalverlust), Return-Bonus 2× in `balanceService`, Newcomer-Protection 1.5×.
+→ Verlieren ist hart, aber nie ein Account-Ende: XP/Level, Titel, Clan und die Karten-Reserve bleiben. Der Frust-Exit ("App deinstallieren") wird zum Revanche-Loop — und der Revanche-Loop erzeugt echte Bewegung (Kern-USP des Spiels).
 
 ### Gesamt-Timeline (1 Entwickler + Agents, realistisch)
 Phase 0: 1 W → A: 4 W → B: 2 W → C: 7 W → D: 3 W → E: 4–6 W ≈ **5–6 Monate** bis Voll-Vision; erster sichtbarer GDD-Content (Phase A.1) ist **~5 Wochen** nach Start live — feature-geflaggt und unabhängig vom v1-Review.
