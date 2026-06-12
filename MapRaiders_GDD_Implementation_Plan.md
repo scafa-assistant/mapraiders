@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS battles (
 
 ---
 
-## PHASE D — HYBRID-KI: H3-SIMULATION + LLM-GENERAL
+## PHASE D — HYBRID-KI: H3-SIMULATION + LLM-GENERAL ✅ FERTIG (2026-06-12, Commit d1cf792, produktiv; live-getestet: Trigger → Fallback-General → Expansion 1→5 Zellen + 2 Probe-Angriffe → Battles aufgelöst → ai_zones fog-gefiltert sichtbar. LLM-Pfad wartet auf ANTHROPIC_API_KEY in /opt/mapraiders/server/.env — bis dahin deterministische Fallback-FSM, by design)
 
 **Ziel:** Die Hyperboreer werden ein autonomer Akteur: besetzen Zellen, eskalieren in 3 Phasen, greifen im Commander-Layer an. Rechnen (deterministisch, Server) ist strikt getrennt vom Denken (LLM, alle 6 h Makro-Befehle).
 
