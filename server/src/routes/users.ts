@@ -294,12 +294,19 @@ router.delete('/me', authenticate, async (req: Request, res: Response) => {
 
       // -- Games / duels / races / bounties --
       await client.query('DELETE FROM game_moves WHERE player_id = $1', [userId]);
-      await client.query("UPDATE territory_games SET defender_id = NULL WHERE defender_id = $1", [userId]);
-      await client.query("UPDATE territory_games SET challenger_id = NULL WHERE challenger_id = $1", [userId]);
-      await client.query("UPDATE territory_games SET current_turn = NULL WHERE current_turn = $1", [userId]);
-      await client.query("UPDATE territory_games SET winner_id = NULL WHERE winner_id = $1", [userId]);
+      // territory_games: defender_id/challenger_id/current_turn are all NOT NULL,
+      // so anonymizing via SET NULL would violate constraints and abort the
+      // whole delete. The user is a participant in every game referencing them
+      // (incl. as winner), so deleting their games covers all references;
+      // game_moves cascade with the game.
+      await client.query(
+        'DELETE FROM territory_games WHERE defender_id = $1 OR challenger_id = $1',
+        [userId]
+      );
       await client.query('DELETE FROM defense_attempts WHERE challenger_id = $1', [userId]);
-      await client.query("UPDATE territory_defenses SET owner_id = NULL WHERE owner_id = $1", [userId]);
+      // territory_defenses.owner_id is NOT NULL — cannot be anonymized, so the
+      // user's defense rows (including Phase B 'shield' rows) are deleted.
+      await client.query("DELETE FROM territory_defenses WHERE owner_id = $1", [userId]);
       await client.query("UPDATE duels SET challenger_id = NULL WHERE challenger_id = $1", [userId]);
       await client.query("UPDATE duels SET defender_id = NULL WHERE defender_id = $1", [userId]);
       await client.query("UPDATE duels SET winner_id = NULL WHERE winner_id = $1", [userId]);
@@ -352,6 +359,10 @@ router.delete('/me', authenticate, async (req: Request, res: Response) => {
       // (player_resources cascades; item_instances.owner_id sets NULL via FK)
       await client.query('DELETE FROM hack_attempts WHERE user_id = $1', [userId]);
       await client.query('DELETE FROM resource_transactions WHERE user_id = $1', [userId]);
+      // Phase B: passive-energy watermark is personal data → delete.
+      // buildings are soft-anonymized (owner_id NULL) like territories.
+      await client.query('DELETE FROM energy_ticks WHERE user_id = $1', [userId]);
+      await client.query('UPDATE buildings SET owner_id = NULL WHERE owner_id = $1', [userId]);
       await client.query('UPDATE pve_spawns SET hacked_by = NULL WHERE hacked_by = $1', [userId]);
       await client.query('UPDATE item_events SET from_user = NULL WHERE from_user = $1', [userId]);
       await client.query('UPDATE item_events SET to_user = NULL WHERE to_user = $1', [userId]);

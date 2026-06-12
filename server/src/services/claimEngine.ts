@@ -17,7 +17,11 @@ import {
   TAKEOVER_DECAY_FACTOR,
   TERRITORY,
   ANTI_GRIND_RETURNS,
+  BUILDINGS,
 } from '../config/constants';
+
+/** Hours a shield stays exhausted after absorbing a takeover attempt. */
+const SHIELD_BLOCK_COOLDOWN_HOURS = BUILDINGS.SHIELD_BLOCK_COOLDOWN_HOURS;
 import { routeToPolygon } from '../utils/polygon';
 import { polygonAreaM2, pathDistance, pathDuration } from '../utils/geo';
 import { toWktPolygon } from '../utils/polygon';
@@ -518,21 +522,61 @@ export class ClaimEngine {
 
         if (!canLose) continue; // Defender hit 30% daily loss cap
 
-        // Defense mini-game: collect defended territories instead of silently skipping
+        // Defense layer: collect defended territories instead of silently skipping.
+        // Phase B: shield_generator defenses (game_type='shield') are NOT playable
+        // mini-games — a fresh shield absorbs ONE takeover attempt per cooldown
+        // window. An exhausted shield (blocked within the cooldown) is skipped so
+        // the takeover can resolve normally against the remaining stack.
         try {
           const defenseRows = await client.query(
-            "SELECT id, game_type, slot_index FROM territory_defenses WHERE territory_id = $1 AND status = 'active' ORDER BY slot_index",
+            "SELECT id, game_type, slot_index, config FROM territory_defenses WHERE territory_id = $1 AND status = 'active' ORDER BY slot_index",
             [existing.id]
           );
-          if (defenseRows.rows.length > 0) {
+
+          const shieldRows = defenseRows.rows.filter((d: any) => d.game_type === 'shield');
+          const playableRows = defenseRows.rows.filter((d: any) => d.game_type !== 'shield');
+
+          // 1. Fresh shield → absorb this attempt and block the takeover.
+          const cooldownMs = SHIELD_BLOCK_COOLDOWN_HOURS * 60 * 60 * 1000;
+          let absorbedByShield = false;
+          for (const shield of shieldRows) {
+            const cfg = typeof shield.config === 'string' ? JSON.parse(shield.config) : (shield.config ?? {});
+            const lastBlocked = cfg?.last_blocked_at ? new Date(cfg.last_blocked_at).getTime() : null;
+            const isFresh = lastBlocked === null || Date.now() - lastBlocked >= cooldownMs;
+            if (isFresh) {
+              await client.query(
+                `UPDATE territory_defenses
+                    SET config = jsonb_set(config, '{last_blocked_at}', to_jsonb(NOW()::text), true)
+                  WHERE id = $1`,
+                [shield.id]
+              );
+              absorbedByShield = true;
+              break;
+            }
+          }
+          if (absorbedByShield) {
             blocked_by_defenses.push({
               territory_id: existing.id,
               owner_id: existing.owner_id,
               defense_count: defenseRows.rows.length,
+              shield_blocked: true,
+              message: 'SHIELD_BLOCKED',
               defenses: defenseRows.rows.map((d: any) => ({ id: d.id, game_type: d.game_type })),
+            });
+            continue; // Shield absorbed the attack this cycle.
+          }
+
+          // 2. Playable defenses remain → must beat them first (shields exhausted are ignored).
+          if (playableRows.length > 0) {
+            blocked_by_defenses.push({
+              territory_id: existing.id,
+              owner_id: existing.owner_id,
+              defense_count: playableRows.length,
+              defenses: playableRows.map((d: any) => ({ id: d.id, game_type: d.game_type })),
             });
             continue; // Can't takeover — must beat defense games first
           }
+          // 3. Only exhausted shields (or nothing) → fall through to normal takeover.
         } catch (err) {
           console.error('[ClaimEngine] Defense check error:', err);
         }

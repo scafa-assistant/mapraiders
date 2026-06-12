@@ -5,7 +5,8 @@
 // ============================================================
 
 import { query, queryOne, queryMany } from '../config/database';
-import { DECAY } from '../config/constants';
+import { DECAY, BUILDINGS } from '../config/constants';
+import { buildingEngine } from './buildingEngine';
 
 /**
  * Decay engine responsible for all time-based degradation
@@ -47,9 +48,22 @@ export class DecayEngine {
            AND is_protected = FALSE`
       );
 
+      // Phase B: batch-load building effects once (no N+1). Shielded
+      // territories decay slower through Phase 1 while the shield stands.
+      let effects: Map<string, { refineryBonus: number; shieldActive: boolean }> = new Map();
+      try {
+        effects = await buildingEngine.getEffectsForTerritories(territories.map((t) => t.id));
+      } catch (err) {
+        console.error('[Decay] Building effects batch error:', err);
+      }
+
       for (const territory of territories) {
         const daysSince = this.getDaysSince(territory.last_defended);
-        const newDecay = DecayEngine.calculateDecay(daysSince);
+        const shieldActive = effects.get(territory.id)?.shieldActive ?? false;
+        const newDecay = DecayEngine.calculateDecay(
+          daysSince,
+          shieldActive ? { phase1Slowdown: BUILDINGS.SHIELD_DECAY_SLOWDOWN } : undefined
+        );
 
         if (newDecay >= DECAY.TERRITORY.MAX) {
           // Territory becomes unclaimed
@@ -79,28 +93,54 @@ export class DecayEngine {
   /**
    * Calculate decay level for a given number of days since last defense.
    *
+   * Optional `phase1Slowdown` (0..1) flattens the Phase-1 ramp — a shielded
+   * territory decays slower while the shield stands. The Phase-1 slope is
+   * multiplied by (1 - slowdown); Phase 2 keeps its original slope and only
+   * begins once the (now slower) Phase 1 has actually reached PHASE1_MAX, so
+   * the transition point shifts later in time accordingly.
+   *
+   * With phase1Slowdown undefined/0 the behaviour is byte-for-byte identical
+   * to the original formula (backward compatible for all legacy callers).
+   *
    * @param daysSince - Days since the territory was last defended
+   * @param opts.phase1Slowdown - Fractional slowdown of the Phase-1 ramp
    * @returns Decay level between 0.0 and 1.0
    */
-  static calculateDecay(daysSince: number): number {
+  static calculateDecay(
+    daysSince: number,
+    opts?: { phase1Slowdown?: number }
+  ): number {
+    const slowdown = Math.max(0, Math.min(1, opts?.phase1Slowdown ?? 0));
+
     // Grace period: no decay in the first day
     if (daysSince <= DECAY.TERRITORY.GRACE_DAYS) {
       return 0.0;
     }
 
-    // Phase 1: days 1-7, linear ramp from 0 to 0.7
-    if (daysSince <= DECAY.TERRITORY.PHASE1_END) {
-      const elapsed = daysSince - DECAY.TERRITORY.GRACE_DAYS;
-      const phase1Duration = DECAY.TERRITORY.PHASE1_END - DECAY.TERRITORY.GRACE_DAYS;
-      return (elapsed / phase1Duration) * DECAY.TERRITORY.PHASE1_MAX;
+    const phase1Duration = DECAY.TERRITORY.PHASE1_END - DECAY.TERRITORY.GRACE_DAYS;
+    // Original per-day Phase-1 slope, scaled down by the slowdown factor.
+    const phase1Slope = (DECAY.TERRITORY.PHASE1_MAX / phase1Duration) * (1 - slowdown);
+
+    // Days into the ramp.
+    const elapsed = daysSince - DECAY.TERRITORY.GRACE_DAYS;
+
+    // How long Phase 1 now takes to reach PHASE1_MAX (longer when slowed).
+    // When slowdown == 0 this is exactly the original phase1Duration, so the
+    // Phase-2 transition lands at PHASE1_END as before.
+    const phase1RealDuration =
+      phase1Slope > 0 ? DECAY.TERRITORY.PHASE1_MAX / phase1Slope : Infinity;
+
+    // Phase 1: linear ramp from 0 toward PHASE1_MAX at the (slowed) slope.
+    if (elapsed <= phase1RealDuration) {
+      return elapsed * phase1Slope;
     }
 
-    // Phase 2: days 7+, linear ramp from 0.7 to 1.0
-    const phase2Elapsed = daysSince - DECAY.TERRITORY.PHASE1_END;
-    const decay =
-      DECAY.TERRITORY.PHASE2_START +
-      (phase2Elapsed / DECAY.TERRITORY.PHASE2_DAYS) *
-        (DECAY.TERRITORY.MAX - DECAY.TERRITORY.PHASE2_START);
+    // Phase 2: original slope from PHASE1_START to MAX, starting at the
+    // (possibly shifted) end of Phase 1.
+    const phase2Elapsed = elapsed - phase1RealDuration;
+    const phase2Slope =
+      (DECAY.TERRITORY.MAX - DECAY.TERRITORY.PHASE2_START) / DECAY.TERRITORY.PHASE2_DAYS;
+    const decay = DECAY.TERRITORY.PHASE2_START + phase2Elapsed * phase2Slope;
 
     return Math.min(DECAY.TERRITORY.MAX, decay);
   }

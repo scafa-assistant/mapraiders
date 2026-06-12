@@ -589,3 +589,64 @@ export const PVE = {
     forest: { definitionId: 'unit_forest_construct', chance: 0.4 },
   } as Partial<Record<Biome, { definitionId: string; chance: number }>>,
 } as const;
+
+// ============================================================
+// BUILDINGS (Phase B) — Tier-1 structures on owned territories.
+// All numbers here are DEFAULTS; the `resources` feature flag's
+// `config` block can override them live (no deploy) — e.g.
+// config.buildings.costs.refinery.energy. buildingEngine and
+// energyService read flag config with these as the fallback.
+// ============================================================
+
+export const BUILDINGS = {
+  /** Resource costs to start construction, per building type. */
+  COSTS: {
+    shield_generator: { energy: 200, tech: 100 },
+    refinery: { energy: 150, tech: 80 },
+  } as Record<string, { energy: number; tech: number }>,
+
+  /** Construction time before a building flips building → active. */
+  BUILD_TIME_HOURS: 2,
+
+  /** Fraction of the original cost refunded on demolish. */
+  DEMOLISH_REFUND: 0.5,
+
+  /** Energy-accrual bonus per ACTIVE refinery on the same territory. */
+  REFINERY_ENERGY_BONUS: 0.25,
+
+  /**
+   * After a shield blocks a takeover it is exhausted for this many
+   * hours; a second attack within the window slips past the shield.
+   */
+  SHIELD_BLOCK_COOLDOWN_HOURS: 24,
+
+  /**
+   * While an active shield stands, Phase-1 territory decay accrues
+   * this much slower (0.25 = 25% slower ramp).
+   */
+  SHIELD_DECAY_SLOWDOWN: 0.25,
+
+  /**
+   * Max building slots per territory by area (m²). Mirrors the
+   * defense-slot model (min(5, floor(area/1000)+1)) so structures
+   * scale with territory size. THRESHOLDS is the explicit fallback
+   * used when no area-based formula applies.
+   */
+  SLOTS: {
+    /** Same formula the defense engine uses for defense slots. */
+    maxByArea(areaSqM: number): number {
+      return Math.min(5, Math.floor((areaSqM || 0) / 1000) + 1);
+    },
+    /** Coarse fallback thresholds (only used if maxByArea is bypassed). */
+    THRESHOLDS: [
+      { maxAreaSqM: 50_000, slots: 1 },
+      { maxAreaSqM: 200_000, slots: 2 },
+    ] as { maxAreaSqM: number; slots: number }[],
+    FALLBACK_SLOTS: 3,
+  },
+
+  ENERGY: {
+    /** Cap on accrual hours to prevent a windfall after long absence. */
+    MAX_ACCRUAL_HOURS: 168,
+  },
+} as const;

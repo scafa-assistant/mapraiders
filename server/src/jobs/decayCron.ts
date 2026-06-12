@@ -32,6 +32,7 @@ import { meetupService } from '../services/meetupService';
 import { recordCronRun, acquireCronLock, releaseCronLock } from '../services/cronMonitor';
 import { runH3Backfill, runOsmPrefetch } from './phase0Jobs';
 import { runPveSpawnTick, runAetherLeechTick } from './phaseAJobs';
+import { runEnergyTick, runBuildingCompletion } from './phaseBJobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -883,6 +884,75 @@ export function setupCronJobs(): void {
       });
     } finally {
       await releaseCronLock('aether_leech_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 03:30 UTC - Energy tick: accrue passive energy for all users (Phase B)
+  // Runs after clan formation (03:00) and before territory decay (04:00).
+  // ------------------------------------------------------------------
+  cron.schedule('30 3 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('energy_tick', 1800);
+    if (!locked) return;
+
+    console.log('[CRON] Running energy tick...');
+    try {
+      const processed = await runEnergyTick();
+      await recordCronRun({
+        job: 'energy_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Energy tick failed:', err);
+      await recordCronRun({
+        job: 'energy_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('energy_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 10 minutes - Building completion: mark due buildings active (Phase B)
+  // Short interval ensures players see their buildings come online promptly.
+  // ------------------------------------------------------------------
+  cron.schedule('*/10 * * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('building_completion', 300);
+    if (!locked) return;
+
+    try {
+      const processed = await runBuildingCompletion();
+      // Record every run (even no-ops) so /api/health/crons always sees a
+      // fresh "last success" — consistent with the other jobs.
+      await recordCronRun({
+        job: 'building_completion',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Building completion failed:', err);
+      await recordCronRun({
+        job: 'building_completion',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('building_completion');
     }
   }, { timezone: 'UTC' });
 

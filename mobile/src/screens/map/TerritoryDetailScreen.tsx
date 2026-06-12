@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,9 +15,14 @@ import { TerritoryDetailScreenProps, MovementClass } from '../../navigation/type
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useAuthStore } from '../../store/authStore';
 import { defenseApi } from '../../services/api';
+import type { BuildingType } from '../../services/api';
 import { useTheme } from '../../hooks/useTheme';
 import { Theme } from '../../utils/constants';
 import { strings as S, t, plural } from '../../i18n';
+import { useFeatureStore } from '../../store/featureStore';
+import { useBuildingStore } from '../../store/buildingStore';
+import { useResourceStore } from '../../store/resourceStore';
+import BuildingPickerSheet from '../../components/BuildingPickerSheet';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
   walker: '#00D4FF', runner: '#FF4757', cyclist: '#00FF88',
@@ -155,6 +160,75 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
   const usedSlots = defenses.length;
   const freeSlots = Math.max(0, maxSlots - usedSlots);
+
+  // ─── Buildings (resources feature flag) ────────────────────────────────────
+  const isResourcesEnabled = useFeatureStore((s) => s.isEnabled('resources') && s.capabilities.resources);
+  const { buildingsByTerritory, loading: buildingLoading, build, demolish } = useBuildingStore();
+  const { balances, fetchResources } = useResourceStore();
+  const [showBuildPicker, setShowBuildPicker] = useState(false);
+  const buildings = buildingsByTerritory[territory.id] ?? [];
+
+  // Fetch buildings and resource balances when the screen mounts (flag-gated)
+  useEffect(() => {
+    if (!isResourcesEnabled) return;
+    useBuildingStore.getState().fetchBuildings(territory.id);
+    fetchResources();
+  }, [isResourcesEnabled, territory.id, fetchResources]);
+
+  // Countdown timer for buildings under construction
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!isResourcesEnabled) return;
+    const hasUnderConstruction = buildings.some((b) => b.status === 'building' && b.completes_at);
+    if (!hasUnderConstruction) return;
+    const interval = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(interval);
+  }, [isResourcesEnabled, buildings]);
+
+  const handleBuild = useCallback(async (type: BuildingType) => {
+    setShowBuildPicker(false);
+    const result = await build(territory.id, type);
+    if (!result.success && result.message) {
+      Alert.alert('Build failed', result.message);
+    }
+  }, [build, territory.id]);
+
+  const handleDemolish = useCallback((buildingId: string, buildingName: string) => {
+    Alert.alert(
+      'Demolish building?',
+      `"${buildingName}" will be demolished. You get 50% of construction costs back.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Demolish',
+          style: 'destructive',
+          onPress: async () => {
+            const result = await demolish(buildingId, territory.id);
+            if (!result.success && result.message) {
+              Alert.alert('Error', result.message);
+            }
+          },
+        },
+      ]
+    );
+  }, [demolish, territory.id]);
+
+  const getBuildingName = (type: BuildingType): string => {
+    if (type === 'shield_generator') return 'Shield Generator';
+    if (type === 'refinery') return 'Refinery';
+    return type;
+  };
+
+  const getCountdownText = (completesAt: string | null): string => {
+    if (!completesAt) return '';
+    const msLeft = new Date(completesAt).getTime() - now;
+    if (msLeft <= 0) return 'completing…';
+    const mins = Math.ceil(msLeft / 60_000);
+    if (mins < 60) return `${mins}m remaining`;
+    const hrs = Math.floor(mins / 60);
+    const rem = mins % 60;
+    return rem > 0 ? `${hrs}h ${rem}m remaining` : `${hrs}h remaining`;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -378,7 +452,85 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             )}
           </>
         )}
+
+        {/* ─── BUILDINGS SECTION (resources feature flag, owner only) ─── */}
+        {isResourcesEnabled && isOwner && (
+          <>
+            <Text style={[styles.sectionTitle, styles.buildingsSectionTitle]}>
+              BUILDINGS
+            </Text>
+
+            {buildingLoading ? (
+              <View style={styles.defenseLoading}>
+                <ActivityIndicator size="small" color="#9D4EDD" />
+              </View>
+            ) : (
+              <>
+                {buildings.length === 0 && (
+                  <View style={styles.buildingsEmpty}>
+                    <Text style={styles.buildingsEmptyText}>
+                      No buildings yet. Construct one to strengthen this territory.
+                    </Text>
+                  </View>
+                )}
+
+                {buildings.map((building) => {
+                  const isUnderConstruction = building.status === 'building';
+                  const statusColor =
+                    building.status === 'active' ? '#00FF88' :
+                    building.status === 'building' ? '#9D4EDD' :
+                    building.status === 'damaged' ? '#FFB800' :
+                    '#FF4757';
+
+                  return (
+                    <View key={building.id} style={styles.buildingCard}>
+                      <View style={styles.buildingCardContent}>
+                        <Text style={styles.buildingName}>{getBuildingName(building.type)}</Text>
+                        <View style={styles.buildingStatusRow}>
+                          <View style={[styles.buildingStatusDot, { backgroundColor: statusColor }]} />
+                          <Text style={[styles.buildingStatusText, { color: statusColor }]}>
+                            {isUnderConstruction
+                              ? getCountdownText(building.completes_at)
+                              : building.status.charAt(0).toUpperCase() + building.status.slice(1)}
+                          </Text>
+                        </View>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.buildingDemolishBtn}
+                        onPress={() => handleDemolish(building.id, getBuildingName(building.type))}
+                        disabled={buildingLoading}
+                      >
+                        <Ionicons name="trash-outline" size={18} color={theme.danger} />
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+
+                <TouchableOpacity
+                  style={styles.buildNewBtn}
+                  onPress={() => setShowBuildPicker(true)}
+                  activeOpacity={0.8}
+                  disabled={buildingLoading}
+                >
+                  <Ionicons name="add-circle-outline" size={20} color="#0A0E17" />
+                  <Text style={styles.buildNewBtnText}>Build</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </>
+        )}
       </ScrollView>
+
+      {/* Building picker sheet — outside ScrollView so Modal renders above everything */}
+      {isResourcesEnabled && isOwner && (
+        <BuildingPickerSheet
+          visible={showBuildPicker}
+          balances={balances}
+          loading={buildingLoading}
+          onClose={() => setShowBuildPicker(false)}
+          onBuild={handleBuild}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -452,4 +604,18 @@ const createStyles = (theme: Theme) =>
   // Owner notice
   ownerNotice: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0, 255, 136, 0.08)', borderWidth: 1, borderColor: 'rgba(0, 255, 136, 0.2)', borderRadius: 12, padding: 16, gap: 12 },
   ownerNoticeText: { flex: 1, color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
+
+  // Buildings section (resources feature flag)
+  buildingsSectionTitle: { marginTop: 28, color: '#9D4EDD' },
+  buildingsEmpty: { backgroundColor: theme.surface, borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#1A2340' },
+  buildingsEmptyText: { color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
+  buildingCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#3A2060', padding: 14, marginBottom: 8, gap: 12 },
+  buildingCardContent: { flex: 1 },
+  buildingName: { color: theme.text, fontSize: 14, fontWeight: '700', marginBottom: 4 },
+  buildingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  buildingStatusDot: { width: 7, height: 7, borderRadius: 3.5 },
+  buildingStatusText: { fontSize: 11, fontWeight: '600' },
+  buildingDemolishBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,71,87,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,71,87,0.25)' },
+  buildNewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#9D4EDD', borderRadius: 14, height: 48, gap: 8, marginTop: 4, shadowColor: '#9D4EDD', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
+  buildNewBtnText: { color: '#0A0E17', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
 });

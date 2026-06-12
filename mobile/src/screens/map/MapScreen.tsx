@@ -28,6 +28,8 @@ import EchoMarker from '../../components/EchoMarker';
 import PvESpawnMarker from '../../components/PvESpawnMarker';
 import { useFeatureStore } from '../../store/featureStore';
 import { usePveStore } from '../../store/pveStore';
+import { useResourceStore } from '../../store/resourceStore';
+import ResourceBar from '../../components/ResourceBar';
 import { MapScreenProps, MovementClass, Territory, Echo } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
 import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
@@ -128,6 +130,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   // PvE feature gate — spawns only rendered when flag + capability are both active
   const isPveEnabled = useFeatureStore((s) => s.isEnabled('pve_spawns') && s.capabilities.pve);
   const { spawns: pveSpawns, fetchSpawns: fetchPveSpawns } = usePveStore();
+
+  // Resources feature gate — ResourceBar only when flag + capability are both active
+  const isResourcesEnabled = useFeatureStore((s) => s.isEnabled('resources') && s.capabilities.resources);
+  const { balances, fetchResources } = useResourceStore();
   const classLabels = React.useMemo(getClassLabels, []);
 
   const [canCloseClaim, setCanCloseClaim] = useState(false);
@@ -425,6 +431,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       const timer = setTimeout(() => setHideOverlays(false), 100);
       return () => clearTimeout(timer);
     }, [])
+  );
+
+  // Resources: fetch balances on focus when feature flag is active (best-effort)
+  useFocusEffect(
+    useCallback(() => {
+      if (isResourcesEnabled) {
+        fetchResources();
+      }
+    }, [isResourcesEnabled, fetchResources])
   );
 
   // Fetch territories and all content when region changes (using viewport bbox)
@@ -1019,6 +1034,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           </View>
         </View>
       </SafeAreaView>
+
+      {/* Resource HUD — only when resources flag + capability are active */}
+      {isResourcesEnabled && <ResourceBar balances={balances} />}
 
       {/* Night Mode Badge */}
       {nightMode && (

@@ -670,6 +670,38 @@ export const resourceApi = {
     api.get('/resources'),
 };
 
+// ─── Buildings API ───────────────────────────────────────────────────────────
+
+export type BuildingType = 'shield_generator' | 'refinery';
+export type BuildingStatus = 'building' | 'active' | 'damaged' | 'destroyed';
+
+export interface Building {
+  id: string;
+  territory_id: string;
+  owner_id: string | null;
+  type: BuildingType;
+  tier: number;
+  status: BuildingStatus;
+  hp: number;
+  completes_at: string | null;
+  config: Record<string, unknown>;
+  created_at: string;
+}
+
+export const buildingApi = {
+  /** List all buildings on a territory. */
+  list: (territoryId: string) =>
+    api.get<{ success: boolean; data: { buildings: Building[] } }>(`/buildings/territory/${territoryId}`),
+
+  /** Construct a new building on a territory. */
+  build: (territoryId: string, type: BuildingType) =>
+    api.post<{ success: boolean; data: { building: Building } }>(`/buildings/territory/${territoryId}`, { type }),
+
+  /** Demolish a building — server refunds 50% of costs. */
+  demolish: (buildingId: string) =>
+    api.delete<{ success: boolean; data: { refunded: { energy?: number; tech?: number } } }>(`/buildings/${buildingId}`),
+};
+
 // ─── PvE API ─────────────────────────────────────────────────────────────────
 
 export interface HackInputTrace {

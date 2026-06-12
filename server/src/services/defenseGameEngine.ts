@@ -11,6 +11,7 @@ import { awardXp } from './progressionEngine';
 import { notifyTerritoryAttack } from './notificationService';
 import { wsService } from './wsService';
 import { turnGameEngine } from './turnGameEngine';
+import { BUILDINGS } from '../config/constants';
 
 const GAME_TYPES = [
   'rock_paper_scissors',
@@ -187,6 +188,13 @@ class DefenseGameEngine {
     // 2. Check not challenging own territory
     if (defense.owner_id === userId) throw new Error('Cannot challenge your own defense');
 
+    // 2b. Phase B shield: not a playable mini-game. A fresh shield absorbs the
+    // attempt (cooldown), an exhausted one is auto-broken so the attacker can
+    // proceed against the rest of the stack.
+    if (defense.game_type === 'shield') {
+      return this.handleShieldDefense(defense, userId);
+    }
+
     // 3. Lock territory during attack (set attack status and attacker)
     await query(
       "UPDATE territories SET attack_status = 'under_attack', attack_started_at = NOW(), attacker_id = $1 WHERE id = $2 AND attack_status IS NULL",
@@ -266,6 +274,76 @@ class DefenseGameEngine {
     if (!defense) throw new Error('Defense not found');
     if (defense.owner_id !== userId) throw new Error('Not your defense');
     await query("UPDATE territory_defenses SET status = 'expired' WHERE id = $1", [defenseId]);
+  }
+
+  // ---- Shield Defense Handling (Phase B) ----
+
+  /**
+   * Handle an attack against a passive shield defense.
+   * - Fresh shield (never blocked, or last block older than the cooldown):
+   *   absorb the attempt, stamp config.last_blocked_at = NOW(), return
+   *   SHIELD_BLOCKED. The shield is NOT a playable game and stays 'active'.
+   * - Exhausted shield (blocked within the cooldown): auto-break this layer
+   *   so the attacker can continue against the remaining defense stack.
+   */
+  private async handleShieldDefense(defense: any, userId: string): Promise<any> {
+    const config = typeof defense.config === 'string' ? JSON.parse(defense.config) : (defense.config ?? {});
+    const cooldownMs = BUILDINGS.SHIELD_BLOCK_COOLDOWN_HOURS * 60 * 60 * 1000;
+    const lastBlocked = config?.last_blocked_at ? new Date(config.last_blocked_at).getTime() : null;
+    const isFresh = lastBlocked === null || Date.now() - lastBlocked >= cooldownMs;
+
+    if (isFresh) {
+      await query(
+        `UPDATE territory_defenses
+            SET config = jsonb_set(config, '{last_blocked_at}', to_jsonb(NOW()::text), true)
+          WHERE id = $1`,
+        [defense.id]
+      );
+      try {
+        wsService.sendToUser(defense.owner_id, 'shield_blocked', {
+          territory_id: defense.territory_id,
+          challenger_id: userId,
+        });
+      } catch { /* non-critical */ }
+      return {
+        attempt_id: null,
+        result: 'blocked',
+        defense_game_type: 'shield',
+        message: 'SHIELD_BLOCKED',
+      };
+    }
+
+    // Exhausted shield → break this layer (no playable game, no XP).
+    // Conditional on status='active' so two simultaneous attackers can't both
+    // break the layer and both trigger conquest — only the attacker whose
+    // UPDATE wins proceeds to the conquest check.
+    const broke = await query(
+      "UPDATE territory_defenses SET status = 'broken' WHERE id = $1 AND status = 'active'",
+      [defense.id]
+    );
+    if ((broke.rowCount ?? 0) === 0) {
+      // Another attacker broke this layer first; no conquest from this call.
+      return {
+        attempt_id: null,
+        result: 'shield_down',
+        defense_game_type: 'shield',
+      };
+    }
+
+    // If that was the last active defense, conquest follows.
+    const remaining = await queryOne<{ count: string }>(
+      "SELECT COUNT(*) as count FROM territory_defenses WHERE territory_id = $1 AND status = 'active'",
+      [defense.territory_id]
+    );
+    if (parseInt(remaining?.count || '0', 10) === 0) {
+      await this.handleFullConquest(defense, userId);
+    }
+
+    return {
+      attempt_id: null,
+      result: 'shield_down',
+      defense_game_type: 'shield',
+    };
   }
 
   // ---- Content Defense Handling ----
