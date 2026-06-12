@@ -35,6 +35,7 @@ import { runPveSpawnTick, runAetherLeechTick } from './phaseAJobs';
 import { runEnergyTick, runBuildingCompletion } from './phaseBJobs';
 import { runTroopArrivalTick, runVisibilityCleanup } from './phaseC1Jobs';
 import { runScoutVisionTick } from './phaseC2Jobs';
+import { runAiTriggerTick, runAiGeneralTick, runRuinsOvergrowth } from './phaseDJobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -1057,6 +1058,109 @@ export function setupCronJobs(): void {
       });
     } finally {
       await releaseCronLock('scout_vision_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Hourly at :05 - AI trigger tick (Phase D). Derives player-active res-6
+  // sectors, flips dormant→triggered on thresholds, and runs the cheap
+  // cooldown-guarded deterministic sim. Gated on the `ai_general` flag
+  // (runAiTriggerTick no-ops while the flag is off).
+  // ------------------------------------------------------------------
+  cron.schedule('5 * * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('ai_trigger_tick', 1800);
+    if (!locked) return;
+
+    try {
+      const processed = await runAiTriggerTick();
+      await recordCronRun({
+        job: 'ai_trigger_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] AI trigger tick failed:', err);
+      await recordCronRun({
+        job: 'ai_trigger_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('ai_trigger_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Every 6 hours at :20 - AI general tick (Phase D). For triggered/invasion
+  // sectors whose LLM cooldown elapsed, run the LLM general (or fallback).
+  // Gated on the `ai_general` flag (runAiGeneralTick no-ops while off).
+  // ------------------------------------------------------------------
+  cron.schedule('20 */6 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('ai_general_tick', 3600);
+    if (!locked) return;
+
+    try {
+      const processed = await runAiGeneralTick();
+      await recordCronRun({
+        job: 'ai_general_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] AI general tick failed:', err);
+      await recordCronRun({
+        job: 'ai_general_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('ai_general_tick');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Daily at 03:15 UTC - Ruins overgrowth (Phase D). Overgrows ruins; ripe
+  // ones become hackable 'ruin_cache' pve spawns. Gated on the `ai_general`
+  // flag (runRuinsOvergrowth no-ops while off).
+  // ------------------------------------------------------------------
+  cron.schedule('15 3 * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('ruins_overgrowth', 600);
+    if (!locked) return;
+
+    try {
+      const processed = await runRuinsOvergrowth();
+      await recordCronRun({
+        job: 'ruins_overgrowth',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Ruins overgrowth failed:', err);
+      await recordCronRun({
+        job: 'ruins_overgrowth',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('ruins_overgrowth');
     }
   }, { timezone: 'UTC' });
 

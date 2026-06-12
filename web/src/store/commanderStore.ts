@@ -44,6 +44,15 @@ export interface CommanderRadar {
   cells: string[];
 }
 
+/** Hyperborean AI presence (Phase D) — fog-filtered server-side. */
+export interface AiZone {
+  h3_cell: string;
+  phase: 'dormant' | 'triggered' | 'invasion';
+}
+
+/** The Hyperborean AI faction's system user id (battle labels). */
+export const HYPERBOREAN_AI_USER_ID = '00000000-0000-0000-0000-00000000a111';
+
 export interface CommanderMapData {
   visible_cells: string[];
   territories: CommanderTerritory[];
@@ -53,6 +62,8 @@ export interface CommanderMapData {
   garrisons?: CommanderGarrison[];
   /** Own active silos (Phase C.3) */
   silos?: SiloInfo[];
+  /** Hyperborean-held cells (Phase D); absent on old servers → treat as []. */
+  ai_zones?: AiZone[];
 }
 
 // Re-export for convenience

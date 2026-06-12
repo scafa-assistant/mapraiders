@@ -17,6 +17,7 @@ import L from 'leaflet';
 import * as h3 from 'h3-js';
 import { useCommanderStore } from '../store/commanderStore';
 import type { AirstrikeResult, CommanderMovement, SiloInfo } from '../store/commanderStore';
+import { HYPERBOREAN_AI_USER_ID } from '../store/commanderStore';
 import { useInventoryStore } from '../store/inventoryStore';
 import { useAuthStore } from '../store/authStore';
 import { theme, colorForRarity } from '../theme';
@@ -129,6 +130,7 @@ export default function CommanderView() {
   const mapRef       = useRef<L.Map | null>(null);
 
   const hexLayerRef      = useRef<L.LayerGroup | null>(null);
+  const aiLayerRef       = useRef<L.LayerGroup | null>(null);
   const terrLayerRef     = useRef<L.LayerGroup | null>(null);
   const radarLayerRef    = useRef<L.LayerGroup | null>(null);
   const moveLayerRef     = useRef<L.LayerGroup | null>(null);
@@ -218,6 +220,7 @@ export default function CommanderView() {
     }).addTo(map);
 
     hexLayerRef.current     = L.layerGroup().addTo(map);
+    aiLayerRef.current      = L.layerGroup().addTo(map); // AI zones UNDER territories
     terrLayerRef.current    = L.layerGroup().addTo(map);
     radarLayerRef.current   = L.layerGroup().addTo(map);
     moveLayerRef.current    = L.layerGroup().addTo(map);
@@ -306,6 +309,31 @@ export default function CommanderView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapData?.territories, userId]);
+
+  // ---- Render Hyperborean AI zones (Phase D) -----------------------------------
+  useEffect(() => {
+    const layer = aiLayerRef.current;
+    if (!layer || !mapData) return;
+    layer.clearLayers();
+    const AI_RED = '#E5383B';
+    const fillByPhase = { dormant: 0.10, triggered: 0.18, invasion: 0.30 } as const;
+    const labelByPhase = {
+      dormant: 'Hyperborean presence',
+      triggered: 'Hyperborean incursion',
+      invasion: 'HYPERBOREAN INVASION',
+    } as const;
+    for (const zone of mapData.ai_zones ?? []) {
+      L.polygon(cellToLeafletLatLngs(zone.h3_cell), {
+        color: AI_RED,
+        weight: 1,
+        fillColor: AI_RED,
+        fillOpacity: fillByPhase[zone.phase] ?? 0.10,
+        opacity: 0.7,
+      })
+        .bindTooltip(labelByPhase[zone.phase] ?? 'Hyperborean presence', { sticky: true })
+        .addTo(layer);
+    }
+  }, [mapData?.ai_zones]);
 
   // ---- Render radars ----------------------------------------------------------
   useEffect(() => {
@@ -1164,6 +1192,14 @@ export default function CommanderView() {
     return (
       <>
         {dispatchError && <div className="panel-error" style={{ margin: 0 }}>{dispatchError}</div>}
+        {(mapData?.ai_zones?.length ?? 0) > 0 && (
+          <div style={{
+            color: '#E5383B', fontSize: 12, fontWeight: 700,
+            border: '1px solid #E5383B55', borderRadius: 6, padding: '6px 8px',
+          }}>
+            ⚠ {mapData!.ai_zones!.length} cells under Hyperborean control
+          </div>
+        )}
         <button style={btnAccent} onClick={handleStartDispatch}>Deploy Scout</button>
         <div style={{ ...sectionLabel, marginTop: 8 }}>Own Territories</div>
         {ownTerrs.length === 0 ? (
@@ -1290,6 +1326,9 @@ export default function CommanderView() {
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontWeight: 700, fontSize: 12 }}>
                       {isAirstrike ? '☄ Airstrike' : (isAtk ? '⚔ Attack' : '🛡 Defense')}
+                      {(b.attacker_id === HYPERBOREAN_AI_USER_ID || b.defender_id === HYPERBOREAN_AI_USER_ID) && (
+                        <span style={{ color: '#E5383B', marginLeft: 6 }}>vs Hyperboreans</span>
+                      )}
                     </span>
                     <span style={{ fontSize: 11, color: won ? theme.color.success : theme.color.danger, fontWeight: 700 }}>
                       {isAirstrike ? '☄' : (b.winner_side == null ? '—' : won ? 'WIN' : 'LOSS')}

@@ -114,8 +114,8 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       const response = await commanderApi.getMap();
       const data = response.data?.data;
       if (data) {
-        // Back-fill silos array if the server omits it (graceful degradation).
-        const normalised = { ...data, silos: data.silos ?? [] };
+        // Back-fill silos + ai_zones arrays if the server omits them (graceful degradation).
+        const normalised = { ...data, silos: data.silos ?? [], ai_zones: data.ai_zones ?? [] };
         set({ mapData: normalised, loading: false });
       } else {
         set({ loading: false });

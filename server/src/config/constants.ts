@@ -515,7 +515,13 @@ export const POLYGON = {
 // Biome decides which NPC types can appear; each type carries a loot table.
 
 /** NPC archetypes that can spawn in the world. */
-export type PveNpcType = 'scout_disc' | 'aether_leech' | 'tech_drone' | 'obsidian_guard' | 'terminal';
+export type PveNpcType =
+  | 'scout_disc'
+  | 'aether_leech'
+  | 'tech_drone'
+  | 'obsidian_guard'
+  | 'terminal'
+  | 'ruin_cache'; // Phase D — overgrown AI-razed cells, hackable for salvage
 
 /** Biomes returned by osmContextService.getContext(). */
 export type Biome = 'water' | 'forest' | 'industrial' | 'rural' | 'urban' | 'landmark';
@@ -574,6 +580,13 @@ export const PVE = {
     },
     aether_leech: {
       resources: { tech: 3, energy: 5 },
+      // no unit drop
+    },
+    // Phase D: ruin_cache spawns are seeded by the ruins_overgrowth cron with
+    // their own explicit loot on the spawn row; this entry is the buildLoot
+    // fallback should one ever be created via the generic spawn path.
+    ruin_cache: {
+      resources: { tech: 8, intel: 4 },
       // no unit drop
     },
   } as Record<string, PveLootTable>,
@@ -783,4 +796,41 @@ export const AIRSTRIKE = {
 export const TELEPORT = {
   TRAVEL_MIN: 2,
   ENERGY_PER_UNIT: 5,
+} as const;
+
+// ============================================================
+// AI GENERAL (Phase D) — Hybrid AI: deterministic sector simulation
+// (aiSimEngine) + a Claude-driven general (aiGeneralService) that issues
+// high-level directives the sim executes via the EXISTING troop/battle
+// engines. All gated behind the `ai_general` feature flag.
+//
+// Architecture: a seeded SYSTEM USER (AI.USER_ID) owns every AI unit and
+// movement so troopEngine / battleEngine / itemService work unchanged.
+// Clients identify AI via that id and config.ai_faction === true.
+//
+// Live overrides: the `ai_general` flag's config block can override
+// thresholds (config.thresholds.*) and the LLM budget (config.max_calls_per_day).
+// ============================================================
+
+export const AI = {
+  USER_ID: '00000000-0000-0000-0000-00000000a111',
+  // Trigger thresholds (flags.config 'ai_general'.thresholds.* overrides live)
+  TRIGGER: { MIN_ACTIVE_PLAYERS: 3, MIN_BUILDING_TIER_SUM: 5, ACTIVE_DAYS: 14 },
+  // Phase behavior
+  DORMANT_HOLD_PCT: 0.12,          // hold ~12% of the sector's active cells
+  MAX_HELD_CELLS: 60,              // hard cap on held cells per sector
+  SIM_COOLDOWN_MIN: 30,            // min minutes between sims of one sector
+  UNIT_DEFINITION: 'unit_scout_disc',   // what the AI fields (exists already)
+  STRENGTH_PER_UNIT: 1,
+  MAX_UNITS_PER_ATTACK: 4,
+  PROBE_INTENSITY_UNITS: (i: number) => Math.max(1, Math.round(i * 4)), // intensity 0..1 -> 1..4 units
+  INVASION_STRENGTH_THRESHOLD: 20,
+  // LLM
+  LLM_MODEL: 'claude-haiku-4-5',
+  LLM_MAX_TOKENS: 400,
+  LLM_CALL_INTERVAL_HOURS: 6,
+  LLM_MAX_CALLS_PER_DAY: 200,      // flags.config max_calls_per_day overrides
+  // Ruins
+  RUIN_OVERGROWTH_PER_NIGHT: 1,
+  RUIN_NEST_THRESHOLD: 7,          // overgrowth >= this -> spawns a ruin_cache pve spawn
 } as const;

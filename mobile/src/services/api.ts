@@ -806,6 +806,15 @@ export interface SiloInfo {
   ready_at: string | null;
 }
 
+/** UUID of the Hyperborean AI faction — used to label its battles. */
+export const HYPERBOREAN_AI_USER_ID = '00000000-0000-0000-0000-00000000a111';
+
+/** A single H3 res-8 cell held by the Hyperborean AI, already fog-filtered server-side. */
+export interface AiZone {
+  h3_cell: string;
+  phase: 'dormant' | 'triggered' | 'invasion';
+}
+
 export interface CommanderMapData {
   visible_cells: string[];
   territories: CommanderTerritory[];
@@ -814,6 +823,11 @@ export interface CommanderMapData {
   garrisons: CommanderGarrison[];
   /** Own silo cooldown states — present when commander flag is enabled. */
   silos: SiloInfo[];
+  /**
+   * H3 res-8 cells held by the Hyperborean AI, fog-filtered by the server.
+   * May be absent on older server versions — always normalise to [].
+   */
+  ai_zones?: AiZone[];
 }
 
 export interface CommanderBattleSummary {

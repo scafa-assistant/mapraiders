@@ -237,6 +237,32 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       return { territory_id: s.territory_id, tier: s.tier, ready_at: readyAt };
     });
 
+    // ---- Phase D: AI zones (held cells of all AI sectors), FILTERED to the
+    // caller's visible cells (fog of war). Each entry carries the owning
+    // sector's phase so the client can colour dormant/triggered/invasion.
+    // AI troop MOVEMENTS already surface via the existing foreign-movement fog
+    // path above (owner_id <> caller → is_own:false), so nothing extra here.
+    const aiZones: Array<{ h3_cell: string; phase: string }> = [];
+    if (visibleCells.length > 0) {
+      try {
+        const zoneRows = await query<{ held_cells: string[] | null; phase: string }>(
+          `SELECT held_cells, phase
+             FROM ai_region_state
+            WHERE held_cells && $1::text[]`,
+          [visibleCells],
+        );
+        for (const z of zoneRows.rows) {
+          for (const cell of z.held_cells ?? []) {
+            if (visibleSet.has(cell)) aiZones.push({ h3_cell: cell, phase: z.phase });
+          }
+        }
+      } catch (err) {
+        // ai_region_state may not exist if the Phase D migration hasn't run —
+        // never let that break the map; just omit ai_zones.
+        console.warn('[Commander] ai_zones query skipped:', (err as any)?.message);
+      }
+    }
+
     return res.json({
       success: true,
       data: {
@@ -246,6 +272,7 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
         garrisons,
         radars,
         silos,
+        ai_zones: aiZones,
       },
     });
   } catch (err: any) {

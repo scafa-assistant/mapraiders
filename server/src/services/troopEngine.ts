@@ -24,7 +24,7 @@
 import { PoolClient } from 'pg';
 import * as h3 from 'h3-js';
 import { transaction, query } from '../config/database';
-import { COMMANDER, COMBAT, TELEPORT } from '../config/constants';
+import { COMMANDER, COMBAT, TELEPORT, AI } from '../config/constants';
 import { RES_SPAWN, cellForPoint, pathBetween } from './h3Service';
 import { resourceService } from './resourceService';
 import { visionService } from './visionService';
@@ -807,6 +807,15 @@ class TroopEngine {
         if (typeof cfg.dice_drop_p === 'number') diceDropP = cfg.dice_drop_p;
       } catch {
         /* keep default */
+      }
+
+      // Phase D: when the AI system user is the attacker, never roll a dice
+      // drop. The AI has no use for minted dice and a win would otherwise
+      // wastefully mint an item_instance to the system account. Surgical,
+      // pool-free (we already have the peeked owner_id) — keeps the assault
+      // path identical for human attackers.
+      if (peek.rows[0].owner_id === AI.USER_ID) {
+        diceDropP = 0;
       }
 
       // Anti-farm: cap dice-drop chances per (attacker, target territory) per

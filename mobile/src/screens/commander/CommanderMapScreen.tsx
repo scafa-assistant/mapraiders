@@ -51,6 +51,7 @@ import type {
   SiloInfo,
   AirstrikeResult,
 } from '../../services/api';
+import { HYPERBOREAN_AI_USER_ID } from '../../services/api';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 
 const H3_RES = 8;
@@ -164,10 +165,12 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     if (!mapData) return [];
     const all = mapData.visible_cells;
     if (all.length <= VISION_HEX_CAP) return all;
-    // Over the cap: only render territory + radar cells, skip plain-vision hexes.
+    // Over the cap: only render territory + radar + AI zone cells, skip plain-vision hexes.
+    // AI cells are high-signal — prefer keeping them over plain vision hexes.
     const keep = new Set<string>();
     for (const t of mapData.territories) t.h3_cells.forEach((c) => keep.add(c));
     for (const r of mapData.radars) r.cells.forEach((c) => keep.add(c));
+    for (const z of mapData.ai_zones ?? []) keep.add(z.h3_cell);
     return all.filter((c) => keep.has(c));
   }, [mapData]);
 
@@ -374,6 +377,23 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
             })
           )}
 
+          {/* AI zones — deep red fill, phase-based opacity; rendered UNDER territory layer */}
+          {(mapData?.ai_zones ?? []).map((zone) => {
+            const coords = cellToPolygon(zone.h3_cell);
+            if (coords.length < 3) return null;
+            // Fill opacity by phase: dormant 0.10 (1A), triggered 0.18 (2E), invasion 0.30 (4D)
+            const fillAlpha = zone.phase === 'invasion' ? '4D' : zone.phase === 'triggered' ? '2E' : '1A';
+            return (
+              <Polygon
+                key={`ai-${zone.h3_cell}`}
+                coordinates={coords}
+                strokeColor="#E5383B55"
+                strokeWidth={0.8}
+                fillColor={`#E5383B${fillAlpha}`}
+              />
+            );
+          })}
+
           {/* Territories — own violet, foreign cyan */}
           {mapData?.territories.map((t) =>
             t.h3_cells.map((cell) => {
@@ -468,34 +488,44 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
         ) : null}
       </View>
 
-      {/* Movements strip */}
-      {ownMovements.length > 0 ? (
+      {/* Movements strip + AI zone warning note */}
+      {(ownMovements.length > 0 || (mapData?.ai_zones ?? []).length > 0) ? (
         <View style={styles.strip}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.stripContent}>
-            {ownMovements.map((m) => {
-              const col =
-                m.purpose === 'attack' ? C.enemy : m.purpose === 'scout' ? C.accent : C.foreign;
-              return (
-                <View key={`chip-${m.id}`} style={[styles.chip, { borderColor: col }]}>
-                  <Ionicons
-                    name={m.purpose === 'attack' ? 'flash' : m.purpose === 'scout' ? 'eye' : 'shield'}
-                    size={12}
-                    color={col}
-                  />
-                  <Text style={styles.chipLabel}>{m.purpose}</Text>
-                  <Text style={[styles.chipEta, { color: col }]}>{formatCountdown(m.arrives_at)}</Text>
-                  {(m.purpose === 'scout' || m.purpose === 'reinforce') && m.status !== 'returning' ? (
-                    <TouchableOpacity
-                      onPress={() => recall(m.id)}
-                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                    >
-                      <Ionicons name="arrow-undo" size={13} color={C.textSecondary} />
-                    </TouchableOpacity>
-                  ) : null}
-                </View>
-              );
-            })}
-          </ScrollView>
+          {(mapData?.ai_zones ?? []).length > 0 ? (
+            <View style={styles.aiWarningRow}>
+              <Ionicons name="warning" size={13} color="#E5383B" />
+              <Text style={styles.aiWarningText}>
+                {'⚠'} {(mapData?.ai_zones ?? []).length} cell{(mapData?.ai_zones ?? []).length !== 1 ? 's' : ''} under Hyperborean control
+              </Text>
+            </View>
+          ) : null}
+          {ownMovements.length > 0 ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.stripContent}>
+              {ownMovements.map((m) => {
+                const col =
+                  m.purpose === 'attack' ? C.enemy : m.purpose === 'scout' ? C.accent : C.foreign;
+                return (
+                  <View key={`chip-${m.id}`} style={[styles.chip, { borderColor: col }]}>
+                    <Ionicons
+                      name={m.purpose === 'attack' ? 'flash' : m.purpose === 'scout' ? 'eye' : 'shield'}
+                      size={12}
+                      color={col}
+                    />
+                    <Text style={styles.chipLabel}>{m.purpose}</Text>
+                    <Text style={[styles.chipEta, { color: col }]}>{formatCountdown(m.arrives_at)}</Text>
+                    {(m.purpose === 'scout' || m.purpose === 'reinforce') && m.status !== 'returning' ? (
+                      <TouchableOpacity
+                        onPress={() => recall(m.id)}
+                        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                      >
+                        <Ionicons name="arrow-undo" size={13} color={C.textSecondary} />
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
+                );
+              })}
+            </ScrollView>
+          ) : null}
         </View>
       ) : null}
 
@@ -1103,6 +1133,10 @@ function BattleLogModal({
                 ((playerIsAttacker && b.winner_side === 'attacker') ||
                   (!playerIsAttacker && b.winner_side === 'defender'));
               const isAirstrike = b.type === 'airstrike';
+              // Resolve opponent label — show 'Hyperboreans' for the AI faction.
+              const opponentId = playerIsAttacker ? b.defender_id : b.attacker_id;
+              const opponentLabel =
+                opponentId === HYPERBOREAN_AI_USER_ID ? 'Hyperboreans' : null;
               return (
                 <TouchableOpacity key={b.id} style={styles.battleRow} onPress={() => onOpen(b.id)}>
                   <Ionicons
@@ -1115,6 +1149,9 @@ function BattleLogModal({
                       {isAirstrike
                         ? 'Airstrike'
                         : `${playerIsAttacker ? 'Attack' : 'Defense'} · ${prettifyDefinitionId(b.type)}`}
+                      {opponentLabel ? (
+                        <Text style={styles.battleOpponent}> vs {opponentLabel}</Text>
+                      ) : null}
                     </Text>
                     <Text style={styles.battleDate}>{new Date(b.created_at).toLocaleString()}</Text>
                   </View>
@@ -1457,6 +1494,23 @@ const styles = StyleSheet.create({
   },
   unitRowSel: { borderColor: C.accent },
 
+  // AI zone warning
+  aiWarningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5383B33',
+  },
+  aiWarningText: {
+    color: '#E5383B',
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+
   // Battle log rows
   battleRow: {
     flexDirection: 'row',
@@ -1467,6 +1521,7 @@ const styles = StyleSheet.create({
     borderBottomColor: C.border,
   },
   battleType: { color: C.text, fontSize: FONT_SIZE.sm, fontWeight: '600' },
+  battleOpponent: { color: '#E5383B', fontSize: FONT_SIZE.sm, fontWeight: '700' },
   battleDate: { color: C.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
   battleResult: { fontSize: FONT_SIZE.sm, fontWeight: '800', letterSpacing: 0.5 },
 });
