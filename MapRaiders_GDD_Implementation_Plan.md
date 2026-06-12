@@ -196,9 +196,11 @@ CREATE TABLE IF NOT EXISTS hack_attempts (
 - **Dabei gleich:** `MarkerFactory`-Refactor (Echo/Challenge/Artifact/Meetup/PvE über eine Factory — der Explore-Report nennt das explizit als Schuld; jetzt ist der richtige Moment, weil ein 6. Marker-Typ dazukommt).
 - Lore-Onboarding: 3 Story-Cards beim ersten PvE-Kontakt (i18n, 13 Sprachen wie gehabt).
 
-### A.2 — Terminals + Jump&Run (Teilphase, kann 2–3 Wochen nach A.1 folgen)
-- WebView-Dependency rein (→ EAS-Build vc4), `GET /games/runner/:levelSeed` serverseitig (statisches HTML5-Spiel + prozedurales Level-JSON aus Biom/Terrain), Score-Submit signiert (HMAC: `spawnId + userId + nonce`), lokale Rangliste pro Landmark (Redis Sorted Set, Muster leaderboardService).
-- DB: `terminal_runs (id, spawn_id, user_id, score, duration_ms, replay_hash, created_at)`.
+### A.2 — Terminals + Jump&Run ✅ FERTIG (2026-06-12, Commit 6bd4b3f, produktiv deployed)
+- **Umgesetzt mit einer Verbesserung gegenüber der Skizze:** Level wird SERVERSEITIG generiert (`terminalEngine.generateLevel`, mulberry32 aus sha256(spawnId) — deterministisch pro Terminal, faire Rangliste) und als JSON an das Spiel gereicht; das HTML5-Spiel (`server/public/games/runner/`, ausgeliefert unter `/games` VOR helmet mit eigener CSP) ist reiner Renderer. Kein Auth-Token in der iframe-URL — Host (Web/RN-WebView) macht Start/Submit, Spiel meldet per postMessage.
+- Score-Submit HMAC-signiert (spawnId+userId+nonce+iat, Einmal-Nonce via Redis GETDEL), Plausibilität gegen server-seitiges `par` (maxScore/minDurationMs), Rangliste pro Terminal als Redis Sorted Set (atomares ZADD GT), Intel-Reward für die ersten 3 geschafften Runs/Tag.
+- DB: `terminal_runs (id, spawn_id, user_id, score, duration_ms, finished, replay_hash, created_at)`. Flag `terminals` (Config `require_proximity` schaltet GPS-Pflicht ohne Deploy — aktuell AUS für Web-Testphase).
+- Mobile-Code (react-native-webview 13.16.0 + TerminalScreen) ist dark-shipped → **braucht EAS-Build vc4**. Web spielt SOFORT auf mapraiders.com/play (Track W.2 damit teilerfüllt).
 
 **Aufwand:** A.1 ~2 Wochen, A.2 ~2 Wochen.
 **Risiken:** Spawn-Dichte-Balancing in dünn besiedelten Gebieten (Mitigation: Mindest-Spawns um jeden aktiven Spieler, wie heute Seed-Territorien); Hacking-Trace-Anti-Cheat anfangs simpel halten (Toleranz + Tagescap reicht für Beta).
