@@ -67,3 +67,20 @@ for src_name, caption, out_name in SHOTS:
     print(out_name, "<-", src_name)
 
 print("done")
+
+
+# --- Tablet variants (7" 1200x1920, 10" 1600x2560) ---
+# Generated from the finished phone screenshots: letterboxed/upscaled on the
+# same dark background. Run after the phone screenshots exist.
+def generate_tablets():
+    import glob
+    for src_path in sorted(glob.glob(os.path.join(OUT, "screenshot-0*.png"))):
+        n = os.path.basename(src_path).split("-")[1].split(".")[0]
+        src = Image.open(src_path)
+        t7 = Image.new("RGB", (1200, 1920), BG)
+        t7.paste(src, ((1200 - 1080) // 2, 0))
+        t7.save(os.path.join(OUT, f"tablet7-{n}.png"))
+        big = src.resize((1440, 2560), Image.LANCZOS)
+        t10 = Image.new("RGB", (1600, 2560), BG)
+        t10.paste(big, ((1600 - 1440) // 2, 0))
+        t10.save(os.path.join(OUT, f"tablet10-{n}.png"))

@@ -1,7 +1,7 @@
 # Play Store Submission — MapRaiders v1.0.0 (versionCode 2)
 
 > **Artefakt:** `builds/mapraiders-v1.0.0-vc2-production-final.aab` (EAS-Build `506fa5a3`, 2026-06-11 11:24, signiert mit EAS-Keystore "Build Credentials 62P9H0rQMx")
-> **Account:** workspace.scafa@gmail.com — Play Console Account-ID 7101708942875114448
+> **Account:** scafarti@gmail.com (Play-Console-Login für MapRaiders — NICHT workspace.scafa@gmail.com, das ist nur der alte Eintrag aus der globalen CLAUDE.md)
 > **Rechtsträger:** SCAFA INVESTMENTS LLC (keine persönlichen Namen im Listing!)
 > **Paket:** com.mapraiders.app
 
@@ -111,6 +111,8 @@ Die Karte ist leer. Hol sie dir.
 | Screenshot 4 | `store-assets/screenshot-04.png` | 1080×1920 | ✅ Activity-Feed — "See what's happening nearby" |
 | Screenshot 5 | `store-assets/screenshot-05.png` | 1080×1920 | ✅ Profil-Features/Streak — "Keep your streak alive" |
 | Screenshot 6 | `store-assets/screenshot-06.png` | 1080×1920 | ✅ Haustier — "Raise your companion" |
+| Tablet 7" 1–6 | `store-assets/tablet7-01..06.png` | 1200×1920 | ✅ aus Handy-Shots erzeugt (Letterbox) |
+| Tablet 10" 1–6 | `store-assets/tablet10-01..06.png` | 1600×2560 | ✅ aus Handy-Shots erzeugt (skaliert) |
 
 Hinweise:
 - Geräte-Statusbar ist aus allen Screenshots herausgeschnitten (keine Uhrzeit/Akku/System-Icons im Listing)
@@ -159,5 +161,5 @@ Hinweise:
 - [ ] Content-Rating-Fragebogen abgeschickt
 - [ ] Listing EN + DE eingepflegt
 - [ ] Feature Graphic + 6 Screenshots hochgeladen (alle fertig in `store-assets/`, siehe §4)
-- [ ] Tester-Liste fürs Internal Testing (workspace.scafa@gmail.com + Beta-Tester)
+- [ ] Tester-Liste fürs Internal Testing (scafarti@gmail.com + Beta-Tester)
 - [ ] Nach Internal-Test ok → Production-Release einreichen
