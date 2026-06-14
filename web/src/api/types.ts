@@ -90,6 +90,22 @@ export interface TerritoryDetail extends Territory {
   recent_claims?: unknown[];
 }
 
+/**
+ * GET /territories/mine — owned territories with centroid lat/lng.
+ * No polygon, no name (territories are unnamed). Newest first.
+ */
+export interface MyTerritory {
+  id: string;
+  lat: number;
+  lng: number;
+  class: string | null;
+  claim_value: number | null;
+  area_m2: number;
+  decay_level: number;
+  is_protected: boolean;
+  claimed_at: string | null;
+}
+
 // ---- Resources ---------------------------------------------------------------
 
 export type ResourceType = 'energy' | 'tech' | 'intel' | 'wood' | 'stone' | 'food';

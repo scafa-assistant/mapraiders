@@ -14,6 +14,7 @@ import LoginScreen from './components/LoginScreen';
 import ResourceHud from './components/ResourceHud';
 import TabBar, { TabKey } from './components/TabBar';
 import MapView from './components/MapView';
+import MyTerritoriesPanel from './components/MyTerritoriesPanel';
 import TerritoryPanel from './components/TerritoryPanel';
 import TerminalPanel from './components/TerminalPanel';
 import InventoryList from './components/InventoryList';
@@ -84,6 +85,7 @@ export default function App() {
         {/* Map stays mounted so Leaflet keeps its state across tab switches. */}
         <div className="tab-pane" style={{ display: tab === 'map' ? 'block' : 'none' }}>
           <MapView />
+          <MyTerritoriesPanel />
           {selectedId && (
             <TerritoryPanel territoryId={selectedId} onClose={() => select(null)} />
           )}

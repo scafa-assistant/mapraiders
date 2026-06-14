@@ -10,7 +10,7 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { territoryApi } from '../api/client';
-import { useMapStore } from '../store/mapStore';
+import { registerMap, useMapStore } from '../store/mapStore';
 import { useFeatureStore } from '../store/featureStore';
 import { useAuthStore } from '../store/authStore';
 import { useTerminalStore } from '../store/terminalStore';
@@ -78,6 +78,7 @@ export default function MapView() {
       attributionControl: true,
     }).setView(BERLIN, 13);
     mapRef.current = map;
+    registerMap(map); // expose to panels (My Territories flyTo)
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -104,6 +105,7 @@ export default function MapView() {
     return () => {
       map.off('moveend', triggerLoad);
       if (debounceRef.current) window.clearTimeout(debounceRef.current);
+      registerMap(null);
       map.remove();
       mapRef.current = null;
     };

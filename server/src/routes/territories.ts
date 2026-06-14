@@ -1,7 +1,8 @@
 // ============================================================
 // Territory Routes
 // GET  /api/territories       - Get territories in bounding box
-// GET  /api/territories/me    - Get current user's territories
+// GET  /api/territories/me    - Get current user's territories (paginated)
+// GET  /api/territories/mine  - All own territories w/ centroid (map recenter)
 // GET  /api/territories/:id   - Get single territory details
 // ============================================================
 
@@ -166,6 +167,53 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error('[Territories] Get my territories error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to get territories' });
+  }
+});
+
+/**
+ * GET /api/territories/mine
+ * List ALL territories owned by the authenticated user (no viewport filter),
+ * each with a centroid (lat/lng) so clients can recenter the map.
+ * Declared BEFORE /:id so the literal path is not captured as an id param.
+ */
+router.get('/mine', authenticate, async (req: Request, res: Response) => {
+  try {
+    const territories = await queryMany(
+      `SELECT id,
+              ST_Y(ST_Centroid(polygon)) AS lat,
+              ST_X(ST_Centroid(polygon)) AS lng,
+              class,
+              claim_value,
+              ROUND(ST_Area(polygon::geography)) AS area_m2,
+              decay_level,
+              is_protected,
+              claimed_at
+       FROM territories
+       WHERE owner_id = $1
+       ORDER BY claimed_at DESC
+       LIMIT 500`,
+      [req.userId as string]
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        territories: territories.map(t => ({
+          id: t.id as string,
+          lat: parseFloat(t.lat),
+          lng: parseFloat(t.lng),
+          class: t.class as string,
+          claim_value: Number(t.claim_value),
+          area_m2: parseFloat(t.area_m2 || '0'),
+          decay_level: parseFloat(t.decay_level || '0'),
+          is_protected: t.is_protected === true || t.is_protected === 't',
+          claimed_at: t.claimed_at as string,
+        })),
+      },
+    });
+  } catch (err: any) {
+    console.error('[Territories] Get mine error:', err);
     return res.status(500).json({ success: false, message: 'Failed to get territories' });
   }
 });

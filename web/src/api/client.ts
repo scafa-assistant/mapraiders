@@ -24,6 +24,7 @@ import type {
   LeaderboardEntry,
   LoginResponse,
   MeResponse,
+  MyTerritory,
   PveSpawn,
   ResourcesResponse,
   RunnerLevel,
@@ -173,6 +174,13 @@ export const territoryApi = {
       throw new Error(res.data.message ?? 'Failed to load territory');
     }
     return res.data.data;
+  },
+  /** Own territories with centroid lat/lng (newest first). */
+  async mine(): Promise<MyTerritory[]> {
+    const res = await api.get<ApiEnvelope<{ territories: MyTerritory[] }>>(
+      '/territories/mine',
+    );
+    return res.data.data?.territories ?? [];
   },
 };
 
