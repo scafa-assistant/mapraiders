@@ -232,6 +232,11 @@ export default function CommanderView() {
   const [battlesOpen, setBattlesOpen]         = useState(false);
   const [replayBattleId, setReplayBattleId]   = useState<string | null>(null);
 
+  // ---- Mobile panel sheet (which side-panel is open as a bottom sheet) --------
+  // On wide screens both panels are always visible (CSS); this only drives the
+  // mobile bottom-sheet open/close + backdrop. null === both closed (map only).
+  const [mobilePanel, setMobilePanel] = useState<'left' | 'right' | null>(null);
+
   // ---- Dice pouch UI ----------------------------------------------------------
   const [diceError, setDiceError]   = useState<string | null>(null);
   const [dicePending, setDicePending] = useState<string | null>(null);
@@ -407,6 +412,7 @@ export default function CommanderView() {
             } else {
               setTerrPanel({ type: 'foreign', territoryId: terr.id });
             }
+            setMobilePanel('left'); // surface the panel on phones
           });
         }
         poly.addTo(layer);
@@ -673,6 +679,7 @@ export default function CommanderView() {
     setBuildRadar(false);
     setDispatch({ phase: 'picking-unit' });
     setTerrPanel({ type: 'none' });
+    setMobilePanel('left');
   }
 
   function handlePickUnit(item: InventoryItem) {
@@ -776,6 +783,7 @@ export default function CommanderView() {
     setAttackError(null);
     setAttackMode(true);
     setTerrPanel({ type: 'none' });
+    setMobilePanel('left');
   }
 
   async function handleMarch() {
@@ -822,6 +830,7 @@ export default function CommanderView() {
     setStrikeError(null);
     setStrikeMode(true);
     setTerrPanel({ type: 'none' });
+    setMobilePanel('left');
   }
 
   async function handleStrike() {
@@ -855,6 +864,7 @@ export default function CommanderView() {
     setHaulError(null);
     setHaulMode(true);
     setTerrPanel({ type: 'none' });
+    setMobilePanel('left');
     // Pull the source stockpile so we can show what's available to haul.
     setHaulStockpile([]);
     void (async () => {
@@ -900,6 +910,7 @@ export default function CommanderView() {
     setStrikeMode(false);
     setHaulMode(false);
     setTerrPanel({ type: 'none' });
+    setMobilePanel('left');
   }
 
   async function handleIntercept() {
@@ -931,16 +942,9 @@ export default function CommanderView() {
 
   // ---- Styles -----------------------------------------------------------------
 
-  const panelBase: React.CSSProperties = {
-    position: 'absolute', top: 0, bottom: 0, width: 288,
-    background: theme.color.panel, borderRight: `1px solid ${theme.color.border}`,
-    zIndex: 700, overflowY: 'auto', padding: '14px 14px',
-    display: 'flex', flexDirection: 'column', gap: 10,
-  };
-  const rightPanel: React.CSSProperties = {
-    ...panelBase, left: 'auto', right: 0, borderRight: 'none',
-    borderLeft: `1px solid ${theme.color.border}`, width: 300,
-  };
+  // Panel positioning (side panels on desktop, bottom sheets on mobile) now
+  // lives in index.css under .commander-panel so media queries can override it.
+  // Only inner-content styles that aren't layout-critical stay inline.
   const sectionLabel: React.CSSProperties = {
     fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
     textTransform: 'uppercase', color: theme.color.textDim, marginBottom: 4,
@@ -1802,18 +1806,45 @@ export default function CommanderView() {
       {loading && !mapData && <div className="map-loading">Loading Commander…</div>}
       {error && <div className="map-loading" style={{ color: theme.color.danger }}>{error}</div>}
 
+      {/* ---- Mobile bottom-sheet toggles (hidden on desktop via CSS) ---- */}
+      <div className="commander-fabs">
+        <button
+          className={`commander-fab${mobilePanel === 'left' ? ' active' : ''}`}
+          onClick={() => setMobilePanel((p) => (p === 'left' ? null : 'left'))}
+        >
+          ◈ Command
+        </button>
+        <button
+          className={`commander-fab${mobilePanel === 'right' ? ' active' : ''}`}
+          onClick={() => setMobilePanel((p) => (p === 'right' ? null : 'right'))}
+        >
+          Movements{activeMovements.some((m) => !m.is_own) ? ' ⚠' : ''}
+        </button>
+      </div>
+
+      {/* Backdrop closes the open sheet on mobile (no-op on desktop, hidden). */}
+      {mobilePanel && (
+        <div className="commander-sheet-backdrop" onClick={() => setMobilePanel(null)} />
+      )}
+
       {/* ---- LEFT PANEL ---- */}
-      <div style={panelBase}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: theme.color.accentBright, letterSpacing: '0.04em' }}>
-          ◈ Commander
+      <div className={`commander-panel commander-panel--left${mobilePanel === 'left' ? ' is-open' : ''}`}>
+        <div className="commander-panel-head">
+          <div style={{ fontWeight: 700, fontSize: 15, color: theme.color.accentBright, letterSpacing: '0.04em' }}>
+            ◈ Commander
+          </div>
+          <button className="commander-sheet-close" onClick={() => setMobilePanel(null)} aria-label="Close">✕</button>
         </div>
         {renderLeftPanel()}
       </div>
 
       {/* ---- RIGHT PANEL ---- */}
-      <div style={rightPanel}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: theme.color.accentBright, letterSpacing: '0.04em' }}>
-          Active Movements
+      <div className={`commander-panel commander-panel--right${mobilePanel === 'right' ? ' is-open' : ''}`}>
+        <div className="commander-panel-head">
+          <div style={{ fontWeight: 700, fontSize: 13, color: theme.color.accentBright, letterSpacing: '0.04em' }}>
+            Active Movements
+          </div>
+          <button className="commander-sheet-close" onClick={() => setMobilePanel(null)} aria-label="Close">✕</button>
         </div>
 
         {/* Foreign spotted movements note */}

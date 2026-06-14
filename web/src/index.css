@@ -906,14 +906,190 @@ path.commander-carry-target {
   }
 }
 
-/* ---- Responsive: narrow viewport ---- */
+/* ============================================================
+   Commander view panels — side panels on desktop, bottom sheets on phones.
+   Positioning lives here (not inline) so the media query can override it.
+   ============================================================ */
 
-@media (max-width: 560px) {
-  .side-panel {
-    width: 100%;
+.commander-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 288px;
+  background: var(--panel);
+  z-index: 700;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.commander-panel--left {
+  left: 0;
+  border-right: 1px solid var(--border);
+}
+
+.commander-panel--right {
+  right: 0;
+  width: 300px;
+  border-left: 1px solid var(--border);
+}
+
+.commander-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* The mobile sheet close button + FAB toggle bar are desktop-hidden. */
+.commander-sheet-close {
+  display: none;
+}
+
+.commander-fabs {
+  display: none;
+}
+
+.commander-sheet-backdrop {
+  display: none;
+}
+
+/* ============================================================
+   Responsive: phones / narrow viewports.
+   ============================================================ */
+
+/* Never allow the page body to scroll sideways on any device. */
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Tab bar: stay above the home-indicator safe area, large tap targets. */
+.tabbar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tabbar button {
+  min-height: 48px;
+}
+
+@media (max-width: 700px) {
+  /* --- HUD wraps and shrinks gracefully --- */
+  .hud {
+    gap: 10px 14px;
+    padding: 8px 12px;
   }
   .hud-brand {
     width: 100%;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    margin-right: 0;
+  }
+
+  /* --- Map-tab side panel becomes full-width --- */
+  .side-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* --- My Territories: compact, capped height, never covers the map --- */
+  .myterr-panel {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: calc(100vw - 16px);
+    /* Leave room for the bottom Walk-to-claim controls + tab bar. */
+    max-height: 40vh;
+  }
+  .myterr-panel.collapsed {
+    width: auto;
+    right: auto;
+  }
+  .myterr-body {
+    /* header is ~40px; keep the list scrollable within the capped panel. */
+    max-height: calc(40vh - 44px);
+  }
+
+  /* --- Walk-to-claim: sit clear of the bottom tab bar + safe area --- */
+  .walk-claim {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: min(440px, calc(100vw - 20px));
+  }
+
+  /* --- Commander: side panels become slide-up bottom sheets --- */
+  .commander-fabs {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 690;
+    display: flex;
+    gap: 10px;
+  }
+  .commander-fab {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 700;
+    min-height: 46px;
+    padding: 0 14px;
+    box-shadow: 0 8px 24px rgba(20, 18, 16, 0.18);
+  }
+  .commander-fab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .commander-sheet-backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 18, 16, 0.32);
+    z-index: 695;
+  }
+
+  .commander-panel {
+    /* Full-width sheet anchored to the bottom, slides up when open. */
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 78vh;
+    border: none;
+    border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -10px 30px rgba(20, 18, 16, 0.22);
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(110%);
+    transition: transform 0.24s ease;
+    z-index: 700;
+  }
+  .commander-panel.is-open {
+    transform: translateY(0);
+  }
+
+  .commander-sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    font-size: 16px;
+    line-height: 1;
   }
 }
