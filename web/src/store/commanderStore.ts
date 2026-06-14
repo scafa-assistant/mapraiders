@@ -4,8 +4,9 @@
 // ============================================================
 
 import { create } from 'zustand';
-import { api, battlesApi, errorMessage, haulApi, interceptApi, strikeApi, troopsApi } from '../api/client';
-import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, HaulMovementConfig, InterceptResponse, InventoryItem, Objective, ScoutCapacity, SiloInfo } from '../api/types';
+import { api, battlesApi, errorMessage, espionageApi, haulApi, interceptApi, strikeApi, troopsApi } from '../api/client';
+import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, DetectedRadar, HaulMovementConfig, InterceptResponse, InventoryItem, Objective, ScoutCapacity, SiloInfo } from '../api/types';
+import { useResourceStore } from './resourceStore';
 
 // ---- API shapes ----------------------------------------------------------------
 
@@ -84,7 +85,7 @@ export interface CommanderMapData {
 }
 
 // Re-export for convenience
-export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail, SiloInfo, AirstrikeResult, Objective, ScoutCapacity };
+export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail, DetectedRadar, SiloInfo, AirstrikeResult, Objective, ScoutCapacity };
 
 // ---- Dispatch state machine types -----------------------------------------------
 
@@ -149,6 +150,10 @@ interface CommanderState {
   fetchBattles: () => Promise<void>;
   fetchBattleDetail: (id: string) => Promise<BattleDetail | null>;
   launchStrike: (fromTerritoryId: string, targetTerritoryId: string) => Promise<{ ok: true; result: AirstrikeResult } | { ok: false; error: string }>;
+
+  // Phase F.3 — Espionage
+  scanTerritory: (territoryId: string) => Promise<{ ok: boolean; found?: DetectedRadar[]; error?: string }>;
+  destroyRadar: (buildingId: string) => Promise<{ ok: boolean; error?: string }>;
 }
 
 // ---- Error code → human messages ------------------------------------------------
@@ -242,6 +247,18 @@ export function scoutErrorLabel(code: string): string {
       return 'Target is out of range.';
     default:
       return code;
+  }
+}
+
+export function espionageErrorLabel(code: string): string {
+  switch (code) {
+    case 'INSUFFICIENT_RESOURCES':   return 'Not enough Intel (30 required).';
+    case 'TERRITORY_NOT_FOUND':      return 'Target no longer exists.';
+    case 'BUILDING_NOT_FOUND':       return 'Target no longer exists.';
+    case 'NOT_DETECTED':             return 'This radar has not been detected.';
+    case 'NOT_TERRITORY_OWNER':      return "You don't own that territory.";
+    case 'FEATURE_DISABLED':         return 'Commander mode is not enabled.';
+    default:                         return code;
   }
 }
 
@@ -493,6 +510,45 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
         return '';
       })();
       return { ok: false, error: raw ? strikeErrorLabel(raw) : errorMessage(err, 'Strike failed') };
+    }
+  },
+
+  // ---- Phase F.3: Espionage ---------------------------------------------------
+
+  scanTerritory: async (territoryId) => {
+    try {
+      const result = await espionageApi.scan(territoryId);
+      // Scan always costs intel (even on an empty find) — refresh the balance
+      // so the HUD doesn't read 30 too high until the next trigger.
+      await useResourceStore.getState().refresh();
+      return { ok: true, found: result.found };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? espionageErrorLabel(raw) : errorMessage(err, 'Scan failed') };
+    }
+  },
+
+  destroyRadar: async (buildingId) => {
+    try {
+      await espionageApi.destroyRadar(buildingId);
+      // Refresh map so the destroyed radar vanishes from the overlay
+      await get().fetchMap();
+      return { ok: true };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? espionageErrorLabel(raw) : errorMessage(err, 'Destroy failed') };
     }
   },
 }));

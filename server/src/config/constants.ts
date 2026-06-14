@@ -899,6 +899,30 @@ export function carryFor(definitionId: string, stats: unknown): number {
 }
 
 // ============================================================
+// ESPIONAGE (Phase F.3) — Spy-radar espionage lifecycle.
+// A scout can plant ONE COVERT spy-radar on enemy land (Phase C.1 placement,
+// extended here into a full lifecycle):
+//   1. Planting now COSTS resources (charged to the scout owner atomically).
+//   2. While active it PASSIVELY detects enemy movements passing in range and
+//      notifies the radar owner ("reads the enemy's task", incl. carrying flag).
+//   3. After DETECTABLE_AFTER_HOURS an enemy may run a paid SCAN; covert radars
+//      older than that, owned by someone of <= the scanner's level, are revealed.
+//   4. Once revealed, the territory owner may DESTROY it.
+// All gated behind the `commander` feature flag.
+// ============================================================
+
+export const ESPIONAGE = {
+  /** Charged to the scout owner when a covert radar is planted (energy + intel). */
+  COVERT_RADAR_COST: { energy: 100, intel: 50 },
+  /** A covert radar must be at least this old before a scan can find it. */
+  DETECTABLE_AFTER_HOURS: 72,
+  /** Cost to run one territory scan (intel). */
+  SCAN_COST: { intel: 30 },
+  /** Per-(radar, movement) detection-notify dedup window (hours). */
+  SCAN_NOTIFY_DEDUP_HOURS: 2,
+} as const;
+
+// ============================================================
 // AIRSTRIKE (Phase C.3) — Silo-launched ranged strikes.
 // A 'silo' building lets its owner strike a foreign territory within range,
 // breaking a shield, damaging the highest-HP building, or (recon-by-fire)

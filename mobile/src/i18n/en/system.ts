@@ -71,6 +71,9 @@ export const system = {
     territoryLostMessage: 'An attacker broke through your defense!',
     defenseHeldTitle: 'Defense Holds!',
     defenseHeldMessage: 'An attacker was repelled.',
+    spyDetectedTitle: 'Spy Radar Alert!',
+    spyDetectedMessage: 'Enemy {purpose}{loaded} column detected near your radar.',
+    spyDetectedLoaded: ' (loaded!)',
   },
   notifications: {
     channelDefault: 'MapRaiders',

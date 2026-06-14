@@ -214,5 +214,16 @@ export function setupWsEventHandlers(): () => void {
     Alert.alert(S.system.ws.defenseHeldTitle, S.system.ws.defenseHeldMessage);
   }));
 
+  // Phase F.3 — spy_detected: own covert radar spotted an enemy column
+  unsubs.push(mapRaidersWs.on('spy_detected', (data) => {
+    if (!data) return;
+    hapticVibrate([0, 200, 80, 200]);
+    const loaded = data.carrying ? S.system.ws.spyDetectedLoaded : '';
+    Alert.alert(
+      S.system.ws.spyDetectedTitle,
+      t(S.system.ws.spyDetectedMessage, { purpose: data.purpose || 'unknown', loaded })
+    );
+  }));
+
   return () => unsubs.forEach(fn => fn());
 }

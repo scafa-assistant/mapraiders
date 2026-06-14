@@ -30,6 +30,7 @@ import {
   TELEPORT,
   HAUL,
   AI,
+  ESPIONAGE,
   scoutCapacityForLevel,
   scoutTier,
   carryFor,
@@ -1109,6 +1110,164 @@ class TroopEngine {
     return { battleId: ctx.battleId, winnerSide: ctx.winnerSide, loadLost: ctx.loadLost };
   }
 
+  // ---- Espionage: scan + destroy (Phase F.3) ------------------------
+
+  /**
+   * Run a paid territory SCAN to reveal old enemy covert spy-radars.
+   *
+   * One atomic tx: debit ESPIONAGE.SCAN_COST (intel) from the scanner
+   * (INSUFFICIENT_RESOURCES bubbles to the route), then find covert radars on
+   * the territory that qualify for detection and flip them detected:
+   *   - type='radar', config.covert=true, status='active'
+   *   - owner_id <> scanner (you never "detect" your own)
+   *   - created_at < NOW() - DETECTABLE_AFTER_HOURS (old enough)
+   *   - radar owner's users.level <= scanner's level ("higher-level players
+   *     find them"; an equal level still qualifies)
+   * Each match gets config.detected=true + detected_by + detected_at.
+   *
+   * The scan COSTS its intel regardless of whether anything is found — it's a
+   * recon attempt with a price (DOCUMENTED deviation choice). Returns the list
+   * of newly-detected radars (empty if none qualified).
+   */
+  async scanTerritory(
+    userId: string,
+    territoryId: string,
+  ): Promise<{
+    found: { building_id: string; owner_id: string | null; detected: true }[];
+    scanned_territory: string;
+  }> {
+    return transaction(async (c) => {
+      // The scanner's level (also implicitly asserts the user exists).
+      const me = await c.query<{ level: number | null }>(
+        `SELECT level FROM users WHERE id = $1`,
+        [userId],
+      );
+      if (me.rowCount === 0) {
+        throw new TroopError('USER_NOT_FOUND', 'Scanner does not exist');
+      }
+      const scannerLevel = me.rows[0].level ?? 1;
+
+      // Debit the scan cost FIRST — recon costs intel whether or not it finds
+      // anything (INSUFFICIENT_RESOURCES bubbles up and rolls back cleanly).
+      await resourceService.debit(
+        userId,
+        'intel',
+        ESPIONAGE.SCAN_COST.intel,
+        'territory_scan',
+        { territory_id: territoryId },
+        c,
+      );
+
+      // Reveal qualifying covert radars. Lock the matched rows FOR UPDATE so two
+      // concurrent scans don't double-process; jsonb_set marks them detected.
+      const revealed = await c.query<{ id: string; owner_id: string | null }>(
+        `UPDATE buildings b
+            SET config = b.config
+                         || jsonb_build_object(
+                              'detected', true,
+                              'detected_by', $2::text,
+                              'detected_at', NOW()::text
+                            )
+          WHERE b.id IN (
+            SELECT b2.id
+              FROM buildings b2
+              JOIN users uo ON uo.id = b2.owner_id
+             WHERE b2.territory_id = $1
+               AND b2.type = 'radar'
+               AND b2.status = 'active'
+               AND COALESCE((b2.config->>'covert')::boolean, FALSE) IS TRUE
+               AND b2.owner_id <> $2
+               AND b2.created_at < NOW() - ($3 || ' hours')::interval
+               AND COALESCE(uo.level, 1) <= $4
+             FOR UPDATE
+          )
+          RETURNING b.id, b.owner_id`,
+        [territoryId, userId, String(ESPIONAGE.DETECTABLE_AFTER_HOURS), scannerLevel],
+      );
+
+      const found = revealed.rows.map((r) => ({
+        building_id: r.id,
+        owner_id: r.owner_id,
+        detected: true as const,
+      }));
+      return { found, scanned_territory: territoryId };
+    });
+  }
+
+  /**
+   * Destroy a DETECTED covert spy-radar that sits on a territory the caller
+   * owns. The caller owns the TERRITORY (not the radar): they found the spy
+   * device on their own land and remove it.
+   *
+   * One atomic tx: lock the building FOR UPDATE; require it to be a covert radar
+   * with config.detected=true (NOT_FOUND / NOT_DETECTED otherwise); verify the
+   * caller owns the territory it sits on; set status='destroyed'. The "remove it
+   * with troops" flavour is cosmetic for now — ownership of the land is enough.
+   * WS 'radar_destroyed' to the radar OWNER post-commit. Returns {destroyed,...}.
+   */
+  async destroyCovertRadar(
+    userId: string,
+    buildingId: string,
+  ): Promise<{ destroyed: true; building_id: string; radar_owner_id: string | null }> {
+    const ctx = await transaction(async (c) => {
+      const cur = await c.query<{
+        id: string;
+        territory_id: string;
+        owner_id: string | null;
+        type: string;
+        status: string;
+        config: Record<string, any>;
+      }>(
+        `SELECT id, territory_id, owner_id, type, status, config
+           FROM buildings
+          WHERE id = $1
+          FOR UPDATE`,
+        [buildingId],
+      );
+      if (cur.rowCount === 0) {
+        throw new TroopError('BUILDING_NOT_FOUND', 'Building does not exist');
+      }
+      const b = cur.rows[0];
+      const isCovertRadar =
+        b.type === 'radar' && !!(b.config && b.config.covert);
+      if (!isCovertRadar || b.status === 'destroyed') {
+        throw new TroopError('BUILDING_NOT_FOUND', 'No such covert radar');
+      }
+      if (!(b.config && b.config.detected === true)) {
+        throw new TroopError('NOT_DETECTED', 'This covert radar has not been detected');
+      }
+
+      // The caller must own the TERRITORY the radar sits on.
+      const terr = await c.query<{ owner_id: string | null }>(
+        `SELECT owner_id FROM territories WHERE id = $1 FOR UPDATE`,
+        [b.territory_id],
+      );
+      if (terr.rowCount === 0 || terr.rows[0].owner_id !== userId) {
+        throw new TroopError('NOT_TERRITORY_OWNER', 'You do not own this territory');
+      }
+
+      await c.query(
+        `UPDATE buildings SET status = 'destroyed' WHERE id = $1`,
+        [buildingId],
+      );
+
+      return { radar_owner_id: b.owner_id };
+    });
+
+    // Post-commit: tell the spy their radar was found and destroyed.
+    if (ctx.radar_owner_id) {
+      try {
+        wsService.sendToUser(ctx.radar_owner_id, 'radar_destroyed', {
+          building_id: buildingId,
+        });
+      } catch {
+        /* non-critical */
+      }
+    }
+
+    return { destroyed: true, building_id: buildingId, radar_owner_id: ctx.radar_owner_id };
+  }
+
   // ---- Reads (garrison) ---------------------------------------------
 
   /**
@@ -1339,7 +1498,7 @@ class TroopEngine {
           ownerId: string;
           toCell: string;
           instanceIds: string[];
-          buildResult: 'placed' | 'no_target' | 'skipped';
+          buildResult: 'placed' | 'no_target' | 'skipped' | 'no_funds';
         }
       | {
           kind: 'return';
@@ -1664,7 +1823,11 @@ class TroopEngine {
       await visionService.writeExploredCorridor(mv.owner_id, corridorCells, c);
 
       // Optional covert radar drop on a FOREIGN active territory at to_cell.
-      let buildResult: 'placed' | 'no_target' | 'skipped' = 'skipped';
+      // Phase F.3: planting now COSTS resources (energy + intel), charged to the
+      // scout owner in THIS atomic tx (reason 'covert_radar'). If the owner
+      // can't afford BOTH, skip the placement cleanly (buildResult='no_funds') —
+      // vision + auto-return are unaffected; we never fail the whole arrival.
+      let buildResult: 'placed' | 'no_target' | 'skipped' | 'no_funds' = 'skipped';
       const buildRadar = !!(mv.config && mv.config.build_radar);
       if (buildRadar) {
         const foreign = await c.query<{ id: string }>(
@@ -1686,14 +1849,64 @@ class TroopEngine {
             [foreign.rows[0].id, mv.owner_id],
           );
           if ((existing.rowCount ?? 0) === 0) {
-            // buildings: hp/tier have defaults; set explicitly for clarity.
-            await c.query(
-              `INSERT INTO buildings (territory_id, owner_id, type, tier, status, hp, config)
-               VALUES ($1, $2, 'radar', 1, 'active', 100, $3)`,
-              [foreign.rows[0].id, mv.owner_id, JSON.stringify({ covert: true })],
+            // Charge the planting cost (energy + intel) atomically. resourceService
+            // .debit guards overdraft per-resource and throws ResourceError on
+            // insufficient funds. To skip cleanly WITHOUT aborting the whole
+            // arrival tx, gate the debit on an in-tx balance read of BOTH
+            // resources first (no debit fires unless both are affordable), so a
+            // ResourceError can't roll back the scout's vision/auto-return.
+            const cost = ESPIONAGE.COVERT_RADAR_COST;
+            // Lock BOTH resource rows FOR UPDATE so the affordability check is
+            // authoritative within this tx — no concurrent spend can slip
+            // between the read and the debits and leave a partial charge.
+            const bal = await c.query<{ resource: string; balance: string }>(
+              `SELECT resource, balance FROM player_resources
+                WHERE user_id = $1 AND resource IN ('energy', 'intel')
+                FOR UPDATE`,
+              [mv.owner_id],
             );
+            const have: Record<string, number> = {};
+            for (const r of bal.rows) have[r.resource] = parseInt(r.balance, 10) || 0;
+            const affordable =
+              (have.energy ?? 0) >= cost.energy && (have.intel ?? 0) >= cost.intel;
+            if (affordable) {
+              await resourceService.debit(
+                mv.owner_id,
+                'energy',
+                cost.energy,
+                'covert_radar',
+                { territory_id: foreign.rows[0].id, to_cell: mv.to_cell },
+                c,
+              );
+              await resourceService.debit(
+                mv.owner_id,
+                'intel',
+                cost.intel,
+                'covert_radar',
+                { territory_id: foreign.rows[0].id, to_cell: mv.to_cell },
+                c,
+              );
+              // buildings: hp/tier have defaults; set explicitly for clarity.
+              // Stamp planted_at (created_at also exists and is used by the scan
+              // detectability window; planted_at is an explicit duplicate marker).
+              await c.query(
+                `INSERT INTO buildings (territory_id, owner_id, type, tier, status, hp, config)
+                 VALUES ($1, $2, 'radar', 1, 'active', 100, $3)`,
+                [
+                  foreign.rows[0].id,
+                  mv.owner_id,
+                  JSON.stringify({ covert: true, planted_at: new Date(mv.arrives_at).toISOString() }),
+                ],
+              );
+              buildResult = 'placed';
+            } else {
+              buildResult = 'no_funds';
+            }
+          } else {
+            // A covert radar from this owner already stands here — treat the
+            // (free, idempotent) repeat as 'placed' with no extra charge.
+            buildResult = 'placed';
           }
-          buildResult = 'placed';
         } else {
           buildResult = 'no_target';
         }

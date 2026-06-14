@@ -59,7 +59,8 @@ import type {
   ScoutCapacity,
   StockpileEntry,
 } from '../../services/api';
-import { HYPERBOREAN_AI_USER_ID } from '../../services/api';
+import { HYPERBOREAN_AI_USER_ID, commanderApi } from '../../services/api';
+import { useResourceStore } from '../../store/resourceStore';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 
 const H3_RES = 8;
@@ -808,6 +809,13 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
 
 // ─── Territory action sheet ─────────────────────────────────────────────────────
 
+// ─── Spy-radar detected result ─────────────────────────────────────────────────
+interface DetectedRadar {
+  building_id: string;
+  owner_id: string | null;
+  detected: true;
+}
+
 function TerritoryActionSheet({
   territory,
   garrison,
@@ -846,6 +854,62 @@ function TerritoryActionSheet({
   const [siloPickerOpen, setSiloPickerOpen] = useState(false);
   const [showAirstrikeConfirm, setShowAirstrikeConfirm] = useState(false);
   const [selectedSiloTerritoryId, setSelectedSiloTerritoryId] = useState<string | null>(null);
+
+  // Phase F.3 — spy scan state
+  const [scanning, setScanning] = useState(false);
+  const [scanDone, setScanDone] = useState(false);
+  const [detectedRadars, setDetectedRadars] = useState<DetectedRadar[]>([]);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [destroyingId, setDestroyingId] = useState<string | null>(null);
+
+  const intelBalance = useResourceStore((s) => s.balances.intel);
+  const SCAN_COST = 30;
+
+  // Reset scan state when territory changes
+  const prevTerritoryId = React.useRef<string | null>(null);
+  if (territory?.id !== prevTerritoryId.current) {
+    prevTerritoryId.current = territory?.id ?? null;
+    // Can't call setState here in render, but the reset effect below handles it
+  }
+
+  useEffect(() => {
+    setScanning(false);
+    setScanDone(false);
+    setDetectedRadars([]);
+    setScanError(null);
+    setDestroyingId(null);
+  }, [territory?.id]);
+
+  const handleScan = async () => {
+    if (!territory) return;
+    setScanning(true);
+    setScanDone(false);
+    setScanError(null);
+    setDetectedRadars([]);
+    try {
+      const result = await commanderApi.scanTerritory(territory.id);
+      setDetectedRadars(result.found);
+      setScanDone(true);
+      // Scan always costs intel — refresh so the HUD isn't 30 too high.
+      void useResourceStore.getState().fetchResources();
+    } catch (err: unknown) {
+      setScanError(err instanceof Error ? err.message : 'Scan failed.');
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const handleDestroyRadar = async (buildingId: string) => {
+    setDestroyingId(buildingId);
+    try {
+      await commanderApi.destroyRadar(buildingId);
+      setDetectedRadars((prev) => prev.filter((r) => r.building_id !== buildingId));
+    } catch (err: unknown) {
+      Alert.alert('Destroy failed', err instanceof Error ? err.message : 'Unknown error.');
+    } finally {
+      setDestroyingId(null);
+    }
+  };
 
   if (!territory) return null;
   const isOwn = territory.is_own;
@@ -1028,6 +1092,65 @@ function TerritoryActionSheet({
                   <Ionicons name="bus" size={18} color="#FFFFFF" />
                   <Text style={styles.haulBtnText}>🚚 Haul home</Text>
                 </TouchableOpacity>
+              ) : null}
+
+              {/* Phase F.3 — Spy radar scan */}
+              <Text style={styles.sectionLabel}>SPY DEFENSE</Text>
+              <TouchableOpacity
+                style={[
+                  styles.scanBtn,
+                  (intelBalance < SCAN_COST || scanning) && styles.scanBtnDisabled,
+                ]}
+                onPress={intelBalance >= SCAN_COST && !scanning ? handleScan : undefined}
+                disabled={intelBalance < SCAN_COST || scanning}
+                activeOpacity={0.85}
+              >
+                {scanning ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="radio" size={18} color={intelBalance >= SCAN_COST ? '#FFFFFF' : C.textSecondary} />
+                    <Text style={[styles.scanBtnText, intelBalance < SCAN_COST && { color: C.textSecondary }]}>
+                      {intelBalance < SCAN_COST
+                        ? `Scan for spies (need ${SCAN_COST} intel, have ${intelBalance})`
+                        : `Scan for spies (${SCAN_COST} intel)`}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+              {scanError ? (
+                <Text style={styles.scanErrorText}>{scanError}</Text>
+              ) : null}
+              {scanDone ? (
+                detectedRadars.length === 0 ? (
+                  <Text style={styles.emptyLine}>No enemy spy-radars found.</Text>
+                ) : (
+                  detectedRadars.map((radar) => (
+                    <View key={radar.building_id} style={styles.radarRow}>
+                      <Ionicons name="radio" size={16} color={C.enemy} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.radarId}>#{radar.building_id.slice(0, 8)}</Text>
+                        {radar.owner_id ? (
+                          <Text style={styles.radarOwner}>Owner: #{radar.owner_id.slice(0, 8)}</Text>
+                        ) : null}
+                      </View>
+                      <TouchableOpacity
+                        style={[
+                          styles.destroyBtn,
+                          destroyingId === radar.building_id && { opacity: 0.5 },
+                        ]}
+                        onPress={() => handleDestroyRadar(radar.building_id)}
+                        disabled={!!destroyingId}
+                      >
+                        {destroyingId === radar.building_id ? (
+                          <ActivityIndicator color="#FFFFFF" size="small" />
+                        ) : (
+                          <Text style={styles.destroyBtnText}>Destroy</Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )
               ) : null}
             </>
           ) : (
@@ -2124,4 +2247,52 @@ const styles = StyleSheet.create({
   battleOpponent: { color: '#D7263D', fontSize: FONT_SIZE.sm, fontWeight: '700' },
   battleDate: { color: C.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
   battleResult: { fontSize: FONT_SIZE.sm, fontWeight: '800', letterSpacing: 0.5 },
+
+  // Phase F.3 — spy scan + destroy
+  scanBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    backgroundColor: C.accent,
+    borderRadius: RADIUS.md,
+    paddingVertical: 12,
+    marginTop: SPACING.sm,
+  },
+  scanBtnDisabled: {
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  scanBtnText: { color: '#FFFFFF', fontWeight: '800', fontSize: FONT_SIZE.md },
+  scanErrorText: {
+    color: C.enemy,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+    paddingVertical: 4,
+    paddingHorizontal: SPACING.sm,
+  },
+  radarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    backgroundColor: C.bg,
+    borderRadius: RADIUS.sm,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: C.enemy,
+  },
+  radarId: { color: C.text, fontSize: FONT_SIZE.sm, fontWeight: '600' },
+  radarOwner: { color: C.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
+  destroyBtn: {
+    backgroundColor: C.enemy,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 6,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  destroyBtnText: { color: '#FFFFFF', fontSize: FONT_SIZE.xs, fontWeight: '800' },
 });

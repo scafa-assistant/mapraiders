@@ -242,6 +242,11 @@ class BuildingEngine {
    * COVERT buildings (scout-planted radars, Phase C.1) are only visible to
    * their own owner — without the filter the territory owner could trivially
    * unmask every spy radar by polling this listing.
+   *
+   * Phase F.3: once a covert radar has been DETECTED (config.detected=true) via
+   * a territory scan, it becomes visible to non-owners too (so the territory
+   * owner can see the spy device they uncovered and destroy it). Undetected
+   * covert buildings stay hidden from everyone but their owner.
    */
   async getBuildings(
     territoryId: string,
@@ -257,6 +262,7 @@ class BuildingEngine {
             AND (
               COALESCE((config->>'covert')::boolean, FALSE) IS NOT TRUE
               OR owner_id = $2
+              OR COALESCE((config->>'detected')::boolean, FALSE) IS TRUE
             )
           ORDER BY created_at ASC`,
         [territoryId, viewerId ?? null],

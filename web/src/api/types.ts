@@ -467,3 +467,34 @@ export interface ScoutCapacity {
   max: number;
   active: number;
 }
+
+// ---- Commander: Espionage (Phase F.3) ----------------------------------------
+
+/** A detected enemy covert radar returned by POST /commander/scan */
+export interface DetectedRadar {
+  building_id: string;
+  owner_id: string | null;
+  detected: true;
+}
+
+export interface ScanResponse {
+  found: DetectedRadar[];
+  scanned_territory: string;
+}
+
+export interface DestroyRadarResponse {
+  destroyed: boolean;
+}
+
+/**
+ * Live WS event pushed when one of YOUR covert radars detects an enemy column.
+ * event = "spy_detected"
+ */
+export interface SpyDetectedPayload {
+  radar_building_id: string;
+  territory_id: string;
+  current_cell: string;
+  purpose: 'scout' | 'attack' | 'reinforce' | 'haul' | 'return';
+  carrying: boolean;
+  eta: string;
+}

@@ -16,6 +16,7 @@ import type {
   BuildingListResponse,
   BuildingType,
   ClientFeatureFlag,
+  DestroyRadarResponse,
   HaulRequest,
   HaulResponse,
   InterceptRequest,
@@ -31,6 +32,7 @@ import type {
   RouteClaimResult,
   RoutePoint,
   RunnerLevel,
+  ScanResponse,
   StockpileEntry,
   Territory,
   TerritoryDetail,
@@ -450,6 +452,32 @@ export const battlesApi = {
       throw new Error(res.data.message ?? 'Failed to load battle');
     }
     return res.data.data.battle;
+  },
+};
+
+// ---- Commander: Espionage (Phase F.3) ----------------------------------------
+
+export const espionageApi = {
+  /** Paid scan (30 intel) to reveal enemy covert spy-radars on a territory you own. */
+  async scan(territoryId: string): Promise<ScanResponse> {
+    const res = await api.post<ApiEnvelope<ScanResponse>>('/commander/scan', {
+      territory_id: territoryId,
+    });
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Scan failed');
+    }
+    return res.data.data;
+  },
+
+  /** Destroy a detected enemy covert radar on a territory you own. */
+  async destroyRadar(buildingId: string): Promise<DestroyRadarResponse> {
+    const res = await api.post<ApiEnvelope<DestroyRadarResponse>>('/commander/destroy-radar', {
+      building_id: buildingId,
+    });
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Destroy failed');
+    }
+    return res.data.data;
   },
 };
 

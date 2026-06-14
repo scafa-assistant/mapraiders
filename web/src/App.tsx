@@ -10,6 +10,8 @@ import { useFeatureStore } from './store/featureStore';
 import { useResourceStore } from './store/resourceStore';
 import { useMapStore } from './store/mapStore';
 import { useTerminalStore } from './store/terminalStore';
+import { getStoredToken } from './api/client';
+import { mapRaidersWs } from './api/ws';
 import LoginScreen from './components/LoginScreen';
 import ResourceHud from './components/ResourceHud';
 import TabBar, { TabKey } from './components/TabBar';
@@ -47,6 +49,17 @@ export default function App() {
     void loadFlags();
     void restore();
   }, [loadFlags, restore]);
+
+  // WebSocket lifecycle: connect once authenticated, disconnect on logout.
+  // getStoredToken() reads from localStorage — safe to call after restore().
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const token = getStoredToken();
+      if (token) mapRaidersWs.connect(token);
+    } else {
+      mapRaidersWs.disconnect();
+    }
+  }, [status]);
 
   // Pull resources once authenticated and flags are known.
   useEffect(() => {

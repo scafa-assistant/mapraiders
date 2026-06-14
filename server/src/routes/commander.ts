@@ -769,5 +769,72 @@ router.post('/intercept', authenticate, async (req: Request, res: Response) => {
   }
 });
 
+// ---- POST /scan --------------------------------------------------------------
+// Run a paid territory SCAN to reveal old enemy covert spy-radars (Phase F.3).
+// Body: { territory_id }. Charges ESPIONAGE.SCAN_COST (intel) regardless of
+// whether anything is found (recon attempt has a price). Returns
+// { found: [{building_id, owner_id, detected}], scanned_territory }. Gated
+// behind the `commander` flag. Error mapping: *_NOT_FOUND → 404, everything
+// else (INSUFFICIENT_RESOURCES, ...) → 400.
+
+router.post('/scan', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const territoryId = body.territory_id;
+    if (typeof territoryId !== 'string') {
+      return res.status(400).json({ success: false, message: 'territory_id is required' });
+    }
+
+    const result = await troopEngine.scanTerritory(userId, territoryId);
+    return res.json({ success: true, data: result });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /scan error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to scan territory' });
+  }
+});
+
+// ---- POST /destroy-radar -----------------------------------------------------
+// Destroy a DETECTED covert spy-radar that sits on a territory you own (Phase
+// F.3). Body: { building_id }. The radar must be a covert radar with
+// config.detected=true and sit on a territory you own. Returns { destroyed }.
+// Gated behind the `commander` flag. Error mapping: *_NOT_FOUND → 404,
+// NOT_DETECTED / NOT_TERRITORY_OWNER → 400.
+
+router.post('/destroy-radar', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const buildingId = body.building_id;
+    if (typeof buildingId !== 'string') {
+      return res.status(400).json({ success: false, message: 'building_id is required' });
+    }
+
+    const result = await troopEngine.destroyCovertRadar(userId, buildingId);
+    return res.json({ success: true, data: { destroyed: result.destroyed } });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /destroy-radar error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to destroy radar' });
+  }
+});
+
 export const commanderRouter = router;
 export default router;

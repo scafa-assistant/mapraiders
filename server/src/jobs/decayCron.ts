@@ -34,7 +34,7 @@ import { runH3Backfill, runOsmPrefetch } from './phase0Jobs';
 import { runPveSpawnTick, runAetherLeechTick } from './phaseAJobs';
 import { runEnergyTick, runBuildingCompletion } from './phaseBJobs';
 import { runTroopArrivalTick, runVisibilityCleanup } from './phaseC1Jobs';
-import { runScoutVisionTick } from './phaseC2Jobs';
+import { runScoutVisionTick, runSpyRadarDetectionTick } from './phaseC2Jobs';
 import { runAiTriggerTick, runAiGeneralTick, runRuinsOvergrowth } from './phaseDJobs';
 import { runExtractionTick } from './phaseF1Jobs';
 
@@ -1040,12 +1040,21 @@ export function setupCronJobs(): void {
 
     try {
       const processed = await runScoutVisionTick();
+      // Phase F.3: fold the passive spy-radar detection pass into the same
+      // commander tick (no separate cron). A failure here is logged but does
+      // not poison the scout-vision result already recorded below.
+      let spyDetections = 0;
+      try {
+        spyDetections = await runSpyRadarDetectionTick();
+      } catch (spyErr) {
+        console.error('[CRON] Spy radar detection failed:', spyErr);
+      }
       await recordCronRun({
         job: 'scout_vision_tick',
         status: 'success',
         startedAt: new Date(startTime).toISOString(),
         durationMs: Date.now() - startTime,
-        recordsProcessed: processed,
+        recordsProcessed: processed + spyDetections,
       });
     } catch (err) {
       console.error('[CRON] Scout vision tick failed:', err);

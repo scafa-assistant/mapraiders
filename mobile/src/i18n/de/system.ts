@@ -73,6 +73,9 @@ export const system: typeof en = {
     territoryLostMessage: 'Ein Angreifer hat deine Verteidigung durchbrochen!',
     defenseHeldTitle: 'Verteidigung hält!',
     defenseHeldMessage: 'Ein Angreifer wurde abgewehrt.',
+    spyDetectedTitle: 'Spionage-Radar-Alarm!',
+    spyDetectedMessage: 'Feindliche {purpose}{loaded}-Kolonne in der Nähe deines Radars entdeckt.',
+    spyDetectedLoaded: ' (beladen!)',
   },
   notifications: {
     channelDefault: 'MapRaiders',

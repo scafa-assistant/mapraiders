@@ -16,14 +16,16 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import * as h3 from 'h3-js';
 import { useCommanderStore } from '../store/commanderStore';
-import type { AirstrikeResult, CommanderMovement, ScoutCapacity, SiloInfo } from '../store/commanderStore';
+import type { AirstrikeResult, CommanderMovement, DetectedRadar, ScoutCapacity, SiloInfo } from '../store/commanderStore';
 import { HYPERBOREAN_AI_USER_ID } from '../store/commanderStore';
 import { useInventoryStore } from '../store/inventoryStore';
 import { useAuthStore } from '../store/authStore';
 import { useFeatureStore } from '../store/featureStore';
+import { useResourceStore } from '../store/resourceStore';
 import { buildingApi } from '../api/client';
+import { mapRaidersWs } from '../api/ws';
 import { theme, colorForRarity } from '../theme';
-import type { HaulLoad, InventoryItem, StockpileEntry } from '../api/types';
+import type { HaulLoad, InventoryItem, SpyDetectedPayload, StockpileEntry } from '../api/types';
 import BattleReplayModal from './BattleReplayModal';
 
 // ---- Colour constants -----------------------------------------------------------
@@ -201,10 +203,12 @@ export default function CommanderView() {
     battles, battlesLoading, fetchBattles,
     launchStrike,
     sendHaul, intercept,
+    scanTerritory, destroyRadar,
   } = useCommanderStore();
   const { items: inventoryItems, refresh: refreshInventory } = useInventoryStore();
   const userId = useAuthStore((s) => s.user?.id);
   const economyEnabled = useFeatureStore((s) => s.isEnabled('economy'));
+  const intelBalance = useResourceStore((s) => s.balances.intel);
 
   // ---- Scout dispatch UI state ------------------------------------------------
   const [selectedUnit, setSelectedUnit]           = useState<InventoryItem | null>(null);
@@ -266,6 +270,18 @@ export default function CommanderView() {
   const [interceptOriginId, setInterceptOriginId]   = useState<string>('');
   const [interceptError, setInterceptError]         = useState<string | null>(null);
   const [interceptPending, setInterceptPending]     = useState(false);
+
+  // ---- Scan / Espionage UI (Phase F.3) ----------------------------------------
+  // Keyed by territory id: null = idle, 'scanning' = in-flight, DetectedRadar[] = result
+  const [scanResults, setScanResults]   = useState<Record<string, DetectedRadar[] | 'scanning' | null>>({});
+  const [scanErrors, setScanErrors]     = useState<Record<string, string>>({});
+  const [destroyPending, setDestroyPending] = useState<Record<string, boolean>>({});
+  const [destroyErrors, setDestroyErrors]   = useState<Record<string, string>>({});
+
+  // ---- Spy-alert log (real-time WS, last 10 events) ---------------------------
+  const [spyLog, setSpyLog] = useState<Array<SpyDetectedPayload & { _ts: number }>>([]);
+  const [spyToast, setSpyToast] = useState<string | null>(null);
+  const spyToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---- Boot -------------------------------------------------------------------
   useEffect(() => {
@@ -623,6 +639,29 @@ export default function CommanderView() {
     return () => window.clearInterval(id);
   }, []);
 
+  // ---- WS: spy_detected event (Phase F.3) ------------------------------------
+  useEffect(() => {
+    const off = mapRaidersWs.on('spy_detected', (raw) => {
+      const payload = raw as SpyDetectedPayload;
+      if (!payload || typeof payload.territory_id !== 'string') return;
+
+      // Prepend to log (newest first), keep at most 10.
+      setSpyLog((prev) => [{ ...payload, _ts: Date.now() }, ...prev].slice(0, 10));
+
+      // Show a dismissible toast for a few seconds.
+      const label = payload.carrying ? ` (loaded!)` : '';
+      const msg = `📡 Enemy ${payload.purpose}${label} spotted near territory`;
+      if (spyToastTimerRef.current) clearTimeout(spyToastTimerRef.current);
+      setSpyToast(msg);
+      spyToastTimerRef.current = setTimeout(() => setSpyToast(null), 6000);
+    });
+    return () => {
+      off();
+      if (spyToastTimerRef.current) clearTimeout(spyToastTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // ---- Derived data -----------------------------------------------------------
   const unitItems   = inventoryItems.filter((i) => isUnitItem(i) && i.status === 'inventory');
   const haulerItems = inventoryItems.filter((i) => isHaulerItem(i) && i.status === 'inventory');
@@ -940,6 +979,37 @@ export default function CommanderView() {
     }
   }
 
+  // ---- Scan / Espionage handlers (Phase F.3) ----------------------------------
+
+  async function handleScan(territoryId: string) {
+    setScanResults((prev) => ({ ...prev, [territoryId]: 'scanning' }));
+    setScanErrors((prev) => { const n = { ...prev }; delete n[territoryId]; return n; });
+    const result = await scanTerritory(territoryId);
+    if (result.ok) {
+      setScanResults((prev) => ({ ...prev, [territoryId]: result.found ?? [] }));
+    } else {
+      setScanResults((prev) => ({ ...prev, [territoryId]: null }));
+      setScanErrors((prev) => ({ ...prev, [territoryId]: result.error ?? 'Scan failed' }));
+    }
+  }
+
+  async function handleDestroyRadar(buildingId: string, territoryId: string) {
+    setDestroyPending((prev) => ({ ...prev, [buildingId]: true }));
+    setDestroyErrors((prev) => { const n = { ...prev }; delete n[buildingId]; return n; });
+    const result = await destroyRadar(buildingId);
+    setDestroyPending((prev) => ({ ...prev, [buildingId]: false }));
+    if (result.ok) {
+      // Remove the destroyed radar from scan results for this territory
+      setScanResults((prev) => {
+        const existing = prev[territoryId];
+        if (!Array.isArray(existing)) return prev;
+        return { ...prev, [territoryId]: existing.filter((r) => r.building_id !== buildingId) };
+      });
+    } else {
+      setDestroyErrors((prev) => ({ ...prev, [buildingId]: result.error ?? 'Destroy failed' }));
+    }
+  }
+
   // ---- Styles -----------------------------------------------------------------
 
   // Panel positioning (side panels on desktop, bottom sheets on mobile) now
@@ -1098,6 +1168,99 @@ export default function CommanderView() {
             🚚 Haul resources home
           </button>
         )}
+
+        {/* Spy-Radar Scan (Phase F.3) */}
+        {(() => {
+          const scanState = scanResults[territoryId];
+          const scanError = scanErrors[territoryId];
+          const isScanning = scanState === 'scanning';
+          const scanDone  = Array.isArray(scanState);
+          const canScan   = !isScanning && intelBalance >= 30;
+
+          return (
+            <div style={{
+              marginTop: 8,
+              border: `1px solid ${theme.color.border}`,
+              borderRadius: theme.radius,
+              padding: '10px 12px',
+              background: theme.color.panelAlt,
+            }}>
+              <div style={{ ...sectionLabel, marginBottom: 6 }}>Spy Radar Scan</div>
+
+              {scanError && (
+                <div style={{ color: theme.color.danger, fontSize: 12, marginBottom: 4 }}>{scanError}</div>
+              )}
+
+              <button
+                style={{
+                  ...btnAccent,
+                  opacity: canScan ? 1 : 0.5,
+                  background: canScan ? theme.color.accent : theme.color.border,
+                }}
+                disabled={!canScan}
+                title={intelBalance < 30 ? 'Not enough Intel (30 required).' : undefined}
+                onClick={() => void handleScan(territoryId)}
+              >
+                {isScanning ? 'Scanning…' : '📡 Scan for spies (30 intel)'}
+              </button>
+
+              {intelBalance < 30 && !isScanning && (
+                <div style={{ fontSize: 11, color: theme.color.textDim, marginTop: 4 }}>
+                  Not enough Intel ({Math.round(intelBalance)}/30).
+                </div>
+              )}
+
+              {scanDone && (
+                <div style={{ marginTop: 8 }}>
+                  {(scanState as DetectedRadar[]).length === 0 ? (
+                    <div style={{ fontSize: 12, color: theme.color.textDim }}>
+                      No enemy spy-radars found.
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 12, color: theme.color.amber, fontWeight: 700, marginBottom: 4 }}>
+                        {(scanState as DetectedRadar[]).length} enemy radar{(scanState as DetectedRadar[]).length !== 1 ? 's' : ''} detected
+                      </div>
+                      {(scanState as DetectedRadar[]).map((r) => {
+                        const pending = destroyPending[r.building_id];
+                        const dErr    = destroyErrors[r.building_id];
+                        return (
+                          <div key={r.building_id} style={{
+                            ...mvCard,
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            borderColor: `${theme.color.danger}55`,
+                            marginBottom: 4,
+                          }}>
+                            <div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: theme.color.danger }}>
+                                📡 Spy Radar
+                              </div>
+                              <div style={{ fontSize: 10, color: theme.color.textDim, fontFamily: 'monospace' }}>
+                                {r.building_id.slice(0, 8)}…
+                              </div>
+                              {dErr && (
+                                <div style={{ fontSize: 11, color: theme.color.danger }}>{dErr}</div>
+                              )}
+                            </div>
+                            <button
+                              style={{ ...btnDanger, opacity: pending ? 0.6 : 1 }}
+                              disabled={!!pending}
+                              onClick={() => void handleDestroyRadar(r.building_id, territoryId)}
+                            >
+                              {pending ? '…' : 'Destroy'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </>
     );
   }
@@ -1872,6 +2035,30 @@ export default function CommanderView() {
             ))
         )}
 
+        {/* Spy log (Phase F.3) — real-time WS events, last 10 */}
+        {spyLog.length > 0 && (
+          <>
+            <div style={{ height: 1, background: theme.color.border, margin: '6px 0' }} />
+            <div style={{ fontWeight: 700, fontSize: 12, color: theme.color.amber, marginBottom: 4 }}>
+              📡 Spy Alerts
+            </div>
+            {spyLog.map((entry) => (
+              <div key={entry._ts} style={{
+                ...mvCard,
+                borderColor: entry.carrying ? `${theme.color.danger}66` : `${theme.color.amber}66`,
+                marginBottom: 4,
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: entry.carrying ? theme.color.danger : theme.color.amber }}>
+                  Enemy {entry.purpose}{entry.carrying ? ' (loaded!)' : ''}
+                </div>
+                <div style={{ fontSize: 11, color: theme.color.textDim }}>
+                  Near territory · {timeAgo(new Date(entry._ts).toISOString())}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
         {/* Battles section */}
         <div style={{ height: 1, background: theme.color.border, margin: '6px 0' }} />
         <button
@@ -1955,6 +2142,23 @@ export default function CommanderView() {
           pointerEvents: 'none',
         }}>
           {strikeToast}
+        </div>
+      )}
+
+      {/* Spy-detected toast (Phase F.3) */}
+      {spyToast && (
+        <div
+          style={{
+            position: 'absolute', bottom: strikeToast ? 72 : 24, left: '50%', transform: 'translateX(-50%)',
+            background: theme.color.amber, border: `1px solid ${theme.color.amber}`,
+            borderRadius: 12, padding: '10px 20px', zIndex: 801,
+            fontWeight: 700, fontSize: 13, color: '#1A1206',
+            boxShadow: '0 4px 24px rgba(20,18,16,0.18)',
+            cursor: 'pointer', whiteSpace: 'nowrap',
+          }}
+          onClick={() => setSpyToast(null)}
+        >
+          {spyToast}
         </div>
       )}
     </div>

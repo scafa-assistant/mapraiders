@@ -1088,6 +1088,51 @@ export const commanderApi = {
   /** Fetch full battle detail with the round-by-round dice log. */
   getBattle: (id: string) =>
     api.get<{ success: boolean; data: { battle: CommanderBattleDetail } }>(`/commander/battles/${id}`),
+
+  /**
+   * Phase F.3 — Paid scan (30 intel) revealing enemy COVERT spy-radars on a
+   * territory older than 72 h owned by someone at or below the caller's level.
+   * Returns the unwrapped `found` array and the scanned territory id.
+   * Throws a human-readable string on failure.
+   */
+  scanTerritory: async (
+    territoryId: string
+  ): Promise<{ found: { building_id: string; owner_id: string | null; detected: true }[]; scanned_territory: string }> => {
+    try {
+      const res = await api.post<{ success: boolean; data: { found: { building_id: string; owner_id: string | null; detected: true }[]; scanned_territory: string } }>(
+        '/commander/scan',
+        { territory_id: territoryId }
+      );
+      return res.data.data;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('INSUFFICIENT_RESOURCES')) throw new Error('Not enough Intel (30 required).');
+      if (msg.includes('NOT_FOUND') || msg.includes('_NOT_FOUND')) throw new Error('Territory not found.');
+      if (msg.includes('FEATURE_DISABLED')) throw new Error('Commander feature is not enabled.');
+      throw new Error(msg || 'Scan failed.');
+    }
+  },
+
+  /**
+   * Phase F.3 — Destroy a DETECTED covert spy-radar on a territory you own.
+   * Returns true on success. Throws a human-readable string on failure.
+   */
+  destroyRadar: async (buildingId: string): Promise<boolean> => {
+    try {
+      const res = await api.post<{ success: boolean; data: { destroyed: boolean } }>(
+        '/commander/destroy-radar',
+        { building_id: buildingId }
+      );
+      return res.data.data.destroyed;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('BUILDING_NOT_FOUND')) throw new Error('Radar building not found.');
+      if (msg.includes('NOT_DETECTED')) throw new Error('Radar has not been detected yet.');
+      if (msg.includes('NOT_TERRITORY_OWNER')) throw new Error('You do not own this territory.');
+      if (msg.includes('FEATURE_DISABLED')) throw new Error('Commander feature is not enabled.');
+      throw new Error(msg || 'Destroy failed.');
+    }
+  },
 };
 
 // ─── Terminals API ───────────────────────────────────────────────────────────
