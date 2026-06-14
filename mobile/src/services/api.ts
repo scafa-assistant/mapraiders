@@ -171,6 +171,22 @@ export const routeApi = {
 
 // ─── Territories API ────────────────────────────────────────────────────────
 
+/**
+ * A territory owned by the current player, as returned by `GET /api/territories/mine`.
+ * This is the flat list shape (no polygon) used by the "My Territories" list on the map.
+ */
+export interface MyTerritory {
+  id: string;
+  lat: number;
+  lng: number;
+  class: string;
+  claim_value: number;
+  area_m2: number;
+  decay_level: number;
+  is_protected: boolean;
+  claimed_at: string;
+}
+
 export const territoryApi = {
   getInBounds: (bbox: { north: number; south: number; east: number; west: number }) =>
     api.get('/territories', { params: bbox }),
@@ -180,6 +196,21 @@ export const territoryApi = {
 
   getMine: () =>
     api.get('/territories/me'),
+
+  /**
+   * Fetch the flat list of the current player's territories (no polygon).
+   * Server: `GET /api/territories/mine` → `{ success, data: { territories: MyTerritory[] } }`.
+   * Returns the unwrapped array, tolerant of nesting variations.
+   */
+  mine: async (): Promise<MyTerritory[]> => {
+    const res = await api.get('/territories/mine');
+    const body = res.data;
+    const raw =
+      body?.data?.territories ??
+      body?.territories ??
+      (Array.isArray(body?.data) ? body.data : Array.isArray(body) ? body : []);
+    return Array.isArray(raw) ? (raw as MyTerritory[]) : [];
+  },
 };
 
 // ─── Quests API ─────────────────────────────────────────────────────────────

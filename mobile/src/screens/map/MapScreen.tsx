@@ -11,6 +11,8 @@ import {
   Platform,
   Alert,
   TextInput,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,7 +25,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useTheme } from '../../hooks/useTheme';
 import * as Haptics from 'expo-haptics';
 import { echoProximityService } from '../../services/echoProximity';
-import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi, meetupApi } from '../../services/api';
+import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi, meetupApi, territoryApi, MyTerritory } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
 import PvESpawnMarker, { TerminalMarker } from '../../components/PvESpawnMarker';
 import { useFeatureStore } from '../../store/featureStore';
@@ -164,6 +166,11 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const [nearbyMeetups, setNearbyMeetups] = useState<any[]>([]);
   const [lastKnownLocation, setLastKnownLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const lastWeatherFetch = useRef<{ lat: number; lng: number } | null>(null);
+
+  // "My Territories" list sheet
+  const [showMyTerritories, setShowMyTerritories] = useState(false);
+  const [myTerritories, setMyTerritories] = useState<MyTerritory[]>([]);
+  const [myTerritoriesLoading, setMyTerritoriesLoading] = useState(false);
 
   // Load last known location from storage for instant map positioning
   useEffect(() => {
@@ -510,6 +517,54 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       );
     }
   };
+
+  // ─── My Territories list ──────────────────────────────────────────────────
+  const fetchMyTerritories = useCallback(async () => {
+    setMyTerritoriesLoading(true);
+    try {
+      const list = await territoryApi.mine();
+      setMyTerritories(Array.isArray(list) ? list : []);
+    } catch {
+      setMyTerritories([]);
+    } finally {
+      setMyTerritoriesLoading(false);
+    }
+  }, []);
+
+  const openMyTerritories = () => {
+    setShowMyTerritories(true);
+    fetchMyTerritories();
+  };
+
+  // Tap a territory row → recenter the map on it and close the sheet
+  const focusTerritory = (terr: MyTerritory) => {
+    setShowMyTerritories(false);
+    if (mapRef.current && typeof terr.lat === 'number' && typeof terr.lng === 'number') {
+      mapRef.current.animateToRegion(
+        {
+          latitude: terr.lat,
+          longitude: terr.lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        },
+        600
+      );
+    }
+  };
+
+  // Format territory area: <1000 → "N m²", else "N.Nk m²"
+  const formatArea = (m2: number): string => {
+    const v = Number(m2) || 0;
+    if (v < 1000) return `${Math.round(v)} m²`;
+    return `${(v / 1000).toFixed(1)}k m²`;
+  };
+
+  // Capitalize a movement class for display ("walker" → "Walker", "dog_walker" → "Dog Walker")
+  const formatClass = (cls: string): string =>
+    (cls || 'unknown')
+      .split('_')
+      .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+      .join(' ');
 
   // Toggle route recording
   const toggleRecording = async () => {
@@ -1134,6 +1189,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         >
           <Ionicons name="trophy" size={22} color={theme.warning} />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.controlButton, {
+            backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          }]}
+          onPress={openMyTerritories}
+        >
+          <Ionicons name="layers" size={22} color={theme.primary} />
+        </TouchableOpacity>
       </View>
 
       {/* City/Place Search Overlay */}
@@ -1263,6 +1327,85 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           </View>
         </View>
       )}
+
+      {/* My Territories Sheet */}
+      <Modal
+        visible={showMyTerritories}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowMyTerritories(false)}
+      >
+        <View style={styles.myTerrBackdrop}>
+          <TouchableOpacity
+            style={styles.myTerrBackdropTouch}
+            activeOpacity={1}
+            onPress={() => setShowMyTerritories(false)}
+          />
+          <View style={styles.myTerrSheet}>
+            <View style={styles.myTerrHandle} />
+            <View style={styles.myTerrHeaderRow}>
+              <Text style={styles.myTerrTitle}>My Territories</Text>
+              <View style={styles.myTerrCountBadge}>
+                <Text style={styles.myTerrCountText}>{myTerritories.length}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowMyTerritories(false)} style={styles.myTerrClose}>
+                <Ionicons name="close" size={22} color="#8892B0" />
+              </TouchableOpacity>
+            </View>
+
+            {myTerritoriesLoading ? (
+              <View style={styles.myTerrEmpty}>
+                <ActivityIndicator size="small" color="#00D4FF" />
+              </View>
+            ) : myTerritories.length === 0 ? (
+              <View style={styles.myTerrEmpty}>
+                <Ionicons name="flag-outline" size={32} color="#2A3450" />
+                <Text style={styles.myTerrEmptyText}>
+                  No territories yet — walk a route to claim one.
+                </Text>
+              </View>
+            ) : (
+              <ScrollView
+                style={styles.myTerrList}
+                contentContainerStyle={styles.myTerrListContent}
+                showsVerticalScrollIndicator={false}
+              >
+                {myTerritories.map((terr) => {
+                  const dotColor =
+                    CLASS_COLORS[(terr.class as MovementClass)] ?? CLASS_COLORS.unknown;
+                  return (
+                    <TouchableOpacity
+                      key={terr.id}
+                      style={styles.myTerrRow}
+                      activeOpacity={0.7}
+                      onPress={() => focusTerritory(terr)}
+                    >
+                      <View style={[styles.myTerrDot, { backgroundColor: dotColor }]} />
+                      <View style={styles.myTerrRowMain}>
+                        <View style={styles.myTerrRowTop}>
+                          <Text style={styles.myTerrRowLabel}>
+                            {formatClass(terr.class)} · {formatArea(terr.area_m2)}
+                          </Text>
+                          {terr.is_protected ? (
+                            <Text style={styles.myTerrShield}>🛡</Text>
+                          ) : null}
+                        </View>
+                        <View style={styles.myTerrRowBottom}>
+                          <Text style={styles.myTerrCv}>cv {Math.round(Number(terr.claim_value) || 0)}</Text>
+                          <Text style={styles.myTerrCoords}>
+                            {(Number(terr.lat) || 0).toFixed(4)}, {(Number(terr.lng) || 0).toFixed(4)}
+                          </Text>
+                        </View>
+                      </View>
+                      <Ionicons name="locate" size={18} color="#00D4FF" />
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       {/* Claim Result Overlay */}
       {showClaimResult && claimResult && (
@@ -1955,5 +2098,129 @@ const styles = StyleSheet.create({
     color: '#00D4FF',
     fontSize: 9,
     fontWeight: '700',
+  },
+  myTerrBackdrop: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  myTerrBackdropTouch: {
+    flex: 1,
+  },
+  myTerrSheet: {
+    backgroundColor: '#0D1220',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderTopWidth: 1,
+    borderColor: '#1A2340',
+    paddingBottom: 24,
+    maxHeight: height * 0.7,
+  },
+  myTerrHandle: {
+    alignSelf: 'center',
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#2A3450',
+    marginTop: 10,
+    marginBottom: 6,
+  },
+  myTerrHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 10,
+  },
+  myTerrTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  myTerrCountBadge: {
+    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    minWidth: 24,
+    alignItems: 'center',
+  },
+  myTerrCountText: {
+    color: '#00D4FF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  myTerrClose: {
+    marginLeft: 'auto',
+    padding: 4,
+  },
+  myTerrEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 30,
+    gap: 12,
+  },
+  myTerrEmptyText: {
+    color: '#8892B0',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  myTerrList: {
+    paddingHorizontal: 16,
+  },
+  myTerrListContent: {
+    paddingBottom: 8,
+  },
+  myTerrRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#141B2D',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 8,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: '#1A2340',
+  },
+  myTerrDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  myTerrRowMain: {
+    flex: 1,
+    gap: 4,
+  },
+  myTerrRowTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  myTerrRowLabel: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  myTerrShield: {
+    fontSize: 12,
+  },
+  myTerrRowBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  myTerrCv: {
+    color: '#00D4FF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  myTerrCoords: {
+    color: '#555E78',
+    fontSize: 10,
+    fontWeight: '500',
   },
 });
