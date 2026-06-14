@@ -20,8 +20,10 @@ import type { AirstrikeResult, CommanderMovement, ScoutCapacity, SiloInfo } from
 import { HYPERBOREAN_AI_USER_ID } from '../store/commanderStore';
 import { useInventoryStore } from '../store/inventoryStore';
 import { useAuthStore } from '../store/authStore';
+import { useFeatureStore } from '../store/featureStore';
+import { buildingApi } from '../api/client';
 import { theme, colorForRarity } from '../theme';
-import type { InventoryItem } from '../api/types';
+import type { HaulLoad, InventoryItem, StockpileEntry } from '../api/types';
 import BattleReplayModal from './BattleReplayModal';
 
 // ---- Colour constants -----------------------------------------------------------
@@ -52,9 +54,44 @@ const C_OBJECTIVE = '#FFB300';
 
 const UNIT_PREFIXES = ['unit_scout_disc', 'unit_tech_drone', 'unit_water_strider', 'unit_forest_construct'];
 
+// Phase F.2: hauler unit types (category 'unit'). Carry value lives in def_stats.carry,
+// but we keep a default fallback for display when stats are absent.
+const HAULER_CARRY_DEFAULTS: Record<string, number> = {
+  unit_porter: 120,
+  unit_transport: 70,
+  unit_armored_transport: 90,
+};
+
+// Friendly names for the 3 hauler unit types.
+const HAULER_NAMES: Record<string, string> = {
+  unit_porter: 'Porter',
+  unit_transport: 'Transport',
+  unit_armored_transport: 'Armored Transport',
+};
+
 function isUnitItem(item: InventoryItem): boolean {
   if (item.category === 'unit') return true;
   return UNIT_PREFIXES.some((p) => item.definition_id.startsWith(p));
+}
+
+function isHaulerItem(item: InventoryItem): boolean {
+  return item.definition_id in HAULER_CARRY_DEFAULTS;
+}
+
+/** Carry capacity of a hauler unit — prefer server def_stats.carry, fall back to defaults. */
+function unitCarry(item: InventoryItem): number {
+  const fromStats = (item.def_stats as Record<string, unknown> | undefined)?.carry;
+  if (typeof fromStats === 'number' && fromStats > 0) return fromStats;
+  return HAULER_CARRY_DEFAULTS[item.definition_id] ?? 0;
+}
+
+/** Format a haul load object as "120 wood, 40 stone". */
+function formatHaulLoad(load: HaulLoad | undefined): string {
+  if (!load) return '';
+  return Object.entries(load)
+    .filter(([, v]) => v > 0)
+    .map(([res, v]) => `${Math.round(v)} ${res}`)
+    .join(', ');
 }
 
 function isDiceItem(item: InventoryItem): boolean {
@@ -63,6 +100,7 @@ function isDiceItem(item: InventoryItem): boolean {
 }
 
 function prettifyDefinitionId(defId: string): string {
+  if (defId in HAULER_NAMES) return HAULER_NAMES[defId];
   return defId
     .replace(/^unit_/, '')
     .replace(/^dice_/, '')
@@ -161,9 +199,11 @@ export default function CommanderView() {
     equipDie, equippedDieInstanceId,
     battles, battlesLoading, fetchBattles,
     launchStrike,
+    sendHaul, intercept,
   } = useCommanderStore();
   const { items: inventoryItems, refresh: refreshInventory } = useInventoryStore();
   const userId = useAuthStore((s) => s.user?.id);
+  const economyEnabled = useFeatureStore((s) => s.isEnabled('economy'));
 
   // ---- Scout dispatch UI state ------------------------------------------------
   const [selectedUnit, setSelectedUnit]           = useState<InventoryItem | null>(null);
@@ -203,6 +243,23 @@ export default function CommanderView() {
   const [strikeError, setStrikeError]         = useState<string | null>(null);
   const [strikePending, setStrikePending]     = useState(false);
   const [strikeToast, setStrikeToast]         = useState<string | null>(null);
+
+  // ---- Haul flow UI (Phase F.2) -----------------------------------------------
+  const [haulMode, setHaulMode]               = useState(false);
+  const [haulFromId, setHaulFromId]           = useState<string>('');   // source extraction territory
+  const [haulTargetId, setHaulTargetId]       = useState<string>('');   // home / destination
+  const [haulSelectedIds, setHaulSelectedIds] = useState<Set<string>>(new Set());
+  const [haulError, setHaulError]             = useState<string | null>(null);
+  const [haulPending, setHaulPending]         = useState(false);
+  const [haulStockpile, setHaulStockpile]     = useState<StockpileEntry[]>([]);
+
+  // ---- Intercept flow UI (Phase F.2) ------------------------------------------
+  const [interceptMode, setInterceptMode]           = useState(false);
+  const [interceptMovementId, setInterceptMovementId] = useState<string>('');
+  const [interceptSelectedIds, setInterceptSelectedIds] = useState<Set<string>>(new Set());
+  const [interceptOriginId, setInterceptOriginId]   = useState<string>('');
+  const [interceptError, setInterceptError]         = useState<string | null>(null);
+  const [interceptPending, setInterceptPending]     = useState(false);
 
   // ---- Boot -------------------------------------------------------------------
   useEffect(() => {
@@ -456,27 +513,60 @@ export default function CommanderView() {
         const cell = mv.current_cell;
         if (!cell) continue;
         const [lat, lng] = cellCenter(cell);
-        const dot = L.circleMarker([lat, lng], {
-          radius: 9, color: C_RED_PULSE, fillColor: C_RED_PULSE, fillOpacity: 0.85, weight: 2,
-        });
+        const carrying = mv.carrying === true;
         const etaStr = mv.eta ? `ETA ${new Date(mv.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '';
-        dot.bindTooltip(`Enemy movement spotted · ${etaStr}`, { sticky: true });
-        dot.addTo(fdLayer);
+
+        if (carrying) {
+          // Fat RED pulsing target — a loaded enemy column, lucrative to intercept.
+          const dot = L.circleMarker([lat, lng], {
+            radius: 13, color: C_RED_PULSE, fillColor: C_RED_PULSE,
+            fillOpacity: 0.35, weight: 3, className: 'commander-carry-target',
+          });
+          dot.bindTooltip(`🚚 Loaded enemy column — click to intercept · ${etaStr}`, { sticky: true });
+          dot.on('click', () => openInterceptFlow(mv.id));
+          dot.addTo(fdLayer);
+        } else {
+          const dot = L.circleMarker([lat, lng], {
+            radius: 9, color: C_RED_PULSE, fillColor: C_RED_PULSE, fillOpacity: 0.85, weight: 2,
+          });
+          dot.bindTooltip(`Enemy movement spotted · ${etaStr}`, { sticky: true });
+          dot.addTo(fdLayer);
+        }
         continue;
       }
 
       // Own movements
       if (mv.path.length < 2) continue;
       const pathLatLngs = mv.path.map(cellCenter);
+      const isHaul   = mv.purpose === 'haul';
+      const isReturn = mv.purpose === 'return';
 
       L.polyline(pathLatLngs, {
-        color: mv.purpose === 'attack' ? C_RED_PULSE : (mv.purpose === 'scout' ? C_ACCENT : C_FOREIGN),
-        weight: 2, opacity: 0.7, dashArray: '6 4',
+        color: isHaul ? C_AMBER : (mv.purpose === 'attack' ? C_RED_PULSE : (mv.purpose === 'scout' ? C_ACCENT : C_FOREIGN)),
+        weight: isHaul ? 2.5 : 2, opacity: 0.7, dashArray: isHaul ? '8 5' : '6 4',
       }).addTo(layer);
 
       const progress = computeProgress(mv.departs_at, mv.arrives_at);
       const dotPos   = interpolatePath(mv.path, progress);
-      const isReturn = mv.purpose === 'return';
+
+      if (isHaul) {
+        // Truck marker for own haul columns, with carry/load tooltip.
+        const icon = L.divIcon({
+          className: 'commander-haul-icon',
+          html: '<span style="font-size:18px;line-height:1;filter:drop-shadow(0 0 3px rgba(0,0,0,0.8))">🚚</span>',
+          iconSize: [20, 20], iconAnchor: [10, 10],
+        });
+        const carryTotal = mv.config?.carry_total;
+        const loadStr = formatHaulLoad(mv.config?.load);
+        const tip = loadStr
+          ? `Carrying ${loadStr}`
+          : (carryTotal != null ? `Outbound · capacity ${carryTotal}` : `Haul · ${mv.status}`);
+        const marker = L.marker(dotPos, { icon });
+        marker.bindTooltip(tip, { sticky: true });
+        marker.addTo(layer);
+        moveDotRefs.current.set(mv.id, marker as unknown as L.CircleMarker);
+        continue;
+      }
 
       const dot = L.circleMarker(dotPos, {
         radius: 7,
@@ -491,6 +581,7 @@ export default function CommanderView() {
       dot.addTo(layer);
       moveDotRefs.current.set(mv.id, dot);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapData?.movements]);
 
   // ---- Tick: update movement dot positions ------------------------------------
@@ -525,6 +616,7 @@ export default function CommanderView() {
 
   // ---- Derived data -----------------------------------------------------------
   const unitItems   = inventoryItems.filter((i) => isUnitItem(i) && i.status === 'inventory');
+  const haulerItems = inventoryItems.filter((i) => isHaulerItem(i) && i.status === 'inventory');
   const diceItems   = inventoryItems.filter((i) => isDiceItem(i));
   const ownTerrs    = mapData?.territories.filter((t) => t.is_own || (userId != null && t.owner_id === userId)) ?? [];
   const allTerrs    = mapData?.territories ?? [];
@@ -750,6 +842,90 @@ export default function CommanderView() {
     }
   }
 
+  // ---- Haul handlers (Phase F.2) ----------------------------------------------
+  function openHaulFlow(sourceTerritoryId: string) {
+    setHaulFromId(sourceTerritoryId);
+    // Default destination = first OTHER own territory; fall back to source.
+    const home = ownTerrs.find((t) => t.id !== sourceTerritoryId);
+    setHaulTargetId(home?.id ?? ownTerrs.find((t) => t.id === sourceTerritoryId)?.id ?? '');
+    setHaulSelectedIds(new Set());
+    setHaulError(null);
+    setHaulMode(true);
+    setTerrPanel({ type: 'none' });
+    // Pull the source stockpile so we can show what's available to haul.
+    setHaulStockpile([]);
+    void (async () => {
+      try {
+        const res = await buildingApi.list(sourceTerritoryId);
+        setHaulStockpile(res.stockpile);
+      } catch { setHaulStockpile([]); }
+    })();
+  }
+
+  async function handleHaul() {
+    if (haulSelectedIds.size === 0 || !haulFromId || !haulTargetId) {
+      setHaulError('Select at least one hauler, the source and a destination.');
+      return;
+    }
+    setHaulPending(true);
+    setHaulError(null);
+    const result = await sendHaul({
+      instanceIds: Array.from(haulSelectedIds),
+      fromTerritoryId: haulFromId,
+      targetTerritoryId: haulTargetId,
+    });
+    setHaulPending(false);
+    if (!result.ok) {
+      setHaulError(result.error ?? 'Haul failed');
+    } else {
+      setHaulMode(false);
+      setHaulSelectedIds(new Set());
+      setStrikeToast('🚚 Haulers dispatched.');
+      window.setTimeout(() => setStrikeToast(null), 4000);
+    }
+  }
+
+  // ---- Intercept handlers (Phase F.2) -----------------------------------------
+  function openInterceptFlow(movementId: string) {
+    setInterceptMovementId(movementId);
+    setInterceptSelectedIds(new Set());
+    setInterceptOriginId(ownTerrs[0]?.id ?? '');
+    setInterceptError(null);
+    setInterceptMode(true);
+    // Close any other left-panel flows
+    setAttackMode(false);
+    setStrikeMode(false);
+    setHaulMode(false);
+    setTerrPanel({ type: 'none' });
+  }
+
+  async function handleIntercept() {
+    if (interceptSelectedIds.size === 0 || !interceptOriginId || !interceptMovementId) {
+      setInterceptError('Select at least one unit and an origin territory.');
+      return;
+    }
+    setInterceptPending(true);
+    setInterceptError(null);
+    const result = await intercept({
+      movementId: interceptMovementId,
+      instanceIds: Array.from(interceptSelectedIds),
+      fromTerritoryId: interceptOriginId,
+    });
+    setInterceptPending(false);
+    if (!result.ok) {
+      setInterceptError(result.error);
+    } else {
+      setInterceptMode(false);
+      setInterceptSelectedIds(new Set());
+      const { winner_side, load_lost } = result.result;
+      const msg = winner_side === 'attacker'
+        ? (load_lost ? '⚔ Haul destroyed — cargo lost!' : '⚔ Interception won!')
+        : '🛡 Interception failed — escort held.';
+      setStrikeToast(msg);
+      window.setTimeout(() => setStrikeToast(null), 5000);
+    }
+  }
+
   // ---- Styles -----------------------------------------------------------------
 
   const panelBase: React.CSSProperties = {
@@ -905,6 +1081,16 @@ export default function CommanderView() {
             </span>
           </div>
         ))}
+
+        {/* Haul resources home (Phase F.2 — economy flag, needs ≥2 own territories) */}
+        {economyEnabled && (
+          <button
+            style={{ ...btnAccent, background: theme.color.amber, color: '#1A1206', marginTop: 6 }}
+            onClick={() => openHaulFlow(territoryId)}
+          >
+            🚚 Haul resources home
+          </button>
+        )}
       </>
     );
   }
@@ -1148,6 +1334,244 @@ export default function CommanderView() {
     );
   }
 
+  // ---- Haul flow panel (Phase F.2) --------------------------------------------
+  function renderHaulFlow() {
+    const sourceTerr = ownTerrs.find((t) => t.id === haulFromId);
+    const destOptions = ownTerrs.filter((t) => t.id !== haulFromId);
+    const totalCarry = Array.from(haulSelectedIds).reduce((sum, id) => {
+      const item = haulerItems.find((h) => h.id === id);
+      return sum + (item ? unitCarry(item) : 0);
+    }, 0);
+    const stockTotal = haulStockpile.reduce((s, e) => s + e.amount, 0);
+
+    return (
+      <>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: theme.color.amber }}>
+            🚚 Haul Resources
+          </div>
+          <button style={btnSmall} onClick={() => setHaulMode(false)}>✕</button>
+        </div>
+
+        <div style={{ fontSize: 12, color: theme.color.textDim }}>
+          From: <strong style={{ color: theme.color.accentBright }}>
+            {sourceTerr?.owner_username ?? haulFromId.slice(0, 8)}…
+          </strong>
+        </div>
+
+        {/* Stockpile preview */}
+        {haulStockpile.length > 0 ? (
+          <div style={{
+            background: theme.color.panelAlt, border: `1px solid ${theme.color.border}`,
+            borderRadius: 8, padding: '8px 10px', fontSize: 12,
+          }}>
+            <div style={{ ...sectionLabel, marginBottom: 4 }}>Stockpile</div>
+            {haulStockpile.map((e) => (
+              <div key={e.resource} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ textTransform: 'capitalize', color: theme.color.textDim }}>{e.resource}</span>
+                <span style={{ color: theme.color.text, fontWeight: 600 }}>{Math.round(e.amount)}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted" style={{ fontSize: 12, fontStyle: 'italic' }}>
+            No stockpile here yet.
+          </div>
+        )}
+
+        {haulError && (
+          <div style={{ color: theme.color.danger, fontSize: 12 }}>{haulError}</div>
+        )}
+
+        {/* Select haulers */}
+        <div style={sectionLabel}>Select Haulers (1–6)</div>
+        {haulerItems.length === 0 ? (
+          <div className="muted" style={{ fontSize: 12 }}>No hauler units in inventory.</div>
+        ) : (
+          haulerItems.map((item) => {
+            const sel = haulSelectedIds.has(item.id);
+            return (
+              <div
+                key={item.id}
+                style={sel ? itemCardSelected : itemCard}
+                onClick={() => {
+                  setHaulSelectedIds((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(item.id)) next.delete(item.id);
+                    else if (next.size < 6) next.add(item.id);
+                    return next;
+                  });
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 600, fontSize: 12 }}>{prettifyDefinitionId(item.definition_id)}</span>
+                  <span style={{
+                    fontSize: 10, background: theme.color.border,
+                    borderRadius: 4, padding: '2px 5px', color: theme.color.amber, fontWeight: 700,
+                  }}>
+                    carry {unitCarry(item)}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: colorForRarity(item.rarity) }}>{item.rarity}</div>
+              </div>
+            );
+          })
+        )}
+
+        {/* Destination select */}
+        <div style={{ ...sectionLabel, marginTop: 4 }}>Destination (home)</div>
+        {destOptions.length === 0 ? (
+          <div className="muted" style={{ fontSize: 12 }}>You need a second territory to haul to.</div>
+        ) : (
+          <select
+            value={haulTargetId}
+            onChange={(e) => setHaulTargetId(e.target.value)}
+            style={{
+              width: '100%', background: theme.color.panelAlt, color: theme.color.text,
+              border: `1px solid ${theme.color.border}`, borderRadius: 8, padding: '7px 10px', fontSize: 12,
+            }}
+          >
+            {destOptions.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.owner_username ?? 'Yours'} ({t.h3_cells.length} hex)
+              </option>
+            ))}
+          </select>
+        )}
+
+        {/* Carry estimate */}
+        {haulSelectedIds.size > 0 && (
+          <div style={{
+            background: theme.color.panelAlt, border: `1px solid ${theme.color.border}`,
+            borderRadius: 8, padding: '8px 10px', fontSize: 12,
+          }}>
+            <div style={{ color: theme.color.amber }}>
+              📦 Total carry: {totalCarry} ({haulSelectedIds.size} unit{haulSelectedIds.size !== 1 ? 's' : ''})
+            </div>
+            <div style={{ color: theme.color.textDim, marginTop: 2 }}>
+              Stockpile available: {Math.round(stockTotal)}
+              {stockTotal > 0 && totalCarry > 0 && stockTotal < totalCarry
+                ? ' — haulers leave partly empty'
+                : ''}
+            </div>
+          </div>
+        )}
+
+        <button
+          style={{
+            ...btnAccent, background: theme.color.amber, color: '#1A1206',
+            opacity: (haulSelectedIds.size === 0 || !haulTargetId || haulPending) ? 0.5 : 1,
+          }}
+          disabled={haulSelectedIds.size === 0 || !haulTargetId || haulPending}
+          onClick={() => void handleHaul()}
+        >
+          {haulPending ? 'Dispatching…' : `🚚 Send Haul (${haulSelectedIds.size})`}
+        </button>
+
+        <button style={btnOutline} onClick={() => setHaulMode(false)}>Cancel</button>
+      </>
+    );
+  }
+
+  // ---- Intercept flow panel (Phase F.2) ---------------------------------------
+  function renderInterceptFlow() {
+    const targetMv = activeMovements.find((m) => m.id === interceptMovementId);
+
+    return (
+      <>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: theme.color.danger }}>
+            ⚔ Intercept
+          </div>
+          <button style={btnSmall} onClick={() => setInterceptMode(false)}>✕</button>
+        </div>
+
+        <div style={{ fontSize: 12, color: theme.color.textDim }}>
+          Target: <strong style={{ color: theme.color.danger }}>Loaded enemy column</strong>
+          {targetMv?.eta && (
+            <> · ETA {new Date(targetMv.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</>
+          )}
+        </div>
+        <div style={{ fontSize: 11, color: theme.color.textDim }}>
+          A successful interception destroys their cargo. Strike before it reaches home.
+        </div>
+
+        {interceptError && (
+          <div style={{ color: theme.color.danger, fontSize: 12 }}>{interceptError}</div>
+        )}
+
+        {/* Select units */}
+        <div style={sectionLabel}>Select Units (1–6)</div>
+        {unitItems.length === 0 ? (
+          <div className="muted" style={{ fontSize: 12 }}>No units in inventory.</div>
+        ) : (
+          unitItems.map((item) => {
+            const sel = interceptSelectedIds.has(item.id);
+            return (
+              <div
+                key={item.id}
+                style={sel ? itemCardSelected : itemCard}
+                onClick={() => {
+                  setInterceptSelectedIds((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(item.id)) next.delete(item.id);
+                    else if (next.size < 6) next.add(item.id);
+                    return next;
+                  });
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 600, fontSize: 12 }}>{prettifyDefinitionId(item.definition_id)}</span>
+                  <span style={{
+                    fontSize: 10, background: theme.color.border,
+                    borderRadius: 4, padding: '2px 5px', color: theme.color.textDim,
+                  }}>
+                    {unitDomain(item.definition_id)}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: colorForRarity(item.rarity) }}>{item.rarity}</div>
+              </div>
+            );
+          })
+        )}
+
+        {/* Origin select */}
+        <div style={{ ...sectionLabel, marginTop: 4 }}>Origin Territory</div>
+        {ownTerrs.length === 0 ? (
+          <div className="muted" style={{ fontSize: 12 }}>No territories.</div>
+        ) : (
+          <select
+            value={interceptOriginId}
+            onChange={(e) => setInterceptOriginId(e.target.value)}
+            style={{
+              width: '100%', background: theme.color.panelAlt, color: theme.color.text,
+              border: `1px solid ${theme.color.border}`, borderRadius: 8, padding: '7px 10px', fontSize: 12,
+            }}
+          >
+            {ownTerrs.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.owner_username ?? 'Yours'} ({t.h3_cells.length} hex)
+              </option>
+            ))}
+          </select>
+        )}
+
+        <button
+          style={{
+            ...btnAccent, background: theme.color.danger,
+            opacity: (interceptSelectedIds.size === 0 || !interceptOriginId || interceptPending) ? 0.5 : 1,
+          }}
+          disabled={interceptSelectedIds.size === 0 || !interceptOriginId || interceptPending}
+          onClick={() => void handleIntercept()}
+        >
+          {interceptPending ? 'Intercepting…' : `⚔ Intercept (${interceptSelectedIds.size})`}
+        </button>
+
+        <button style={btnOutline} onClick={() => setInterceptMode(false)}>Cancel</button>
+      </>
+    );
+  }
+
   // ---- Dice pouch panel -------------------------------------------------------
   function renderDicePouch() {
     if (diceItems.length === 0) return null;
@@ -1193,6 +1617,12 @@ export default function CommanderView() {
 
   // ---- Left panel content switch ----------------------------------------------
   function renderLeftPanel() {
+    // Intercept flow takes top priority (time-sensitive)
+    if (interceptMode) return renderInterceptFlow();
+
+    // Haul flow
+    if (haulMode) return renderHaulFlow();
+
     // Strike flow takes priority over attack
     if (strikeMode) return renderStrikeFlow();
 
@@ -1433,6 +1863,7 @@ export default function CommanderView() {
             {battles.map((b) => {
               const isAtk = b.attacker_id === userId;
               const isAirstrike = b.type === 'airstrike';
+              const isInterception = b.type === 'interception';
               const won = b.winner_side != null && (
                 (isAtk && b.winner_side === 'attacker') ||
                 (!isAtk && b.winner_side === 'defender')
@@ -1448,7 +1879,11 @@ export default function CommanderView() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontWeight: 700, fontSize: 12 }}>
-                      {isAirstrike ? '☄ Airstrike' : (isAtk ? '⚔ Attack' : '🛡 Defense')}
+                      {isAirstrike
+                        ? '☄ Airstrike'
+                        : isInterception
+                          ? (isAtk ? '🚚 Interception' : '🚚 Convoy ambushed')
+                          : (isAtk ? '⚔ Attack' : '🛡 Defense')}
                       {(b.attacker_id === HYPERBOREAN_AI_USER_ID || b.defender_id === HYPERBOREAN_AI_USER_ID) && (
                         <span style={{ color: '#E5383B', marginLeft: 6 }}>vs Hyperboreans</span>
                       )}
@@ -1508,6 +1943,7 @@ const PURPOSE_ICONS: Record<string, string> = {
   return: '↩',
   attack: '⚔',
   reinforce: '🛡',
+  haul: '🚚',
 };
 
 function MovementCard({ mv, onRecall, recallError, cardStyle, progressBarOuter, btnDanger }: MvCardProps) {
@@ -1520,8 +1956,11 @@ function MovementCard({ mv, onRecall, recallError, cardStyle, progressBarOuter, 
   const msLeft = new Date(mv.arrives_at).getTime() - Date.now();
   const progress = computeProgress(mv.departs_at, mv.arrives_at);
   const isRecallable = mv.purpose === 'scout' && mv.status === 'marching';
+  const isHaul = mv.purpose === 'haul';
   const icon = PURPOSE_ICONS[mv.purpose] ?? '•';
-  const dotColor = mv.purpose === 'attack' ? theme.color.danger : theme.color.accent;
+  const dotColor = isHaul ? theme.color.amber : (mv.purpose === 'attack' ? theme.color.danger : theme.color.accent);
+  const haulLoadStr = isHaul ? formatHaulLoad(mv.config?.load) : '';
+  const carryTotal = isHaul ? mv.config?.carry_total : undefined;
 
   return (
     <div style={cardStyle}>
@@ -1536,6 +1975,11 @@ function MovementCard({ mv, onRecall, recallError, cardStyle, progressBarOuter, 
       <div style={{ color: theme.color.textDim, fontSize: 11 }}>
         {mv.status} · {mv.path.length} cells
       </div>
+      {isHaul && (haulLoadStr || carryTotal != null) && (
+        <div style={{ color: theme.color.amber, fontSize: 11, fontWeight: 600 }}>
+          {haulLoadStr ? `📦 Carrying ${haulLoadStr}` : `📦 Capacity ${carryTotal}`}
+        </div>
+      )}
       <div style={progressBarOuter}>
         <div style={{
           height: '100%', width: `${Math.round(progress * 100)}%`,

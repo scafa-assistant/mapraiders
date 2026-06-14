@@ -775,9 +775,20 @@ export interface CommanderTerritory {
   live?: boolean;
 }
 
+/**
+ * Per-haul cargo manifest. Outbound haul movements expose `carry_total`
+ * (the stack's total carry capacity); the return leg additionally exposes
+ * `load` — the actual resources being carried home, e.g. `{ wood: 120 }`.
+ */
+export interface HaulConfig {
+  carry_total?: number;
+  load?: Partial<Record<RawResource, number>>;
+  [key: string]: unknown;
+}
+
 export interface CommanderOwnMovement {
   id: string;
-  purpose: 'scout' | 'return' | 'attack' | 'reinforce';
+  purpose: 'scout' | 'return' | 'attack' | 'reinforce' | 'haul';
   status: string;
   from_cell: string;
   to_cell: string;
@@ -786,15 +797,17 @@ export interface CommanderOwnMovement {
   arrives_at: string;
   progress: number;
   instance_ids: string[];
-  config?: Record<string, unknown>;
+  config?: HaulConfig;
   is_own: true;
 }
 
 export interface CommanderForeignMovement {
   id: string;
-  purpose: 'scout' | 'return' | 'attack' | 'reinforce';
+  purpose: 'scout' | 'return' | 'attack' | 'reinforce' | 'haul';
   current_cell: string;
   eta: string;
+  /** Phase F.2 — true when this enemy column is loaded with cargo (interceptable). */
+  carrying?: boolean;
   is_own: false;
 }
 
@@ -942,6 +955,15 @@ export interface CommanderAirstrikeBattleLog {
   result: AirstrikeResult;
 }
 
+/** Phase F.2 — result of an interception attempt against a loaded haul column. */
+export interface InterceptResult {
+  battle_id: string;
+  result: {
+    winner_side: 'attacker' | 'defender';
+    load_lost: boolean;
+  };
+}
+
 /** The full battle narrative lives INSIDE the `log` JSONB column. */
 export type CommanderBattleLog = CommanderDiceBattleLog | CommanderAirstrikeBattleLog;
 
@@ -1010,6 +1032,23 @@ export const commanderApi = {
       '/commander/strike',
       body
     ),
+
+  /**
+   * Phase F.2 — Haul a stockpile home. Dispatch 1–6 hauler units from an own
+   * territory with a stockpile to another own territory.
+   */
+  haul: (body: { instance_ids: string[]; from_territory_id: string; target_territory_id: string }) =>
+    api.post<{ success: boolean; data: { movement: CommanderOwnMovement } }>(
+      '/commander/haul',
+      body
+    ),
+
+  /**
+   * Phase F.2 — Intercept a loaded foreign haul movement with own units.
+   * Resolves an interception battle server-side.
+   */
+  intercept: (body: { movement_id: string; instance_ids: string[]; from_territory_id: string }) =>
+    api.post<{ success: boolean; data: InterceptResult }>('/commander/intercept', body),
 
   /** List recent battles involving the player. */
   getBattles: () =>

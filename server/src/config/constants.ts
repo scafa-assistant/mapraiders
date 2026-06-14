@@ -855,6 +855,50 @@ export const COMBAT = {
 } as const;
 
 // ============================================================
+// HAUL (Phase F.2) — Resource hauling + interception.
+// Harvested resources sit in territory_stockpile (F.1). To get them into the
+// player's BALANCE they must be HAULED home with troops. Haul units trade
+// carry capacity vs protection (see the hauler unit defs in schema.sql). A
+// loaded haul can be INTERCEPTED; if its escort loses the battle the load is
+// LOST. Haul is gated behind the `economy` flag, interception behind `commander`.
+//
+// carryFor(defId, stats) reads stats.carry (from the unit definition) else
+// CARRY_BY_DEF[defId] else DEFAULT_CARRY — so any combat unit can haul a little.
+// March speed + energy reuse the COMBAT march constants for consistency.
+// ============================================================
+
+export const HAUL = {
+  /** Per-unit carry fallback by definition id when stats.carry is absent. */
+  CARRY_BY_DEF: {
+    unit_porter: 120,
+    unit_transport: 70,
+    unit_armored_transport: 90,
+  } as Record<string, number>,
+  /** Any other unit definition hauls this small default (combat units too). */
+  DEFAULT_CARRY: 20,
+  /** Travel minutes per res-8 path cell (reuse the march rate). */
+  MARCH_MIN_PER_CELL: COMBAT.MARCH_MIN_PER_CELL,
+  /** Energy per path cell per unit on dispatch (reuse the march rate). */
+  ENERGY_PER_CELL_PER_UNIT: COMBAT.MARCH_ENERGY_PER_CELL_PER_UNIT,
+  /** Max hauler units per haul mission. */
+  MAX_HAUL_UNITS: 6,
+} as const;
+
+/**
+ * Per-unit carry capacity: stats.carry if present, else the CARRY_BY_DEF
+ * fallback for the definition id, else DEFAULT_CARRY (so combat units haul a
+ * little). Always clamps to a non-negative integer.
+ */
+export function carryFor(definitionId: string, stats: unknown): number {
+  const s = stats && typeof stats === 'object' ? (stats as Record<string, unknown>) : {};
+  const raw =
+    typeof s.carry === 'number'
+      ? s.carry
+      : HAUL.CARRY_BY_DEF[definitionId] ?? HAUL.DEFAULT_CARRY;
+  return Math.max(0, Math.floor(raw || 0));
+}
+
+// ============================================================
 // AIRSTRIKE (Phase C.3) — Silo-launched ranged strikes.
 // A 'silo' building lets its owner strike a foreign territory within range,
 // breaking a shield, damaging the highest-HP building, or (recon-by-fire)

@@ -22,6 +22,7 @@ import { AIRSTRIKE, scoutCapacityForLevel } from '../config/constants';
 const router = Router();
 
 const COMMANDER_FLAG = 'commander';
+const ECONOMY_FLAG = 'economy';
 
 /** Map a TroopError code onto an HTTP status. */
 function statusForCode(code: unknown): number {
@@ -195,21 +196,25 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       current_cell: string;
       eta: Date;
       is_own: false;
+      carrying: boolean;
     }> = [];
 
     if (activeCells.length > 0) {
       const fmRows = await query<{
         id: string;
         purpose: string;
+        config: Record<string, any> | null;
         path: string[];
         departs_at: Date;
         arrives_at: Date;
       }>(
-        `SELECT id, purpose, path, departs_at, arrives_at
+        // Phase F.2: include 'haul' so loaded enemy hauls surface (and a loaded
+        // 'return' too). The `carrying` flag below marks interceptable columns.
+        `SELECT id, purpose, config, path, departs_at, arrives_at
            FROM troop_movements
           WHERE owner_id <> $1
             AND status = 'marching' AND resolved = FALSE
-            AND purpose IN ('attack', 'reinforce', 'scout', 'return')`,
+            AND purpose IN ('attack', 'reinforce', 'scout', 'return', 'haul')`,
         [userId],
       );
 
@@ -223,12 +228,20 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
         const idx = len <= 1 ? 0 : Math.floor(progress * (len - 1));
         const currentCell = mv.path[idx];
         if (activeSet.has(currentCell)) {
+          // carrying = this column holds an interceptable load: a 'haul' (en
+          // route to load, intercept destroys its escort + denies the load) or
+          // a 'return' that carries a materialised config.load.
+          const cfg = mv.config ?? {};
+          const carrying =
+            mv.purpose === 'haul' ||
+            (mv.purpose === 'return' && !!cfg.load && typeof cfg.load === 'object');
           foreignMovements.push({
             id: mv.id,
             purpose: mv.purpose,
             current_cell: currentCell,
             eta: mv.arrives_at,
             is_own: false,
+            carrying,
           });
         }
       }
@@ -652,6 +665,107 @@ router.post('/strike', authenticate, async (req: Request, res: Response) => {
     }
     console.error('[Commander] POST /strike error:', err);
     return res.status(500).json({ success: false, message: 'Failed to launch airstrike' });
+  }
+});
+
+// ---- POST /haul --------------------------------------------------------------
+// Dispatch a haul mission: hauler units ferry a target territory's stockpile
+// home into the player's balance. Body: { instance_ids[], from_territory_id,
+// target_territory_id }. Returns { movement }. Gated behind the `economy` flag.
+// Error mapping: *_NOT_FOUND → 404, everything else (NOTHING_TO_HAUL,
+// TARGET_NOT_OWNED, TARGET_TOO_FAR, INVALID_UNITS, UNIT_BUSY, ...) → 400.
+
+router.post('/haul', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, ECONOMY_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const instanceIds = body.instance_ids;
+    const fromTerritoryId = body.from_territory_id;
+    const targetTerritoryId = body.target_territory_id;
+
+    if (
+      !Array.isArray(instanceIds) ||
+      !instanceIds.every((x) => typeof x === 'string') ||
+      typeof fromTerritoryId !== 'string' ||
+      typeof targetTerritoryId !== 'string'
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'instance_ids[], from_territory_id and target_territory_id are required',
+      });
+    }
+
+    const movement = await troopEngine.dispatchHaul(userId, {
+      instanceIds,
+      fromTerritoryId,
+      targetTerritoryId,
+    });
+    return res.json({ success: true, data: { movement } });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /haul error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to dispatch haul' });
+  }
+});
+
+// ---- POST /intercept ---------------------------------------------------------
+// Attack a foreign loaded haul (or loaded return) in your active vision. Body:
+// { movement_id, instance_ids[], from_territory_id }. Returns { battle_id,
+// result }. Gated behind the `commander` flag. Error mapping: *_NOT_FOUND →
+// 404, NOT_VISIBLE → 400, everything else → 400.
+
+router.post('/intercept', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, COMMANDER_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+    }
+
+    const body = req.body ?? {};
+    const movementId = body.movement_id;
+    const instanceIds = body.instance_ids;
+    const fromTerritoryId = body.from_territory_id;
+
+    if (
+      typeof movementId !== 'string' ||
+      !Array.isArray(instanceIds) ||
+      !instanceIds.every((x) => typeof x === 'string') ||
+      typeof fromTerritoryId !== 'string'
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'movement_id, instance_ids[] and from_territory_id are required',
+      });
+    }
+
+    const outcome = await troopEngine.interceptHaul(userId, {
+      movementId,
+      instanceIds,
+      fromTerritoryId,
+    });
+    return res.json({
+      success: true,
+      data: {
+        battle_id: outcome.battleId,
+        result: { winner_side: outcome.winnerSide, load_lost: outcome.loadLost },
+      },
+    });
+  } catch (err: any) {
+    if (err?.code) {
+      return res.status(statusForCode(err.code)).json({ success: false, message: err.code });
+    }
+    console.error('[Commander] POST /intercept error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to intercept haul' });
   }
 });
 

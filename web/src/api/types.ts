@@ -322,6 +322,43 @@ export interface TroopMovement {
   config?: Record<string, unknown>;
 }
 
+// ---- Commander: Hauling + Interception (Phase F.2) ---------------------------
+
+/** Resource load credited on a haul return leg, e.g. { wood: 120, stone: 40 }. */
+export type HaulLoad = Record<string, number>;
+
+/** Config blob carried by own haul movements (GET /commander/map). */
+export interface HaulMovementConfig extends Record<string, unknown> {
+  /** Total carry capacity of the dispatched hauler column. */
+  carry_total?: number;
+  /** Actual resources picked up — present on the return leg only. */
+  load?: HaulLoad;
+}
+
+export interface HaulRequest {
+  instance_ids: string[];
+  from_territory_id: string;
+  target_territory_id: string;
+}
+
+export interface HaulResponse {
+  movement: TroopMovement;
+}
+
+export interface InterceptRequest {
+  movement_id: string;
+  instance_ids: string[];
+  from_territory_id: string;
+}
+
+export interface InterceptResponse {
+  battle_id: string;
+  result: {
+    winner_side: 'attacker' | 'defender';
+    load_lost: boolean;
+  };
+}
+
 // ---- Airstrikes (Phase C.3) --------------------------------------------------
 
 /** One own silo returned in GET /commander/map */

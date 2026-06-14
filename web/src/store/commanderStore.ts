@@ -4,8 +4,8 @@
 // ============================================================
 
 import { create } from 'zustand';
-import { api, battlesApi, errorMessage, strikeApi, troopsApi } from '../api/client';
-import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, InventoryItem, Objective, ScoutCapacity, SiloInfo } from '../api/types';
+import { api, battlesApi, errorMessage, haulApi, interceptApi, strikeApi, troopsApi } from '../api/client';
+import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, HaulMovementConfig, InterceptResponse, InventoryItem, Objective, ScoutCapacity, SiloInfo } from '../api/types';
 
 // ---- API shapes ----------------------------------------------------------------
 
@@ -22,7 +22,7 @@ export interface CommanderTerritory {
 
 export interface CommanderMovement {
   id: string;
-  purpose: 'scout' | 'return' | 'attack' | 'reinforce';
+  purpose: 'scout' | 'return' | 'attack' | 'reinforce' | 'haul';
   status: string;
   from_cell: string;
   to_cell: string;
@@ -36,7 +36,13 @@ export interface CommanderMovement {
   current_cell?: string;
   /** eta for foreign spotted movements */
   eta?: string;
-  config?: Record<string, unknown>;
+  /**
+   * Phase F.2: true = a loaded haul/return column (interceptable, lucrative).
+   * Present on foreign spotted movements; own haul movements may also set it.
+   */
+  carrying?: boolean;
+  /** Own haul movements expose carry_total and (return leg) load — see HaulMovementConfig. */
+  config?: HaulMovementConfig;
 }
 
 export interface CommanderRadar {
@@ -127,6 +133,19 @@ interface CommanderState {
     purpose: 'attack' | 'reinforce';
   }) => Promise<{ ok: boolean; error?: string; teleport?: boolean }>;
   equipDie: (instanceId: string) => Promise<{ ok: boolean; error?: string }>;
+
+  // Phase F.2 actions
+  sendHaul: (params: {
+    instanceIds: string[];
+    fromTerritoryId: string;
+    targetTerritoryId: string;
+  }) => Promise<{ ok: boolean; error?: string }>;
+  intercept: (params: {
+    movementId: string;
+    instanceIds: string[];
+    fromTerritoryId: string;
+  }) => Promise<{ ok: true; result: InterceptResponse['result'] } | { ok: false; error: string }>;
+
   fetchBattles: () => Promise<void>;
   fetchBattleDetail: (id: string) => Promise<BattleDetail | null>;
   launchStrike: (fromTerritoryId: string, targetTerritoryId: string) => Promise<{ ok: true; result: AirstrikeResult } | { ok: false; error: string }>;
@@ -160,6 +179,38 @@ export function strikeErrorLabel(code: string): string {
     case 'CANNOT_STRIKE_SELF':     return 'You cannot airstrike your own territory.';
     case 'TARGET_TOO_FAR':         return 'Target is out of silo range (max 40 cells).';
     case 'INSUFFICIENT_RESOURCES': return 'Not enough Energy (150⚡ required).';
+    case 'FEATURE_DISABLED':       return 'Commander mode is not enabled for your account.';
+    default:                       return code;
+  }
+}
+
+export function haulErrorLabel(code: string): string {
+  switch (code) {
+    case 'NO_BASE':                return 'Select one of your territories as origin.';
+    case 'TARGET_NOT_FOUND':       return 'Destination territory not found.';
+    case 'TARGET_NOT_OWNED':       return 'You can only haul to a territory you own.';
+    case 'NOTHING_TO_HAUL':        return 'Nothing to haul yet — let the stockpile grow.';
+    case 'TARGET_TOO_FAR':         return 'Destination is out of range.';
+    case 'INVALID_UNITS':          return 'One or more selected units are invalid.';
+    case 'UNIT_BUSY':              return 'One or more units are already deployed or marching.';
+    case 'TOO_MANY_UNITS':         return 'You can haul with at most 6 units at once.';
+    case 'INSUFFICIENT_RESOURCES': return 'Not enough Energy for this haul.';
+    case 'FEATURE_DISABLED':       return 'The economy is not enabled for your account.';
+    default:                       return code;
+  }
+}
+
+export function interceptErrorLabel(code: string): string {
+  switch (code) {
+    case 'MOVEMENT_NOT_FOUND':     return 'That enemy column is no longer in range.';
+    case 'NOT_INTERCEPTABLE':      return 'This movement cannot be intercepted.';
+    case 'ALREADY_RESOLVED':       return 'This column has already reached its destination.';
+    case 'CANNOT_INTERCEPT_SELF':  return 'You cannot intercept your own column.';
+    case 'NOT_VISIBLE':            return 'You have lost sight of this column.';
+    case 'NO_BASE':                return 'Select one of your territories as origin.';
+    case 'INVALID_UNITS':          return 'One or more selected units are invalid.';
+    case 'UNIT_BUSY':              return 'One or more units are already deployed or marching.';
+    case 'TOO_MANY_UNITS':         return 'You can intercept with at most 6 units at once.';
     case 'FEATURE_DISABLED':       return 'Commander mode is not enabled for your account.';
     default:                       return code;
   }
@@ -361,6 +412,49 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
         return '';
       })();
       return { ok: false, error: raw || errorMessage(err, 'Equip failed') };
+    }
+  },
+
+  sendHaul: async ({ instanceIds, fromTerritoryId, targetTerritoryId }) => {
+    try {
+      await haulApi.send({
+        instance_ids: instanceIds,
+        from_territory_id: fromTerritoryId,
+        target_territory_id: targetTerritoryId,
+      });
+      await get().fetchMap();
+      return { ok: true };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? haulErrorLabel(raw) : errorMessage(err, 'Haul failed') };
+    }
+  },
+
+  intercept: async ({ movementId, instanceIds, fromTerritoryId }) => {
+    try {
+      const result = await interceptApi.launch({
+        movement_id: movementId,
+        instance_ids: instanceIds,
+        from_territory_id: fromTerritoryId,
+      });
+      // Refresh map (column may vanish) and battles list (new interception entry)
+      await Promise.all([get().fetchMap(), get().fetchBattles()]);
+      return { ok: true, result: result.result };
+    } catch (err) {
+      const raw = (() => {
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          const axErr = err as { response?: { data?: { message?: string } } };
+          return axErr.response?.data?.message ?? '';
+        }
+        return '';
+      })();
+      return { ok: false, error: raw ? interceptErrorLabel(raw) : errorMessage(err, 'Intercept failed') };
     }
   },
 

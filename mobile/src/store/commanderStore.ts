@@ -6,6 +6,7 @@ import {
   CommanderBattleDetail,
   CommanderOwnMovement,
   AirstrikeResult,
+  InterceptResult,
   Objective,
   ScoutCapacity,
 } from '../services/api';
@@ -35,6 +36,16 @@ const COMMANDER_ERROR_MESSAGES: Record<string, string> = {
   SILO_COOLDOWN: 'Silo is reloading.',
   TARGET_NOT_FOUND: 'Target territory not found.',
   CANNOT_STRIKE_SELF: 'You cannot airstrike your own territory.',
+  // Phase F.2 — Hauling
+  TARGET_NOT_OWNED: 'You can only haul to a territory you control.',
+  NOTHING_TO_HAUL: 'Nothing to haul yet.',
+  INVALID_UNITS: 'Pick at least one valid hauler unit.',
+  // Phase F.2 — Interception
+  MOVEMENT_NOT_FOUND: 'That column has already moved on.',
+  NOT_INTERCEPTABLE: 'That column is not carrying anything to intercept.',
+  ALREADY_RESOLVED: 'That column has already been resolved.',
+  CANNOT_INTERCEPT_SELF: 'You cannot intercept your own column.',
+  NOT_VISIBLE: 'You have lost sight of that column.',
 };
 
 export function resolveCommanderError(message: string): string {
@@ -51,6 +62,11 @@ interface ActionResult {
 interface StrikeResult extends ActionResult {
   battle_id?: string;
   result?: AirstrikeResult;
+}
+
+interface InterceptActionResult extends ActionResult {
+  battle_id?: string;
+  result?: InterceptResult['result'];
 }
 
 interface CommanderState {
@@ -85,6 +101,16 @@ interface CommanderState {
   ) => Promise<ActionResult>;
   equipDie: (instanceId: string) => Promise<ActionResult>;
   strike: (fromTerritoryId: string, targetTerritoryId: string) => Promise<StrikeResult>;
+  sendHaul: (
+    instanceIds: string[],
+    fromTerritoryId: string,
+    targetTerritoryId: string
+  ) => Promise<ActionResult>;
+  intercept: (
+    movementId: string,
+    instanceIds: string[],
+    fromTerritoryId: string
+  ) => Promise<InterceptActionResult>;
   fetchBattles: () => Promise<void>;
   fetchBattle: (id: string) => Promise<void>;
   clearBattleDetail: () => void;
@@ -246,6 +272,51 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       });
       const { battle_id, result } = response.data.data;
       // Refresh map (cooldown) + battle log in parallel.
+      await Promise.all([get().fetchMap(), get().fetchBattles()]);
+      return { success: true, battle_id, result };
+    } catch (err: unknown) {
+      const raw = err instanceof Error ? err.message : 'UNKNOWN_ERROR';
+      const message = resolveCommanderError(raw);
+      set({ error: message });
+      return { success: false, message };
+    }
+  },
+
+  /**
+   * Phase F.2 — Haul a stockpile home with a stack of hauler units.
+   * Refreshes the map so the new haul movement appears in the movements strip.
+   */
+  sendHaul: async (instanceIds, fromTerritoryId, targetTerritoryId) => {
+    set({ error: null });
+    try {
+      await commanderApi.haul({
+        instance_ids: instanceIds,
+        from_territory_id: fromTerritoryId,
+        target_territory_id: targetTerritoryId,
+      });
+      await get().fetchMap();
+      return { success: true };
+    } catch (err: unknown) {
+      const raw = err instanceof Error ? err.message : 'UNKNOWN_ERROR';
+      const message = resolveCommanderError(raw);
+      set({ error: message });
+      return { success: false, message };
+    }
+  },
+
+  /**
+   * Phase F.2 — Intercept a loaded foreign haul column. Resolves a battle
+   * server-side, then refreshes both the map and the battle log.
+   */
+  intercept: async (movementId, instanceIds, fromTerritoryId) => {
+    set({ error: null });
+    try {
+      const response = await commanderApi.intercept({
+        movement_id: movementId,
+        instance_ids: instanceIds,
+        from_territory_id: fromTerritoryId,
+      });
+      const { battle_id, result } = response.data.data;
       await Promise.all([get().fetchMap(), get().fetchBattles()]);
       return { success: true, battle_id, result };
     } catch (err: unknown) {

@@ -1536,6 +1536,27 @@ INSERT INTO feature_flags (key, enabled, rollout_percent, config)
 VALUES ('economy', FALSE, 100, '{}')
 ON CONFLICT (key) DO NOTHING;
 
+-- ============================================================
+-- Phase F.2 — Resource Hauling + Interception (2026-06-14)
+-- Hauler unit definitions: non-tradeable 'unit' items carrying a `carry` stat
+-- (units of resource they can transport). Haul reuses troop_movements
+-- (purpose 'haul'/'return'); interception writes battles.type 'interception'.
+-- No new table. Haul gated behind `economy`; interception behind `commander`.
+-- See src/db/migrations/2026-06-14_phaseF2_haul.sql.
+-- ============================================================
+INSERT INTO item_definitions (id, category, rarity, tradeable, stats, lore)
+VALUES
+  ('unit_porter', 'unit', 'common', FALSE,
+    '{"domain":"ground","atk":0,"def":0,"carry":120}',
+    '{"name_key":"unit_porter","faction":"hyperborean"}'),
+  ('unit_transport', 'unit', 'uncommon', FALSE,
+    '{"domain":"ground","atk":1,"def":2,"carry":70}',
+    '{"name_key":"unit_transport","faction":"hyperborean"}'),
+  ('unit_armored_transport', 'unit', 'rare', FALSE,
+    '{"domain":"armor","atk":3,"def":3,"carry":90}',
+    '{"name_key":"unit_armored_transport","faction":"hyperborean"}')
+ON CONFLICT (id) DO NOTHING;
+
 -- AI system user: unique-safe insert (a player may hold 'Hyperboreans');
 -- banned = TRUE hides it from player search + leaderboards (banned filters).
 INSERT INTO users (id, username, email, password_hash, banned)

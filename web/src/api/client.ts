@@ -16,6 +16,10 @@ import type {
   BuildingListResponse,
   BuildingType,
   ClientFeatureFlag,
+  HaulRequest,
+  HaulResponse,
+  InterceptRequest,
+  InterceptResponse,
   InventoryItem,
   LeaderboardEntry,
   LoginResponse,
@@ -337,6 +341,30 @@ export const troopsApi = {
     if (!res.data.success) {
       throw new Error(res.data.message ?? 'Equip failed');
     }
+  },
+};
+
+// ---- Commander: Hauling + Interception (Phase F.2) ---------------------------
+
+export const haulApi = {
+  /** Dispatch hauler units from an extraction territory back to a home base. */
+  async send(body: HaulRequest): Promise<TroopMovement> {
+    const res = await api.post<ApiEnvelope<HaulResponse>>('/commander/haul', body);
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Haul failed');
+    }
+    return res.data.data.movement;
+  },
+};
+
+export const interceptApi = {
+  /** Ambush an enemy's loaded haul/return column. */
+  async launch(body: InterceptRequest): Promise<InterceptResponse> {
+    const res = await api.post<ApiEnvelope<InterceptResponse>>('/commander/intercept', body);
+    if (!res.data.success || !res.data.data) {
+      throw new Error(res.data.message ?? 'Intercept failed');
+    }
+    return res.data.data;
   },
 };
 

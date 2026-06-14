@@ -25,6 +25,8 @@ import type { CommanderMapScreenProps } from '../../navigation/types';
 import { useCommanderStore } from '../../store/commanderStore';
 import { useInventoryStore, ItemInstance } from '../../store/inventoryStore';
 import { useAuthStore } from '../../store/authStore';
+import { useFeatureStore } from '../../store/featureStore';
+import { useBuildingStore } from '../../store/buildingStore';
 import {
   COMMANDER_COLORS as C,
   RADAR_MAP_STYLE,
@@ -41,6 +43,9 @@ import {
   domainColor,
   prettifyDefinitionId,
   formatCountdown,
+  isHauler,
+  carryCapacity,
+  formatLoad,
   LatLng,
 } from '../../utils/commander';
 import type {
@@ -52,6 +57,7 @@ import type {
   AirstrikeResult,
   Objective,
   ScoutCapacity,
+  StockpileEntry,
 } from '../../services/api';
 import { HYPERBOREAN_AI_USER_ID } from '../../services/api';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
@@ -65,6 +71,36 @@ function isUnit(item: ItemInstance): boolean {
   return item.category === 'unit' || (item.definition_id || '').startsWith('unit_');
 }
 
+const MAX_HAUL_UNITS = 6;
+
+/** Marker / chip color for an own movement by purpose. Haul → amber. */
+function ownMovementColor(purpose: CommanderOwnMovement['purpose']): string {
+  if (purpose === 'attack') return C.enemy;
+  if (purpose === 'scout') return C.accent;
+  if (purpose === 'haul') return C.warning;
+  return C.foreign;
+}
+
+/** Ionicon name for an own movement by purpose. Haul → truck. */
+function ownMovementIcon(purpose: CommanderOwnMovement['purpose']): string {
+  if (purpose === 'attack') return 'flash';
+  if (purpose === 'scout') return 'eye';
+  if (purpose === 'haul') return 'bus'; // truck-like glyph available in Ionicons
+  return 'shield';
+}
+
+/**
+ * Chip label for a haul movement. Return leg shows actual cargo ("Carrying 120 wood");
+ * outbound shows total carry capacity ("Haul · 120").
+ */
+function haulLoadLabel(m: CommanderOwnMovement): string {
+  const loadStr = formatLoad(m.config?.load);
+  if (loadStr) return `Carrying ${loadStr}`;
+  const total = m.config?.carry_total;
+  if (typeof total === 'number' && total > 0) return `Haul · ${total}`;
+  return 'haul';
+}
+
 type ActiveFlow =
   | { kind: 'none' }
   | { kind: 'scout'; instanceId: string; fromTerritoryId: string }
@@ -74,6 +110,20 @@ type ActiveFlow =
       instanceIds: string[];
       fromTerritoryId: string;
       targetTerritoryId: string;
+    }
+  | {
+      // Phase F.2 — haul a stockpile home from an own territory to another own territory.
+      kind: 'haul';
+      instanceIds: string[];
+      fromTerritoryId: string;
+      targetTerritoryId: string | null;
+    }
+  | {
+      // Phase F.2 — intercept a loaded foreign haul column.
+      kind: 'intercept';
+      movementId: string;
+      instanceIds: string[];
+      fromTerritoryId: string | null;
     };
 
 export default function CommanderMapScreen({ navigation }: CommanderMapScreenProps) {
@@ -88,12 +138,18 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     undeploy,
     march,
     strike,
+    sendHaul,
+    intercept,
     battles,
     fetchBattles,
     clearError,
   } = useCommanderStore();
   const { items, fetchInventory } = useInventoryStore();
   const userId = useAuthStore((s) => s.user?.id);
+  const economyEnabled = useFeatureStore(
+    (s) => s.isEnabled('economy') && s.isEnabled('resources') && s.capabilities.resources
+  );
+  const { stockpileByTerritory, fetchBuildings } = useBuildingStore();
 
   const mapRef = useRef<MapView>(null);
   const fittedRef = useRef(false);
@@ -106,6 +162,11 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
   const [submitting, setSubmitting] = useState(false);
 
   const unitItems = useMemo(() => items.filter(isUnit), [items]);
+  // Phase F.2 — hauler units available for hauling (carry stat or known hauler def).
+  const haulerItems = useMemo(
+    () => unitItems.filter((u) => isHauler(u.definition_id, u.stats)),
+    [unitItems]
+  );
 
   // ── Data refresh: on focus + every 30s; clears on blur/unmount.
   useFocusEffect(
@@ -228,10 +289,17 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const openTerritory = useCallback((t: CommanderTerritory) => {
-    setSelectedTerritory(t);
-    setBuildRadar(false);
-  }, []);
+  const openTerritory = useCallback(
+    (t: CommanderTerritory) => {
+      setSelectedTerritory(t);
+      setBuildRadar(false);
+      // Phase F.2 — pull the stockpile for own territories so "Haul home" can gate on it.
+      if (t.is_own && economyEnabled) {
+        fetchBuildings(t.id);
+      }
+    },
+    [economyEnabled, fetchBuildings]
+  );
 
   const closeSheet = useCallback(() => {
     setSelectedTerritory(null);
@@ -327,6 +395,43 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     },
     [strike]
   );
+
+  // ── Phase F.2 — Haul ─────────────────────────────────────────────────────────
+  const beginHaul = useCallback(
+    (fromTerritoryId: string) => {
+      closeSheet();
+      setFlow({ kind: 'haul', instanceIds: [], fromTerritoryId, targetTerritoryId: null });
+    },
+    [closeSheet]
+  );
+
+  const confirmHaul = useCallback(async () => {
+    if (flow.kind !== 'haul' || !flow.targetTerritoryId) return;
+    setSubmitting(true);
+    const res = await sendHaul(flow.instanceIds, flow.fromTerritoryId, flow.targetTerritoryId);
+    setSubmitting(false);
+    if (res.success) setFlow({ kind: 'none' });
+  }, [flow, sendHaul]);
+
+  // ── Phase F.2 — Intercept ──────────────────────────────────────────────────────
+  const beginIntercept = useCallback((movementId: string) => {
+    setFlow({ kind: 'intercept', movementId, instanceIds: [], fromTerritoryId: null });
+  }, []);
+
+  const confirmIntercept = useCallback(async () => {
+    if (flow.kind !== 'intercept' || !flow.fromTerritoryId || flow.instanceIds.length === 0) return;
+    setSubmitting(true);
+    const res = await intercept(flow.movementId, flow.instanceIds, flow.fromTerritoryId);
+    setSubmitting(false);
+    if (res.success) {
+      setFlow({ kind: 'none' });
+      const won = res.result?.winner_side === 'attacker';
+      Alert.alert(
+        'Interception',
+        won ? 'Haul destroyed — cargo lost!' : 'Interception failed.'
+      );
+    }
+  }, [flow, intercept]);
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -497,8 +602,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
           {ownMovements.map((m) => {
             const line = pathPolyline(m.path);
             const pos = pathPositionAt(m.path, m.progress);
-            const col =
-              m.purpose === 'attack' ? C.enemy : m.purpose === 'scout' ? C.accent : C.foreign;
+            const col = ownMovementColor(m.purpose);
             return (
               <React.Fragment key={`mv-${m.id}`}>
                 {line.length >= 2 ? (
@@ -512,11 +616,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
                 {pos ? (
                   <Marker key={`mv-dot-${m.id}-${tick}`} coordinate={pos} anchor={{ x: 0.5, y: 0.5 }}>
                     <View style={[styles.moveDot, { borderColor: col, backgroundColor: `${col}55` }]}>
-                      <Ionicons
-                        name={m.purpose === 'attack' ? 'flash' : m.purpose === 'scout' ? 'eye' : 'shield'}
-                        size={10}
-                        color={col}
-                      />
+                      <Ionicons name={ownMovementIcon(m.purpose) as any} size={10} color={col} />
                     </View>
                   </Marker>
                 ) : null}
@@ -524,14 +624,21 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
             );
           })}
 
-          {/* Foreign movements — red marker at current cell, no path (fog) */}
+          {/* Foreign movements — red marker at current cell, no path (fog).
+              Carrying columns (Phase F.2) get a fatter red marker and a tap → intercept. */}
           {foreignMovements.map((m) => {
             const pos = cellCenter(m.current_cell);
             if (!pos) return null;
+            const carrying = m.carrying === true;
             return (
-              <Marker key={`fm-${m.id}`} coordinate={pos} anchor={{ x: 0.5, y: 0.5 }}>
-                <View style={styles.enemyDot}>
-                  <Ionicons name="alert" size={10} color="#FFFFFF" />
+              <Marker
+                key={`fm-${m.id}`}
+                coordinate={pos}
+                anchor={{ x: 0.5, y: 0.5 }}
+                onPress={carrying ? () => beginIntercept(m.id) : undefined}
+              >
+                <View style={carrying ? styles.enemyHaulDot : styles.enemyDot}>
+                  <Ionicons name={carrying ? 'cube' : 'alert'} size={carrying ? 14 : 10} color="#FFFFFF" />
                 </View>
               </Marker>
             );
@@ -580,16 +687,13 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
           {ownMovements.length > 0 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.stripContent}>
               {ownMovements.map((m) => {
-                const col =
-                  m.purpose === 'attack' ? C.enemy : m.purpose === 'scout' ? C.accent : C.foreign;
+                const col = ownMovementColor(m.purpose);
+                // Phase F.2 — haul chips show carry capacity (outbound) or actual load (return leg).
+                const loadLabel = m.purpose === 'haul' ? haulLoadLabel(m) : null;
                 return (
                   <View key={`chip-${m.id}`} style={[styles.chip, { borderColor: col }]}>
-                    <Ionicons
-                      name={m.purpose === 'attack' ? 'flash' : m.purpose === 'scout' ? 'eye' : 'shield'}
-                      size={12}
-                      color={col}
-                    />
-                    <Text style={styles.chipLabel}>{m.purpose}</Text>
+                    <Ionicons name={ownMovementIcon(m.purpose) as any} size={12} color={col} />
+                    <Text style={styles.chipLabel}>{loadLabel ?? m.purpose}</Text>
                     <Text style={[styles.chipEta, { color: col }]}>{formatCountdown(m.arrives_at)}</Text>
                     {m.purpose === 'scout' && m.status !== 'returning' ? (
                       <TouchableOpacity
@@ -620,10 +724,17 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
         silos={mapData?.silos ?? []}
         scoutCapacity={mapData?.scout_capacity ?? null}
         submitting={submitting}
+        canHaul={
+          !!selectedTerritory &&
+          selectedTerritory.is_own &&
+          economyEnabled &&
+          (stockpileByTerritory[selectedTerritory.id]?.some((e) => e.amount > 0) ?? false)
+        }
         onClose={closeSheet}
         onDeploy={handleDeploy}
         onUndeploy={handleUndeploy}
         onStartScout={beginScout}
+        onStartHaul={beginHaul}
         onStartAttack={(target) => {
           // pick a from-territory: first own territory by default
           const from = ownTerritories[0];
@@ -632,6 +743,29 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
           setFlow({ kind: 'attack', instanceIds: [], fromTerritoryId: from.id, targetTerritoryId: target.id });
         }}
         onStrike={handleStrike}
+      />
+
+      {/* Haul composition modal */}
+      <HaulModal
+        flow={flow}
+        haulers={haulerItems}
+        ownTerritories={ownTerritories}
+        stockpileByTerritory={stockpileByTerritory}
+        submitting={submitting}
+        onChange={setFlow}
+        onConfirm={confirmHaul}
+        onCancel={() => setFlow({ kind: 'none' })}
+      />
+
+      {/* Intercept composition modal */}
+      <InterceptModal
+        flow={flow}
+        units={unitItems}
+        ownTerritories={ownTerritories}
+        submitting={submitting}
+        onChange={setFlow}
+        onConfirm={confirmIntercept}
+        onCancel={() => setFlow({ kind: 'none' })}
       />
 
       {/* Scout confirm card */}
@@ -682,10 +816,12 @@ function TerritoryActionSheet({
   silos,
   scoutCapacity,
   submitting,
+  canHaul,
   onClose,
   onDeploy,
   onUndeploy,
   onStartScout,
+  onStartHaul,
   onStartAttack,
   onStrike,
 }: {
@@ -696,10 +832,12 @@ function TerritoryActionSheet({
   silos: SiloInfo[];
   scoutCapacity: ScoutCapacity | null;
   submitting: boolean;
+  canHaul: boolean;
   onClose: () => void;
   onDeploy: (instanceId: string, territoryId: string) => void;
   onUndeploy: (instanceId: string) => void;
   onStartScout: (instanceId: string, fromTerritoryId: string) => void;
+  onStartHaul: (fromTerritoryId: string) => void;
   onStartAttack: (target: CommanderTerritory) => void;
   onStrike: (fromTerritoryId: string, targetTerritoryId: string) => void;
 }) {
@@ -878,6 +1016,18 @@ function TerritoryActionSheet({
                         ))
                   ) : null}
                 </>
+              ) : null}
+
+              {/* Phase F.2 — Haul home (economy flag + non-empty stockpile) */}
+              {canHaul ? (
+                <TouchableOpacity
+                  style={styles.haulBtn}
+                  onPress={() => onStartHaul(territory.id)}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="bus" size={18} color="#FFFFFF" />
+                  <Text style={styles.haulBtnText}>🚚 Haul home</Text>
+                </TouchableOpacity>
               ) : null}
             </>
           ) : (
@@ -1203,6 +1353,287 @@ function AttackModal({
   );
 }
 
+// ─── Haul composition modal (Phase F.2) ──────────────────────────────────────────
+
+function HaulModal({
+  flow,
+  haulers,
+  ownTerritories,
+  stockpileByTerritory,
+  submitting,
+  onChange,
+  onConfirm,
+  onCancel,
+}: {
+  flow: ActiveFlow;
+  haulers: ItemInstance[];
+  ownTerritories: CommanderTerritory[];
+  stockpileByTerritory: Record<string, StockpileEntry[]>;
+  submitting: boolean;
+  onChange: (f: ActiveFlow) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (flow.kind !== 'haul') return null;
+  const from = ownTerritories.find((t) => t.id === flow.fromTerritoryId);
+  const destinations = ownTerritories.filter((t) => t.id !== flow.fromTerritoryId);
+
+  const toggleUnit = (id: string) => {
+    const has = flow.instanceIds.includes(id);
+    let next: string[];
+    if (has) next = flow.instanceIds.filter((u) => u !== id);
+    else {
+      if (flow.instanceIds.length >= MAX_HAUL_UNITS) return;
+      next = [...flow.instanceIds, id];
+    }
+    onChange({ ...flow, instanceIds: next });
+  };
+
+  const totalCarry = flow.instanceIds.reduce((sum, id) => {
+    const u = haulers.find((h) => h.id === id);
+    return sum + (u ? carryCapacity(u.definition_id, u.stats) : 0);
+  }, 0);
+
+  const stockpile = stockpileByTerritory[flow.fromTerritoryId] ?? [];
+  const stockpileTotal = stockpile.reduce((s, e) => s + e.amount, 0);
+
+  const canConfirm = flow.instanceIds.length > 0 && !!flow.targetTerritoryId;
+
+  return (
+    <Modal transparent visible animationType="slide" onRequestClose={onCancel}>
+      <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={onCancel} />
+      <View style={styles.sheet}>
+        <View style={styles.sheetHandle} />
+        <View style={styles.sheetHeader}>
+          <Ionicons name="bus" size={18} color={C.warning} />
+          <Text style={styles.sheetTitle}>Haul home</Text>
+          <TouchableOpacity onPress={onCancel} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Ionicons name="close" size={22} color={C.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.sheetMeta}>
+          {from ? `${from.h3_cells.length} cells · ` : ''}
+          {stockpile.length > 0
+            ? `${stockpileTotal} in stockpile (${stockpile.map((e) => `${e.amount} ${e.resource}`).join(', ')})`
+            : 'No stockpile data.'}
+        </Text>
+
+        <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+          {/* Hauler multiselect */}
+          <Text style={styles.sectionLabel}>
+            SELECT HAULERS ({flow.instanceIds.length}/{MAX_HAUL_UNITS})
+          </Text>
+          {haulers.length === 0 ? (
+            <Text style={styles.emptyLine}>No hauler units available.</Text>
+          ) : (
+            haulers.map((u) => {
+              const sel = flow.instanceIds.includes(u.id);
+              const carry = carryCapacity(u.definition_id, u.stats);
+              return (
+                <TouchableOpacity
+                  key={u.id}
+                  style={[styles.unitRow, sel && styles.unitRowSel]}
+                  onPress={() => toggleUnit(u.id)}
+                >
+                  <Ionicons name="bus" size={16} color={C.warning} />
+                  <Text style={styles.pickName}>{prettifyDefinitionId(u.definition_id)}</Text>
+                  <Text style={styles.pickDomain}>carry {carry}</Text>
+                  <Ionicons
+                    name={sel ? 'checkmark-circle' : 'ellipse-outline'}
+                    size={18}
+                    color={sel ? C.accent : C.textSecondary}
+                  />
+                </TouchableOpacity>
+              );
+            })
+          )}
+
+          {/* Destination picker */}
+          <Text style={styles.sectionLabel}>DELIVER TO</Text>
+          {destinations.length === 0 ? (
+            <Text style={styles.emptyLine}>You need a second territory to haul to.</Text>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: SPACING.sm }}>
+              {destinations.map((t) => {
+                const sel = t.id === flow.targetTerritoryId;
+                return (
+                  <TouchableOpacity
+                    key={t.id}
+                    style={[styles.originChip, sel && styles.originChipSel]}
+                    onPress={() => onChange({ ...flow, targetTerritoryId: t.id })}
+                  >
+                    <Text style={[styles.originChipText, sel && { color: C.bg }]}>
+                      {t.h3_cells.length}c · {t.claim_value}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          )}
+
+          {/* Total carry */}
+          {flow.instanceIds.length > 0 ? (
+            <View style={styles.costRow}>
+              <View style={styles.costPill}>
+                <Ionicons name="cube" size={13} color={C.warning} />
+                <Text style={styles.costText}>Total carry {totalCarry}</Text>
+              </View>
+            </View>
+          ) : null}
+        </ScrollView>
+
+        <View style={styles.confirmActions}>
+          <TouchableOpacity style={styles.ghostBtn} onPress={onCancel}>
+            <Text style={styles.ghostBtnText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.haulConfirmBtn, !canConfirm && { opacity: 0.5 }]}
+            onPress={onConfirm}
+            disabled={submitting || !canConfirm}
+            activeOpacity={0.85}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.attackConfirmText}>Send haul ({totalCarry})</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// ─── Intercept composition modal (Phase F.2) ──────────────────────────────────────
+
+function InterceptModal({
+  flow,
+  units,
+  ownTerritories,
+  submitting,
+  onChange,
+  onConfirm,
+  onCancel,
+}: {
+  flow: ActiveFlow;
+  units: ItemInstance[];
+  ownTerritories: CommanderTerritory[];
+  submitting: boolean;
+  onChange: (f: ActiveFlow) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (flow.kind !== 'intercept') return null;
+
+  const toggleUnit = (id: string) => {
+    const has = flow.instanceIds.includes(id);
+    let next: string[];
+    if (has) next = flow.instanceIds.filter((u) => u !== id);
+    else {
+      if (flow.instanceIds.length >= MAX_HAUL_UNITS) return;
+      next = [...flow.instanceIds, id];
+    }
+    onChange({ ...flow, instanceIds: next });
+  };
+
+  const canConfirm = flow.instanceIds.length > 0 && !!flow.fromTerritoryId;
+
+  return (
+    <Modal transparent visible animationType="slide" onRequestClose={onCancel}>
+      <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={onCancel} />
+      <View style={styles.sheet}>
+        <View style={styles.sheetHandle} />
+        <View style={styles.sheetHeader}>
+          <Ionicons name="flash" size={18} color={C.enemy} />
+          <Text style={styles.sheetTitle}>⚔ Intercept</Text>
+          <TouchableOpacity onPress={onCancel} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Ionicons name="close" size={22} color={C.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.sheetMeta}>
+          Catch the loaded enemy column before it reaches base. Win and the cargo is destroyed.
+        </Text>
+
+        <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+          {/* Origin picker */}
+          <Text style={styles.sectionLabel}>LAUNCH FROM</Text>
+          {ownTerritories.length === 0 ? (
+            <Text style={styles.emptyLine}>You need a base territory to intercept from.</Text>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: SPACING.sm }}>
+              {ownTerritories.map((t) => {
+                const sel = t.id === flow.fromTerritoryId;
+                return (
+                  <TouchableOpacity
+                    key={t.id}
+                    style={[styles.originChip, sel && styles.originChipSel]}
+                    onPress={() => onChange({ ...flow, fromTerritoryId: t.id })}
+                  >
+                    <Text style={[styles.originChipText, sel && { color: C.bg }]}>
+                      {t.h3_cells.length}c · {t.claim_value}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          )}
+
+          {/* Unit multiselect */}
+          <Text style={styles.sectionLabel}>
+            SELECT UNITS ({flow.instanceIds.length}/{MAX_HAUL_UNITS})
+          </Text>
+          {units.length === 0 ? (
+            <Text style={styles.emptyLine}>No units available.</Text>
+          ) : (
+            units.map((u) => {
+              const sel = flow.instanceIds.includes(u.id);
+              const d = inferDomain(u.definition_id, u.stats);
+              return (
+                <TouchableOpacity
+                  key={u.id}
+                  style={[styles.unitRow, sel && styles.unitRowSel]}
+                  onPress={() => toggleUnit(u.id)}
+                >
+                  <View style={[styles.domainBadge, { borderColor: domainColor(d) }]}>
+                    <Ionicons name={DOMAIN_ICONS[d] as any} size={11} color={domainColor(d)} />
+                  </View>
+                  <Text style={styles.pickName}>{prettifyDefinitionId(u.definition_id)}</Text>
+                  <Text style={styles.pickDomain}>{DOMAIN_LABELS[d]}</Text>
+                  <Ionicons
+                    name={sel ? 'checkmark-circle' : 'ellipse-outline'}
+                    size={18}
+                    color={sel ? C.accent : C.textSecondary}
+                  />
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ScrollView>
+
+        <View style={styles.confirmActions}>
+          <TouchableOpacity style={styles.ghostBtn} onPress={onCancel}>
+            <Text style={styles.ghostBtnText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.attackConfirmBtn, !canConfirm && { opacity: 0.5 }]}
+            onPress={onConfirm}
+            disabled={submitting || !canConfirm}
+            activeOpacity={0.85}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.attackConfirmText}>Intercept</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 // ─── Battle log modal ────────────────────────────────────────────────────────────
 
 function BattleLogModal({
@@ -1242,6 +1673,9 @@ function BattleLogModal({
                 ((playerIsAttacker && b.winner_side === 'attacker') ||
                   (!playerIsAttacker && b.winner_side === 'defender'));
               const isAirstrike = b.type === 'airstrike';
+              const isInterception = b.type === 'interception';
+              // Battle-type icon: rocket for airstrike, crossed swords for assault/interception.
+              const typeIcon = isAirstrike ? 'rocket' : 'flash';
               // Resolve opponent label — show 'Hyperboreans' for the AI faction.
               const opponentId = playerIsAttacker ? b.defender_id : b.attacker_id;
               const opponentLabel =
@@ -1249,7 +1683,7 @@ function BattleLogModal({
               return (
                 <TouchableOpacity key={b.id} style={styles.battleRow} onPress={() => onOpen(b.id)}>
                   <Ionicons
-                    name={isAirstrike ? 'rocket' : won ? 'trophy' : 'skull'}
+                    name={typeIcon as any}
                     size={16}
                     color={isAirstrike ? C.warning : won ? C.warning : C.enemy}
                   />
@@ -1257,6 +1691,8 @@ function BattleLogModal({
                     <Text style={styles.battleType}>
                       {isAirstrike
                         ? 'Airstrike'
+                        : isInterception
+                        ? `${playerIsAttacker ? 'Interception' : 'Defense'}`
                         : `${playerIsAttacker ? 'Attack' : 'Defense'} · ${prettifyDefinitionId(b.type)}`}
                       {opponentLabel ? (
                         <Text style={styles.battleOpponent}> vs {opponentLabel}</Text>
@@ -1320,6 +1756,17 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+    backgroundColor: C.enemy,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Phase F.2 — loaded foreign haul column: fatter, brighter red marker (tappable).
+  enemyHaulDot: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 2.5,
     borderColor: '#FFFFFF',
     backgroundColor: C.enemy,
     alignItems: 'center',
@@ -1478,6 +1925,26 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
   },
   attackBtnText: { color: '#FFFFFF', fontWeight: '800', fontSize: FONT_SIZE.md },
+
+  // Phase F.2 — Haul home button + confirm
+  haulBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    backgroundColor: '#A16207', // amber-700-ish, distinct from attack red
+    borderRadius: RADIUS.md,
+    paddingVertical: 12,
+    marginTop: SPACING.md,
+  },
+  haulBtnText: { color: '#FFFFFF', fontWeight: '800', fontSize: FONT_SIZE.md },
+  haulConfirmBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: RADIUS.md,
+    backgroundColor: '#A16207',
+  },
 
   airstrikeBtn: {
     flexDirection: 'row',

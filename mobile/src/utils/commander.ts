@@ -136,6 +136,50 @@ export function domainColor(domain: UnitDomain): string {
   return COMMANDER_COLORS[domain];
 }
 
+// ─── Hauler units (Phase F.2) ────────────────────────────────────────────────
+
+/** Default carry capacity per hauler definition (server is authoritative). */
+const HAULER_CARRY: Record<string, number> = {
+  unit_porter: 120,
+  unit_transport: 70,
+  unit_armored_transport: 90,
+};
+
+/** A unit is a hauler when it has a carry stat or a known hauler definition_id. */
+export function isHauler(definitionId: string, stats?: Record<string, number | string>): boolean {
+  if (carryCapacity(definitionId, stats) > 0) return true;
+  return (definitionId || '') in HAULER_CARRY;
+}
+
+/**
+ * Carry capacity of a unit. Prefers explicit `stats.carry`, falls back to the
+ * known hauler definition table, else 0 (not a hauler).
+ */
+export function carryCapacity(
+  definitionId: string,
+  stats?: Record<string, number | string>
+): number {
+  const raw = stats?.carry;
+  if (typeof raw === 'number' && raw > 0) return raw;
+  if (typeof raw === 'string') {
+    const n = parseInt(raw, 10);
+    if (!isNaN(n) && n > 0) return n;
+  }
+  return HAULER_CARRY[definitionId || ''] ?? 0;
+}
+
+/**
+ * Format a haul cargo manifest like `{ wood: 120, stone: 40 }` into a short
+ * string: "120 wood, 40 stone". Returns null when nothing is loaded.
+ */
+export function formatLoad(load?: Partial<Record<string, number>>): string | null {
+  if (!load) return null;
+  const parts = Object.entries(load)
+    .filter(([, amt]) => typeof amt === 'number' && amt > 0)
+    .map(([res, amt]) => `${amt} ${res}`);
+  return parts.length > 0 ? parts.join(', ') : null;
+}
+
 // ─── Rarity colors ─────────────────────────────────────────────────────────────
 
 const RARITY_COLORS: Record<string, string> = {

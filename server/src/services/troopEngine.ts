@@ -28,10 +28,13 @@ import {
   COMMANDER,
   COMBAT,
   TELEPORT,
+  HAUL,
   AI,
   scoutCapacityForLevel,
   scoutTier,
+  carryFor,
 } from '../config/constants';
+import { extractionService } from './extractionService';
 import { disk } from './h3Service';
 import { RES_SPAWN, cellForPoint, pathBetween } from './h3Service';
 import { resourceService } from './resourceService';
@@ -667,6 +670,445 @@ class TroopEngine {
     return result;
   }
 
+  // ---- Haul (Phase F.2) ---------------------------------------------
+
+  /**
+   * Dispatch a HAUL mission (Phase F.2): march 1..MAX_HAUL_UNITS hauler units
+   * from an owned origin territory to an owned target territory that has a
+   * stockpile, to ferry raw resources home into the player's BALANCE.
+   *
+   * PRE-TX (pool ok): both territories must be owned by the user; the target
+   * must have a stockpile with >0 of some resource (accrueTerritory is called
+   * FIRST, OUTSIDE the haul tx, to materialise pending production). The path
+   * origin→target is built via pathBetween (TARGET_TOO_FAR if too far).
+   *
+   * TX: lock the units (owned, category 'unit', status 'inventory'), debit
+   * energy, flip them to 'deployed', insert a 'haul' movement whose config
+   * carries { target_territory_id, carry_total, ai_faction:false }. The actual
+   * LOAD happens on arrival in resolveOne (drains the stockpile under locks).
+   */
+  async dispatchHaul(
+    userId: string,
+    opts: { instanceIds: string[]; fromTerritoryId: string; targetTerritoryId: string },
+  ): Promise<TroopMovement> {
+    const { instanceIds, fromTerritoryId, targetTerritoryId } = opts;
+
+    if (!Array.isArray(instanceIds) || instanceIds.length === 0) {
+      throw new TroopError('INVALID_UNITS', 'At least one hauler unit is required');
+    }
+    if (instanceIds.length > HAUL.MAX_HAUL_UNITS) {
+      throw new TroopError('TOO_MANY_UNITS', `At most ${HAUL.MAX_HAUL_UNITS} units may haul`);
+    }
+
+    // ---- PRE-TX: origin territory (own, has cells) ----
+    const originRes = await query<{ id: string; h3_cells: string[] | null }>(
+      `SELECT id, h3_cells FROM territories WHERE id = $1 AND owner_id = $2`,
+      [fromTerritoryId, userId],
+    );
+    if (originRes.rowCount === 0) {
+      throw new TroopError('NO_BASE', 'Origin territory not found or not owned');
+    }
+    const originCells = originRes.rows[0].h3_cells;
+    if (!originCells || originCells.length === 0) {
+      throw new TroopError('NO_BASE', 'Origin territory has no H3 cells (not backfilled)');
+    }
+    const originCell = originCells[0];
+
+    // ---- PRE-TX: target territory (own, has cells) ----
+    const targetRes = await query<{
+      id: string;
+      owner_id: string | null;
+      h3_cells: string[] | null;
+    }>(
+      `SELECT id, owner_id, h3_cells FROM territories WHERE id = $1`,
+      [targetTerritoryId],
+    );
+    if (targetRes.rowCount === 0) {
+      throw new TroopError('TARGET_NOT_FOUND', 'Target territory does not exist');
+    }
+    if (targetRes.rows[0].owner_id !== userId) {
+      throw new TroopError('TARGET_NOT_OWNED', 'Target territory is not owned by you');
+    }
+    const targetCells = targetRes.rows[0].h3_cells;
+    if (!targetCells || targetCells.length === 0) {
+      throw new TroopError('TARGET_NOT_FOUND', 'Target territory has no H3 cells (not backfilled)');
+    }
+    const targetCell0 = targetCells[0];
+
+    // ---- PRE-TX: materialise + check the stockpile (pool — OUTSIDE the tx) ----
+    // accrueTerritory turns pending production into rows before we look; this is
+    // a plain pool call (its own tx) and MUST run before the haul tx so we never
+    // hold the haul tx open while accruing.
+    try {
+      await extractionService.accrueTerritory(targetTerritoryId);
+    } catch (err) {
+      // Non-fatal: a transient accrual hiccup must not block hauling whatever is
+      // already in the stockpile. The arrival load reads the live rows anyway.
+      console.error('[Troop] dispatchHaul accrue failed (non-fatal):', (err as any)?.message);
+    }
+    const stockRes = await query<{ total: string }>(
+      `SELECT COALESCE(SUM(amount), 0)::bigint AS total
+         FROM territory_stockpile
+        WHERE territory_id = $1 AND amount > 0`,
+      [targetTerritoryId],
+    );
+    if (parseInt(stockRes.rows[0]?.total ?? '0', 10) <= 0) {
+      throw new TroopError('NOTHING_TO_HAUL', 'Target territory stockpile is empty');
+    }
+
+    // ---- PRE-TX: path ----
+    let path: string[];
+    try {
+      path = pathBetween(originCell, targetCell0);
+    } catch {
+      throw new TroopError('TARGET_TOO_FAR', 'No valid path to the target');
+    }
+    if (path.length === 0 || path.length > COMMANDER.MAX_PATH_CELLS) {
+      throw new TroopError('TARGET_TOO_FAR', 'Target is too far to haul to');
+    }
+
+    return transaction(async (c) => {
+      // ---- Lock the hauler units (owned, category 'unit', status inventory) ----
+      // Read stats too so we can sum the carry capacity under the lock.
+      const locked = await c.query<{
+        id: string;
+        owner_id: string | null;
+        status: string;
+        category: string | null;
+        definition_id: string;
+        stats: any;
+      }>(
+        `SELECT i.id, i.owner_id, i.status, d.category, i.definition_id, d.stats
+           FROM item_instances i
+           LEFT JOIN item_definitions d ON d.id = i.definition_id
+          WHERE i.id = ANY($1)
+          FOR UPDATE OF i`,
+        [instanceIds],
+      );
+      if (locked.rowCount !== instanceIds.length) {
+        throw new TroopError('INVALID_UNITS', 'One or more units do not exist');
+      }
+      let carryTotal = 0;
+      for (const u of locked.rows) {
+        if (u.owner_id !== userId) {
+          throw new TroopError('NOT_OWNER', 'You do not own one of these units');
+        }
+        if (u.category !== 'unit') {
+          throw new TroopError('INVALID_UNITS', 'One of these items is not a unit');
+        }
+        if (u.status !== 'inventory') {
+          throw new TroopError('UNIT_BUSY', 'One of these units is not in inventory');
+        }
+        carryTotal += carryFor(u.definition_id, u.stats);
+      }
+
+      // ---- Debit energy: path × count × rate ----
+      const energyCost = path.length * instanceIds.length * HAUL.ENERGY_PER_CELL_PER_UNIT;
+      await resourceService.debit(
+        userId,
+        'energy',
+        energyCost,
+        'haul_dispatch',
+        { targetTerritoryId },
+        c,
+      );
+
+      // ---- Flip units to deployed (in flight) ----
+      await c.query(
+        `UPDATE item_instances SET status = 'deployed', updated_at = NOW()
+          WHERE id = ANY($1)`,
+        [instanceIds],
+      );
+
+      // ---- Insert the haul movement ----
+      const travelMin = path.length * HAUL.MARCH_MIN_PER_CELL;
+      const inserted = await c.query<TroopMovement>(
+        `INSERT INTO troop_movements
+           (owner_id, instance_ids, from_cell, to_cell, path, purpose, config,
+            departs_at, arrives_at, status)
+         VALUES ($1, $2, $3, $4, $5, 'haul', $6,
+                 NOW(), NOW() + ($7 || ' minutes')::interval, 'marching')
+         RETURNING ${MOVEMENT_COLS}`,
+        [
+          userId,
+          instanceIds,
+          originCell,
+          targetCell0,
+          path,
+          JSON.stringify({
+            target_territory_id: targetTerritoryId,
+            carry_total: carryTotal,
+            ai_faction: false,
+          }),
+          String(travelMin),
+        ],
+      );
+      return inserted.rows[0];
+    });
+  }
+
+  // ---- Interception (Phase F.2) -------------------------------------
+
+  /**
+   * Intercept a foreign loaded haul (or a loaded 'return') with own units.
+   *
+   * PRE-TX (pool ok): the target movement must exist, be purpose 'haul' or a
+   * 'return' carrying a load, status 'marching', unresolved, owned by SOMEONE
+   * ELSE, and its CURRENT cell (projected from elapsed time) must be in the
+   * attacker's ACTIVE vision (visionService.getActiveCells) else NOT_VISIBLE.
+   * The attacker's units come from an owned origin territory (validated).
+   *
+   * TX: lock the haul movement FOR UPDATE, re-check it is still marching +
+   * unresolved (ALREADY_RESOLVED otherwise). Resolve a unit-vs-unit battle
+   * (battleEngine.resolveInterception) — attacker units vs the haul's escort.
+   *   - Attacker wins → escort destroyed, movement status='intercepted'
+   *     resolved=TRUE, the load is LOST (never credited); surviving attackers
+   *     auto-return home.
+   *   - Haul (defender) wins → dead attackers destroyed, survivors auto-return;
+   *     the haul CONTINUES unchanged (still marching, unresolved).
+   * Atomic; WS to BOTH sides post-commit. diceDropP=0 if attacker is AI.
+   */
+  async interceptHaul(
+    userId: string,
+    opts: { movementId: string; instanceIds: string[]; fromTerritoryId: string },
+  ): Promise<{ battleId: string; winnerSide: 'attacker' | 'defender'; loadLost: boolean }> {
+    const { movementId, instanceIds, fromTerritoryId } = opts;
+
+    if (!Array.isArray(instanceIds) || instanceIds.length === 0) {
+      throw new TroopError('INVALID_UNITS', 'At least one unit is required');
+    }
+    if (instanceIds.length > COMBAT.MAX_MARCH_UNITS) {
+      throw new TroopError('TOO_MANY_UNITS', `At most ${COMBAT.MAX_MARCH_UNITS} units may intercept`);
+    }
+
+    // ---- PRE-TX: load the target movement (pool) ----
+    const mvRes = await query<TroopMovement>(
+      `SELECT ${MOVEMENT_COLS} FROM troop_movements WHERE id = $1`,
+      [movementId],
+    );
+    if (mvRes.rowCount === 0) {
+      throw new TroopError('MOVEMENT_NOT_FOUND', 'Target movement does not exist');
+    }
+    const haul = mvRes.rows[0];
+    const isLoadedReturn =
+      haul.purpose === 'return' &&
+      !!(haul.config && haul.config.load && typeof haul.config.load === 'object');
+    const interceptable = haul.purpose === 'haul' || isLoadedReturn;
+    if (!interceptable) {
+      throw new TroopError('NOT_INTERCEPTABLE', 'This movement carries no haul load');
+    }
+    if (haul.status !== 'marching' || haul.resolved) {
+      throw new TroopError('ALREADY_RESOLVED', 'This haul is no longer in transit');
+    }
+    if (haul.owner_id === userId) {
+      throw new TroopError('CANNOT_INTERCEPT_SELF', 'You cannot intercept your own haul');
+    }
+
+    // Project the haul's CURRENT cell from elapsed time over its path.
+    const departs = new Date(haul.departs_at).getTime();
+    const arrives = new Date(haul.arrives_at).getTime();
+    const span = Math.max(1, arrives - departs);
+    const progress = Math.min(1, Math.max(0, (Date.now() - departs) / span));
+    const len = haul.path.length;
+    const idx = len <= 1 ? 0 : Math.floor(progress * (len - 1));
+    const currentCell = haul.path[idx];
+
+    // ---- PRE-TX: visibility (getActiveCells queries the pool) ----
+    const activeCells = await visionService.getActiveCells(userId);
+    if (!activeCells.has(currentCell)) {
+      throw new TroopError('NOT_VISIBLE', 'The haul is not in your active vision');
+    }
+
+    // ---- PRE-TX: origin territory (own, has cells) ----
+    const originRes = await query<{ id: string; h3_cells: string[] | null }>(
+      `SELECT id, h3_cells FROM territories WHERE id = $1 AND owner_id = $2`,
+      [fromTerritoryId, userId],
+    );
+    if (originRes.rowCount === 0) {
+      throw new TroopError('NO_BASE', 'Origin territory not found or not owned');
+    }
+    const originCells = originRes.rows[0].h3_cells;
+    if (!originCells || originCells.length === 0) {
+      throw new TroopError('NO_BASE', 'Origin territory has no H3 cells (not backfilled)');
+    }
+    const originCell = originCells[0];
+
+    // ---- PRE-TX: dice-drop probability (mirrors resolveOne attack path) ----
+    let diceDropP: number = COMBAT.DICE_DROP_P;
+    try {
+      const flags = await featureService.getAllFlags();
+      const commander = flags.find((f) => f.key === 'commander');
+      const cfg = (commander?.config ?? {}) as Record<string, unknown>;
+      if (typeof cfg.dice_drop_p === 'number') diceDropP = cfg.dice_drop_p;
+    } catch {
+      /* keep default */
+    }
+    // AI attacker never rolls a dice drop (consistency with resolveOne).
+    if (userId === AI.USER_ID) diceDropP = 0;
+
+    const targetTerritoryId =
+      haul.config && typeof haul.config.target_territory_id === 'string'
+        ? haul.config.target_territory_id
+        : null;
+
+    type Ctx = {
+      battleId: string;
+      winnerSide: 'attacker' | 'defender';
+      loadLost: boolean;
+      defenderId: string;
+    } | null;
+
+    const ctx: Ctx = await transaction(async (c) => {
+      // ---- Lock the haul movement + re-check it is still in transit ----
+      const locked = await c.query<TroopMovement>(
+        `SELECT ${MOVEMENT_COLS} FROM troop_movements
+          WHERE id = $1 FOR UPDATE`,
+        [movementId],
+      );
+      if (locked.rowCount === 0) {
+        throw new TroopError('MOVEMENT_NOT_FOUND', 'Target movement does not exist');
+      }
+      const mv = locked.rows[0];
+      if (mv.status !== 'marching' || mv.resolved) {
+        throw new TroopError('ALREADY_RESOLVED', 'This haul is no longer in transit');
+      }
+      if (mv.owner_id === userId) {
+        throw new TroopError('CANNOT_INTERCEPT_SELF', 'You cannot intercept your own haul');
+      }
+
+      // ---- Lock + validate the attacker's units (owned, unit, inventory) ----
+      const lockedAtk = await c.query<{
+        id: string;
+        owner_id: string | null;
+        status: string;
+        category: string | null;
+      }>(
+        `SELECT i.id, i.owner_id, i.status, d.category
+           FROM item_instances i
+           LEFT JOIN item_definitions d ON d.id = i.definition_id
+          WHERE i.id = ANY($1)
+          FOR UPDATE OF i`,
+        [instanceIds],
+      );
+      if (lockedAtk.rowCount !== instanceIds.length) {
+        throw new TroopError('INVALID_UNITS', 'One or more units do not exist');
+      }
+      for (const u of lockedAtk.rows) {
+        if (u.owner_id !== userId) {
+          throw new TroopError('NOT_OWNER', 'You do not own one of these units');
+        }
+        if (u.category !== 'unit') {
+          throw new TroopError('INVALID_UNITS', 'One of these items is not a unit');
+        }
+        if (u.status !== 'inventory') {
+          throw new TroopError('UNIT_BUSY', 'One of these units is not in inventory');
+        }
+      }
+
+      // The attacker's units must be 'deployed' for the battle engine to load
+      // them (it filters status='deployed'). Flip them in flight now.
+      await c.query(
+        `UPDATE item_instances SET status = 'deployed', updated_at = NOW()
+          WHERE id = ANY($1)`,
+        [instanceIds],
+      );
+
+      // ---- Resolve the interception (attacker vs haul escort) ----
+      const result = await battleEngine.resolveInterception(c, {
+        attackerId: userId,
+        attackerInstanceIds: instanceIds,
+        defenderId: mv.owner_id,
+        defenderInstanceIds: mv.instance_ids,
+        diceDropP,
+        territoryId: targetTerritoryId,
+      });
+
+      // Surviving attacker units march back to THEIR origin (not the haul's
+      // route). Build the attacker's own return path: currentCell → originCell.
+      const homeReturn = async (survivors: string[]): Promise<void> => {
+        if (!survivors || survivors.length === 0) return;
+        let backPath: string[];
+        try {
+          backPath = pathBetween(currentCell, originCell);
+        } catch {
+          backPath = [currentCell, originCell];
+        }
+        if (backPath.length === 0) backPath = [currentCell, originCell];
+        const travelMin = backPath.length * COMBAT.MARCH_MIN_PER_CELL;
+        await c.query(
+          `INSERT INTO troop_movements
+             (owner_id, instance_ids, from_cell, to_cell, path, purpose, config,
+              departs_at, arrives_at, status)
+           VALUES ($1, $2, $3, $4, $5, 'return', $6,
+                   NOW(), NOW() + ($7 || ' minutes')::interval, 'marching')`,
+          [
+            userId,
+            survivors,
+            currentCell,
+            originCell,
+            backPath,
+            JSON.stringify({ auto_return: true, from_intercept: mv.id }),
+            String(travelMin),
+          ],
+        );
+      };
+
+      let loadLost = false;
+      if (result.winnerSide === 'attacker') {
+        // The haul is intercepted: resolved so the arrival branch never fires,
+        // the load is LOST (never credited). The ENTIRE escort is destroyed —
+        // the engine only flips per-round casualties, so on a max-rounds win
+        // with surviving escort units we must destroy the remainder here, else
+        // they strand in 'deployed' forever (no movement re-enters them).
+        await c.query(
+          `UPDATE troop_movements SET status = 'intercepted', resolved = TRUE WHERE id = $1`,
+          [mv.id],
+        );
+        await c.query(
+          `UPDATE item_instances SET status = 'destroyed', updated_at = NOW()
+            WHERE id = ANY($1) AND status = 'deployed'`,
+          [mv.instance_ids],
+        );
+        loadLost = true;
+        await homeReturn(result.survivorsAttacker);
+      } else {
+        // The haul wins: it CONTINUES unchanged (still marching, unresolved).
+        // The haul's escort units stay 'deployed' (in flight) and arrive
+        // normally. Dead attackers are status='destroyed'; surviving attacker
+        // units march back to their own origin.
+        await homeReturn(result.survivorsAttacker);
+      }
+
+      return {
+        battleId: result.battleId,
+        winnerSide: result.winnerSide,
+        loadLost,
+        defenderId: mv.owner_id,
+      };
+    });
+
+    if (!ctx) {
+      // Defensive: transaction always returns a ctx or throws.
+      throw new TroopError('ALREADY_RESOLVED', 'Interception could not be resolved');
+    }
+
+    // ---- Post-commit WS to BOTH sides ----
+    try {
+      for (const uid of [userId, ctx.defenderId]) {
+        wsService.sendToUser(uid, 'haul_intercepted', {
+          battle_id: ctx.battleId,
+          movement_id: movementId,
+          winner_side: ctx.winnerSide,
+          load_lost: ctx.loadLost,
+        });
+      }
+    } catch {
+      /* non-critical */
+    }
+
+    return { battleId: ctx.battleId, winnerSide: ctx.winnerSide, loadLost: ctx.loadLost };
+  }
+
   // ---- Reads (garrison) ---------------------------------------------
 
   /**
@@ -904,6 +1346,14 @@ class TroopEngine {
           ownerId: string;
           toCell: string;
           instanceIds: string[];
+          load: Record<string, number> | null;
+        }
+      | {
+          kind: 'haul';
+          ownerId: string;
+          toCell: string;
+          instanceIds: string[];
+          load: Record<string, number>;
         }
       | {
           kind: 'battle';
@@ -937,7 +1387,8 @@ class TroopEngine {
         mv.purpose === 'scout' ||
         mv.purpose === 'return' ||
         mv.purpose === 'attack' ||
-        mv.purpose === 'reinforce';
+        mv.purpose === 'reinforce' ||
+        mv.purpose === 'haul';
       if (!knownPurpose) {
         // Unknown future purpose — forward-compat no-op so it does not pile up.
         console.warn(
@@ -959,6 +1410,33 @@ class TroopEngine {
         // Fog v2: the return path also leaves PERMANENT explored memory (covers
         // the way back). Cells pre-filtered against silent zones above.
         await visionService.writeExploredCorridor(mv.owner_id, corridorCells, c);
+
+        // Phase F.2: a loaded haul-return CREDITS its load to the owner's
+        // balance BEFORE the units re-enter inventory. The credit happens under
+        // this same atomic tx as the stockpile decrement that produced it (on
+        // the original haul arrival), so stockpile→balance can never dupe: the
+        // load was already removed from the stockpile; crediting it here moves
+        // it into the balance, and a crash rolls the whole arrival back together.
+        let creditedLoad: Record<string, number> | null = null;
+        const rawLoad = mv.config && mv.config.load;
+        if (rawLoad && typeof rawLoad === 'object') {
+          creditedLoad = {};
+          for (const [resource, amt] of Object.entries(rawLoad as Record<string, unknown>)) {
+            const n = typeof amt === 'number' ? Math.floor(amt) : parseInt(String(amt), 10);
+            if (Number.isFinite(n) && n > 0) {
+              await resourceService.credit(
+                mv.owner_id,
+                resource as any,
+                n,
+                'haul_delivered',
+                { from_movement: mv.id, to_cell: mv.to_cell },
+                c,
+              );
+              creditedLoad[resource] = n;
+            }
+          }
+        }
+
         // Units re-enter inventory in the same tx.
         await c.query(
           `UPDATE item_instances
@@ -971,6 +1449,7 @@ class TroopEngine {
           ownerId: mv.owner_id,
           toCell: mv.to_cell,
           instanceIds: mv.instance_ids,
+          load: creditedLoad,
         };
       }
 
@@ -1089,6 +1568,95 @@ class TroopEngine {
         };
       }
 
+      // ---- 'haul' arrival ----
+      if (mv.purpose === 'haul') {
+        const targetTerritoryId =
+          mv.config && typeof mv.config.target_territory_id === 'string'
+            ? mv.config.target_territory_id
+            : null;
+        const carryTotalRaw =
+          mv.config && typeof mv.config.carry_total === 'number' ? mv.config.carry_total : 0;
+        const carryTotal = Math.max(0, Math.floor(carryTotalRaw));
+
+        // Re-load the target territory FOR UPDATE: ownership may have changed
+        // in transit. If we no longer own it, load NOTHING and auto-return empty.
+        const terr = targetTerritoryId
+          ? await c.query<{ id: string; owner_id: string | null }>(
+              `SELECT id, owner_id FROM territories WHERE id = $1 FOR UPDATE`,
+              [targetTerritoryId],
+            )
+          : { rowCount: 0, rows: [] as { id: string; owner_id: string | null }[] };
+        const stillOwn =
+          terr.rowCount && terr.rowCount > 0 && terr.rows[0].owner_id === mv.owner_id;
+
+        const load: Record<string, number> = {};
+        if (stillOwn && carryTotal > 0) {
+          // Lock the stockpile rows and greedily fill carry_total across
+          // resources (deterministic order: wood, stone, food, then any other).
+          // DECREMENT the stockpile by exactly what we load — atomic with the
+          // credit that happens on the return arrival, so resources can't dupe.
+          const stock = await c.query<{ resource: string; amount: string }>(
+            `SELECT resource, amount
+               FROM territory_stockpile
+              WHERE territory_id = $1 AND amount > 0
+              FOR UPDATE`,
+            [terr.rows[0].id],
+          );
+          const order: Record<string, number> = { wood: 0, stone: 1, food: 2 };
+          const rows = [...stock.rows].sort((a, b) => {
+            const oa = order[a.resource] ?? 99;
+            const ob = order[b.resource] ?? 99;
+            return oa - ob || a.resource.localeCompare(b.resource);
+          });
+          let remaining = carryTotal;
+          for (const r of rows) {
+            if (remaining <= 0) break;
+            const have = parseInt(r.amount, 10) || 0;
+            const take = Math.min(have, remaining);
+            if (take <= 0) continue;
+            await c.query(
+              `UPDATE territory_stockpile
+                  SET amount = amount - $3, updated_at = NOW()
+                WHERE territory_id = $1 AND resource = $2`,
+              [terr.rows[0].id, r.resource, take],
+            );
+            load[r.resource] = (load[r.resource] ?? 0) + take;
+            remaining -= take;
+          }
+        }
+
+        // Auto-return to the ORIGIN (from_cell of the haul), carrying the load.
+        // The load is credited to the balance on THIS return's arrival.
+        const returnPath = [...mv.path].reverse();
+        const safePath = returnPath.length > 0 ? returnPath : [mv.to_cell];
+        const travelMin = safePath.length * HAUL.MARCH_MIN_PER_CELL;
+        await c.query(
+          `INSERT INTO troop_movements
+             (owner_id, instance_ids, from_cell, to_cell, path, purpose, config,
+              departs_at, arrives_at, status)
+           VALUES ($1, $2, $3, $4, $5, 'return', $6,
+                   $7::timestamptz, $7::timestamptz + ($8 || ' minutes')::interval, 'marching')`,
+          [
+            mv.owner_id,
+            mv.instance_ids,
+            mv.to_cell,
+            mv.from_cell,
+            safePath,
+            JSON.stringify({ auto_return: true, from_movement: mv.id, load }),
+            new Date(mv.arrives_at).toISOString(),
+            String(travelMin),
+          ],
+        );
+
+        return {
+          kind: 'haul' as const,
+          ownerId: mv.owner_id,
+          toCell: mv.to_cell,
+          instanceIds: mv.instance_ids,
+          load,
+        };
+      }
+
       // ---- 'scout' arrival ----
       // Fog v2: the WHOLE walked corridor becomes PERMANENT explored terrain
       // (cells pre-filtered against silent zones above). LIVE detail around the
@@ -1172,11 +1740,27 @@ class TroopEngine {
 
     // Post-commit notifications only — never inside the tx.
     try {
-      if (ctx.kind === 'return') {
-        wsService.sendToUser(ctx.ownerId, 'troops_arrived', {
+      if (ctx.kind === 'haul') {
+        // Phase F.2: loaded at the target, now auto-returning with the load.
+        wsService.sendToUser(ctx.ownerId, 'haul_loaded', {
+          movement_id: movementId,
           to_cell: ctx.toCell,
-          instance_ids: ctx.instanceIds,
+          load: ctx.load,
         });
+      } else if (ctx.kind === 'return') {
+        if (ctx.load) {
+          // Phase F.2: a loaded haul-return delivered its load to the balance.
+          wsService.sendToUser(ctx.ownerId, 'haul_delivered', {
+            to_cell: ctx.toCell,
+            instance_ids: ctx.instanceIds,
+            load: ctx.load,
+          });
+        } else {
+          wsService.sendToUser(ctx.ownerId, 'troops_arrived', {
+            to_cell: ctx.toCell,
+            instance_ids: ctx.instanceIds,
+          });
+        }
       } else if (ctx.kind === 'reinforce') {
         wsService.sendToUser(ctx.ownerId, 'troops_arrived', {
           to_cell: ctx.toCell,
