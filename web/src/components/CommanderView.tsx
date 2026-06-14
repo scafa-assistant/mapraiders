@@ -31,26 +31,27 @@ import BattleReplayModal from './BattleReplayModal';
 const C_ACCENT   = theme.color.accent;
 const C_FOREIGN  = theme.color.foreign;
 const C_AMBER    = theme.color.amber;
-const C_RED_PULSE = '#FF5470';
+const C_RED_PULSE = '#D7263D';
 
-// --- Fog-of-war tier colours ---
-// Tier 2: explored (stale) — faint violet outline, near-zero fill
-const C_EXPLORED_BORDER  = '#9D4EDD';
-const C_EXPLORED_FILL    = 'rgba(157,78,221,0.03)';
-const C_EXPLORED_OPACITY = 0.25;
-// Tier 3: active (live now) — bright violet glow
-const C_ACTIVE_BORDER  = '#9D4EDD';
-const C_ACTIVE_FILL    = 'rgba(157,78,221,0.12)';
-const C_ACTIVE_OPACITY = 0.80;
+// --- Fog-of-war tier colours (light theme) ---
+// The base map is covered by a muted grey veil (.commander-tiles filter).
+// Tier 2: explored (stale) — clears the veil slightly with a faint neutral wash.
+const C_EXPLORED_BORDER  = '#7A7470';
+const C_EXPLORED_FILL    = 'rgba(255,255,255,0.35)';
+const C_EXPLORED_OPACITY = 0.45;
+// Tier 3: active (live now) — bright blue glow, fully readable.
+const C_ACTIVE_BORDER  = '#1558F0';
+const C_ACTIVE_FILL    = 'rgba(21,88,240,0.14)';
+const C_ACTIVE_OPACITY = 0.90;
 
 // --- Territory colours ---
-const C_OWN_FILL         = 'rgba(157,78,221,0.35)';
-const C_OWN_FILL_DIM     = 'rgba(157,78,221,0.15)';
-const C_FOREIGN_FILL     = 'rgba(77,208,225,0.25)';
-const C_FOREIGN_FILL_DIM = 'rgba(77,208,225,0.10)';
+const C_OWN_FILL         = 'rgba(21,88,240,0.35)';
+const C_OWN_FILL_DIM     = 'rgba(21,88,240,0.16)';
+const C_FOREIGN_FILL     = 'rgba(245,166,35,0.30)';
+const C_FOREIGN_FILL_DIM = 'rgba(245,166,35,0.14)';
 
 // Objective markers: always-visible coarse hints
-const C_OBJECTIVE = '#FFB300';
+const C_OBJECTIVE = '#F5A623';
 
 const UNIT_PREFIXES = ['unit_scout_disc', 'unit_tech_drone', 'unit_water_strider', 'unit_forest_construct'];
 
@@ -328,9 +329,11 @@ export default function CommanderView() {
   }, [dispatch.phase]);
 
   // ---- Render hex grid (3-tier fog of war) ------------------------------------
-  // Tier 1 (unexplored): no overlay — the dark map tiles already convey darkness.
-  // Tier 2 (explored, stale): faint violet border, near-zero fill.
-  // Tier 3 (active, live now): bright violet border + slight fill glow.
+  // Tier 1 (unexplored): no overlay — the muted grey veil (.commander-tiles
+  //   filter) over the base map conveys "the unknown".
+  // Tier 2 (explored, stale): faint neutral wash that lifts the veil a little,
+  //   thin grey outline.
+  // Tier 3 (active, live now): bright blue border + slight blue fill glow.
   // A cell in both explored + active → active wins (rendered as active).
   useEffect(() => {
     const layer = hexLayerRef.current;
@@ -388,7 +391,7 @@ export default function CommanderView() {
           fillColor, fillOpacity: 1,
         });
         const ownerLabel = terr.owner_username ?? (terr.owner_id ? 'Unknown' : 'Unclaimed');
-        const liveNote   = live ? '' : ' <em style="color:#9A8FB0">(no live intel)</em>';
+        const liveNote   = live ? '' : ' <em style="color:#7A7470">(no live intel)</em>';
         poly.bindTooltip(
           `<strong>${ownerLabel}</strong>${terr.claim_value ? ` · ${terr.claim_value}` : ''}${liveNote}`,
           { sticky: true },
@@ -431,7 +434,7 @@ export default function CommanderView() {
     const layer = aiLayerRef.current;
     if (!layer || !mapData) return;
     layer.clearLayers();
-    const AI_RED = '#E5383B';
+    const AI_RED = theme.color.danger;
     const fillByPhase = { dormant: 0.10, triggered: 0.18, invasion: 0.30 } as const;
     const labelByPhase = {
       dormant: 'Hyperborean presence',
@@ -570,8 +573,8 @@ export default function CommanderView() {
 
       const dot = L.circleMarker(dotPos, {
         radius: 7,
-        color: isReturn ? '#7A5EB0' : (mv.purpose === 'attack' ? C_RED_PULSE : C_ACCENT),
-        fillColor: isReturn ? '#7A5EB0' : (mv.purpose === 'attack' ? C_RED_PULSE : C_ACCENT),
+        color: isReturn ? '#7A7470' : (mv.purpose === 'attack' ? C_RED_PULSE : C_ACCENT),
+        fillColor: isReturn ? '#7A7470' : (mv.purpose === 'attack' ? C_RED_PULSE : C_ACCENT),
         fillOpacity: isReturn ? 0.5 : 0.9, weight: 2,
       });
       dot.bindTooltip(
@@ -1128,7 +1131,7 @@ export default function CommanderView() {
           </button>
           {getReadySilos().length > 0 && (
             <button
-              style={{ ...btnAccent, background: '#7B2D8B', flex: 1 }}
+              style={{ ...btnAccent, background: theme.color.accentBright, flex: 1 }}
               onClick={() => openStrikeFlow(territoryId)}
             >
               ☄ Airstrike
@@ -1266,7 +1269,7 @@ export default function CommanderView() {
     return (
       <>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: '#D4A5FF' }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: theme.color.accent }}>
             ☄ Airstrike
           </div>
           <button style={btnSmall} onClick={() => setStrikeMode(false)}>✕</button>
@@ -1320,7 +1323,7 @@ export default function CommanderView() {
 
         <button
           style={{
-            ...btnAccent, background: '#7B2D8B',
+            ...btnAccent, background: theme.color.accentBright,
             opacity: (strikePending || readySilos.length === 0) ? 0.5 : 1,
           }}
           disabled={strikePending || readySilos.length === 0}
@@ -1717,8 +1720,8 @@ export default function CommanderView() {
         {dispatchError && <div className="panel-error" style={{ margin: 0 }}>{dispatchError}</div>}
         {(mapData?.ai_zones?.length ?? 0) > 0 && (
           <div style={{
-            color: '#E5383B', fontSize: 12, fontWeight: 700,
-            border: '1px solid #E5383B55', borderRadius: 6, padding: '6px 8px',
+            color: theme.color.danger, fontSize: 12, fontWeight: 700,
+            border: `1px solid ${theme.color.danger}55`, borderRadius: 6, padding: '6px 8px',
           }}>
             ⚠ {mapData!.ai_zones!.length} cells under Hyperborean control
           </div>
@@ -1885,7 +1888,7 @@ export default function CommanderView() {
                           ? (isAtk ? '🚚 Interception' : '🚚 Convoy ambushed')
                           : (isAtk ? '⚔ Attack' : '🛡 Defense')}
                       {(b.attacker_id === HYPERBOREAN_AI_USER_ID || b.defender_id === HYPERBOREAN_AI_USER_ID) && (
-                        <span style={{ color: '#E5383B', marginLeft: 6 }}>vs Hyperboreans</span>
+                        <span style={{ color: theme.color.danger, marginLeft: 6 }}>vs Hyperboreans</span>
                       )}
                     </span>
                     <span style={{ fontSize: 11, color: won ? theme.color.success : theme.color.danger, fontWeight: 700 }}>
@@ -1917,7 +1920,7 @@ export default function CommanderView() {
           background: theme.color.panel, border: `1px solid ${theme.color.border}`,
           borderRadius: 12, padding: '10px 20px', zIndex: 800,
           fontWeight: 700, fontSize: 14, color: theme.color.text,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+          boxShadow: '0 4px 24px rgba(20,18,16,0.18)',
           pointerEvents: 'none',
         }}>
           {strikeToast}

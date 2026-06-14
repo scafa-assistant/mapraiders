@@ -409,7 +409,7 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
                   <div className="section-title" style={{ marginTop: 18 }}>Production / Stockpile</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                     {stockpile.map((entry) => {
-                      const color = STOCKPILE_COLORS[entry.resource] ?? '#9A8FB0';
+                      const color = STOCKPILE_COLORS[entry.resource] ?? '#7A7470';
                       const icon = STOCKPILE_ICONS[entry.resource] ?? '📦';
                       const pct = entry.cap > 0 ? Math.min(100, (entry.amount / entry.cap) * 100) : 0;
                       return (

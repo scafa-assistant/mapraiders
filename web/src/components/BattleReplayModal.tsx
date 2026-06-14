@@ -39,8 +39,8 @@ function ensureKeyframes(): void {
       100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
     @keyframes enemyPulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(255,84,112,0.4); }
-      50%     { box-shadow: 0 0 0 6px rgba(255,84,112,0); }
+      0%,100% { box-shadow: 0 0 0 0 rgba(215,38,61,0.4); }
+      50%     { box-shadow: 0 0 0 6px rgba(215,38,61,0); }
     }
   `;
   document.head.appendChild(style);
@@ -174,8 +174,8 @@ function RoundFrame({ round, animated, isAttacker }: RoundFrameProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {round.effects.map((eff, i) => (
             <div key={i} style={{
-              background: '#FFB30022',
-              border: '1px solid #FFB30055',
+              background: `${theme.color.amber}22`,
+              border: `1px solid ${theme.color.amber}55`,
               borderRadius: 6,
               padding: '4px 8px',
               fontSize: 11,
@@ -232,7 +232,7 @@ function AirstrikeCard({ battle, onClose }: AirstrikeCardProps) {
 
   const overlay: React.CSSProperties = {
     position: 'fixed', inset: 0, zIndex: 9999,
-    background: 'rgba(12,9,20,0.92)',
+    background: 'rgba(20,18,16,0.55)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   };
   const modal: React.CSSProperties = {
@@ -358,7 +358,7 @@ export default function BattleReplayModal({ battleId, onClose }: Props) {
     position: 'fixed',
     inset: 0,
     zIndex: 9999,
-    background: 'rgba(12,9,20,0.92)',
+    background: 'rgba(20,18,16,0.55)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

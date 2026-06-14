@@ -157,7 +157,7 @@ export default function RunnerModal({ spawnId, runToken, level, onClose }: Props
     position: 'fixed',
     inset: 0,
     zIndex: 9999,
-    background: 'rgba(12, 9, 20, 0.92)',
+    background: 'rgba(20, 18, 16, 0.55)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -265,7 +265,7 @@ export default function RunnerModal({ spawnId, runToken, level, onClose }: Props
               justifyContent: 'center',
               color: theme.color.textDim,
               fontSize: 14,
-              background: 'rgba(12,9,20,0.7)',
+              background: 'rgba(246,244,241,0.82)',
               zIndex: 1,
             }}
           >

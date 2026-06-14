@@ -1,35 +1,36 @@
 // ============================================================
-// Central theme tokens — Vril violet on obsidian.
+// Central theme tokens — MapRaiders brand: clean blue on off-white.
+// Light theme matching the marketing landing page.
 // Plain TS object, consumed inline and mirrored in index.css.
 // ============================================================
 
 export const theme = {
   color: {
-    bg: '#0C0914',
-    panel: '#161022',
-    panelAlt: '#1F1733',
-    border: '#2A2140',
-    accent: '#9D4EDD',
-    accentBright: '#D4A5FF',
-    text: '#ECE6F5',
-    textDim: '#9A8FB0',
-    amber: '#FFB300',
-    danger: '#FF5470',
-    success: '#56D364',
-    foreign: '#4DD0E1', // cyan for foreign territories
-    foreignFill: 'rgba(77, 208, 225, 0.18)',
-    ownFill: 'rgba(157, 78, 221, 0.30)',
+    bg: '#F6F4F1',          // warm off-white background
+    panel: '#FFFFFF',       // cards / panels
+    panelAlt: '#EFEDE8',    // secondary surface
+    border: '#C0BAB4',      // dim borders
+    accent: '#1558F0',      // strong brand blue
+    accentBright: '#4B7BFF', // lighter blue for hovers / glows
+    text: '#141210',        // near-black text
+    textDim: '#7A7470',     // muted text
+    amber: '#F5A623',       // secondary accent (highlights / objectives)
+    danger: '#D7263D',
+    success: '#1B9E5A',
+    foreign: '#F5A623',     // amber for foreign territories (light-friendly contrast)
+    foreignFill: 'rgba(245, 166, 35, 0.18)',
+    ownFill: 'rgba(21, 88, 240, 0.22)',
   },
   radius: 12,
 } as const;
 
 // Rarity palette for inventory items.
 export const rarityColor: Record<string, string> = {
-  common: '#9A8FB0',
-  uncommon: '#56D364',
-  rare: '#4DA3FF',
-  epic: '#9D4EDD',
-  legendary: '#FFB300',
+  common: '#7A7470',
+  uncommon: '#1B9E5A',
+  rare: '#1558F0',
+  epic: '#0E7490', // deep teal (distinct tier, no purple)
+  legendary: '#F5A623',
 };
 
 export function colorForRarity(rarity: string | undefined): string {

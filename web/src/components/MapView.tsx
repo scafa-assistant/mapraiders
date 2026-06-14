@@ -1,5 +1,5 @@
 // ============================================================
-// Leaflet map — direct (no react-leaflet). Dark OSM tiles, territory
+// Leaflet map — direct (no react-leaflet). Light OSM tiles, territory
 // polygons, PvE spawn markers. Loads territories/spawns on debounced
 // 'moveend'. Clicking a polygon selects it (App opens the side panel).
 //
@@ -156,7 +156,7 @@ export default function MapView() {
             width:18px;height:18px;
             background:${theme.color.amber};
             transform:rotate(45deg);
-            border:2px solid #fff4;
+            border:2px solid rgba(255,255,255,0.85);
             border-radius:3px;
             box-shadow:0 0 0 0 ${theme.color.amber}88;
             animation:terminal-pulse 2s ease-in-out infinite;
@@ -172,7 +172,7 @@ export default function MapView() {
         });
         marker.addTo(layer);
       } else {
-        // Regular PvE spawn: violet circle (original behaviour).
+        // Regular PvE spawn: amber circle.
         const marker = L.circleMarker([s.latitude, s.longitude], {
           radius: 7,
           color: theme.color.amber,
