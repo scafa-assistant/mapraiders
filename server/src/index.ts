@@ -104,9 +104,16 @@ app.use(helmet({
 }));
 
 // ---- CORS ----
-const corsOrigin = process.env.CORS_ORIGIN || (
+// CORS_ORIGIN may be a single origin OR a comma-separated list. The cors
+// package needs an ARRAY for multiple origins (it then reflects the matching
+// request origin) — a comma-joined STRING produces an invalid
+// `Access-Control-Allow-Origin: a,b,c` header that every browser rejects.
+const corsRaw = process.env.CORS_ORIGIN || (
   process.env.NODE_ENV === 'production' ? 'https://mapraiders.com' : '*'
 );
+const corsOrigin: string | string[] = corsRaw === '*'
+  ? '*'
+  : corsRaw.split(',').map((o) => o.trim()).filter(Boolean);
 app.use(cors({
   origin: corsOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
