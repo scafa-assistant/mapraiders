@@ -10,6 +10,7 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { territoryApi } from '../api/client';
+import WalkToClaim from './WalkToClaim';
 import { registerMap, useMapStore } from '../store/mapStore';
 import { useFeatureStore } from '../store/featureStore';
 import { useAuthStore } from '../store/authStore';
@@ -194,6 +195,7 @@ export default function MapView() {
     <div className="map-root">
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
       {loading && <div className="map-loading">Loading map…</div>}
+      <WalkToClaim />
     </div>
   );
 }

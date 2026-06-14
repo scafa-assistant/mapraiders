@@ -25,8 +25,11 @@ import type {
   LoginResponse,
   MeResponse,
   MyTerritory,
+  MovementClass,
   PveSpawn,
   ResourcesResponse,
+  RouteClaimResult,
+  RoutePoint,
   RunnerLevel,
   StockpileEntry,
   Territory,
@@ -181,6 +184,61 @@ export const territoryApi = {
       '/territories/mine',
     );
     return res.data.data?.territories ?? [];
+  },
+};
+
+/**
+ * Thrown by routeApi.claim on a server rejection. Carries the server's
+ * `error` text (NOT `message`) plus any consolation XP so the UI can show
+ * a friendly "route rejected" card.
+ */
+export class RouteClaimRejected extends Error {
+  consolationXp: number;
+  constructor(message: string, consolationXp = 0) {
+    super(message);
+    this.name = 'RouteClaimRejected';
+    this.consolationXp = consolationXp;
+  }
+}
+
+export const routeApi = {
+  /**
+   * Submit a recorded GPS track to claim territory. Requires >= 10 points;
+   * the server runs the full anti-cheat pipeline regardless of client.
+   * Resolves with the claim result on 201, throws RouteClaimRejected with the
+   * server's `error` text (and consolation_xp) on a rejection.
+   */
+  async claim(points: RoutePoint[], movementClass: MovementClass): Promise<RouteClaimResult> {
+    try {
+      const res = await api.post<ApiEnvelope<RouteClaimResult>>('/routes/', {
+        points,
+        class: movementClass,
+      });
+      if (!res.data.success || !res.data.data) {
+        // Defensive: a 2xx body without data — surface error/message.
+        const body = res.data as { error?: string; message?: string };
+        throw new RouteClaimRejected(body.error ?? body.message ?? 'Route rejected');
+      }
+      return res.data.data;
+    } catch (err) {
+      if (err instanceof RouteClaimRejected) throw err;
+      if (axios.isAxiosError(err)) {
+        // Failure body is { success:false, error, consolation_xp } — read `error`.
+        const data = err.response?.data as
+          | { error?: string; message?: string; consolation_xp?: number }
+          | undefined;
+        const text =
+          data?.error ??
+          data?.message ??
+          (err.code === 'ECONNABORTED'
+            ? 'Request timed out'
+            : !err.response
+              ? 'Cannot reach the server'
+              : `Request failed (${err.response.status})`);
+        throw new RouteClaimRejected(text, data?.consolation_xp ?? 0);
+      }
+      throw new RouteClaimRejected('Something went wrong claiming this route');
+    }
   },
 };
 

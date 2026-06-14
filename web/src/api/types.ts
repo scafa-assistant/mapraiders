@@ -106,6 +106,57 @@ export interface MyTerritory {
   claimed_at: string | null;
 }
 
+// ---- Routes (Walk to claim) --------------------------------------------------
+
+/** Movement class accepted by POST /routes. */
+export type MovementClass =
+  | 'walker'
+  | 'runner'
+  | 'cyclist'
+  | 'dog_walker'
+  | 'skater'
+  | 'driver';
+
+/** A single GPS fix sent to the server. timestamp is epoch milliseconds. */
+export interface RoutePoint {
+  lat: number;
+  lng: number;
+  timestamp: number;
+  accuracy?: number;
+  speed?: number;
+  altitude?: number;
+  bearing?: number;
+}
+
+export interface RouteClaimRequest {
+  points: RoutePoint[];
+  class: MovementClass;
+}
+
+/**
+ * POST /routes success payload (HTTP 201).
+ * Mirrors the mobile claim flow.
+ */
+export interface RouteClaimResult {
+  territory_id: string;
+  claim_value: number;
+  xp_earned: number;
+  is_takeover: boolean;
+  previous_owner?: string | null;
+  bonuses?: Record<string, number> | null;
+  blocked_by_defenses?: boolean;
+}
+
+/**
+ * POST /routes failure payload. NOTE: the error text lives in `error`
+ * (NOT the usual `message`), and the server still awards a small XP.
+ */
+export interface RouteClaimError {
+  success: false;
+  error: string;
+  consolation_xp?: number;
+}
+
 // ---- Resources ---------------------------------------------------------------
 
 export type ResourceType = 'energy' | 'tech' | 'intel' | 'wood' | 'stone' | 'food';
