@@ -60,8 +60,13 @@ export function rateLimit(windowMs: number, maxRequests: number) {
 /** General API rate limit: 1000 requests per 15 minutes (map apps need high limits) */
 export const apiLimiter = rateLimit(15 * 60 * 1000, 1000);
 
-/** Auth endpoints rate limit: 10 requests per 15 minutes */
-export const authLimiter = rateLimit(15 * 60 * 1000, 10);
+/**
+ * Auth endpoints rate limit: 40 requests per 15 minutes per IP.
+ * Per-IP brute-force protection; per-ACCOUNT brute force is separately capped
+ * by the login_fails lockout (>5 failed attempts → 15 min). 10 was too low for
+ * a human fumbling a password a few times, so raised to a forgiving 40.
+ */
+export const authLimiter = rateLimit(15 * 60 * 1000, 40);
 
 /** Upload/claim rate limit: 20 requests per hour */
 export const uploadLimiter = rateLimit(60 * 60 * 1000, 20);
