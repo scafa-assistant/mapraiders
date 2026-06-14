@@ -319,7 +319,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
     sprint_race: { label: S.map.defenseChallenge.gameSprintRace, icon: 'speedometer-outline', color: '#1B9E5A' },
     trivia: { label: S.map.defenseChallenge.gameTrivia, icon: 'help-circle-outline', color: '#1558F0' },
     coin_flip: { label: S.map.defenseChallenge.gameCoinFlip, icon: 'ellipse-outline', color: '#F5A623' },
-    odd_even: { label: S.map.defenseChallenge.gameOddEven, icon: 'finger-print-outline', color: '#FF69B4' },
+    odd_even: { label: S.map.defenseChallenge.gameOddEven, icon: 'finger-print-outline', color: '#0E9CB0' },
     tic_tac_toe: { label: S.map.defenseChallenge.gameTicTacToe, icon: 'grid-outline', color: '#1558F0' },
     mini_chess: { label: S.map.defenseChallenge.gameMiniChess, icon: 'trophy-outline', color: '#F5A623' },
   };
@@ -611,8 +611,8 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             style={[
               styles.rpsButton,
               { width: 80, height: 90 },
-              { borderColor: oeFingers === n ? '#FF69B4' : theme.border },
-              oeFingers === n && { backgroundColor: 'rgba(255, 105, 180, 0.15)' },
+              { borderColor: oeFingers === n ? '#0E9CB0' : theme.border },
+              oeFingers === n && { backgroundColor: 'rgba(14, 156, 176, 0.15)' },
             ]}
             onPress={() => {
               if (!isSubmitting && result !== 'win' && result !== 'lose') setOeFingers(n);
@@ -621,7 +621,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             activeOpacity={0.7}
           >
             <Text style={[styles.rpsEmoji, { fontSize: 28 }]}>{'✋'.repeat(0)}{n}</Text>
-            <Text style={[styles.rpsLabel, oeFingers === n && { color: '#FF69B4' }]}>
+            <Text style={[styles.rpsLabel, oeFingers === n && { color: '#0E9CB0' }]}>
               {n === 1 ? '☝️' : n === 2 ? '✌️' : n === 3 ? '🤟' : n === 4 ? '🖖' : '🖐️'}
             </Text>
           </TouchableOpacity>

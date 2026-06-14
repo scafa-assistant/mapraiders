@@ -54,7 +54,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.oddEvenName,
     icon: 'finger-print-outline',
     description: S.map.defenseSetup.oddEvenDesc,
-    color: '#FF69B4',
+    color: '#0E9CB0',
     category: 'instant',
   },
   {
@@ -525,11 +525,11 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             key={pick}
             style={[
               styles.roundButton,
-              oddEvenPick === pick && { borderColor: '#FF69B4', backgroundColor: 'rgba(255, 105, 180, 0.1)' },
+              oddEvenPick === pick && { borderColor: '#0E9CB0', backgroundColor: 'rgba(14, 156, 176, 0.1)' },
             ]}
             onPress={() => setOddEvenPick(pick)}
           >
-            <Text style={[styles.roundButtonText, oddEvenPick === pick && { color: '#FF69B4' }]}>
+            <Text style={[styles.roundButtonText, oddEvenPick === pick && { color: '#0E9CB0' }]}>
               {pick === 'odd' ? S.map.defenseSetup.odd : S.map.defenseSetup.even}
             </Text>
           </TouchableOpacity>
@@ -543,11 +543,11 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             key={n}
             style={[
               styles.distanceChip,
-              oeFingers === n && { borderColor: '#FF69B4', backgroundColor: 'rgba(255, 105, 180, 0.1)' },
+              oeFingers === n && { borderColor: '#0E9CB0', backgroundColor: 'rgba(14, 156, 176, 0.1)' },
             ]}
             onPress={() => setOeFingers(n)}
           >
-            <Text style={[styles.distanceChipText, oeFingers === n && { color: '#FF69B4' }]}>
+            <Text style={[styles.distanceChipText, oeFingers === n && { color: '#0E9CB0' }]}>
               {n} {'🤚'.repeat(0)}{n}
             </Text>
           </TouchableOpacity>
@@ -584,8 +584,13 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{S.map.defenseSetup.headerTitle}</Text>
+        <Text style={styles.headerTitle}>{S.map.defenseSetup.arenaTitle}</Text>
         <View style={{ width: 40 }} />
+      </View>
+
+      <View style={styles.arenaSubtitleBanner}>
+        <Ionicons name="shield-half-outline" size={16} color="#1558F0" />
+        <Text style={styles.arenaSubtitleText}>{S.map.defenseSetup.arenaSubtitle}</Text>
       </View>
 
       <ScrollView
@@ -593,8 +598,11 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Instant Games */}
-        <Text style={styles.sectionHeader}>{S.map.defenseSetup.instantGames}</Text>
+        {/* Instant Duels */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeader}>{S.map.defenseSetup.instantDuels}</Text>
+          <Text style={styles.sectionSubheader}>{S.map.defenseSetup.instantDuelsDesc}</Text>
+        </View>
         <View style={styles.gameGrid}>
           {gameTypes.filter((g) => g.category === 'instant').map((game) => (
             <TouchableOpacity
@@ -639,8 +647,11 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
           ))}
         </View>
 
-        {/* Strategy Games */}
-        <Text style={styles.sectionHeader}>{S.map.defenseSetup.strategyGames}</Text>
+        {/* Strategy Duels */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeader}>{S.map.defenseSetup.strategyDuels}</Text>
+          <Text style={styles.sectionSubheader}>{S.map.defenseSetup.strategyDuelsDesc}</Text>
+        </View>
         <View style={styles.gameGrid}>
           {gameTypes.filter((g) => g.category === 'strategy').map((game) => (
             <TouchableOpacity
@@ -765,15 +776,41 @@ const createStyles = (theme: Theme) =>
   scrollContent: {
     paddingBottom: 40,
   },
+  arenaSubtitleBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(21,88,240,0.12)',
+    backgroundColor: 'rgba(21,88,240,0.04)',
+  },
+  arenaSubtitleText: {
+    flex: 1,
+    color: '#1558F0',
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+    lineHeight: 17,
+  },
+  sectionHeaderRow: {
+    paddingHorizontal: 20,
+    marginTop: SPACING.xl,
+    marginBottom: SPACING.md,
+  },
   sectionHeader: {
     color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    paddingHorizontal: 20,
-    marginTop: SPACING.xl,
-    marginBottom: SPACING.md,
+    marginBottom: 2,
+  },
+  sectionSubheader: {
+    color: theme.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '400',
+    lineHeight: 15,
   },
 
   // ─── Game Type Cards ────────────────────────────────────────────────
