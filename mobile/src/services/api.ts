@@ -90,8 +90,15 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+    // Auth endpoints (login/register/refresh/web3) must NOT go through the
+    // token-refresh retry: a 401 there means "bad credentials", not "expired
+    // session". Otherwise the refresh attempt fails with "No refresh token
+    // available" and masks the real server message on the login screen.
+    const reqUrl = originalRequest?.url ?? '';
+    const isAuthRoute = reqUrl.includes('/auth/');
+
     // Handle 401 with token refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });

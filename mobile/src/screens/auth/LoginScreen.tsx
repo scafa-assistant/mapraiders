@@ -206,6 +206,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
                 returnKeyType="done"
                 onSubmitEditing={handleLogin}
               />
