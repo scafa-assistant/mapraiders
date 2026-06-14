@@ -752,6 +752,8 @@ export interface CommanderTerritory {
   claim_value: number;
   h3_cells: string[];
   is_own: boolean;
+  /** true = server has live intel; false = stale/cached territory outline only */
+  live?: boolean;
 }
 
 export interface CommanderOwnMovement {
@@ -815,8 +817,33 @@ export interface AiZone {
   phase: 'dormant' | 'triggered' | 'invasion';
 }
 
+/**
+ * A strategic objective cell — always visible regardless of fog tier.
+ * kind: 'enemy_territory' | 'pve_spawn' | 'ai_zone'
+ */
+export interface Objective {
+  h3_cell: string;
+  kind: 'enemy_territory' | 'pve_spawn' | 'ai_zone';
+}
+
+/** How many scouts the player may have out concurrently. */
+export interface ScoutCapacity {
+  max: number;
+  active: number;
+}
+
 export interface CommanderMapData {
-  visible_cells: string[];
+  /**
+   * Legacy field — absent from server v2+ responses (replaced by explored_cells + active_cells).
+   * Kept optional so old cached payloads don't break.
+   */
+  visible_cells?: string[];
+  /** Permanently explored H3 cells — render DIM (violet, low alpha). */
+  explored_cells: string[];
+  /** Cells visible RIGHT NOW (scouts, live territory, radar) — render BRIGHT. */
+  active_cells: string[];
+  /** Always-visible strategic objectives (coarse yellow hint markers). */
+  objectives: Objective[];
   territories: CommanderTerritory[];
   movements: CommanderMovement[];
   radars: CommanderRadar[];
@@ -828,6 +855,8 @@ export interface CommanderMapData {
    * May be absent on older server versions — always normalise to [].
    */
   ai_zones?: AiZone[];
+  /** Concurrent scout limit for this player. */
+  scout_capacity?: ScoutCapacity;
 }
 
 export interface CommanderBattleSummary {

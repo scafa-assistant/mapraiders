@@ -1354,11 +1354,18 @@ VALUES ('terminals', FALSE, 100, '{}') ON CONFLICT (key) DO NOTHING;
 CREATE TABLE IF NOT EXISTS player_visibility (
   user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   h3_cell    TEXT NOT NULL,
-  source     VARCHAR(15) NOT NULL,        -- 'radar' | 'scout'
+  source     VARCHAR(15) NOT NULL,        -- 'explored' (permanent) | 'scout'/'radar' (legacy TTL)
   expires_at TIMESTAMPTZ,                 -- NULL = permanent while source exists
   PRIMARY KEY (user_id, h3_cell, source)
 );
 CREATE INDEX IF NOT EXISTS idx_player_visibility_user ON player_visibility(user_id, expires_at);
+
+-- Fog v2 (2026-06-14): no table change. source='explored' is PERMANENT terrain
+-- memory (expires_at NULL), written per scout corridor on arrival. 'scout'/
+-- 'radar' are legacy TTL rows (live cells now computed dynamically). The
+-- composite index keeps the explored-tier lookup (user_id, source='explored')
+-- an index scan. See src/db/migrations/2026-06-14_fog_v2.sql.
+CREATE INDEX IF NOT EXISTS idx_player_visibility_user_src ON player_visibility(user_id, source);
 
 CREATE TABLE IF NOT EXISTS troop_movements (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),

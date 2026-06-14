@@ -6,6 +6,8 @@ import {
   CommanderBattleDetail,
   CommanderOwnMovement,
   AirstrikeResult,
+  Objective,
+  ScoutCapacity,
 } from '../services/api';
 
 // ─── Error code → user-readable message map (terminalStore style) ─────────────
@@ -114,8 +116,17 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       const response = await commanderApi.getMap();
       const data = response.data?.data;
       if (data) {
-        // Back-fill silos + ai_zones arrays if the server omits them (graceful degradation).
-        const normalised = { ...data, silos: data.silos ?? [], ai_zones: data.ai_zones ?? [] };
+        // Normalise all new + optional arrays so the render layer never needs null-checks.
+        const normalised: CommanderMapData = {
+          ...data,
+          // v1 compat: if server still sends visible_cells but not explored/active, treat it as explored
+          explored_cells: data.explored_cells ?? data.visible_cells ?? [],
+          active_cells: data.active_cells ?? [],
+          objectives: data.objectives ?? [],
+          silos: data.silos ?? [],
+          ai_zones: data.ai_zones ?? [],
+          scout_capacity: data.scout_capacity ?? undefined,
+        };
         set({ mapData: normalised, loading: false });
       } else {
         set({ loading: false });
@@ -274,4 +285,4 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
 }));
 
 // Re-export for ergonomic imports in screens.
-export type { CommanderOwnMovement };
+export type { CommanderOwnMovement, Objective, ScoutCapacity };

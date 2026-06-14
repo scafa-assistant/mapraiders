@@ -17,7 +17,7 @@ import { transaction, query } from '../config/database';
 import { troopEngine } from '../services/troopEngine';
 import { visionService } from '../services/visionService';
 import { airstrikeService } from '../services/airstrikeService';
-import { AIRSTRIKE } from '../config/constants';
+import { AIRSTRIKE, scoutCapacityForLevel } from '../config/constants';
 
 const router = Router();
 
@@ -48,11 +48,38 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       console.error('[Commander] lazy resolveDueMovements failed:', err);
     }
 
-    const visibleSet = await visionService.getVisibleCells(userId);
-    const visibleCells = Array.from(visibleSet);
+    // ---- Fog v2: three tiers ----
+    //   explored = permanent terrain memory (dim)
+    //   active   = live detail right now (bright)
+    //   revealed = explored ∪ active — what's drawn at all (vs unexplored fog)
+    const exploredSet = await visionService.getExploredCells(userId);
+    const activeSet = await visionService.getActiveCells(userId);
+    const revealedSet = new Set<string>(exploredSet);
+    for (const cell of activeSet) revealedSet.add(cell);
 
-    // Territories overlapping the visible cells (array-overlap via GIN index).
-    // Only the visible subset of each territory's cells is returned.
+    const exploredCells = Array.from(exploredSet);
+    const activeCells = Array.from(activeSet);
+    const revealedCells = Array.from(revealedSet);
+
+    // ALWAYS-visible coarse objective markers (hint where to scout).
+    const objectives = await visionService.getObjectives(userId, revealedSet);
+
+    // Player scout capacity (level-scaled) + how many are in flight now.
+    const playerRow = await query<{ level: number | null }>(
+      `SELECT level FROM users WHERE id = $1`,
+      [userId],
+    );
+    const scoutCapMax = scoutCapacityForLevel(playerRow.rows[0]?.level ?? 1);
+    const activeScoutRow = await query<{ cnt: string }>(
+      `SELECT COUNT(*)::bigint AS cnt FROM troop_movements
+        WHERE owner_id = $1 AND purpose IN ('scout','return')
+          AND status = 'marching' AND resolved = FALSE`,
+      [userId],
+    );
+    const scoutCapActive = parseInt(activeScoutRow.rows[0]?.cnt ?? '0', 10);
+
+    // Territories whose cells intersect revealed. h3_cells = the revealed
+    // subset; live = the territory has any cell in the ACTIVE tier.
     let territories: Array<{
       id: string;
       owner_id: string | null;
@@ -60,9 +87,10 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       claim_value: number;
       h3_cells: string[];
       is_own: boolean;
+      live: boolean;
     }> = [];
 
-    if (visibleCells.length > 0) {
+    if (revealedCells.length > 0) {
       const terrRows = await transaction((c) =>
         c.query<{
           id: string;
@@ -76,20 +104,28 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
              FROM territories t
              LEFT JOIN users u ON u.id = t.owner_id
             WHERE t.h3_cells && $1::text[]`,
-          [visibleCells],
+          [revealedCells],
         ),
       );
 
       territories = terrRows.rows.map((t) => {
         const cells = t.h3_cells ?? [];
-        const visibleSubset = cells.filter((cell) => visibleSet.has(cell));
+        const revealedSubset = cells.filter((cell) => revealedSet.has(cell));
+        const live = cells.some((cell) => activeSet.has(cell));
+        const own = t.owner_id === userId;
+        // Fog tier discipline: owner identity + claim_value are LIVE intel.
+        // For a non-live, explored-only foreign territory we only "remember
+        // the terrain" — we must NOT reveal current owner/value (could have
+        // changed since you scouted). Own territories always show full detail.
+        const showLiveMeta = live || own;
         return {
           id: t.id,
-          owner_id: t.owner_id,
-          owner_username: t.owner_username,
-          claim_value: t.claim_value,
-          h3_cells: visibleSubset,
-          is_own: t.owner_id === userId,
+          owner_id: showLiveMeta ? t.owner_id : null,
+          owner_username: showLiveMeta ? t.owner_username : null,
+          claim_value: showLiveMeta ? t.claim_value : 0,
+          h3_cells: revealedSubset,
+          is_own: own,
+          live,
         };
       });
     }
@@ -97,9 +133,12 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
     const ownMovements = await troopEngine.getMovements(userId);
     const movements = ownMovements.map((mv) => ({ ...mv, is_own: true }));
 
-    // ---- Garrisons of all territories with a visible cell ----
-    // `units` detail ONLY for own garrisons; foreign garrisons leak count
-    // only (fog of war).
+    // ---- Garrisons: ONLY for LIVE territories (a cell in the ACTIVE tier) ----
+    // Explored-but-not-live territories leak no garrison (you saw the terrain,
+    // not the current troops). `units` detail only for own garrisons.
+    const liveTerritoryIds = new Set(
+      territories.filter((t) => t.live).map((t) => t.id),
+    );
     let garrisons: Array<{
       territory_id: string;
       count: number;
@@ -107,7 +146,7 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       units: { instance_id: string; definition_id: string }[] | null;
     }> = [];
 
-    if (visibleCells.length > 0) {
+    if (liveTerritoryIds.size > 0) {
       const garrisonRows = await query<{
         territory_id: string;
         owner_id: string | null;
@@ -118,9 +157,9 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
            FROM troop_deployments td
            JOIN territories t ON t.id = td.territory_id
            JOIN item_instances i ON i.id = td.instance_id
-          WHERE t.h3_cells && $1::text[]
+          WHERE td.territory_id = ANY($1::uuid[])
           ORDER BY td.created_at ASC`,
-        [visibleCells],
+        [Array.from(liveTerritoryIds)],
       );
 
       const byTerritory = new Map<
@@ -147,9 +186,9 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       });
     }
 
-    // ---- Foreign movements whose CURRENT path cell is visible ----
-    // Stripped to {id, purpose, current_cell, eta, is_own:false} — no path or
-    // origin leak. Current cell derived from elapsed-time progress.
+    // ---- Foreign movements whose CURRENT path cell is ACTIVE ----
+    // Live tier only: you only see enemy troops where you have live detail
+    // right now. Stripped to {id, purpose, current_cell, eta, is_own:false}.
     const foreignMovements: Array<{
       id: string;
       purpose: string;
@@ -158,7 +197,7 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
       is_own: false;
     }> = [];
 
-    if (visibleCells.length > 0) {
+    if (activeCells.length > 0) {
       const fmRows = await query<{
         id: string;
         purpose: string;
@@ -183,7 +222,7 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
         const len = mv.path.length;
         const idx = len <= 1 ? 0 : Math.floor(progress * (len - 1));
         const currentCell = mv.path[idx];
-        if (visibleSet.has(currentCell)) {
+        if (activeSet.has(currentCell)) {
           foreignMovements.push({
             id: mv.id,
             purpose: mv.purpose,
@@ -243,17 +282,17 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
     // AI troop MOVEMENTS already surface via the existing foreign-movement fog
     // path above (owner_id <> caller → is_own:false), so nothing extra here.
     const aiZones: Array<{ h3_cell: string; phase: string }> = [];
-    if (visibleCells.length > 0) {
+    if (revealedCells.length > 0) {
       try {
         const zoneRows = await query<{ held_cells: string[] | null; phase: string }>(
           `SELECT held_cells, phase
              FROM ai_region_state
             WHERE held_cells && $1::text[]`,
-          [visibleCells],
+          [revealedCells],
         );
         for (const z of zoneRows.rows) {
           for (const cell of z.held_cells ?? []) {
-            if (visibleSet.has(cell)) aiZones.push({ h3_cell: cell, phase: z.phase });
+            if (revealedSet.has(cell)) aiZones.push({ h3_cell: cell, phase: z.phase });
           }
         }
       } catch (err) {
@@ -266,13 +305,16 @@ router.get('/map', authenticate, async (req: Request, res: Response) => {
     return res.json({
       success: true,
       data: {
-        visible_cells: visibleCells,
+        explored_cells: exploredCells,
+        active_cells: activeCells,
+        objectives,
         territories,
-        movements: [...movements, ...foreignMovements],
         garrisons,
+        movements: [...movements, ...foreignMovements],
         radars,
         silos,
         ai_zones: aiZones,
+        scout_capacity: { max: scoutCapMax, active: scoutCapActive },
       },
     });
   } catch (err: any) {

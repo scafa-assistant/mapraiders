@@ -24,7 +24,15 @@
 import { PoolClient } from 'pg';
 import * as h3 from 'h3-js';
 import { transaction, query } from '../config/database';
-import { COMMANDER, COMBAT, TELEPORT, AI } from '../config/constants';
+import {
+  COMMANDER,
+  COMBAT,
+  TELEPORT,
+  AI,
+  scoutCapacityForLevel,
+  scoutTier,
+} from '../config/constants';
+import { disk } from './h3Service';
 import { RES_SPAWN, cellForPoint, pathBetween } from './h3Service';
 import { resourceService } from './resourceService';
 import { visionService } from './visionService';
@@ -114,14 +122,16 @@ class TroopEngine {
     }
 
     return transaction(async (c) => {
-      // ---- 2a. Lock the unit instance + its definition category ----
+      // ---- 2a. Lock the unit instance + its definition category + level ----
       const inst = await c.query<{
         id: string;
         owner_id: string | null;
         status: string;
         category: string | null;
+        unit_level: number | null;
       }>(
-        `SELECT i.id, i.owner_id, i.status, d.category
+        `SELECT i.id, i.owner_id, i.status, d.category,
+                (i.state->>'level')::int AS unit_level
            FROM item_instances i
            LEFT JOIN item_definitions d ON d.id = i.definition_id
           WHERE i.id = $1
@@ -141,6 +151,8 @@ class TroopEngine {
       if (unit.status !== 'inventory') {
         throw new TroopError('UNIT_BUSY', `Unit is not in inventory (status '${unit.status}')`);
       }
+      // Fog v2: tier (k + range) derives from the unit's level (default 1).
+      const tier = scoutTier(unit.unit_level ?? 1);
 
       // ---- 2b. Load the origin territory (owned + has h3 cells) ----
       const terr = await c.query<{ id: string; h3_cells: string[] | null }>(
@@ -161,6 +173,13 @@ class TroopEngine {
       const originCell = fromCells[0];
 
       // ---- 2c. Active-scout cap (scouts in flight, incl. returning) ----
+      // Fog v2: the cap scales with the PLAYER's account level (cheap read in
+      // the tx), hard-capped at SCOUT_CAPACITY_MAX (one per cardinal direction).
+      const playerRow = await c.query<{ level: number | null }>(
+        `SELECT level FROM users WHERE id = $1`,
+        [userId],
+      );
+      const cap = scoutCapacityForLevel(playerRow.rows[0]?.level ?? 1);
       const active = await c.query<{ cnt: string }>(
         `SELECT COUNT(*)::bigint AS cnt
            FROM troop_movements
@@ -169,8 +188,11 @@ class TroopEngine {
             AND status = 'marching'`,
         [userId],
       );
-      if (parseInt(active.rows[0].cnt, 10) >= COMMANDER.MAX_ACTIVE_SCOUTS) {
-        throw new TroopError('TOO_MANY_SCOUTS', 'Too many scouts already in flight');
+      if (parseInt(active.rows[0].cnt, 10) >= cap) {
+        throw new TroopError(
+          'TOO_MANY_SCOUTS',
+          `All scouts deployed (max ${cap} at your level).`,
+        );
       }
 
       // ---- 2d. Build the path ----
@@ -181,7 +203,9 @@ class TroopEngine {
         // pathBetween rethrows Error('PATH_FAILED') on pentagon/distant cells.
         throw new TroopError('TARGET_TOO_FAR', 'No valid path to the target');
       }
-      if (path.length === 0 || path.length > COMMANDER.MAX_PATH_CELLS) {
+      // Fog v2: range limit is per-tier (scoutTier(unitLevel).range), not a
+      // fixed cap — higher-level scouts reach farther.
+      if (path.length === 0 || path.length > tier.range) {
         throw new TroopError('TARGET_TOO_FAR', 'Target is too far to scout');
       }
 
@@ -216,7 +240,11 @@ class TroopEngine {
           originCell,
           targetCell,
           path,
-          JSON.stringify({ build_radar: !!opts.buildRadar }),
+          JSON.stringify({
+            build_radar: !!opts.buildRadar,
+            scout_level: unit.unit_level ?? 1,
+            scout_k: tier.k,
+          }),
           String(travelMin),
         ],
       );
@@ -728,7 +756,13 @@ class TroopEngine {
           currentCell,
           mv.from_cell,
           safePath,
-          JSON.stringify({ recalled_from: mv.id }),
+          // Carry the scout's tier so the recalled return-trip writes its
+          // explored corridor at the right vision radius (k) on arrival.
+          JSON.stringify({
+            recalled_from: mv.id,
+            scout_level: (mv.config && mv.config.scout_level) ?? 1,
+            scout_k: (mv.config && mv.config.scout_k) ?? scoutTier(1).k,
+          }),
           String(travelMin),
         ],
       );
@@ -790,10 +824,27 @@ class TroopEngine {
     );
     if (peek.rowCount === 0) return false;
     const peekPurpose = peek.rows[0].purpose;
-    const visionCells =
-      peekPurpose === 'scout'
-        ? await visionService.filterScoutVisionCells(peek.rows[0].to_cell)
-        : [];
+
+    // Fog v2: on a scout/return arrival, the whole WALKED CORRIDOR becomes
+    // PERMANENT explored terrain ("once a scout walked there, you see the
+    // terrain forever"). Pre-compute it BEFORE the tx — filterCorridorCells
+    // queries the pool (silent-zone checks) and must never run while a tx
+    // client is held. For each path cell expand a disk(scoutTier.k), dedup,
+    // then silent-zone filter. scout_k is stored in config at dispatch
+    // (default tier-1 k=1); return movements inherit it via config too.
+    let corridorCells: string[] = [];
+    if (peekPurpose === 'scout' || peekPurpose === 'return') {
+      const cfg = (peek.rows[0].config ?? {}) as Record<string, unknown>;
+      const k =
+        typeof cfg.scout_k === 'number'
+          ? cfg.scout_k
+          : scoutTier(typeof cfg.scout_level === 'number' ? cfg.scout_level : 1).k;
+      const raw = new Set<string>();
+      for (const cell of peek.rows[0].path ?? []) {
+        for (const d of disk(cell, k)) raw.add(d);
+      }
+      corridorCells = await visionService.filterCorridorCells(raw);
+    }
 
     // PRE-TX pool read: for an attack arrival, the live winner dice-drop
     // probability comes from the `commander` flag's config (battleEngine stays
@@ -905,6 +956,9 @@ class TroopEngine {
       );
 
       if (mv.purpose === 'return') {
+        // Fog v2: the return path also leaves PERMANENT explored memory (covers
+        // the way back). Cells pre-filtered against silent zones above.
+        await visionService.writeExploredCorridor(mv.owner_id, corridorCells, c);
         // Units re-enter inventory in the same tx.
         await c.query(
           `UPDATE item_instances
@@ -1036,8 +1090,10 @@ class TroopEngine {
       }
 
       // ---- 'scout' arrival ----
-      // Vision disk (24h TTL; cells pre-filtered against silent zones above).
-      await visionService.upsertScoutVision(mv.owner_id, visionCells, c);
+      // Fog v2: the WHOLE walked corridor becomes PERMANENT explored terrain
+      // (cells pre-filtered against silent zones above). LIVE detail around the
+      // scout is computed dynamically by getActiveCells — no TTL rows written.
+      await visionService.writeExploredCorridor(mv.owner_id, corridorCells, c);
 
       // Optional covert radar drop on a FOREIGN active territory at to_cell.
       let buildResult: 'placed' | 'no_target' | 'skipped' = 'skipped';
@@ -1091,7 +1147,13 @@ class TroopEngine {
           mv.to_cell,
           mv.from_cell,
           safePath,
-          JSON.stringify({ auto_return: true }),
+          // Carry the scout's tier so the return-trip corridor is written at
+          // the same vision radius (k) on its own arrival.
+          JSON.stringify({
+            auto_return: true,
+            scout_level: (mv.config && mv.config.scout_level) ?? 1,
+            scout_k: (mv.config && mv.config.scout_k) ?? scoutTier(1).k,
+          }),
           new Date(mv.arrives_at).toISOString(),
           String(travelMin),
         ],

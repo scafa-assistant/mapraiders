@@ -737,7 +737,50 @@ export const COMMANDER = {
   MAX_ACTIVE_SCOUTS: 3,
   MAX_PATH_CELLS: 60,
   MAX_VISIBLE_CELLS: 1500,      // hard response cap
+
+  // ---- Fog v2 (3-tier Anno-style fog of war, 2026-06-14) ----
+  // Scout unit tiers (item_instances.state.level, default 1): bigger radar
+  // (live vision disk k) + longer march range per level.
+  SCOUT_LEVELS: {
+    1: { k: 1, range: 40 },
+    2: { k: 2, range: 55 },
+    3: { k: 2, range: 70 },
+    4: { k: 3, range: 90 },
+  } as Record<number, { k: number; range: number }>,
+  SCOUT_LEVEL_MAX: 4,
+  // Simultaneous scout capacity by PLAYER level (users.level), hard cap 4
+  // (one per cardinal direction N/E/S/W).
+  SCOUT_CAPACITY: [
+    { minLevel: 1, cap: 1 },
+    { minLevel: 3, cap: 2 },
+    { minLevel: 6, cap: 3 },
+    { minLevel: 10, cap: 4 },
+  ] as Array<{ minLevel: number; cap: number }>,
+  SCOUT_CAPACITY_MAX: 4,
 } as const;
+
+/**
+ * How many scouts a player of the given account level may have in flight at
+ * once. Walks COMMANDER.SCOUT_CAPACITY for the highest minLevel <= playerLevel,
+ * clamped to SCOUT_CAPACITY_MAX. Unknown/low levels fall back to 1.
+ */
+export function scoutCapacityForLevel(playerLevel: number): number {
+  let cap = 1;
+  for (const bracket of COMMANDER.SCOUT_CAPACITY) {
+    if (playerLevel >= bracket.minLevel) cap = bracket.cap;
+  }
+  return Math.min(COMMANDER.SCOUT_CAPACITY_MAX, cap);
+}
+
+/**
+ * Resolve a scout unit's tier effects ({k, range}) from its unit level,
+ * clamped to 1..SCOUT_LEVEL_MAX. k = live vision disk radius around the scout,
+ * range = max march path cells.
+ */
+export function scoutTier(unitLevel: number): { k: number; range: number } {
+  const lvl = Math.max(1, Math.min(COMMANDER.SCOUT_LEVEL_MAX, Math.floor(unitLevel || 1)));
+  return COMMANDER.SCOUT_LEVELS[lvl] ?? COMMANDER.SCOUT_LEVELS[1];
+}
 
 // ============================================================
 // COMBAT (Phase C.2) — Troop deployment + dice battle engine.

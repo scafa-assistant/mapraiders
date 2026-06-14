@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import * as h3 from 'h3-js';
 import { useCommanderStore } from '../store/commanderStore';
-import type { AirstrikeResult, CommanderMovement, SiloInfo } from '../store/commanderStore';
+import type { AirstrikeResult, CommanderMovement, ScoutCapacity, SiloInfo } from '../store/commanderStore';
 import { HYPERBOREAN_AI_USER_ID } from '../store/commanderStore';
 import { useInventoryStore } from '../store/inventoryStore';
 import { useAuthStore } from '../store/authStore';
@@ -29,11 +29,26 @@ import BattleReplayModal from './BattleReplayModal';
 const C_ACCENT   = theme.color.accent;
 const C_FOREIGN  = theme.color.foreign;
 const C_AMBER    = theme.color.amber;
-const C_VIS_FILL = 'rgba(157,78,221,0.06)';
-const C_VIS_BORDER = '#9D4EDD';
-const C_OWN_FILL   = 'rgba(157,78,221,0.35)';
-const C_FOREIGN_FILL = 'rgba(77,208,225,0.25)';
 const C_RED_PULSE = '#FF5470';
+
+// --- Fog-of-war tier colours ---
+// Tier 2: explored (stale) — faint violet outline, near-zero fill
+const C_EXPLORED_BORDER  = '#9D4EDD';
+const C_EXPLORED_FILL    = 'rgba(157,78,221,0.03)';
+const C_EXPLORED_OPACITY = 0.25;
+// Tier 3: active (live now) — bright violet glow
+const C_ACTIVE_BORDER  = '#9D4EDD';
+const C_ACTIVE_FILL    = 'rgba(157,78,221,0.12)';
+const C_ACTIVE_OPACITY = 0.80;
+
+// --- Territory colours ---
+const C_OWN_FILL         = 'rgba(157,78,221,0.35)';
+const C_OWN_FILL_DIM     = 'rgba(157,78,221,0.15)';
+const C_FOREIGN_FILL     = 'rgba(77,208,225,0.25)';
+const C_FOREIGN_FILL_DIM = 'rgba(77,208,225,0.10)';
+
+// Objective markers: always-visible coarse hints
+const C_OBJECTIVE = '#FFB300';
 
 const UNIT_PREFIXES = ['unit_scout_disc', 'unit_tech_drone', 'unit_water_strider', 'unit_forest_construct'];
 
@@ -132,6 +147,7 @@ export default function CommanderView() {
   const hexLayerRef      = useRef<L.LayerGroup | null>(null);
   const aiLayerRef       = useRef<L.LayerGroup | null>(null);
   const terrLayerRef     = useRef<L.LayerGroup | null>(null);
+  const objectiveLayerRef = useRef<L.LayerGroup | null>(null); // Phase E: objective markers (above fog, below UI)
   const radarLayerRef    = useRef<L.LayerGroup | null>(null);
   const moveLayerRef     = useRef<L.LayerGroup | null>(null);
   const foreignDotLayer  = useRef<L.LayerGroup | null>(null);
@@ -219,13 +235,14 @@ export default function CommanderView() {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    hexLayerRef.current     = L.layerGroup().addTo(map);
-    aiLayerRef.current      = L.layerGroup().addTo(map); // AI zones UNDER territories
-    terrLayerRef.current    = L.layerGroup().addTo(map);
-    radarLayerRef.current   = L.layerGroup().addTo(map);
-    moveLayerRef.current    = L.layerGroup().addTo(map);
-    foreignDotLayer.current = L.layerGroup().addTo(map);
-    targetLayerRef.current  = L.layerGroup().addTo(map);
+    hexLayerRef.current      = L.layerGroup().addTo(map);
+    aiLayerRef.current       = L.layerGroup().addTo(map); // AI zones UNDER territories
+    terrLayerRef.current     = L.layerGroup().addTo(map);
+    objectiveLayerRef.current = L.layerGroup().addTo(map); // Phase E: objectives ABOVE territory fog
+    radarLayerRef.current    = L.layerGroup().addTo(map);
+    moveLayerRef.current     = L.layerGroup().addTo(map);
+    foreignDotLayer.current  = L.layerGroup().addTo(map);
+    targetLayerRef.current   = L.layerGroup().addTo(map);
 
     return () => { map.remove(); mapRef.current = null; };
   }, []);
@@ -253,17 +270,41 @@ export default function CommanderView() {
     return () => { map.off('click', onMapClick); };
   }, [dispatch.phase]);
 
-  // ---- Render hex grid --------------------------------------------------------
+  // ---- Render hex grid (3-tier fog of war) ------------------------------------
+  // Tier 1 (unexplored): no overlay — the dark map tiles already convey darkness.
+  // Tier 2 (explored, stale): faint violet border, near-zero fill.
+  // Tier 3 (active, live now): bright violet border + slight fill glow.
+  // A cell in both explored + active → active wins (rendered as active).
   useEffect(() => {
     const layer = hexLayerRef.current;
     if (!layer || !mapData) return;
     layer.clearLayers();
-    for (const cell of mapData.visible_cells) {
+
+    const activeSet = new Set<string>(mapData.active_cells);
+
+    // Render explored (stale) first — active cells will be rendered on top
+    for (const cell of mapData.explored_cells) {
+      if (activeSet.has(cell)) continue; // skip; rendered in next pass
       L.polygon(cellToLeafletLatLngs(cell), {
-        color: C_VIS_BORDER, weight: 0.8, fillColor: C_VIS_FILL, fillOpacity: 1, opacity: 0.5,
+        color:       C_EXPLORED_BORDER,
+        weight:      0.6,
+        opacity:     C_EXPLORED_OPACITY,
+        fillColor:   C_EXPLORED_FILL,
+        fillOpacity: 1,
       }).addTo(layer);
     }
-  }, [mapData?.visible_cells]);
+
+    // Render active (live) cells on top
+    for (const cell of mapData.active_cells) {
+      L.polygon(cellToLeafletLatLngs(cell), {
+        color:       C_ACTIVE_BORDER,
+        weight:      1.2,
+        opacity:     C_ACTIVE_OPACITY,
+        fillColor:   C_ACTIVE_FILL,
+        fillOpacity: 1,
+      }).addTo(layer);
+    }
+  }, [mapData?.explored_cells, mapData?.active_cells]);
 
   // ---- Render territories (clickable) -----------------------------------------
   useEffect(() => {
@@ -272,38 +313,56 @@ export default function CommanderView() {
     layer.clearLayers();
 
     for (const terr of mapData.territories) {
-      const own = terr.is_own || (userId != null && terr.owner_id === userId);
-      const fillColor = own ? C_OWN_FILL : C_FOREIGN_FILL;
+      const own  = terr.is_own || (userId != null && terr.owner_id === userId);
+      // live === undefined means old server that didn't send the field → treat as live
+      const live = terr.live !== false;
+
+      // Dim styling for explored-but-not-live territories
+      const fillColor = own
+        ? (live ? C_OWN_FILL     : C_OWN_FILL_DIM)
+        : (live ? C_FOREIGN_FILL : C_FOREIGN_FILL_DIM);
       const stroke    = own ? C_ACCENT : C_FOREIGN;
+      const strokeOpacity = live ? 1 : 0.4;
 
       for (const cell of terr.h3_cells) {
         const poly = L.polygon(cellToLeafletLatLngs(cell), {
-          color: stroke, weight: 1.5, fillColor, fillOpacity: 1,
+          color: stroke, weight: live ? 1.5 : 0.8,
+          opacity: strokeOpacity,
+          fillColor, fillOpacity: 1,
         });
         const ownerLabel = terr.owner_username ?? (terr.owner_id ? 'Unknown' : 'Unclaimed');
+        const liveNote   = live ? '' : ' <em style="color:#9A8FB0">(no live intel)</em>';
         poly.bindTooltip(
-          `<strong>${ownerLabel}</strong>${terr.claim_value ? ` · ${terr.claim_value}` : ''}`,
+          `<strong>${ownerLabel}</strong>${terr.claim_value ? ` · ${terr.claim_value}` : ''}${liveNote}`,
           { sticky: true },
         );
-        poly.on('click', () => {
-          setDeployError(null);
-          setAttackError(null);
-          setAttackMode(false);
-          if (own) {
-            setTerrPanel({ type: 'own', territoryId: terr.id });
-          } else {
-            setTerrPanel({ type: 'foreign', territoryId: terr.id });
-          }
-        });
+        if (live) {
+          // Only clickable when live (fog-cleared)
+          poly.on('click', () => {
+            setDeployError(null);
+            setAttackError(null);
+            setAttackMode(false);
+            if (own) {
+              setTerrPanel({ type: 'own', territoryId: terr.id });
+            } else {
+              setTerrPanel({ type: 'foreign', territoryId: terr.id });
+            }
+          });
+        }
         poly.addTo(layer);
       }
     }
 
-    const allCells = mapData.territories.flatMap((t) => t.h3_cells).concat(mapData.visible_cells);
-    if (allCells.length > 0 && mapRef.current) {
+    // Auto-fit on first render: explored_cells ∪ territory cells ∪ objective cells
+    const boundsSource: string[] = [
+      ...mapData.explored_cells,
+      ...mapData.territories.flatMap((t) => t.h3_cells),
+      ...mapData.objectives.map((o) => o.h3_cell),
+    ];
+    if (boundsSource.length > 0 && mapRef.current) {
       try {
-        const bounds = allCells.map((c) => cellCenter(c));
-        const lbounds = L.latLngBounds(bounds);
+        const pts = boundsSource.map((c) => cellCenter(c));
+        const lbounds = L.latLngBounds(pts);
         if (lbounds.isValid()) mapRef.current.fitBounds(lbounds, { padding: [40, 40], maxZoom: 15 });
       } catch { /* ignore */ }
     }
@@ -334,6 +393,37 @@ export default function CommanderView() {
         .addTo(layer);
     }
   }, [mapData?.ai_zones]);
+
+  // ---- Render objectives (Phase E) — always visible, coarse yellow markers ----
+  // These render above the fog hex and territory layers so they read as hints
+  // even in unexplored areas. Slight transparency keeps the "coarse intel" feel.
+  useEffect(() => {
+    const layer = objectiveLayerRef.current;
+    if (!layer || !mapData) return;
+    layer.clearLayers();
+
+    const OBJECTIVE_TOOLTIPS: Record<string, string> = {
+      enemy_territory: 'Enemy territory',
+      pve_spawn:       'Hostile signal',
+      ai_zone:         'Hyperborean presence',
+    };
+
+    for (const obj of mapData.objectives) {
+      const [lat, lng] = cellCenter(obj.h3_cell);
+      const tooltip = OBJECTIVE_TOOLTIPS[obj.kind] ?? obj.kind;
+      // Diamond-ish marker: a tiny rotated square via CircleMarker at low radius + outline
+      L.circleMarker([lat, lng], {
+        radius:      6,
+        color:       C_OBJECTIVE,
+        weight:      1.5,
+        opacity:     0.70,
+        fillColor:   C_OBJECTIVE,
+        fillOpacity: 0.35,
+      })
+        .bindTooltip(tooltip, { sticky: true })
+        .addTo(layer);
+    }
+  }, [mapData?.objectives]);
 
   // ---- Render radars ----------------------------------------------------------
   useEffect(() => {
@@ -1189,6 +1279,9 @@ export default function CommanderView() {
     );
 
     // Idle: show action buttons + own territory list
+    const scoutCap: ScoutCapacity = mapData?.scout_capacity ?? { max: 3, active: 0 };
+    const scoutLimitReached = scoutCap.active >= scoutCap.max;
+
     return (
       <>
         {dispatchError && <div className="panel-error" style={{ margin: 0 }}>{dispatchError}</div>}
@@ -1200,7 +1293,37 @@ export default function CommanderView() {
             ⚠ {mapData!.ai_zones!.length} cells under Hyperborean control
           </div>
         )}
-        <button style={btnAccent} onClick={handleStartDispatch}>Deploy Scout</button>
+
+        {/* Scout capacity indicator */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: theme.color.panelAlt, border: `1px solid ${theme.color.border}`,
+          borderRadius: 8, padding: '6px 10px', fontSize: 12,
+        }}>
+          <span style={{ color: theme.color.textDim }}>Scouts</span>
+          <span style={{
+            fontWeight: 700,
+            color: scoutLimitReached ? theme.color.danger : theme.color.accentBright,
+          }}>
+            {scoutCap.active} / {scoutCap.max}
+          </span>
+        </div>
+
+        <button
+          style={{ ...btnAccent, opacity: scoutLimitReached ? 0.5 : 1 }}
+          disabled={scoutLimitReached}
+          onClick={scoutLimitReached ? undefined : handleStartDispatch}
+          title={scoutLimitReached
+            ? `Scout limit reached (${scoutCap.max}). Reach a higher level to deploy more.`
+            : undefined}
+        >
+          Deploy Scout
+        </button>
+        {scoutLimitReached && (
+          <div style={{ fontSize: 11, color: theme.color.textDim, textAlign: 'center', marginTop: -4 }}>
+            Scout limit reached ({scoutCap.max}). Reach a higher level to deploy more.
+          </div>
+        )}
         <div style={{ ...sectionLabel, marginTop: 8 }}>Own Territories</div>
         {ownTerrs.length === 0 ? (
           <div className="muted">No territories yet. Click a hex to start.</div>

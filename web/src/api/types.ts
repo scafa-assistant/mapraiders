@@ -331,3 +331,17 @@ export interface AirstrikeLog {
   damage: number;
   result: AirstrikeResultPayload;
 }
+
+// ---- Commander: Fog-of-war tiers (Phase E) -----------------------------------
+
+export type ObjectiveKind = 'enemy_territory' | 'pve_spawn' | 'ai_zone';
+
+export interface Objective {
+  h3_cell: string;
+  kind: ObjectiveKind;
+}
+
+export interface ScoutCapacity {
+  max: number;
+  active: number;
+}

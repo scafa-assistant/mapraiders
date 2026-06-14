@@ -50,6 +50,8 @@ import type {
   CommanderGarrison,
   SiloInfo,
   AirstrikeResult,
+  Objective,
+  ScoutCapacity,
 } from '../../services/api';
 import { HYPERBOREAN_AI_USER_ID } from '../../services/api';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
@@ -124,19 +126,24 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     return () => clearInterval(id);
   }, []);
 
-  // ── Fit to visible cells on first load.
+  // ── Fit to explored ∪ active ∪ territory ∪ objective cells on first load.
   useEffect(() => {
     if (fittedRef.current || !mapData) return;
     const coords: LatLng[] = [];
-    for (const cell of mapData.visible_cells.slice(0, 200)) {
+    // Sample explored + active (up to 200 total) for the initial camera fit.
+    const seedCells = [...new Set([...mapData.explored_cells, ...mapData.active_cells])].slice(0, 150);
+    for (const cell of seedCells) {
       const c = cellCenter(cell);
       if (c) coords.push(c);
     }
-    if (coords.length === 0) {
-      for (const t of mapData.territories) {
-        const c = t.h3_cells[0] ? cellCenter(t.h3_cells[0]) : null;
-        if (c) coords.push(c);
-      }
+    // Always include territory centroids and objective centroids.
+    for (const t of mapData.territories) {
+      const c = t.h3_cells[0] ? cellCenter(t.h3_cells[0]) : null;
+      if (c) coords.push(c);
+    }
+    for (const obj of mapData.objectives) {
+      const c = cellCenter(obj.h3_cell);
+      if (c) coords.push(c);
     }
     if (coords.length >= 1 && mapRef.current) {
       fittedRef.current = true;
@@ -160,18 +167,47 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
     [mapData]
   );
 
-  // ── Decide which vision hexes to draw (cap to avoid overdraw).
-  const visionCells = useMemo(() => {
-    if (!mapData) return [];
-    const all = mapData.visible_cells;
-    if (all.length <= VISION_HEX_CAP) return all;
-    // Over the cap: only render territory + radar + AI zone cells, skip plain-vision hexes.
-    // AI cells are high-signal — prefer keeping them over plain vision hexes.
-    const keep = new Set<string>();
-    for (const t of mapData.territories) t.h3_cells.forEach((c) => keep.add(c));
-    for (const r of mapData.radars) r.cells.forEach((c) => keep.add(c));
-    for (const z of mapData.ai_zones ?? []) keep.add(z.h3_cell);
-    return all.filter((c) => keep.has(c));
+  // ── 3-tier fog: active cells (bright) and explored-but-not-active (dim).
+  //    Priority under VISION_HEX_CAP cap: active > objective > territory > explored.
+  const { activeCellSet, exploredDimCells } = useMemo(() => {
+    if (!mapData) return { activeCellSet: new Set<string>(), exploredDimCells: [] as string[] };
+
+    const activeSet = new Set<string>(mapData.active_cells);
+    const exploredSet = new Set<string>(mapData.explored_cells);
+
+    // Build the priority-ordered collection of all cells we want to render.
+    // Tier A: active (bright) — these always render; also skip from explored-dim list.
+    // Tier B: objective cells (always-visible markers — they have their own Marker, not polygon)
+    // Tier C: territory cells (always render regardless of fog)
+    // Tier D: plain explored-dim (drop first when over cap)
+
+    const territoryCells = new Set<string>();
+    for (const t of mapData.territories) {
+      for (const c of t.h3_cells) territoryCells.add(c);
+    }
+
+    const objectiveCells = new Set<string>(mapData.objectives.map((o) => o.h3_cell));
+
+    // Explored-dim = in explored but NOT in active and NOT in territory (territory gets its own richer render)
+    const plainExplored: string[] = [];
+    for (const c of exploredSet) {
+      if (!activeSet.has(c) && !territoryCells.has(c)) {
+        plainExplored.push(c);
+      }
+    }
+
+    // Budget accounting: active + territory always rendered (no cap on those);
+    // plain explored hexes fill the remaining budget.
+    const fixedCount = activeSet.size + territoryCells.size;
+    const remaining = Math.max(0, VISION_HEX_CAP - fixedCount);
+    // Keep objective cells in explored-dim budget since they get Marker not Polygon.
+    // Drop plain explored hexes first (least informative).
+    const trimmedExplored =
+      plainExplored.length <= remaining
+        ? plainExplored
+        : plainExplored.slice(0, remaining);
+
+    return { activeCellSet: activeSet, exploredDimCells: trimmedExplored };
   }, [mapData]);
 
   // ── Territory cell → territory lookup (for tap detection on hexes).
@@ -342,19 +378,34 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
           }}
           onPress={handleMapPress}
         >
-          {/* Plain vision hexes — thin violet stroke, very low fill */}
-          {visionCells.map((cell) => {
-            // Skip cells that belong to a territory (those get a richer fill below).
+          {/* Tier 2 — Explored-dim hexes: thin violet stroke, near-zero fill (~0.25 alpha stroke) */}
+          {exploredDimCells.map((cell) => {
+            const coords = cellToPolygon(cell);
+            if (coords.length < 3) return null;
+            return (
+              <Polygon
+                key={`exp-${cell}`}
+                coordinates={coords}
+                strokeColor={`${C.accent}3F`}
+                strokeWidth={0.5}
+                fillColor={`${C.accent}06`}
+              />
+            );
+          })}
+
+          {/* Tier 3 — Active hexes: bright violet stroke (~0.8 alpha), faint fill */}
+          {Array.from(activeCellSet).map((cell) => {
+            // Skip territory cells — those get their own richer polygon below.
             if (territoryByCell.has(cell)) return null;
             const coords = cellToPolygon(cell);
             if (coords.length < 3) return null;
             return (
               <Polygon
-                key={`vis-${cell}`}
+                key={`act-${cell}`}
                 coordinates={coords}
-                strokeColor={`${C.vision}44`}
-                strokeWidth={0.5}
-                fillColor={`${C.vision}0D`}
+                strokeColor={`${C.accent}CC`}
+                strokeWidth={0.8}
+                fillColor={`${C.accent}14`}
               />
             );
           })}
@@ -394,19 +445,22 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
             );
           })}
 
-          {/* Territories — own violet, foreign cyan */}
+          {/* Territories — own violet, foreign cyan; dimmed when live===false (stale intel) */}
           {mapData?.territories.map((t) =>
             t.h3_cells.map((cell) => {
               const coords = cellToPolygon(cell);
               if (coords.length < 3) return null;
               const col = t.is_own ? C.own : C.foreign;
-              const fillAlpha = t.is_own ? '59' : '40'; // 0.35 / 0.25
+              // live===false → dim outline only (0.4 alpha stroke, no fill)
+              const isLive = t.live !== false;
+              const strokeAlpha = isLive ? 'FF' : '66'; // 1.0 / 0.4
+              const fillAlpha = isLive ? (t.is_own ? '59' : '40') : '0A'; // dim fill for stale
               return (
                 <Polygon
                   key={`terr-${t.id}-${cell}`}
                   coordinates={coords}
-                  strokeColor={col}
-                  strokeWidth={1}
+                  strokeColor={`${col}${strokeAlpha}`}
+                  strokeWidth={isLive ? 1 : 0.7}
                   fillColor={`${col}${fillAlpha}`}
                   tappable
                   onPress={() => openTerritory(t)}
@@ -414,6 +468,30 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
               );
             })
           )}
+
+          {/* Objective markers — always-visible yellow diamonds; coarse strategic hints */}
+          {mapData?.objectives.map((obj) => {
+            const pos = cellCenter(obj.h3_cell);
+            if (!pos) return null;
+            const title =
+              obj.kind === 'enemy_territory'
+                ? 'Enemy territory'
+                : obj.kind === 'pve_spawn'
+                ? 'Hostile signal'
+                : 'Hyperborean presence';
+            return (
+              <Marker
+                key={`obj-${obj.h3_cell}`}
+                coordinate={pos}
+                anchor={{ x: 0.5, y: 0.5 }}
+                title={title}
+              >
+                <View style={styles.objectiveDiamond}>
+                  <Ionicons name="diamond" size={12} color="#FFB300" />
+                </View>
+              </Marker>
+            );
+          })}
 
           {/* Own movement paths + progress marker */}
           {ownMovements.map((m) => {
@@ -513,7 +591,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
                     />
                     <Text style={styles.chipLabel}>{m.purpose}</Text>
                     <Text style={[styles.chipEta, { color: col }]}>{formatCountdown(m.arrives_at)}</Text>
-                    {(m.purpose === 'scout' || m.purpose === 'reinforce') && m.status !== 'returning' ? (
+                    {m.purpose === 'scout' && m.status !== 'returning' ? (
                       <TouchableOpacity
                         onPress={() => recall(m.id)}
                         hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
@@ -540,6 +618,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
         units={unitItems}
         ownTerritories={ownTerritories}
         silos={mapData?.silos ?? []}
+        scoutCapacity={mapData?.scout_capacity ?? null}
         submitting={submitting}
         onClose={closeSheet}
         onDeploy={handleDeploy}
@@ -601,6 +680,7 @@ function TerritoryActionSheet({
   units,
   ownTerritories,
   silos,
+  scoutCapacity,
   submitting,
   onClose,
   onDeploy,
@@ -614,6 +694,7 @@ function TerritoryActionSheet({
   units: ItemInstance[];
   ownTerritories: CommanderTerritory[];
   silos: SiloInfo[];
+  scoutCapacity: ScoutCapacity | null;
   submitting: boolean;
   onClose: () => void;
   onDeploy: (instanceId: string, territoryId: string) => void;
@@ -630,7 +711,9 @@ function TerritoryActionSheet({
 
   if (!territory) return null;
   const isOwn = territory.is_own;
+  const isLive = territory.live !== false;
   const scoutBase = ownTerritories[0];
+  const scoutAtLimit = scoutCapacity != null && scoutCapacity.active >= scoutCapacity.max;
 
   // Ready silos: ready_at is null OR ready_at is in the past.
   const readySilos = silos.filter(
@@ -682,12 +765,20 @@ function TerritoryActionSheet({
 
         <Text style={styles.sheetMeta}>
           Claim value {territory.claim_value} · {territory.h3_cells.length} cells
+          {!isLive ? '  ·  (no live intel)' : ''}
         </Text>
+        {scoutCapacity != null ? (
+          <Text style={styles.scoutCapacityText}>
+            Scouts: {scoutCapacity.active}/{scoutCapacity.max}
+          </Text>
+        ) : null}
 
         <ScrollView style={{ maxHeight: 360 }} showsVerticalScrollIndicator={false}>
-          {/* Garrison list */}
+          {/* Garrison list — hidden when territory has no live intel */}
           <Text style={styles.sectionLabel}>GARRISON</Text>
-          {garrison && garrison.count > 0 ? (
+          {!isLive ? (
+            <Text style={styles.emptyLine}>No garrison data — scout to update intel.</Text>
+          ) : garrison && garrison.count > 0 ? (
             isOwn && garrison.units ? (
               garrison.units.map((u: { instance_id: string; definition_id: string }) => (
                 <View key={u.instance_id} style={styles.garrisonRow}>
@@ -752,19 +843,28 @@ function TerritoryActionSheet({
               {scoutBase ? (
                 <>
                   <TouchableOpacity
-                    style={styles.actionBtn}
-                    onPress={() => setScoutPickerOpen((v) => !v)}
+                    style={[styles.actionBtn, scoutAtLimit && { opacity: 0.5 }]}
+                    onPress={scoutAtLimit ? undefined : () => setScoutPickerOpen((v) => !v)}
+                    disabled={scoutAtLimit}
                   >
-                    <Ionicons name="eye" size={18} color={C.accent} />
-                    <Text style={styles.actionBtnText}>Dispatch scout</Text>
-                    <Ionicons
-                      name={scoutPickerOpen ? 'chevron-up' : 'chevron-down'}
-                      size={16}
-                      color={C.textSecondary}
-                    />
+                    <Ionicons name="eye" size={18} color={scoutAtLimit ? C.textSecondary : C.accent} />
+                    <Text style={[styles.actionBtnText, scoutAtLimit && { color: C.textSecondary }]}>
+                      Dispatch scout
+                    </Text>
+                    {scoutAtLimit ? null : (
+                      <Ionicons
+                        name={scoutPickerOpen ? 'chevron-up' : 'chevron-down'}
+                        size={16}
+                        color={C.textSecondary}
+                      />
+                    )}
                   </TouchableOpacity>
-                  {scoutPickerOpen
-                    ? units.length === 0
+                  {scoutAtLimit ? (
+                    <Text style={styles.scoutLimitText}>
+                      Scout limit reached ({scoutCapacity!.max}) — level up to deploy more.
+                    </Text>
+                  ) : scoutPickerOpen ? (
+                    units.length === 0
                       ? <Text style={styles.emptyLine}>No units to scout with.</Text>
                       : units.map((u) => (
                           <TouchableOpacity
@@ -776,7 +876,7 @@ function TerritoryActionSheet({
                             <Text style={styles.pickName}>{prettifyDefinitionId(u.definition_id)}</Text>
                           </TouchableOpacity>
                         ))
-                    : null}
+                  ) : null}
                 </>
               ) : null}
             </>
@@ -851,14 +951,23 @@ function TerritoryActionSheet({
               ) : null}
 
               {scoutBase ? (
-                <TouchableOpacity
-                  style={styles.actionBtn}
-                  onPress={() => onStartScout(units[0]?.id ?? '', scoutBase.id)}
-                  disabled={units.length === 0}
-                >
-                  <Ionicons name="eye" size={18} color={C.accent} />
-                  <Text style={styles.actionBtnText}>Send scout here</Text>
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity
+                    style={[styles.actionBtn, (units.length === 0 || scoutAtLimit) && { opacity: 0.5 }]}
+                    onPress={(units.length === 0 || scoutAtLimit) ? undefined : () => onStartScout(units[0]?.id ?? '', scoutBase.id)}
+                    disabled={units.length === 0 || scoutAtLimit}
+                  >
+                    <Ionicons name="eye" size={18} color={(units.length === 0 || scoutAtLimit) ? C.textSecondary : C.accent} />
+                    <Text style={[styles.actionBtnText, (units.length === 0 || scoutAtLimit) && { color: C.textSecondary }]}>
+                      Send scout here
+                    </Text>
+                  </TouchableOpacity>
+                  {scoutAtLimit ? (
+                    <Text style={styles.scoutLimitText}>
+                      Scout limit reached ({scoutCapacity!.max}) — level up to deploy more.
+                    </Text>
+                  ) : null}
+                </>
               ) : null}
             </>
           )}
@@ -1493,6 +1602,30 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   unitRowSel: { borderColor: C.accent },
+
+  // Objective marker (diamond)
+  objectiveDiamond: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.8,
+  },
+
+  // Scout capacity display
+  scoutCapacityText: {
+    color: C.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '600',
+    marginBottom: SPACING.xs,
+  },
+  scoutLimitText: {
+    color: C.warning,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '600',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+  },
 
   // AI zone warning
   aiWarningRow: {

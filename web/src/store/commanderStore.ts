@@ -5,7 +5,7 @@
 
 import { create } from 'zustand';
 import { api, battlesApi, errorMessage, strikeApi, troopsApi } from '../api/client';
-import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, InventoryItem, SiloInfo } from '../api/types';
+import type { AirstrikeResult, ApiEnvelope, BattleDetail, BattleSummary, CommanderGarrison, CommanderForeignMovement, InventoryItem, Objective, ScoutCapacity, SiloInfo } from '../api/types';
 
 // ---- API shapes ----------------------------------------------------------------
 
@@ -16,6 +16,8 @@ export interface CommanderTerritory {
   claim_value: number;
   h3_cells: string[];
   is_own: boolean;
+  /** Phase E: true = live visibility, false = explored-only (dim, no garrison detail). Absent on old servers → treat as true. */
+  live?: boolean;
 }
 
 export interface CommanderMovement {
@@ -54,7 +56,16 @@ export interface AiZone {
 export const HYPERBOREAN_AI_USER_ID = '00000000-0000-0000-0000-00000000a111';
 
 export interface CommanderMapData {
-  visible_cells: string[];
+  /** @deprecated Replaced by explored_cells + active_cells. Keep optional for old-server safety. */
+  visible_cells?: string[];
+  /** Phase E: permanently known terrain (dim fog). */
+  explored_cells: string[];
+  /** Phase E: live visibility right now (bright). active ⊆ explored conceptually, but active wins. */
+  active_cells: string[];
+  /** Phase E: always-visible coarse markers, even outside explored area. */
+  objectives: Objective[];
+  /** Phase E: scout capacity { max, active }. */
+  scout_capacity: ScoutCapacity;
   territories: CommanderTerritory[];
   movements: CommanderMovement[];
   radars: CommanderRadar[];
@@ -67,7 +78,7 @@ export interface CommanderMapData {
 }
 
 // Re-export for convenience
-export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail, SiloInfo, AirstrikeResult };
+export type { CommanderGarrison, CommanderForeignMovement, BattleSummary, BattleDetail, SiloInfo, AirstrikeResult, Objective, ScoutCapacity };
 
 // ---- Dispatch state machine types -----------------------------------------------
 
@@ -202,7 +213,22 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       if (!res.data.success || !res.data.data) {
         throw new Error(res.data.message ?? 'Failed to load commander map');
       }
-      set({ mapData: res.data.data, loading: false });
+      const raw = res.data.data;
+      // Normalize new Phase-E arrays — fall back to [] when talking to old servers.
+      const normalized: CommanderMapData = {
+        ...raw,
+        explored_cells: raw.explored_cells ?? raw.visible_cells ?? [],
+        active_cells:   raw.active_cells   ?? [],
+        objectives:     raw.objectives     ?? [],
+        scout_capacity: raw.scout_capacity ?? { max: 3, active: 0 },
+        territories:    raw.territories    ?? [],
+        movements:      raw.movements      ?? [],
+        radars:         raw.radars         ?? [],
+        garrisons:      raw.garrisons      ?? [],
+        silos:          raw.silos          ?? [],
+        ai_zones:       raw.ai_zones       ?? [],
+      };
+      set({ mapData: normalized, loading: false });
     } catch (err) {
       set({ loading: false, error: errorMessage(err, 'Failed to load commander map') });
     }
