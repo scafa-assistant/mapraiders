@@ -40,6 +40,7 @@
         "backgroundColor": "#F6F4F1"
       },
       "package": "com.mapraiders.app",
+      "versionCode": 1,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
