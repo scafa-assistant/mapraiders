@@ -835,12 +835,13 @@ export const AI = {
   // available — add { provider: 'anthropic', model: 'claude-haiku-4-5' } to the
   // ai_general flag's config.llm_cascade to enable it live (no deploy). Adding/
   // reordering ANY model is a one-line config.llm_cascade edit.
-  // Verified-working free/cheap cascade (2026-06-14): DeepSeek native is the
-  // reliable primary (paid-but-negligible at our volume); the two OpenRouter
-  // entries are currently-free tiers. Gemini is omitted (the supplied key had
-  // 0 free-tier quota) — re-add it via the ai_general flag's config.llm_cascade
-  // once a free-tier key exists, no deploy needed.
+  // Verified-working cascade (2026-06-14): Gemini 2.5 Flash primary (billing
+  // now linked, gemini-2.0-flash is deprecated → 2.5), DeepSeek native as the
+  // reliable backup (paid-but-negligible at our volume), then two currently-
+  // free OpenRouter tiers, then the deterministic FSM. Reorder/extend live via
+  // the ai_general flag's config.llm_cascade — no deploy needed.
   LLM_PROVIDER_CASCADE: [
+    { provider: 'gemini',     model: 'gemini-2.5-flash' },
     { provider: 'deepseek',   model: 'deepseek-chat' },
     { provider: 'openrouter', model: 'qwen/qwen3-next-80b-a3b-instruct:free' },
     { provider: 'openrouter', model: 'google/gemma-4-31b-it:free' },
