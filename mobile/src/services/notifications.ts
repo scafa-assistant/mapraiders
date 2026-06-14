@@ -64,7 +64,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
         name: S.system.notifications.channelDefault,
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#00D4FF',
+        lightColor: '#1558F0',
       });
 
       await Notifications.setNotificationChannelAsync('territory', {
@@ -72,21 +72,21 @@ export async function registerForPushNotifications(): Promise<string | null> {
         importance: Notifications.AndroidImportance.HIGH,
         description: S.system.notifications.channelTerritoryDesc,
         vibrationPattern: [0, 500, 250, 500],
-        lightColor: '#FF4757',
+        lightColor: '#D7263D',
       });
 
       await Notifications.setNotificationChannelAsync('quests', {
         name: S.system.notifications.channelQuests,
         importance: Notifications.AndroidImportance.DEFAULT,
         description: S.system.notifications.channelQuestsDesc,
-        lightColor: '#7B61FF',
+        lightColor: '#1558F0',
       });
 
       await Notifications.setNotificationChannelAsync('social', {
         name: S.system.notifications.channelSocial,
         importance: Notifications.AndroidImportance.DEFAULT,
         description: S.system.notifications.channelSocialDesc,
-        lightColor: '#00FF88',
+        lightColor: '#1B9E5A',
       });
     }
 

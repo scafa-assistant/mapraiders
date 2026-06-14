@@ -21,7 +21,7 @@ export default function ProfileStack() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#0A0E17' },
+        contentStyle: { backgroundColor: '#F6F4F1' },
         animation: 'slide_from_right',
       }}
     >

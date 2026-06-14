@@ -19,13 +19,13 @@ import { clanApi } from '../../services/api';
 import { strings as S } from '../../i18n';
 
 const PRESET_COLORS = [
-  '#00D4FF',
-  '#7B61FF',
-  '#00FF88',
-  '#FFB800',
-  '#FF4757',
+  '#1558F0',
+  '#1558F0',
+  '#1B9E5A',
+  '#F5A623',
+  '#D7263D',
   '#FF69B4',
-  '#8892B0',
+  '#7A7470',
   '#FFFFFF',
 ];
 
@@ -123,7 +123,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               <TextInput
                 style={styles.input}
                 placeholder={S.profile.createClan.namePlaceholder}
-                placeholderTextColor="#3A4560"
+                placeholderTextColor="#7A7470"
                 value={name}
                 onChangeText={(t) => t.length <= 30 && setName(t)}
                 maxLength={30}
@@ -144,7 +144,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               <TextInput
                 style={styles.input}
                 placeholder={S.profile.createClan.tagPlaceholder}
-                placeholderTextColor="#3A4560"
+                placeholderTextColor="#7A7470"
                 value={tag}
                 onChangeText={handleTagChange}
                 maxLength={6}
@@ -172,7 +172,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder={S.profile.createClan.descriptionPlaceholder}
-                placeholderTextColor="#3A4560"
+                placeholderTextColor="#7A7470"
                 value={description}
                 onChangeText={(t) => t.length <= 500 && setDescription(t)}
                 maxLength={500}
@@ -206,7 +206,7 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
                     <Ionicons
                       name="checkmark"
                       size={18}
-                      color={c === '#FFFFFF' ? '#0A0E17' : '#0A0E17'}
+                      color={c === '#FFFFFF' ? '#F6F4F1' : '#F6F4F1'}
                     />
                   )}
                 </TouchableOpacity>
@@ -263,10 +263,10 @@ export default function CreateClanScreen({ navigation }: { navigation: any }) {
             activeOpacity={0.8}
           >
             {submitting ? (
-              <ActivityIndicator size="small" color="#0A0E17" />
+              <ActivityIndicator size="small" color="#F6F4F1" />
             ) : (
               <>
-                <Ionicons name="shield-checkmark" size={22} color="#0A0E17" />
+                <Ionicons name="shield-checkmark" size={22} color="#F6F4F1" />
                 <Text style={styles.submitBtnText}>{S.profile.createClan.submitButton}</Text>
               </>
             )}
@@ -342,7 +342,7 @@ const createStyles = (theme: Theme) =>
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(20,18,16,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
@@ -418,7 +418,7 @@ const createStyles = (theme: Theme) =>
     paddingTop: 0,
   },
   charCount: {
-    color: '#3A4560',
+    color: '#7A7470',
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
@@ -510,7 +510,7 @@ const createStyles = (theme: Theme) =>
     textAlign: 'center',
   },
   toggleSubtextActive: {
-    color: 'rgba(10,14,23,0.6)',
+    color: 'rgba(246,244,241,0.6)',
   },
 
   // ─── Submit Button ─────────────────────────────────
@@ -518,11 +518,11 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFB800',
+    backgroundColor: '#F5A623',
     borderRadius: RADIUS.lg,
     paddingVertical: 18,
     gap: 10,
-    shadowColor: '#FFB800',
+    shadowColor: '#F5A623',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
@@ -530,12 +530,12 @@ const createStyles = (theme: Theme) =>
     marginTop: SPACING.md,
   },
   submitBtnDisabled: {
-    backgroundColor: '#2A3040',
+    backgroundColor: '#C0BAB4',
     shadowOpacity: 0,
     elevation: 0,
   },
   submitBtnText: {
-    color: '#0A0E17',
+    color: '#F6F4F1',
     fontSize: FONT_SIZE.lg,
     fontWeight: '900',
     letterSpacing: 2,

@@ -15,13 +15,13 @@ import type { BuildingType } from '../services/api';
 import type { ResourceBalances } from '../store/resourceStore';
 
 // ─── Vril palette ─────────────────────────────────────────────────────────────
-const VRIL_ACCENT = '#9D4EDD';
-const VRIL_PRIMARY = '#7B61FF';
-const OBSIDIAN = '#0A0E17';
-const SURFACE = '#141B2D';
-const BORDER = '#1A2340';
-const TEXT = '#FFFFFF';
-const TEXT_SECONDARY = '#8892B0';
+const VRIL_ACCENT = '#1558F0';
+const VRIL_PRIMARY = '#1558F0';
+const OBSIDIAN = '#F6F4F1';
+const SURFACE = '#FFFFFF';
+const BORDER = '#C0BAB4';
+const TEXT = '#141210';
+const TEXT_SECONDARY = '#7A7470';
 
 // ─── Building definitions ─────────────────────────────────────────────────────
 
@@ -232,7 +232,7 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
                     ⚡{def.costEnergy} ⚙{def.costTech}
                   </Text>
                   {loading ? (
-                    <ActivityIndicator size="small" color={OBSIDIAN} style={styles.buildBtn} />
+                    <ActivityIndicator size="small" color={'#FFFFFF'} style={styles.buildBtn} />
                   ) : (
                     <View style={[styles.buildBtn, !canAfford && styles.buildBtnDisabled]}>
                       <Text style={styles.buildBtnText}>
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   rowCostInsufficient: {
-    color: '#FF4757',
+    color: '#D7263D',
   },
   buildBtn: {
     backgroundColor: VRIL_ACCENT,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   buildBtnText: {
-    color: TEXT,
+    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '800',
   },

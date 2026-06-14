@@ -19,14 +19,14 @@ import type { MapStackParamList } from '../../navigation/types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TERMINAL_COLOR = '#FFB300';
-const TERMINAL_ACCENT = '#FF8F00';
-const TERMINAL_GLOW = 'rgba(255, 179, 0, 0.12)';
-const BG = '#0A0E17';
-const SURFACE = '#0D1220';
-const BORDER = '#1A2340';
-const TEXT_PRIMARY = '#FFFFFF';
-const TEXT_SECONDARY = '#8892B0';
+const TERMINAL_COLOR = '#F5A623';
+const TERMINAL_ACCENT = '#F5A623';
+const TERMINAL_GLOW = 'rgba(245,166,35,0.12)';
+const BG = '#F6F4F1';
+const SURFACE = '#FFFFFF';
+const BORDER = '#C0BAB4';
+const TEXT_PRIMARY = '#141210';
+const TEXT_SECONDARY = '#7A7470';
 
 /** Game runner URL served by the same origin as the API server. */
 const GAME_URL = `${API_BASE_ORIGIN}/games/runner/index.html`;
@@ -237,10 +237,10 @@ true;
           activeOpacity={0.8}
         >
           {loading ? (
-            <ActivityIndicator color={BG} size="small" />
+            <ActivityIndicator color="#FFFFFF" size="small" />
           ) : (
             <>
-              <Ionicons name="play" size={18} color={BG} />
+              <Ionicons name="play" size={18} color="#FFFFFF" />
               <Text style={styles.playBtnText}>Play Grid Runner</Text>
             </>
           )}
@@ -296,7 +296,7 @@ true;
                   <Text style={styles.resultStatLabel}>Score</Text>
                 </View>
                 <View style={styles.resultStatItem}>
-                  <Text style={[styles.resultStatValue, { color: '#00D4FF' }]}>
+                  <Text style={[styles.resultStatValue, { color: '#1558F0' }]}>
                     {result.best_score.toLocaleString()}
                   </Text>
                   <Text style={styles.resultStatLabel}>Best</Text>
@@ -311,15 +311,15 @@ true;
 
               {result.reward?.intel ? (
                 <View style={styles.rewardRow}>
-                  <Ionicons name="eye" size={18} color="#9D4EDD" />
+                  <Ionicons name="eye" size={18} color="#1558F0" />
                   <Text style={styles.rewardText}>+{result.reward.intel} Intel</Text>
                 </View>
               ) : null}
             </>
           ) : (
             <>
-              <Ionicons name="close-circle" size={52} color="#FF4757" />
-              <Text style={[styles.resultTitle, { color: '#FF4757' }]}>
+              <Ionicons name="close-circle" size={52} color="#D7263D" />
+              <Text style={[styles.resultTitle, { color: '#D7263D' }]}>
                 {hasError ? 'Run Rejected' : 'Run Not Accepted'}
               </Text>
               {result.error ? (
@@ -510,7 +510,7 @@ const styles = StyleSheet.create({
 
   // ── Error
   errorText: {
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: FONT_SIZE.sm,
     textAlign: 'center',
     marginBottom: SPACING.sm,
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   playBtnText: {
     fontSize: FONT_SIZE.md,
     fontWeight: '800',
-    color: BG,
+    color: '#FFFFFF',
     letterSpacing: 0.5,
   },
 
@@ -608,17 +608,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: 'rgba(157, 78, 221, 0.12)',
+    backgroundColor: 'rgba(21,88,240,0.12)',
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: 'rgba(157, 78, 221, 0.3)',
+    borderColor: 'rgba(21,88,240,0.3)',
     marginTop: SPACING.xs,
   },
   rewardText: {
     fontSize: FONT_SIZE.md,
-    color: '#9D4EDD',
+    color: '#1558F0',
     fontWeight: '700',
   },
   resultError: {

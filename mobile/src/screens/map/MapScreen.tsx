@@ -59,13 +59,13 @@ const WEATHER_BONUSES: Record<string, WeatherBonus> = {
 const { width, height } = Dimensions.get('window');
 
 const CLASS_COLORS: Record<MovementClass, string> = {
-  walker: '#00D4FF',
-  runner: '#FF4757',
-  cyclist: '#00FF88',
-  skater: '#FFB800',
-  dog_walker: '#7B61FF',
-  driver: '#8892B0',
-  unknown: '#555E78',
+  walker: '#1558F0',
+  runner: '#D7263D',
+  cyclist: '#1B9E5A',
+  skater: '#F5A623',
+  dog_walker: '#4B7BFF',
+  driver: '#7A7470',
+  unknown: '#C0BAB4',
 };
 
 const getClassLabels = (): Record<MovementClass, string> => ({
@@ -668,7 +668,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
   const recordingBg = recordingPulse.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(255, 71, 87, 0.8)', 'rgba(255, 71, 87, 1)'],
+    outputRange: ['rgba(215, 38, 61, 0.8)', 'rgba(215, 38, 61, 1)'],
   });
 
   // Safe arrays — prevent crash if server returns unexpected format
@@ -729,7 +729,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             .filter((p: any) => p && typeof p.latitude === 'number' && typeof p.longitude === 'number')
             .map((p: any) => ({ latitude: p.latitude, longitude: p.longitude }));
           if (validCoords.length < 3) return null;
-          const baseColor = territory.color || CLASS_COLORS[territory.movementClass] || '#00D4FF';
+          const baseColor = territory.color || CLASS_COLORS[territory.movementClass] || '#1558F0';
           const decay = isNaN(territory.decayPercent) ? 0 : territory.decayPercent;
           const alpha = Math.round(Math.max(0.1, (1 - decay / 100)) * 0.4 * 255);
           const hexAlpha = alpha.toString(16).padStart(2, '0');
@@ -751,14 +751,14 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           const centroid = getPolygonCentroid(territory.polygon);
           if (!centroid) return null;
           const shieldColor =
-            territory.defenseGameType === 'rock_paper_scissors' ? '#7B61FF' :
-            territory.defenseGameType === 'sprint_race' ? '#00FF88' :
-            territory.defenseGameType === 'trivia' ? '#00D4FF' :
-            territory.defenseGameType === 'coin_flip' ? '#FFB800' :
+            territory.defenseGameType === 'rock_paper_scissors' ? '#1558F0' :
+            territory.defenseGameType === 'sprint_race' ? '#1B9E5A' :
+            territory.defenseGameType === 'trivia' ? '#1558F0' :
+            territory.defenseGameType === 'coin_flip' ? '#F5A623' :
             territory.defenseGameType === 'odd_even' ? '#FF69B4' :
-            territory.defenseGameType === 'tic_tac_toe' ? '#00D4FF' :
-            territory.defenseGameType === 'mini_chess' ? '#FFB800' :
-            '#FFB800';
+            territory.defenseGameType === 'tic_tac_toe' ? '#1558F0' :
+            territory.defenseGameType === 'mini_chess' ? '#F5A623' :
+            '#F5A623';
           return (
             <Marker
               key={`def-${territory.id}`}
@@ -787,7 +787,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 onPress={() => navigation.navigate('DefenseSetup', { territoryId: territory.id })}
               >
                 <View style={styles.undefendedMarkerOwn}>
-                  <Ionicons name="warning" size={14} color="#FF4757" />
+                  <Ionicons name="warning" size={14} color="#D7263D" />
                   <Text style={styles.undefendedTextOwn}>{S.map.mapScreen.unprotectedBadge}</Text>
                 </View>
               </Marker>
@@ -808,7 +808,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 onPress={() => handleTerritoryPress(territory)}
               >
                 <View style={styles.undefendedMarkerEnemy}>
-                  <Ionicons name="flash" size={10} color="#00FF88" />
+                  <Ionicons name="flash" size={10} color="#1B9E5A" />
                 </View>
               </Marker>
             );
@@ -842,7 +842,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             }
           >
             <View style={styles.questMarker}>
-              <Ionicons name="compass" size={18} color="#00D4FF" />
+              <Ionicons name="compass" size={18} color="#1558F0" />
             </View>
           </Marker>
         ))}
@@ -861,12 +861,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         {safeArtifacts.filter((a: any) => a.location?.latitude && a.location?.longitude).map((artifact) => {
           const rarityColor =
             artifact.rarity === 'legendary'
-              ? '#FFB800'
+              ? '#F5A623'
               : artifact.rarity === 'epic'
-                ? '#7B61FF'
+                ? '#1558F0'
                 : artifact.rarity === 'rare'
-                  ? '#00D4FF'
-                  : '#8892B0';
+                  ? '#1558F0'
+                  : '#7A7470';
           return (
             <Marker
               key={`artifact-${artifact.id}`}
@@ -897,8 +897,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 latitude: c[1],
                 longitude: c[0],
               }))}
-              fillColor="rgba(0, 200, 83, 0.12)"
-              strokeColor="rgba(0, 200, 83, 0.6)"
+              fillColor="rgba(27, 158, 90, 0.12)"
+              strokeColor="rgba(27, 158, 90, 0.6)"
               strokeWidth={2}
               tappable
             />
@@ -908,9 +908,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         {/* Resonance Spot Markers */}
         {safeResonance.map((spot) => {
           const levelColor =
-            spot.resonance_level >= 4 ? '#FFB800' :
-            spot.resonance_level >= 3 ? '#FF8C00' :
-            '#00D4FF';
+            spot.resonance_level >= 4 ? '#F5A623' :
+            spot.resonance_level >= 3 ? '#F5A623' :
+            '#1558F0';
           const opacity = spot.resonance_level >= 4 ? 0.35 : spot.resonance_level >= 3 ? 0.25 : 0.15;
           return (
             <React.Fragment key={`resonance-${spot.id}`}>
@@ -940,12 +940,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           if (mLat === 0 && mLng === 0) return null;
           const cat = meetup.category ?? 'other';
           const catColor =
-            cat === 'dog_walk' ? '#FFB800' :
+            cat === 'dog_walk' ? '#F5A623' :
             cat === 'party' ? '#FF69B4' :
-            cat === 'sport' ? '#00FF88' :
-            cat === 'gaming' ? '#7B61FF' :
-            cat === 'meetup' ? '#00D4FF' :
-            '#8892B0';
+            cat === 'sport' ? '#1B9E5A' :
+            cat === 'gaming' ? '#1558F0' :
+            cat === 'meetup' ? '#1558F0' :
+            '#7A7470';
           const catIcon: keyof typeof Ionicons.glyphMap =
             cat === 'dog_walk' ? 'paw' :
             cat === 'party' ? 'musical-notes' :
@@ -986,7 +986,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                   <Animated.View style={[
                     styles.spontanPulse,
                     {
-                      borderColor: isLive ? '#FF4757' : catColor,
+                      borderColor: isLive ? '#D7263D' : catColor,
                       transform: [{ scale: pulseScale }],
                       opacity: pulseOpacity,
                     },
@@ -1004,7 +1004,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 {countdownText ? (
                   <View style={[
                     styles.countdownBadge,
-                    { backgroundColor: isLive ? '#FF4757' : catColor },
+                    { backgroundColor: isLive ? '#D7263D' : catColor },
                   ]}>
                     <Text style={styles.countdownText}>{countdownText}</Text>
                   </View>
@@ -1080,7 +1080,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 <Ionicons
                   name={CLASS_ICONS[isTracking ? detectedClass : 'unknown']}
                   size={12}
-                  color="#0A0E17"
+                  color="#FFFFFF"
                 />
               </View>
             </View>
@@ -1091,17 +1091,17 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Top Status Bar */}
       <SafeAreaView style={styles.topOverlay} edges={['top']}>
         <View style={[styles.statusBar, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
         }]}>
           <View style={[styles.levelBadge, { backgroundColor: theme.primary }]}>
-            <Text style={[styles.levelText, { color: settings.darkMapStyle ? '#0A0E17' : '#FFFFFF' }]}>Lv {user?.level ?? 1}</Text>
+            <Text style={[styles.levelText, { color: settings.darkMapStyle ? '#FFFFFF' : '#FFFFFF' }]}>Lv {user?.level ?? 1}</Text>
           </View>
           <View style={styles.xpContainer}>
             <Text style={[styles.xpText, { color: theme.textSecondary }]}>
               {user?.xp ?? 0} / {user?.xpToNextLevel ?? 100} XP
             </Text>
-            <View style={[styles.xpBarBg, { backgroundColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0' }]}>
+            <View style={[styles.xpBarBg, { backgroundColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4' }]}>
               <View
                 style={[
                   styles.xpBarFill,
@@ -1129,7 +1129,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Night Mode Badge */}
       {nightMode && (
         <View style={styles.nightBadge}>
-          <Ionicons name="moon" size={14} color="#8B5CF6" />
+          <Ionicons name="moon" size={14} color="#1558F0" />
           <Text style={styles.nightBadgeText}>{S.map.mapScreen.nightMode}</Text>
         </View>
       )}
@@ -1137,8 +1137,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Weather Badge */}
       {weather && (
         <View style={[styles.weatherBadge, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
         }]}>
           <Ionicons
             name={WEATHER_ICONS[weather.condition] || 'partly-sunny'}
@@ -1169,21 +1169,21 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Map Control Buttons */}
       <View style={styles.mapControls}>
         <TouchableOpacity style={[styles.controlButton, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
         }]} onPress={centerOnUser}>
           <Ionicons name="locate" size={22} color={theme.primary} />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.controlButton, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
         }]} onPress={() => setShowSearch(true)}>
           <Ionicons name="search" size={22} color={theme.primary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.controlButton, {
-            backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-            borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+            backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
           }]}
           onPress={() => navigation.navigate('ChallengeList')}
         >
@@ -1191,8 +1191,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.controlButton, {
-            backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-            borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+            backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
           }]}
           onPress={openMyTerritories}
         >
@@ -1260,8 +1260,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       >
         {isTracking ? (
           canCloseClaim ? (
-            <View style={[styles.fabInner, { backgroundColor: '#00FF88' }]}>
-              <Ionicons name="checkmark" size={32} color="#0A0E17" />
+            <View style={[styles.fabInner, { backgroundColor: '#1B9E5A' }]}>
+              <Ionicons name="checkmark" size={32} color="#FFFFFF" />
             </View>
           ) : (
             <Animated.View style={[styles.fabInner, { backgroundColor: recordingBg }]}>
@@ -1270,15 +1270,15 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           )
         ) : (
           <View style={[styles.fabInner, { backgroundColor: theme.primary }]}>
-            <Ionicons name="footsteps" size={28} color={settings.darkMapStyle ? '#0A0E17' : '#FFFFFF'} />
+            <Ionicons name="footsteps" size={28} color={settings.darkMapStyle ? '#FFFFFF' : '#FFFFFF'} />
           </View>
         )}
       </TouchableOpacity>
 
       {/* Small class badge bottom-left */}
       <View style={[styles.classBadgeFloat, {
-        backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.9)' : 'rgba(255, 255, 255, 0.95)',
-        borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+        backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+        borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
       }]}>
         <Ionicons
           name={CLASS_ICONS[detectedClass]}
@@ -1294,8 +1294,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Tracking Stats Bar (only when recording) */}
       {isTracking && (
         <View style={[styles.trackingBar, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(13, 18, 32, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#1A2340' : '#E0E0E0',
+          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
         }]}>
           <TouchableOpacity
             style={styles.trackingCancelBtn}
@@ -1314,7 +1314,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               );
             }}
           >
-            <Ionicons name="close" size={18} color="#FF4757" />
+            <Ionicons name="close" size={18} color="#D7263D" />
           </TouchableOpacity>
           <Text style={[styles.trackingStatText, { color: theme.text }]}>{formatDistance(totalDistance)}</Text>
           <View style={styles.trackingDot} />
@@ -1349,17 +1349,17 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 <Text style={styles.myTerrCountText}>{myTerritories.length}</Text>
               </View>
               <TouchableOpacity onPress={() => setShowMyTerritories(false)} style={styles.myTerrClose}>
-                <Ionicons name="close" size={22} color="#8892B0" />
+                <Ionicons name="close" size={22} color="#7A7470" />
               </TouchableOpacity>
             </View>
 
             {myTerritoriesLoading ? (
               <View style={styles.myTerrEmpty}>
-                <ActivityIndicator size="small" color="#00D4FF" />
+                <ActivityIndicator size="small" color="#1558F0" />
               </View>
             ) : myTerritories.length === 0 ? (
               <View style={styles.myTerrEmpty}>
-                <Ionicons name="flag-outline" size={32} color="#2A3450" />
+                <Ionicons name="flag-outline" size={32} color="#C0BAB4" />
                 <Text style={styles.myTerrEmptyText}>
                   No territories yet — walk a route to claim one.
                 </Text>
@@ -1397,7 +1397,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                           </Text>
                         </View>
                       </View>
-                      <Ionicons name="locate" size={18} color="#00D4FF" />
+                      <Ionicons name="locate" size={18} color="#1558F0" />
                     </TouchableOpacity>
                   );
                 })}
@@ -1426,7 +1426,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
             {/* Warning: unprotected */}
             <View style={styles.claimWarningBox}>
-              <Ionicons name="warning" size={22} color="#FF4757" />
+              <Ionicons name="warning" size={22} color="#D7263D" />
               <Text style={styles.claimWarningText}>
                 {S.map.mapScreen.unprotectedWarning}
               </Text>
@@ -1443,7 +1443,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 <Text style={styles.claimStepText}>{S.map.mapScreen.claimStep2}</Text>
               </View>
               <View style={styles.claimStep}>
-                <View style={[styles.claimStepNumber, { backgroundColor: 'rgba(255, 184, 0, 0.2)' }]}><Text style={[styles.claimStepNumberText, { color: '#FFB800' }]}>3</Text></View>
+                <View style={[styles.claimStepNumber, { backgroundColor: 'rgba(245, 166, 35, 0.2)' }]}><Text style={[styles.claimStepNumberText, { color: '#F5A623' }]}>3</Text></View>
                 <Text style={styles.claimStepText}>{S.map.mapScreen.claimStep3}</Text>
               </View>
             </View>
@@ -1462,7 +1462,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 }
               }}
             >
-              <Ionicons name="shield-checkmark" size={20} color="#0A0E17" />
+              <Ionicons name="shield-checkmark" size={20} color="#FFFFFF" />
               <Text style={styles.claimDefenseButtonText}>{S.map.mapScreen.defendNow}</Text>
             </TouchableOpacity>
 
@@ -1482,7 +1482,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: '#F6F4F1',
   },
   map: {
     width,
@@ -1499,22 +1499,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 16,
     marginTop: 8,
-    backgroundColor: 'rgba(13, 18, 32, 0.92)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
   },
   levelBadge: {
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
     marginRight: 10,
   },
   levelText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '900',
   },
@@ -1523,32 +1523,32 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   xpText: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 10,
     marginBottom: 4,
   },
   xpBarBg: {
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#1A2340',
+    backgroundColor: '#C0BAB4',
     overflow: 'hidden',
   },
   xpBarFill: {
     height: '100%',
     borderRadius: 2,
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
   },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 184, 0, 0.15)',
+    backgroundColor: 'rgba(245, 166, 35, 0.15)',
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 4,
   },
   streakText: {
-    color: '#FFB800',
+    color: '#F5A623',
     fontSize: 12,
     fontWeight: '700',
   },
@@ -1562,9 +1562,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(13, 18, 32, 0.92)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1605,17 +1605,17 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    shadowColor: '#00D4FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 10,
   },
   fabRecording: {
-    shadowColor: '#FF4757',
+    shadowColor: '#D7263D',
   },
   fabCanClose: {
-    shadowColor: '#00FF88',
+    shadowColor: '#1B9E5A',
     shadowOpacity: 0.6,
     shadowRadius: 16,
     elevation: 15,
@@ -1624,7 +1624,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1664,9 +1664,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    backgroundColor: 'rgba(21, 88, 240, 0.2)',
     borderWidth: 1.5,
-    borderColor: '#00D4FF',
+    borderColor: '#1558F0',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1674,7 +1674,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1684,7 +1684,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    backgroundColor: 'rgba(21, 88, 240, 0.2)',
     borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1725,13 +1725,13 @@ const styles = StyleSheet.create({
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
     gap: 5,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
   },
   classBadgeText: {
     fontSize: 12,
@@ -1741,7 +1741,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FF4757',
+    backgroundColor: '#D7263D',
     marginLeft: 4,
   },
   trackingBar: {
@@ -1751,26 +1751,26 @@ const styles = StyleSheet.create({
     right: 80,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(13, 18, 32, 0.92)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 8,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
   } as any,
   trackingCancelBtn: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(255, 71, 87, 0.15)',
+    backgroundColor: 'rgba(215, 38, 61, 0.15)',
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
   },
   trackingStatText: {
-    color: '#FFFFFF',
+    color: '#141210',
     fontSize: 13,
     fontWeight: '700',
   },
@@ -1778,7 +1778,7 @@ const styles = StyleSheet.create({
     width: 3,
     height: 3,
     borderRadius: 1.5,
-    backgroundColor: '#555E78',
+    backgroundColor: '#7A7470',
   },
   recBadge: {
     flexDirection: 'row',
@@ -1790,10 +1790,10 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FF4757',
+    backgroundColor: '#D7263D',
   },
   recText: {
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 10,
     fontWeight: '800',
   },
@@ -1805,7 +1805,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#2A3450',
+    backgroundColor: '#EFEDE8',
   },
   bottomSheetContent: {
     paddingHorizontal: 20,
@@ -1838,10 +1838,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FF4757',
+    backgroundColor: '#D7263D',
   },
   recordingText: {
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 1,
@@ -1850,7 +1850,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: '#141B2D',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 12,
@@ -1860,12 +1860,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    color: '#FFFFFF',
+    color: '#141210',
     fontSize: 18,
     fontWeight: '800',
   },
   statLabel: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 11,
     marginTop: 4,
     fontWeight: '500',
@@ -1873,19 +1873,19 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 30,
-    backgroundColor: '#1A2340',
+    backgroundColor: '#C0BAB4',
   },
   idlePrompt: {
     alignItems: 'center',
     paddingVertical: 4,
   },
   idleText: {
-    color: '#FFFFFF',
+    color: '#141210',
     fontSize: 13,
     fontWeight: '600',
   },
   idleSubtext: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 11,
     marginTop: 2,
   },
@@ -1900,21 +1900,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   claimCard: {
-    backgroundColor: '#141B2D',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#00FF88',
+    borderColor: '#1B9E5A',
     paddingVertical: 32,
     paddingHorizontal: 40,
     alignItems: 'center',
-    shadowColor: '#00FF88',
+    shadowColor: '#1B9E5A',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 20,
   },
   claimTitle: {
-    color: '#00FF88',
+    color: '#1B9E5A',
     fontSize: 20,
     fontWeight: '900',
     letterSpacing: 3,
@@ -1929,29 +1929,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   claimStatValue: {
-    color: '#00FF88',
+    color: '#1B9E5A',
     fontSize: 22,
     fontWeight: '800',
   },
   claimStatLabel: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 11,
     marginTop: 4,
   },
   claimWarningBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 71, 87, 0.12)',
+    backgroundColor: 'rgba(215, 38, 61, 0.12)',
     borderRadius: 12,
     padding: 12,
     marginTop: 16,
     gap: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
   },
   claimWarningText: {
     flex: 1,
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 12,
     fontWeight: '700',
     lineHeight: 17,
@@ -1969,18 +1969,18 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   claimStepNumberText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 12,
     fontWeight: '800',
   },
   claimStepText: {
     flex: 1,
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -1988,14 +1988,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFB800',
+    backgroundColor: '#F5A623',
     borderRadius: 14,
     paddingVertical: 14,
     marginTop: 16,
     gap: 8,
   },
   claimDefenseButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
     letterSpacing: 1,
@@ -2006,20 +2006,20 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   claimDismissButtonText: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 13,
     fontWeight: '600',
   },
   undefendedMarkerOwn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 71, 87, 0.92)',
+    backgroundColor: 'rgba(215, 38, 61, 0.92)',
     borderRadius: 10,
     paddingHorizontal: 7,
     paddingVertical: 3,
     gap: 3,
     borderWidth: 1,
-    borderColor: '#FF4757',
+    borderColor: '#D7263D',
   },
   undefendedTextOwn: {
     color: '#FFFFFF',
@@ -2031,9 +2031,9 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(0, 255, 136, 0.2)',
+    backgroundColor: 'rgba(27, 158, 90, 0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 136, 0.4)',
+    borderColor: 'rgba(27, 158, 90, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -2043,16 +2043,16 @@ const styles = StyleSheet.create({
     right: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: 'rgba(21, 88, 240, 0.3)',
     gap: 6,
   },
   nightBadgeText: {
-    color: '#8B5CF6',
+    color: '#1558F0',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1,
@@ -2063,39 +2063,39 @@ const styles = StyleSheet.create({
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(13, 18, 32, 0.92)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
     gap: 6,
   },
   weatherText: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 11,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   weatherMultiplier: {
-    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    backgroundColor: 'rgba(27, 158, 90, 0.15)',
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   weatherMultiplierText: {
-    color: '#00FF88',
+    color: '#1B9E5A',
     fontSize: 10,
     fontWeight: '800',
   },
   weatherQuestBadge: {
-    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    backgroundColor: 'rgba(21, 88, 240, 0.2)',
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   weatherQuestBadgeText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 9,
     fontWeight: '700',
   },
@@ -2108,11 +2108,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myTerrSheet: {
-    backgroundColor: '#0D1220',
+    backgroundColor: '#F6F4F1',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderTopWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
     paddingBottom: 24,
     maxHeight: height * 0.7,
   },
@@ -2121,7 +2121,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#2A3450',
+    backgroundColor: '#EFEDE8',
     marginTop: 10,
     marginBottom: 6,
   },
@@ -2133,12 +2133,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   myTerrTitle: {
-    color: '#FFFFFF',
+    color: '#141210',
     fontSize: 18,
     fontWeight: '800',
   },
   myTerrCountBadge: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -2146,7 +2146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   myTerrCountText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 12,
     fontWeight: '800',
   },
@@ -2162,7 +2162,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   myTerrEmptyText: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
@@ -2177,14 +2177,14 @@ const styles = StyleSheet.create({
   myTerrRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141B2D',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 8,
     gap: 12,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
   },
   myTerrDot: {
     width: 10,
@@ -2201,7 +2201,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   myTerrRowLabel: {
-    color: '#FFFFFF',
+    color: '#141210',
     fontSize: 14,
     fontWeight: '700',
   },
@@ -2214,12 +2214,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   myTerrCv: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 11,
     fontWeight: '700',
   },
   myTerrCoords: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 10,
     fontWeight: '500',
   },

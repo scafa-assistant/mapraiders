@@ -34,7 +34,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingHomeZone, setIsSettingHomeZone] = useState(false);
   const [homeZoneSet, setHomeZoneSet] = useState(false);
-  const [territoryColor, setTerritoryColor] = useState('#00D4FF');
+  const [territoryColor, setTerritoryColor] = useState('#1558F0');
   const [editUsername, setEditUsername] = useState(user?.username || '');
 
   // Load territory color from server
@@ -175,8 +175,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
       <Switch
         value={value}
         onValueChange={onToggle}
-        trackColor={{ false: settings.darkMapStyle ? '#1A2340' : '#D0D0D0', true: `${color}60` }}
-        thumbColor={value ? color : settings.darkMapStyle ? '#555E78' : '#AAAAAA'}
+        trackColor={{ false: settings.darkMapStyle ? '#FFFFFF' : '#D0D0D0', true: `${color}60` }}
+        thumbColor={value ? color : settings.darkMapStyle ? '#7A7470' : '#AAAAAA'}
       />
     </View>
   );
@@ -196,7 +196,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{S.profile.settings.account}</Text>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={[styles.row, { borderBottomColor: theme.border }]}>
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.15)' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(21,88,240,0.15)' }]}>
               <Ionicons name="mail" size={18} color={theme.primary} />
             </View>
             <View style={styles.rowContent}>
@@ -205,8 +205,8 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             </View>
           </View>
           <View style={[styles.row, { borderBottomWidth: 0 }]}>
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(0, 255, 136, 0.15)' }]}>
-              <Ionicons name="person" size={18} color="#00FF88" />
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(27,158,90,0.15)' }]}>
+              <Ionicons name="person" size={18} color="#1B9E5A" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.rowSubtitle, { color: theme.textSecondary, marginBottom: 6 }]}>{S.profile.settings.usernameLabel}</Text>
@@ -232,7 +232,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                 />
                 <TouchableOpacity
                   style={{
-                    backgroundColor: editUsername !== (user?.username || '') ? '#00FF88' : theme.border,
+                    backgroundColor: editUsername !== (user?.username || '') ? '#1B9E5A' : theme.border,
                     borderRadius: 10,
                     paddingHorizontal: 14,
                     paddingVertical: 9,
@@ -268,7 +268,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                     }
                   }}
                 >
-                  <Text style={{ color: editUsername !== (user?.username || '') ? '#0A0E17' : theme.textSecondary, fontWeight: '700', fontSize: 13 }}>
+                  <Text style={{ color: editUsername !== (user?.username || '') ? '#F6F4F1' : theme.textSecondary, fontWeight: '700', fontSize: 13 }}>
                     {S.common.save}
                   </Text>
                 </TouchableOpacity>
@@ -366,7 +366,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             {S.profile.settings.territoryColorHint}
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-            {['#00D4FF', '#7B61FF', '#00FF88', '#FFB800', '#FF4757', '#FF69B4', '#FF6B35', '#00BFFF',
+            {['#1558F0', '#1558F0', '#1B9E5A', '#F5A623', '#D7263D', '#FF69B4', '#FF6B35', '#00BFFF',
               '#E040FB', '#76FF03', '#FFEA00', '#FF1744', '#00E5FF', '#D500F9', '#1DE9B6', '#F50057',
             ].map((c) => (
               <TouchableOpacity
@@ -375,7 +375,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                   width: 36, height: 36, borderRadius: 18,
                   backgroundColor: c,
                   borderWidth: territoryColor === c ? 3 : 1,
-                  borderColor: territoryColor === c ? '#FFFFFF' : 'rgba(255,255,255,0.2)',
+                  borderColor: territoryColor === c ? '#141210' : 'rgba(20,18,16,0.15)',
                 }}
                 onPress={async () => {
                   setTerritoryColor(c);
@@ -427,7 +427,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             S.profile.settings.quietHoursSubtitle,
             settings.quietHours,
             (val) => updateSetting('quietHours', val),
-            '#8892B0'
+            '#7A7470'
           )}
         </View>
 
@@ -546,10 +546,10 @@ const createStyles = (theme: Theme) =>
   rowSubtitle: { color: theme.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
   logoutBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255, 71, 87, 0.1)', marginHorizontal: 20,
+    backgroundColor: 'rgba(215,38,61,0.1)', marginHorizontal: 20,
     marginTop: SPACING.xl, padding: SPACING.lg, borderRadius: RADIUS.lg,
-    gap: SPACING.sm, borderWidth: 1, borderColor: 'rgba(255, 71, 87, 0.2)',
+    gap: SPACING.sm, borderWidth: 1, borderColor: 'rgba(215,38,61,0.2)',
   },
   logoutText: { color: theme.danger, fontSize: FONT_SIZE.md, fontWeight: '700' },
-  version: { color: '#2A3450', fontSize: FONT_SIZE.xs, textAlign: 'center', marginTop: SPACING.xl },
+  version: { color: '#7A7470', fontSize: FONT_SIZE.xs, textAlign: 'center', marginTop: SPACING.xl },
 });

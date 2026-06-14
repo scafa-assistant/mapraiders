@@ -80,7 +80,7 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 14, 23, 0.85)',
+    backgroundColor: 'rgba(246, 244, 241, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
@@ -108,7 +108,7 @@ const createStyles = (theme: Theme) =>
     borderWidth: 2,
     borderColor: 'transparent',
     borderTopColor: theme.primary,
-    borderRightColor: 'rgba(0, 212, 255, 0.3)',
+    borderRightColor: 'rgba(21, 88, 240, 0.3)',
   },
   spinner: {
     marginBottom: SPACING.lg,

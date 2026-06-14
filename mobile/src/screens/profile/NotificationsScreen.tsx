@@ -220,7 +220,7 @@ const createStyles = (theme: Theme) =>
   markReadBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 212, 255, 0.12)',
+    backgroundColor: 'rgba(21, 88, 240, 0.12)',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: RADIUS.full,
@@ -261,7 +261,7 @@ const createStyles = (theme: Theme) =>
     borderColor: theme.border,
   },
   notificationUnread: {
-    borderColor: 'rgba(0, 212, 255, 0.2)',
+    borderColor: 'rgba(21, 88, 240, 0.2)',
   },
   unreadDot: {
     position: 'absolute',

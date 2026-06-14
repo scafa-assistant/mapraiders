@@ -35,12 +35,12 @@ interface DraftStep {
 }
 
 const getStepTypes = (): { type: QuestStepType; label: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] => [
-  { type: 'FIND', label: S.create.quest.typeFind, icon: 'camera', color: '#00D4FF' },
-  { type: 'LISTEN', label: S.create.quest.typeListen, icon: 'ear', color: '#7B61FF' },
-  { type: 'CHALLENGE', label: S.create.quest.typeChallenge, icon: 'videocam', color: '#FF4757' },
-  { type: 'SOLVE', label: S.create.quest.typeSolve, icon: 'help-circle', color: '#FFB800' },
-  { type: 'COLLECT', label: S.create.quest.typeCollect, icon: 'location', color: '#00FF88' },
-  { type: 'DOG', label: S.create.quest.typeDog, icon: 'paw', color: '#7B61FF' },
+  { type: 'FIND', label: S.create.quest.typeFind, icon: 'camera', color: '#1558F0' },
+  { type: 'LISTEN', label: S.create.quest.typeListen, icon: 'ear', color: '#1558F0' },
+  { type: 'CHALLENGE', label: S.create.quest.typeChallenge, icon: 'videocam', color: '#D7263D' },
+  { type: 'SOLVE', label: S.create.quest.typeSolve, icon: 'help-circle', color: '#F5A623' },
+  { type: 'COLLECT', label: S.create.quest.typeCollect, icon: 'location', color: '#1B9E5A' },
+  { type: 'DOG', label: S.create.quest.typeDog, icon: 'paw', color: '#1558F0' },
 ];
 
 type WizardStep = 'info' | 'steps' | 'edit' | 'preview';
@@ -193,7 +193,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                 <Ionicons
                   name={star <= difficulty ? 'star' : 'star-outline'}
                   size={32}
-                  color={star <= difficulty ? '#FFB800' : theme.textSecondary}
+                  color={star <= difficulty ? '#F5A623' : theme.textSecondary}
                 />
               </TouchableOpacity>
             ))}
@@ -225,12 +225,12 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                 <Ionicons
                   name={opt.icon}
                   size={16}
-                  color={weatherCondition === opt.value ? '#00D4FF' : theme.textSecondary}
+                  color={weatherCondition === opt.value ? '#1558F0' : theme.textSecondary}
                 />
                 <Text
                   style={[
                     styles.weatherChipLabel,
-                    weatherCondition === opt.value && { color: '#00D4FF' },
+                    weatherCondition === opt.value && { color: '#1558F0' },
                   ]}
                 >
                   {opt.label}
@@ -245,7 +245,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           <View style={styles.seedToggleRow}>
             <View style={styles.seedToggleInfo}>
               <View style={styles.seedToggleLabelRow}>
-                <Ionicons name="leaf" size={18} color="#00FF88" />
+                <Ionicons name="leaf" size={18} color="#1B9E5A" />
                 <Text style={styles.seedToggleLabel}>{S.create.quest.seedToggleLabel}</Text>
               </View>
               <Text style={styles.seedToggleDescription}>
@@ -255,8 +255,8 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
             <Switch
               value={isSeed}
               onValueChange={setIsSeed}
-              trackColor={{ false: theme.border, true: 'rgba(0, 255, 136, 0.3)' }}
-              thumbColor={isSeed ? '#00FF88' : theme.textSecondary}
+              trackColor={{ false: theme.border, true: 'rgba(27, 158, 90, 0.3)' }}
+              thumbColor={isSeed ? '#1B9E5A' : theme.textSecondary}
             />
           </View>
         </View>
@@ -275,7 +275,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                 style={[
                   styles.radiusChip,
                   timeWindow === opt.value && (opt.value === 'night'
-                    ? { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: '#8B5CF6' }
+                    ? { backgroundColor: 'rgba(21, 88, 240, 0.15)', borderColor: '#1558F0' }
                     : styles.radiusChipActive),
                 ]}
                 onPress={() => setTimeWindow(opt.value)}
@@ -283,13 +283,13 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                 <Ionicons
                   name={opt.icon}
                   size={14}
-                  color={timeWindow === opt.value ? (opt.value === 'night' ? '#8B5CF6' : '#00D4FF') : theme.textSecondary}
+                  color={timeWindow === opt.value ? (opt.value === 'night' ? '#1558F0' : '#1558F0') : theme.textSecondary}
                 />
                 <Text
                   style={[
                     styles.radiusChipText,
                     timeWindow === opt.value && {
-                      color: opt.value === 'night' ? '#8B5CF6' : '#00D4FF',
+                      color: opt.value === 'night' ? '#1558F0' : '#1558F0',
                     },
                   ]}
                 >
@@ -308,7 +308,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           disabled={!title.trim()}
         >
           <Text style={styles.nextButtonText}>{S.create.quest.nextPlaceSteps}</Text>
-          <Ionicons name="arrow-forward" size={20} color="#0A0E17" />
+          <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -357,7 +357,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                   setWizardStep('edit');
                 }}
               >
-                <View style={[styles.stepMarker, { backgroundColor: typeInfo?.color || '#00D4FF' }]}>
+                <View style={[styles.stepMarker, { backgroundColor: typeInfo?.color || '#1558F0' }]}>
                   <Text style={styles.stepMarkerText}>{index + 1}</Text>
                 </View>
               </Marker>
@@ -409,7 +409,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           disabled={steps.length < 2}
         >
           <Text style={styles.nextButtonText}>{S.create.quest.preview}</Text>
-          <Ionicons name="arrow-forward" size={18} color="#0A0E17" />
+          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>
@@ -441,7 +441,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                 }
               }}
             >
-              <Ionicons name="trash-outline" size={18} color="#FF4757" />
+              <Ionicons name="trash-outline" size={18} color="#D7263D" />
             </TouchableOpacity>
           </View>
 
@@ -536,7 +536,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
             style={styles.nextButton}
             onPress={() => setWizardStep('steps')}
           >
-            <Ionicons name="checkmark" size={20} color="#0A0E17" />
+            <Ionicons name="checkmark" size={20} color="#FFFFFF" />
             <Text style={styles.nextButtonText}>{S.create.quest.saveStep}</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -560,7 +560,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
                 key={star}
                 name={star <= difficulty ? 'star' : 'star-outline'}
                 size={14}
-                color={star <= difficulty ? '#FFB800' : theme.textSecondary}
+                color={star <= difficulty ? '#F5A623' : theme.textSecondary}
               />
             ))}
           </View>
@@ -603,10 +603,10 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
           disabled={isPublishing}
         >
           {isPublishing ? (
-            <ActivityIndicator color="#0A0E17" size="small" />
+            <ActivityIndicator color="#FFFFFF" size="small" />
           ) : (
             <>
-              <Ionicons name="rocket" size={20} color="#0A0E17" />
+              <Ionicons name="rocket" size={20} color="#FFFFFF" />
               <Text style={styles.publishButtonText}>{S.create.quest.publishQuest}</Text>
             </>
           )}
@@ -677,7 +677,7 @@ const createStyles = (theme: Theme) =>
     backgroundColor: theme.border,
   },
   stepDotActive: {
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
   },
   infoContent: {
     padding: 20,
@@ -753,8 +753,8 @@ const createStyles = (theme: Theme) =>
     paddingVertical: 8,
   },
   weatherChipActive: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
-    borderColor: '#00D4FF',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
+    borderColor: '#1558F0',
   },
   weatherChipLabel: {
     color: theme.textSecondary,
@@ -765,7 +765,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     borderRadius: 14,
     height: 52,
     gap: 8,
@@ -778,7 +778,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.4,
   },
   nextButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
     letterSpacing: 1,
@@ -868,7 +868,7 @@ const createStyles = (theme: Theme) =>
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+    backgroundColor: 'rgba(215, 38, 61, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -906,8 +906,8 @@ const createStyles = (theme: Theme) =>
     paddingVertical: 8,
   },
   radiusChipActive: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
-    borderColor: '#00D4FF',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
+    borderColor: '#1558F0',
   },
   radiusChipText: {
     color: theme.textSecondary,
@@ -915,7 +915,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '600',
   },
   radiusChipTextActive: {
-    color: '#00D4FF',
+    color: '#1558F0',
   },
   // Preview
   previewCard: {
@@ -1010,7 +1010,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00FF88',
+    backgroundColor: '#1B9E5A',
     borderRadius: 14,
     height: 52,
     gap: 8,
@@ -1019,7 +1019,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.7,
   },
   publishButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
     letterSpacing: 1,

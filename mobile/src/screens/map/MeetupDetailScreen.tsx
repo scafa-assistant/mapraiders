@@ -27,10 +27,10 @@ const { width } = Dimensions.get('window');
 
 const CATEGORY_COLORS: Record<string, string> = {
   party: '#FF69B4',
-  sport: '#00FF88',
-  gaming: '#7B61FF',
-  meetup: '#00D4FF',
-  other: '#8892B0',
+  sport: '#1B9E5A',
+  gaming: '#1558F0',
+  meetup: '#1558F0',
+  other: '#7A7470',
 };
 
 const getCategoryLabels = (): Record<string, string> => ({
@@ -193,7 +193,7 @@ export default function MeetupDetailScreen({ navigation, route }: MeetupDetailSc
   }
 
   const categoryKey = meetup.category ?? 'other';
-  const categoryColor = CATEGORY_COLORS[categoryKey] ?? '#8892B0';
+  const categoryColor = CATEGORY_COLORS[categoryKey] ?? '#7A7470';
   const categoryLabel = categoryLabels[categoryKey] ?? S.map.meetupDetail.categoryFallback;
   const eventLat = meetup.lat ?? meetup.latitude ?? 0;
   const eventLng = meetup.lng ?? meetup.longitude ?? 0;
@@ -588,11 +588,11 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderRadius: RADIUS.lg,
     paddingVertical: 14,
     borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.3)',
+    borderColor: 'rgba(21, 88, 240, 0.3)',
     gap: 4,
   },
   chatBtnText: {

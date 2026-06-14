@@ -16,25 +16,25 @@ import { SPACING, FONT_SIZE, RADIUS } from '../utils/constants';
 const CARDS = [
   {
     icon: 'aperture' as const,
-    iconColor: '#9D4EDD',
+    iconColor: '#1558F0',
     title: 'Erdrisse öffnen sich',
     body: 'Unsichtbare Wunden im Stadtgefüge. Fremde Energien dringen durch die Lücken — und sie suchen unsere Territorien.',
   },
   {
     icon: 'hardware-chip' as const,
-    iconColor: '#00D4FF',
+    iconColor: '#1558F0',
     title: 'Die Hyperboreer scannen unsere Welt',
     body: 'Ihre Drohnen, Sonden und Aether-Sauger senden auf verborgenen Frequenzen. Sie wissen, dass wir da sind.',
   },
   {
     icon: 'flash' as const,
-    iconColor: '#7B61FF',
+    iconColor: '#1558F0',
     title: 'Hacke ihre Einheiten — mach sie zu deinen',
     body: 'Stimme deine Frequenz auf ihre Signatur ab. Halte die Verbindung. Dann gehören ihre Ressourcen dir.',
   },
 ];
 
-const VRIL_PRIMARY = '#7B61FF';
+const VRIL_PRIMARY = '#1558F0';
 const { width } = Dimensions.get('window');
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ export default function PvEIntroCards({ onFinish }: PvEIntroCardsProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: '#F6F4F1',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SPACING.lg,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(123,97,255,0.25)',
+    backgroundColor: 'rgba(21,88,240,0.25)',
   },
   dotActive: {
     backgroundColor: VRIL_PRIMARY,
@@ -146,14 +146,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#141210',
     textAlign: 'center',
     marginBottom: SPACING.md,
     letterSpacing: 0.3,
   },
   body: {
     fontSize: FONT_SIZE.md,
-    color: '#8892B0',
+    color: '#7A7470',
     textAlign: 'center',
     lineHeight: 26,
   },

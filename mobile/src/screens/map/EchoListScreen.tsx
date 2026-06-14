@@ -177,7 +177,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
             <Ionicons
               name={item.liked ? 'heart' : 'heart-outline'}
               size={16}
-              color={item.liked ? theme.danger : '#555E78'}
+              color={item.liked ? theme.danger : '#7A7470'}
             />
             <Text style={[styles.likeCount, item.liked && styles.likeCountActive]}>
               {item.likes}
@@ -194,7 +194,7 @@ export default function EchoListScreen({ navigation }: EchoListScreenProps) {
     if (loading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="musical-notes-outline" size={64} color="#2A3450" />
+        <Ionicons name="musical-notes-outline" size={64} color="#7A7470" />
         <Text style={styles.emptyTitle}>{S.map.echoList.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>
           {S.map.echoList.emptySubtext}
@@ -299,7 +299,7 @@ const createStyles = (theme: Theme) =>
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -319,7 +319,7 @@ const createStyles = (theme: Theme) =>
     width: 3,
     height: 3,
     borderRadius: 1.5,
-    backgroundColor: '#2A3450',
+    backgroundColor: '#EFEDE8',
   },
   metaText: {
     color: theme.textSecondary,
@@ -329,7 +329,7 @@ const createStyles = (theme: Theme) =>
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderWidth: 1.5,
     borderColor: theme.secondary,
     justifyContent: 'center',
@@ -349,7 +349,7 @@ const createStyles = (theme: Theme) =>
     gap: 6,
   },
   likeCount: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -374,7 +374,7 @@ const createStyles = (theme: Theme) =>
     marginTop: 16,
   },
   emptySubtext: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 13,
     marginTop: 6,
   },

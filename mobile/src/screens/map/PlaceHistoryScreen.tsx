@@ -27,18 +27,18 @@ interface EventConfig {
 }
 
 const getEventConfig = (): Record<string, EventConfig> => ({
-  claim: { icon: 'flag', color: '#00FF88', label: S.map.placeHistory.eventClaim },
-  takeover: { icon: 'flash', color: '#FF4757', label: S.map.placeHistory.eventTakeover },
-  quest_complete: { icon: 'compass', color: '#00D4FF', label: S.map.placeHistory.eventQuestComplete },
-  echo_created: { icon: 'musical-note', color: '#7B61FF', label: S.map.placeHistory.eventEchoCreated },
-  echo_expired: { icon: 'musical-note', color: '#555E78', label: S.map.placeHistory.eventEchoExpired },
-  challenge_complete: { icon: 'trophy', color: '#FFB800', label: S.map.placeHistory.eventChallengeComplete },
-  artifact_placed: { icon: 'diamond', color: '#7B61FF', label: S.map.placeHistory.eventArtifactPlaced },
+  claim: { icon: 'flag', color: '#1B9E5A', label: S.map.placeHistory.eventClaim },
+  takeover: { icon: 'flash', color: '#D7263D', label: S.map.placeHistory.eventTakeover },
+  quest_complete: { icon: 'compass', color: '#1558F0', label: S.map.placeHistory.eventQuestComplete },
+  echo_created: { icon: 'musical-note', color: '#1558F0', label: S.map.placeHistory.eventEchoCreated },
+  echo_expired: { icon: 'musical-note', color: '#7A7470', label: S.map.placeHistory.eventEchoExpired },
+  challenge_complete: { icon: 'trophy', color: '#F5A623', label: S.map.placeHistory.eventChallengeComplete },
+  artifact_placed: { icon: 'diamond', color: '#1558F0', label: S.map.placeHistory.eventArtifactPlaced },
 });
 
 const getDefaultEventConfig = (): EventConfig => ({
   icon: 'ellipse',
-  color: '#8892B0',
+  color: '#7A7470',
   label: S.map.placeHistory.eventDefault,
 });
 
@@ -212,7 +212,7 @@ export default function PlaceHistoryScreen({ navigation, route }: PlaceHistorySc
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="location-outline" size={48} color="#2A3450" />
+              <Ionicons name="location-outline" size={48} color="#C0BAB4" />
               <Text style={styles.emptyText}>{S.map.placeHistory.emptyTitle}</Text>
               <Text style={styles.emptySubtext}>
                 {S.map.placeHistory.emptySubtext}
@@ -261,7 +261,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '800',
   },
   headerCoords: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 11,
     marginTop: 2,
     fontVariant: ['tabular-nums'],
@@ -310,7 +310,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '800',
   },
   statLabel: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 10,
     fontWeight: '600',
     marginTop: 4,
@@ -377,7 +377,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '700',
   },
   eventTime: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 11,
     marginTop: 2,
   },
@@ -393,7 +393,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '600',
   },
   emptySubtext: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 13,
     textAlign: 'center',
   },

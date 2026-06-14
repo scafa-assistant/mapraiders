@@ -344,8 +344,8 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
               <Polygon
                 key={t.id}
                 coordinates={t.polygon.map((p: any) => ({ latitude: p.latitude, longitude: p.longitude }))}
-                fillColor="rgba(0, 212, 255, 0.15)"
-                strokeColor="#00D4FF"
+                fillColor="rgba(21, 88, 240, 0.15)"
+                strokeColor="#1558F0"
                 strokeWidth={1}
               />
             );
@@ -355,13 +355,13 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
               <Circle
                 center={currentLocation}
                 radius={radius}
-                fillColor="rgba(123, 97, 255, 0.15)"
-                strokeColor="#7B61FF"
+                fillColor="rgba(21, 88, 240, 0.15)"
+                strokeColor="#1558F0"
                 strokeWidth={2}
               />
               <Marker coordinate={currentLocation} anchor={{ x: 0.5, y: 0.5 }}>
                 <View style={styles.echoMarker}>
-                  <Ionicons name="musical-note" size={20} color="#7B61FF" />
+                  <Ionicons name="musical-note" size={20} color="#1558F0" />
                 </View>
               </Marker>
             </>
@@ -372,7 +372,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
       {/* Silent Zone Warning */}
       {inSilentZone && (
         <View style={styles.silentZoneWarning}>
-          <Ionicons name="leaf" size={16} color="#00C853" />
+          <Ionicons name="leaf" size={16} color="#1B9E5A" />
           <Text style={styles.silentZoneWarningText}>
             {S.create.echo.silentZoneWarning}
           </Text>
@@ -400,12 +400,12 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
             <Ionicons
               name={opt.icon}
               size={16}
-              color={mediaType === opt.value ? '#7B61FF' : theme.textSecondary}
+              color={mediaType === opt.value ? '#1558F0' : theme.textSecondary}
             />
             <Text
               style={[
                 styles.mediaTypeChipText,
-                mediaType === opt.value && { color: '#7B61FF' },
+                mediaType === opt.value && { color: '#1558F0' },
               ]}
             >
               {opt.label}
@@ -483,11 +483,11 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                   <Ionicons
                     name={isPlaying ? 'stop' : 'play'}
                     size={28}
-                    color="#7B61FF"
+                    color="#1558F0"
                   />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
-                  <Ionicons name="refresh" size={20} color="#FF4757" />
+                  <Ionicons name="refresh" size={20} color="#D7263D" />
                   <Text style={styles.retakeText}>{S.create.echo.retake}</Text>
                 </TouchableOpacity>
               </View>
@@ -527,7 +527,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
             ) : (
               <View style={styles.previewControls}>
                 <TouchableOpacity style={styles.retakeButton} onPress={resetRecording}>
-                  <Ionicons name="refresh" size={20} color="#FF4757" />
+                  <Ionicons name="refresh" size={20} color="#D7263D" />
                   <Text style={styles.retakeText}>{S.create.echo.retake}</Text>
                 </TouchableOpacity>
               </View>
@@ -582,7 +582,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                 style={[
                   styles.radiusChip,
                   timeWindow === opt.value && (opt.value === 'night'
-                    ? { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: '#8B5CF6' }
+                    ? { backgroundColor: 'rgba(21, 88, 240, 0.15)', borderColor: '#1558F0' }
                     : styles.radiusChipActive),
                 ]}
                 onPress={() => setTimeWindow(opt.value)}
@@ -591,7 +591,7 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
                   style={[
                     styles.radiusChipText,
                     timeWindow === opt.value && {
-                      color: opt.value === 'night' ? '#8B5CF6' : '#7B61FF',
+                      color: opt.value === 'night' ? '#1558F0' : '#1558F0',
                     },
                   ]}
                 >
@@ -613,13 +613,13 @@ export default function EchoCreateScreen({ navigation }: EchoCreateScreenProps) 
           activeOpacity={0.8}
         >
           {isDropping ? (
-            <ActivityIndicator color="#0A0E17" size="small" />
+            <ActivityIndicator color="#FFFFFF" size="small" />
           ) : (
             <>
               <Ionicons
                 name={mediaType === 'audio' ? 'musical-note' : mediaType === 'photo' ? 'image' : 'videocam'}
                 size={20}
-                color="#0A0E17"
+                color="#FFFFFF"
               />
               <Text style={styles.dropButtonText}>
                 {mediaType === 'audio' ? S.create.echo.dropEcho : mediaType === 'photo' ? S.create.echo.dropPhoto : S.create.echo.dropVideo}
@@ -665,9 +665,9 @@ const createStyles = (theme: Theme) =>
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(123, 97, 255, 0.2)',
+    backgroundColor: 'rgba(21, 88, 240, 0.2)',
     borderWidth: 2,
-    borderColor: '#7B61FF',
+    borderColor: '#1558F0',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -703,7 +703,7 @@ const createStyles = (theme: Theme) =>
   waveBar: {
     width: 4,
     borderRadius: 2,
-    backgroundColor: '#7B61FF',
+    backgroundColor: '#1558F0',
   },
   waveBarStatic: {
     backgroundColor: theme.textSecondary,
@@ -723,19 +723,19 @@ const createStyles = (theme: Theme) =>
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#7B61FF',
+    backgroundColor: '#1558F0',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#7B61FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 8,
   },
   recordButtonActive: {
-    backgroundColor: '#FF4757',
-    shadowColor: '#FF4757',
+    backgroundColor: '#D7263D',
+    shadowColor: '#D7263D',
   },
   stopIcon: {
     width: 24,
@@ -753,9 +753,9 @@ const createStyles = (theme: Theme) =>
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderWidth: 2,
-    borderColor: '#7B61FF',
+    borderColor: '#1558F0',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -766,7 +766,7 @@ const createStyles = (theme: Theme) =>
     padding: 10,
   },
   retakeText: {
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -796,8 +796,8 @@ const createStyles = (theme: Theme) =>
     paddingVertical: 8,
   },
   radiusChipActive: {
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
-    borderColor: '#7B61FF',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
+    borderColor: '#1558F0',
   },
   radiusChipText: {
     color: theme.textSecondary,
@@ -805,18 +805,18 @@ const createStyles = (theme: Theme) =>
     fontWeight: '600',
   },
   radiusChipTextActive: {
-    color: '#7B61FF',
+    color: '#1558F0',
   },
   dropButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7B61FF',
+    backgroundColor: '#1558F0',
     borderRadius: 16,
     height: 56,
     width: '100%',
     gap: 10,
-    shadowColor: '#7B61FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -826,7 +826,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.4,
   },
   dropButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
@@ -834,9 +834,9 @@ const createStyles = (theme: Theme) =>
   silentZoneWarning: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 200, 83, 0.1)',
+    backgroundColor: 'rgba(27, 158, 90, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 200, 83, 0.3)',
+    borderColor: 'rgba(27, 158, 90, 0.3)',
     borderRadius: 12,
     marginHorizontal: 20,
     marginTop: 12,
@@ -844,7 +844,7 @@ const createStyles = (theme: Theme) =>
     gap: 10,
   },
   silentZoneWarningText: {
-    color: '#00C853',
+    color: '#1B9E5A',
     fontSize: 12,
     fontWeight: '600',
     flex: 1,
@@ -869,8 +869,8 @@ const createStyles = (theme: Theme) =>
     paddingVertical: 8,
   },
   mediaTypeChipActive: {
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
-    borderColor: '#7B61FF',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
+    borderColor: '#1558F0',
   },
   mediaTypeChipText: {
     color: theme.textSecondary,

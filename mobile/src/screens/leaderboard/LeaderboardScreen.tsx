@@ -212,7 +212,7 @@ const createStyles = (theme: Theme) =>
     gap: 6,
   },
   typeTabActive: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderColor: theme.primary,
   },
   typeTabText: {
@@ -227,13 +227,13 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    backgroundColor: 'rgba(21, 88, 240, 0.08)',
     marginHorizontal: 20,
     marginBottom: SPACING.md,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.2)',
+    borderColor: 'rgba(21, 88, 240, 0.2)',
   },
   myRankLabel: {
     color: theme.textSecondary,

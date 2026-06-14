@@ -135,7 +135,7 @@ export default function TravelRouteDetailScreen({
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color="#8892B0" />
+          <Ionicons name="arrow-back" size={22} color="#7A7470" />
         </TouchableOpacity>
 
         {/* Map Preview */}
@@ -153,7 +153,7 @@ export default function TravelRouteDetailScreen({
             {polylineCoords.length >= 2 && (
               <Polyline
                 coordinates={polylineCoords}
-                strokeColor="#00FF88"
+                strokeColor="#1B9E5A"
                 strokeWidth={3}
                 lineDashPattern={[8, 6]}
               />
@@ -297,7 +297,7 @@ const createStyles = (theme: Theme) =>
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -314,13 +314,13 @@ const createStyles = (theme: Theme) =>
     position: 'absolute',
     bottom: 12,
     right: 12,
-    backgroundColor: 'rgba(13, 18, 32, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
   mapOverlayText: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 11,
     fontWeight: '600',
   },
@@ -349,7 +349,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(255, 184, 0, 0.12)',
+    backgroundColor: 'rgba(245, 166, 35, 0.12)',
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -374,7 +374,7 @@ const createStyles = (theme: Theme) =>
     fontSize: 13,
   },
   description: {
-    color: '#B8C0D8',
+    color: '#141210',
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 14,
@@ -413,7 +413,7 @@ const createStyles = (theme: Theme) =>
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    backgroundColor: 'rgba(27, 158, 90, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -446,14 +446,14 @@ const createStyles = (theme: Theme) =>
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#00FF88',
+    backgroundColor: '#1B9E5A',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#FFFFFF',
   },
   spotMarkerText: {
-    color: '#0A0E17',
+    color: '#F6F4F1',
     fontSize: 12,
     fontWeight: '900',
   },
@@ -462,7 +462,7 @@ const createStyles = (theme: Theme) =>
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(10, 14, 23, 0.95)',
+    backgroundColor: 'rgba(246, 244, 241, 0.95)',
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 36,

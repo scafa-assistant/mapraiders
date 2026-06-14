@@ -273,7 +273,7 @@ export default function TravelRoutePlayScreen({
         {polylineCoords.length >= 2 && (
           <Polyline
             coordinates={polylineCoords}
-            strokeColor="rgba(0, 255, 136, 0.4)"
+            strokeColor="rgba(27, 158, 90, 0.4)"
             strokeWidth={3}
             lineDashPattern={[8, 6]}
           />
@@ -298,7 +298,7 @@ export default function TravelRoutePlayScreen({
                 ]}
               >
                 {isVisited ? (
-                  <Ionicons name="checkmark" size={14} color="#0A0E17" />
+                  <Ionicons name="checkmark" size={14} color="#F6F4F1" />
                 ) : (
                   <Text
                     style={[
@@ -462,17 +462,17 @@ const createStyles = (theme: Theme) =>
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
   },
   progressContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -488,7 +488,7 @@ const createStyles = (theme: Theme) =>
   progressBarFill: {
     height: '100%',
     borderRadius: 3,
-    backgroundColor: '#00FF88',
+    backgroundColor: '#1B9E5A',
   },
   progressText: {
     color: theme.textSecondary,
@@ -503,14 +503,14 @@ const createStyles = (theme: Theme) =>
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#555E78',
+    borderColor: '#7A7470',
   },
   spotMarkerVisited: {
-    backgroundColor: '#00FF88',
+    backgroundColor: '#1B9E5A',
     borderColor: '#FFFFFF',
   },
   spotMarkerCurrent: {
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     borderColor: '#FFFFFF',
     width: 34,
     height: 34,
@@ -518,12 +518,12 @@ const createStyles = (theme: Theme) =>
     borderWidth: 3,
   },
   spotMarkerText: {
-    color: '#8892B0',
+    color: '#7A7470',
     fontSize: 12,
     fontWeight: '800',
   },
   spotMarkerTextCurrent: {
-    color: '#0A0E17',
+    color: '#F6F4F1',
     fontSize: 14,
   },
   // Spot detail overlay
@@ -610,7 +610,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+    backgroundColor: 'rgba(27, 158, 90, 0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -651,7 +651,7 @@ const createStyles = (theme: Theme) =>
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(255, 184, 0, 0.1)',
+    backgroundColor: 'rgba(245, 166, 35, 0.1)',
     borderWidth: 3,
     borderColor: theme.warning,
     justifyContent: 'center',

@@ -217,7 +217,7 @@ const createStyles = (theme: Theme) =>
     borderColor: theme.border,
   },
   filterChipActive: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderColor: theme.primary,
   },
   filterChipText: {

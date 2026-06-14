@@ -178,7 +178,7 @@ export default function MeetupChatScreen({ navigation, route }: MeetupChatScreen
     if (loading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="chatbubbles-outline" size={48} color="#2A3450" />
+        <Ionicons name="chatbubbles-outline" size={48} color="#EFEDE8" />
         <Text style={styles.emptyTitle}>{S.map.meetupChat.emptyTitle}</Text>
         <Text style={styles.emptySubtext}>{S.map.meetupChat.emptySubtext}</Text>
       </View>
@@ -344,7 +344,7 @@ const createStyles = (theme: Theme) =>
     padding: SPACING.md,
   },
   messageBubbleOwn: {
-    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+    backgroundColor: 'rgba(21, 88, 240, 0.2)',
     borderBottomRightRadius: 4,
   },
   messageBubbleOther: {
@@ -374,7 +374,7 @@ const createStyles = (theme: Theme) =>
     alignSelf: 'flex-end',
   },
   messageTimeOwn: {
-    color: 'rgba(0, 212, 255, 0.6)',
+    color: 'rgba(21, 88, 240, 0.6)',
   },
   loadingMore: {
     paddingVertical: 16,
@@ -394,7 +394,7 @@ const createStyles = (theme: Theme) =>
     marginTop: 12,
   },
   emptySubtext: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: FONT_SIZE.sm,
     marginTop: 4,
     textAlign: 'center',
@@ -431,6 +431,6 @@ const createStyles = (theme: Theme) =>
     marginLeft: 8,
   },
   sendBtnDisabled: {
-    backgroundColor: 'rgba(0, 212, 255, 0.3)',
+    backgroundColor: 'rgba(21, 88, 240, 0.3)',
   },
 });

@@ -38,7 +38,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.rpsName,
     icon: 'hand-left-outline',
     description: S.map.defenseSetup.rpsDesc,
-    color: '#7B61FF',
+    color: '#1558F0',
     category: 'instant',
   },
   {
@@ -46,7 +46,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.coinFlipName,
     icon: 'ellipse-outline',
     description: S.map.defenseSetup.coinFlipDesc,
-    color: '#FFB800',
+    color: '#F5A623',
     category: 'instant',
   },
   {
@@ -62,7 +62,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.sprintName,
     icon: 'speedometer-outline',
     description: S.map.defenseSetup.sprintDesc,
-    color: '#00FF88',
+    color: '#1B9E5A',
     category: 'instant',
   },
   {
@@ -70,7 +70,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.triviaName,
     icon: 'help-circle-outline',
     description: S.map.defenseSetup.triviaDesc,
-    color: '#00D4FF',
+    color: '#1558F0',
     category: 'instant',
   },
   {
@@ -78,7 +78,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.tttName,
     icon: 'grid-outline',
     description: S.map.defenseSetup.tttDesc,
-    color: '#00D4FF',
+    color: '#1558F0',
     category: 'strategy',
   },
   {
@@ -86,7 +86,7 @@ const getGameTypes = (): GameTypeCard[] => [
     name: S.map.defenseSetup.chessName,
     icon: 'trophy-outline',
     description: S.map.defenseSetup.chessDesc,
-    color: '#FFB800',
+    color: '#F5A623',
     category: 'strategy',
   },
 ];
@@ -314,9 +314,9 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
 
   const renderRpsConfig = () => {
     const moves: { choice: RpsChoice; label: string; emoji: string; color: string; scale: Animated.Value }[] = [
-      { choice: 'rock', label: S.map.defenseSetup.rock, emoji: '🪨', color: '#8892B0', scale: rpsScaleRock },
-      { choice: 'scissors', label: S.map.defenseSetup.scissors, emoji: '✂️', color: '#FF4757', scale: rpsScaleScissors },
-      { choice: 'paper', label: S.map.defenseSetup.paper, emoji: '📄', color: '#00D4FF', scale: rpsScalePaper },
+      { choice: 'rock', label: S.map.defenseSetup.rock, emoji: '🪨', color: '#7A7470', scale: rpsScaleRock },
+      { choice: 'scissors', label: S.map.defenseSetup.scissors, emoji: '✂️', color: '#D7263D', scale: rpsScaleScissors },
+      { choice: 'paper', label: S.map.defenseSetup.paper, emoji: '📄', color: '#1558F0', scale: rpsScalePaper },
     ];
 
     return (
@@ -449,7 +449,7 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
           </View>
         ) : (
           <TouchableOpacity style={styles.startBenchmarkBtn} onPress={startBenchmark}>
-            <Ionicons name="play" size={22} color="#0A0E17" />
+            <Ionicons name="play" size={22} color="#FFFFFF" />
             <Text style={styles.startBenchmarkText}>{S.map.defenseSetup.setYourBenchmark}</Text>
           </TouchableOpacity>
         )}
@@ -496,14 +496,14 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             style={[
               styles.rpsButton,
               { width: 130, height: 110 },
-              { borderColor: coinBet === bet ? '#FFB800' : theme.border },
-              coinBet === bet && { backgroundColor: 'rgba(255, 184, 0, 0.15)' },
+              { borderColor: coinBet === bet ? '#F5A623' : theme.border },
+              coinBet === bet && { backgroundColor: 'rgba(245,166,35,0.15)' },
             ]}
             onPress={() => setCoinBet(bet)}
             activeOpacity={0.7}
           >
             <Text style={styles.rpsEmoji}>{bet === 'heads' ? '👑' : '🔢'}</Text>
-            <Text style={[styles.rpsLabel, coinBet === bet && { color: '#FFB800' }]}>
+            <Text style={[styles.rpsLabel, coinBet === bet && { color: '#F5A623' }]}>
               {bet === 'heads' ? S.map.defenseSetup.heads : S.map.defenseSetup.tails}
             </Text>
           </TouchableOpacity>
@@ -566,9 +566,9 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
         </Text>
 
         <View style={[styles.rpsRow, { justifyContent: 'center' }]}>
-          <View style={[styles.rpsButton, { width: 260, height: 80, borderColor: isTTT ? '#00D4FF' : '#FFB800', backgroundColor: isTTT ? 'rgba(0, 212, 255, 0.08)' : 'rgba(255, 184, 0, 0.08)' }]}>
+          <View style={[styles.rpsButton, { width: 260, height: 80, borderColor: isTTT ? '#1558F0' : '#F5A623', backgroundColor: isTTT ? 'rgba(21,88,240,0.08)' : 'rgba(245,166,35,0.08)' }]}>
             <Text style={[styles.rpsEmoji, { fontSize: 28 }]}>{isTTT ? '❌⭕' : '♔♚'}</Text>
-            <Text style={[styles.rpsLabel, { color: isTTT ? '#00D4FF' : '#FFB800' }]}>
+            <Text style={[styles.rpsLabel, { color: isTTT ? '#1558F0' : '#F5A623' }]}>
               {isTTT ? S.map.defenseSetup.tttTiming : S.map.defenseSetup.chessTiming}
             </Text>
           </View>
@@ -703,10 +703,10 @@ export default function DefenseSetupScreen({ route, navigation }: DefenseSetupSc
             activeOpacity={0.7}
           >
             {isSubmitting ? (
-              <ActivityIndicator size="small" color="#0A0E17" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="shield-checkmark" size={22} color="#0A0E17" />
+                <Ionicons name="shield-checkmark" size={22} color="#FFFFFF" />
                 <Text style={styles.activateBtnText}>{S.map.defenseSetup.activateDefenseBtn}</Text>
               </>
             )}
@@ -879,7 +879,7 @@ const createStyles = (theme: Theme) =>
   },
   roundButtonActive: {
     borderColor: theme.secondary,
-    backgroundColor: 'rgba(123, 97, 255, 0.1)',
+    backgroundColor: 'rgba(21,88,240,0.1)',
   },
   roundButtonText: {
     color: theme.textSecondary,
@@ -907,7 +907,7 @@ const createStyles = (theme: Theme) =>
   },
   distanceChipActive: {
     borderColor: theme.accent,
-    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+    backgroundColor: 'rgba(27,158,90,0.1)',
   },
   distanceChipText: {
     color: theme.textSecondary,
@@ -928,7 +928,7 @@ const createStyles = (theme: Theme) =>
     marginTop: SPACING.sm,
   },
   startBenchmarkText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },
@@ -937,11 +937,11 @@ const createStyles = (theme: Theme) =>
     alignItems: 'center',
     gap: 12,
     marginTop: SPACING.sm,
-    backgroundColor: 'rgba(0, 255, 136, 0.08)',
+    backgroundColor: 'rgba(27,158,90,0.08)',
     borderRadius: RADIUS.md,
     padding: SPACING.lg,
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 136, 0.2)',
+    borderColor: 'rgba(27,158,90,0.2)',
   },
   benchmarkTimeText: {
     color: theme.accent,
@@ -1047,7 +1047,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.5,
   },
   activateBtnText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
     letterSpacing: 2,

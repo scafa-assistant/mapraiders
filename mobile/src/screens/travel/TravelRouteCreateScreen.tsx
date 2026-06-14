@@ -217,7 +217,7 @@ export default function TravelRouteCreateScreen({
                 {polylineCoords.length >= 2 && (
                   <Polyline
                     coordinates={polylineCoords}
-                    strokeColor="#00FF88"
+                    strokeColor="#1B9E5A"
                     strokeWidth={3}
                     lineDashPattern={[8, 6]}
                   />
@@ -473,21 +473,21 @@ const createStyles = (theme: Theme) =>
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#00FF88',
+    backgroundColor: '#1B9E5A',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#FFFFFF',
   },
   spotMarkerSelected: {
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     width: 34,
     height: 34,
     borderRadius: 17,
     borderWidth: 3,
   },
   spotMarkerText: {
-    color: '#0A0E17',
+    color: '#F6F4F1',
     fontSize: 12,
     fontWeight: '900',
   },
@@ -512,7 +512,7 @@ const createStyles = (theme: Theme) =>
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    backgroundColor: 'rgba(27, 158, 90, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 4,
@@ -540,7 +540,7 @@ const createStyles = (theme: Theme) =>
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+    backgroundColor: 'rgba(215, 38, 61, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -585,7 +585,7 @@ const createStyles = (theme: Theme) =>
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(10, 14, 23, 0.95)',
+    backgroundColor: 'rgba(246, 244, 241, 0.95)',
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 36,

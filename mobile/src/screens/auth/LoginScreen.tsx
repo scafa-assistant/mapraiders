@@ -98,7 +98,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           {/* Logo / Title */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-              <Ionicons name="grid" size={48} color="#00D4FF" />
+              <Ionicons name="grid" size={48} color="#1558F0" />
             </View>
             <Text style={styles.title}>MAPRAIDERS</Text>
             <Text style={styles.subtitle}>{S.auth.login.tagline}</Text>
@@ -107,10 +107,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           {/* Error Banner */}
           {error && (
             <View style={styles.errorBanner}>
-              <Ionicons name="alert-circle" size={18} color="#FF4757" />
+              <Ionicons name="alert-circle" size={18} color="#D7263D" />
               <Text style={styles.errorText}>{error}</Text>
               <TouchableOpacity onPress={clearError}>
-                <Ionicons name="close" size={18} color="#FF4757" />
+                <Ionicons name="close" size={18} color="#D7263D" />
               </TouchableOpacity>
             </View>
           )}
@@ -124,7 +124,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               activeOpacity={0.8}
             >
               {socialLoading === 'google' ? (
-                <ActivityIndicator color="#0A0E17" size="small" />
+                <ActivityIndicator color="#141210" size="small" />
               ) : (
                 <>
                   <Ionicons name="logo-google" size={20} color="#4285F4" style={styles.socialIcon} />
@@ -158,10 +158,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               activeOpacity={0.8}
             >
               {socialLoading === 'email' ? (
-                <ActivityIndicator color="#00D4FF" size="small" />
+                <ActivityIndicator color="#1558F0" size="small" />
               ) : (
                 <>
-                  <Ionicons name="mail-outline" size={20} color="#00D4FF" style={styles.socialIcon} />
+                  <Ionicons name="mail-outline" size={20} color="#1558F0" style={styles.socialIcon} />
                   <Text style={styles.emailLinkButtonText}>{S.auth.login.loginWithEmailLink}</Text>
                 </>
               )}
@@ -228,7 +228,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               activeOpacity={0.8}
             >
               {isLoading ? (
-                <ActivityIndicator color="#0A0E17" size="small" />
+                <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
                 <Text style={styles.loginButtonText}>{S.auth.login.enterTheGrid}</Text>
               )}
@@ -286,11 +286,11 @@ const createStyles = (theme: Theme) =>
     borderRadius: 44,
     backgroundColor: theme.surface,
     borderWidth: 2,
-    borderColor: '#00D4FF',
+    borderColor: '#1558F0',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#00D4FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
@@ -311,9 +311,9 @@ const createStyles = (theme: Theme) =>
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+    backgroundColor: 'rgba(215, 38, 61, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -322,7 +322,7 @@ const createStyles = (theme: Theme) =>
   },
   errorText: {
     flex: 1,
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 13,
   },
   socialSection: {
@@ -341,7 +341,7 @@ const createStyles = (theme: Theme) =>
     height: 52,
   },
   googleButtonText: {
-    color: '#0A0E17',
+    color: '#141210',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -366,10 +366,10 @@ const createStyles = (theme: Theme) =>
     borderRadius: 12,
     height: 52,
     borderWidth: 1.5,
-    borderColor: '#00D4FF',
+    borderColor: '#1558F0',
   },
   emailLinkButtonText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -418,13 +418,13 @@ const createStyles = (theme: Theme) =>
     padding: 4,
   },
   loginButton: {
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#00D4FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -434,7 +434,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.7,
   },
   loginButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
@@ -453,7 +453,7 @@ const createStyles = (theme: Theme) =>
   },
   registerButton: {
     borderWidth: 1.5,
-    borderColor: '#7B61FF',
+    borderColor: '#1558F0',
     borderRadius: 12,
     height: 52,
     justifyContent: 'center',
@@ -461,7 +461,7 @@ const createStyles = (theme: Theme) =>
     width: '100%',
   },
   registerButtonText: {
-    color: '#7B61FF',
+    color: '#1558F0',
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 2,

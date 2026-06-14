@@ -60,11 +60,11 @@ function findWinningLine(cells: CellValue[]): number[] | null {
 
 // ─── Colors ──────────────────────────────────────────────────────────────────
 
-const COLOR_X = '#00D4FF'; // cyan
-const COLOR_O = '#FF4757'; // magenta
-const COLOR_VICTORY = '#00FF88';
-const COLOR_DEFEATED = '#FF4757';
-const COLOR_DRAW = '#FFB800';
+const COLOR_X = '#1558F0'; // cyan
+const COLOR_O = '#D7263D'; // magenta
+const COLOR_VICTORY = '#1B9E5A';
+const COLOR_DEFEATED = '#D7263D';
+const COLOR_DRAW = '#F5A623';
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -385,7 +385,7 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
 
   const boardBorderColor = boardPulse.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(0, 212, 255, 0.15)', 'rgba(0, 212, 255, 0.6)'],
+    outputRange: ['rgba(21, 88, 240, 0.15)', 'rgba(21, 88, 240, 0.6)'],
   });
 
   const boardShadowOpacity = boardPulse.interpolate({
@@ -404,14 +404,14 @@ export default function TicTacToeScreen({ route, navigation }: TicTacToeGameScre
 
     const winGlow = winGlowAnims[index].interpolate({
       inputRange: [0, 1],
-      outputRange: ['rgba(0, 255, 136, 0)', 'rgba(0, 255, 136, 0.4)'],
+      outputRange: ['rgba(27, 158, 90, 0)', 'rgba(27, 158, 90, 0.4)'],
     });
 
     const activeGlow = glowAnim.interpolate({
       inputRange: [0, 1],
       outputRange: [
-        value === 'X' ? 'rgba(0, 212, 255, 0.05)' : 'rgba(255, 71, 87, 0.05)',
-        value === 'X' ? 'rgba(0, 212, 255, 0.25)' : 'rgba(255, 71, 87, 0.25)',
+        value === 'X' ? 'rgba(21, 88, 240, 0.05)' : 'rgba(215, 38, 61, 0.05)',
+        value === 'X' ? 'rgba(21, 88, 240, 0.25)' : 'rgba(215, 38, 61, 0.25)',
       ],
     });
 
@@ -1217,7 +1217,7 @@ const createStyles = (theme: Theme) =>
   // ─── Submitting Overlay ────────────────────────────────────────────────
   submittingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 14, 23, 0.5)',
+    backgroundColor: 'rgba(246, 244, 241, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1225,7 +1225,7 @@ const createStyles = (theme: Theme) =>
   // ─── Result Overlay ────────────────────────────────────────────────────
   resultOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 14, 23, 0.96)',
+    backgroundColor: 'rgba(246, 244, 241, 0.96)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 30,
@@ -1239,7 +1239,7 @@ const createStyles = (theme: Theme) =>
     borderWidth: 3,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(10, 14, 23, 0.8)',
+    backgroundColor: 'rgba(246, 244, 241, 0.8)',
     marginBottom: SPACING.sm,
   },
   resultTitle: {
@@ -1278,7 +1278,7 @@ const createStyles = (theme: Theme) =>
     marginTop: SPACING.md,
   },
   resultBtnText: {
-    color: '#0A0E17',
+    color: '#141210',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },

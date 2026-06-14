@@ -5,13 +5,13 @@ import Svg, { Ellipse, Polygon as SvgPolygon, Circle as SvgCircle, Line, Rect } 
 import type { PvESpawn, NpcType } from '../store/pveStore';
 
 // Vril brand palette
-const VRIL_PRIMARY = '#7B61FF';
-const VRIL_ACCENT = '#9D4EDD';
-const VRIL_GLOW = 'rgba(123, 97, 255, 0.18)';
+const VRIL_PRIMARY = '#1558F0';
+const VRIL_ACCENT = '#1558F0';
+const VRIL_GLOW = 'rgba(21, 88, 240, 0.18)';
 
 // Terminal brand palette — amber diamond
-const TERMINAL_COLOR = '#FFB300';
-const TERMINAL_GLOW = 'rgba(255, 179, 0, 0.18)';
+const TERMINAL_COLOR = '#F5A623';
+const TERMINAL_GLOW = 'rgba(245, 166, 35, 0.18)';
 
 /** SVG icon for each NPC type, rendered at 24×24 */
 function NpcIcon({ npcType }: { npcType: NpcType }) {
@@ -54,18 +54,18 @@ function NpcIcon({ npcType }: { npcType: NpcType }) {
       // Hexagon — water tint
       return (
         <Svg width={24} height={24} viewBox="0 0 24 24">
-          <SvgPolygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#4E9DDD" opacity={0.85} />
+          <SvgPolygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#4B7BFF" opacity={0.85} />
           <SvgPolygon points="12,6 17,9 17,15 12,18 7,15 7,9" fill="#FFFFFF" opacity={0.4} />
-          <SvgCircle cx={12} cy={12} r={2.5} fill="#4E9DDD" />
+          <SvgCircle cx={12} cy={12} r={2.5} fill="#4B7BFF" />
         </Svg>
       );
     case 'forest_construct_source':
       // Hexagon — forest tint
       return (
         <Svg width={24} height={24} viewBox="0 0 24 24">
-          <SvgPolygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#4EDD7A" opacity={0.85} />
+          <SvgPolygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#1B9E5A" opacity={0.85} />
           <SvgPolygon points="12,6 17,9 17,15 12,18 7,15 7,9" fill="#FFFFFF" opacity={0.4} />
-          <SvgCircle cx={12} cy={12} r={2.5} fill="#4EDD7A" />
+          <SvgCircle cx={12} cy={12} r={2.5} fill="#1B9E5A" />
         </Svg>
       );
     default:
@@ -150,7 +150,7 @@ const PvESpawnMarker: React.FC<PvESpawnMarkerProps> = ({ spawn, onPress }) => {
 
   // Higher-level spawns get a slightly more intense glow
   const glowColor =
-    spawn.level === 3 ? '#C77DFF' : spawn.level === 2 ? VRIL_ACCENT : VRIL_PRIMARY;
+    spawn.level === 3 ? '#1558F0' : spawn.level === 2 ? VRIL_ACCENT : VRIL_PRIMARY;
 
   return (
     <Marker
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     backgroundColor: VRIL_PRIMARY,
   },
   dotInactive: {
-    backgroundColor: 'rgba(123, 97, 255, 0.25)',
+    backgroundColor: 'rgba(21, 88, 240, 0.25)',
   },
 });
 
@@ -396,6 +396,6 @@ const terminalStyles = StyleSheet.create({
     backgroundColor: TERMINAL_COLOR,
   },
   dotInactive: {
-    backgroundColor: 'rgba(255, 179, 0, 0.25)',
+    backgroundColor: 'rgba(245, 166, 35, 0.25)',
   },
 });

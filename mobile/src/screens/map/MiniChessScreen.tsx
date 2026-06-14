@@ -25,16 +25,16 @@ const BOARD_SIZE = 5;
 const CELL_SIZE = (SCREEN_WIDTH - 80) / BOARD_SIZE;
 
 const COLORS = {
-  white: '#FFB800',
-  black: '#7B61FF',
-  lightSquare: '#232B45',
-  darkSquare: '#1A2340',
-  selectedGlow: '#00D4FF',
-  validMove: '#00FF88',
-  lastMoveFrom: 'rgba(0, 212, 255, 0.15)',
-  lastMoveTo: 'rgba(0, 212, 255, 0.25)',
-  boardBorder: '#0D1221',
-  boardEdge: '#1E293B',
+  white: '#F5A623',
+  black: '#1558F0',
+  lightSquare: '#FFFFFF',
+  darkSquare: '#EFEDE8',
+  selectedGlow: '#1558F0',
+  validMove: '#1B9E5A',
+  lastMoveFrom: 'rgba(21, 88, 240, 0.15)',
+  lastMoveTo: 'rgba(21, 88, 240, 0.25)',
+  boardBorder: '#F6F4F1',
+  boardEdge: '#C0BAB4',
 } as const;
 
 const PIECE_SYMBOLS: Record<string, string> = {
@@ -629,8 +629,8 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
                 color: pieceColor === 'w' ? COLORS.white : COLORS.black,
                 textShadowColor:
                   pieceColor === 'w'
-                    ? 'rgba(255, 184, 0, 0.5)'
-                    : 'rgba(123, 97, 255, 0.5)',
+                    ? 'rgba(245, 166, 35, 0.5)'
+                    : 'rgba(21, 88, 240, 0.5)',
               },
             ]}
           >
@@ -748,7 +748,7 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
     const isDraw = result === 'draw';
     const title = isVictory ? S.map.miniChess.victory : isDraw ? S.map.miniChess.draw : S.map.miniChess.defeated;
     const icon = isVictory ? 'trophy' : isDraw ? 'swap-horizontal' : 'close-circle';
-    const color = isVictory ? '#FFB800' : isDraw ? theme.primary : '#FF4757';
+    const color = isVictory ? '#F5A623' : isDraw ? theme.primary : '#D7263D';
 
     return (
       <Animated.View
@@ -794,12 +794,12 @@ export default function MiniChessScreen({ route, navigation }: MiniChessGameScre
           <Ionicons
             name={isYourTurn ? 'flash' : 'hourglass-outline'}
             size={18}
-            color={isYourTurn ? '#FFB800' : theme.textSecondary}
+            color={isYourTurn ? '#F5A623' : theme.textSecondary}
           />
           <Text
             style={[
               styles.turnBannerText,
-              { color: isYourTurn ? '#FFB800' : theme.textSecondary },
+              { color: isYourTurn ? '#F5A623' : theme.textSecondary },
             ]}
           >
             {isYourTurn ? S.map.miniChess.yourTurn : S.map.miniChess.waitingOpponent}
@@ -1051,8 +1051,8 @@ const createStyles = (theme: Theme) =>
     borderWidth: 1,
   },
   turnBannerYours: {
-    backgroundColor: 'rgba(255, 184, 0, 0.08)',
-    borderColor: 'rgba(255, 184, 0, 0.25)',
+    backgroundColor: 'rgba(245, 166, 35, 0.08)',
+    borderColor: 'rgba(245, 166, 35, 0.25)',
   },
   turnBannerWaiting: {
     backgroundColor: theme.surface,
@@ -1071,7 +1071,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(136, 146, 176, 0.1)',
+    backgroundColor: 'rgba(122, 116, 112, 0.1)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: RADIUS.full,
@@ -1151,7 +1151,7 @@ const createStyles = (theme: Theme) =>
     borderWidth: 2.5,
     borderColor: COLORS.selectedGlow,
     borderRadius: 2,
-    backgroundColor: 'rgba(0, 212, 255, 0.12)',
+    backgroundColor: 'rgba(21, 88, 240, 0.12)',
   },
   validMoveDot: {
     width: CELL_SIZE * 0.28,
@@ -1243,7 +1243,7 @@ const createStyles = (theme: Theme) =>
   // ─── Promotion Dialog ─────────────────────────────────────────────────
   promotionOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 14, 23, 0.9)',
+    backgroundColor: 'rgba(246, 244, 241, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100,
@@ -1314,7 +1314,7 @@ const createStyles = (theme: Theme) =>
   // ─── Result Overlay ───────────────────────────────────────────────────
   resultOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 14, 23, 0.95)',
+    backgroundColor: 'rgba(246, 244, 241, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 200,
@@ -1355,7 +1355,7 @@ const createStyles = (theme: Theme) =>
   // ─── Submitting Overlay ───────────────────────────────────────────────
   submittingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 14, 23, 0.5)',
+    backgroundColor: 'rgba(246, 244, 241, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 50,

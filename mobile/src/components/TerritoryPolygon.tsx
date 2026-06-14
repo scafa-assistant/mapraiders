@@ -84,7 +84,7 @@ const TerritoryPolygon: React.FC<TerritoryPolygonProps> = ({
     <Polygon
       coordinates={coordinates}
       fillColor={isContested ? withOpacity(classColor, fillOpacity * 0.7) : fillColor}
-      strokeColor={isContested ? withOpacity('#FF4757', 0.9) : strokeColor}
+      strokeColor={isContested ? withOpacity('#D7263D', 0.9) : strokeColor}
       strokeWidth={isContested ? 3 : strokeWidth}
       tappable={!!onPress}
       onPress={onPress}

@@ -9,20 +9,20 @@ import { cellToBoundary, cellToLatLng, gridDistance } from 'h3-js';
 // ─── Palette ─────────────────────────────────────────────────────────────────
 
 export const COMMANDER_COLORS = {
-  bg: '#0C0914',
-  surface: '#15101F',
-  border: '#241A33',
-  accent: '#9D4EDD', // violet
-  own: '#9D4EDD',
-  foreign: '#22D3EE', // cyan
-  vision: '#9D4EDD',
-  enemy: '#FF4757',
-  text: '#FFFFFF',
-  textSecondary: '#8B7FA8',
-  warning: '#FFB800',
-  air: '#22D3EE',
-  naval: '#3B82F6',
-  ground: '#F59E0B',
+  bg: '#F6F4F1',          // warm off-white
+  surface: '#FFFFFF',     // cards
+  border: '#C0BAB4',      // dim border
+  accent: '#1558F0',      // brand blue (was violet)
+  own: '#1558F0',         // own units / territory = blue
+  foreign: '#0E9CB0',     // teal (distinct from blue, readable on light)
+  vision: '#4B7BFF',      // lighter blue
+  enemy: '#D7263D',       // red
+  text: '#141210',        // near-black
+  textSecondary: '#7A7470', // muted
+  warning: '#F5A623',     // amber
+  air: '#0E9CB0',         // teal
+  naval: '#1558F0',       // blue
+  ground: '#F5A623',      // amber
 } as const;
 
 export type LatLng = { latitude: number; longitude: number };
@@ -183,12 +183,12 @@ export function formatLoad(load?: Partial<Record<string, number>>): string | nul
 // ─── Rarity colors ─────────────────────────────────────────────────────────────
 
 const RARITY_COLORS: Record<string, string> = {
-  common: '#8B7FA8',
-  uncommon: '#00FF88',
-  rare: '#00D4FF',
-  epic: '#9D4EDD',
-  legendary: '#FFB800',
-  mythic: '#FF4757',
+  common: '#7A7470',
+  uncommon: '#1B9E5A',
+  rare: '#1558F0',
+  epic: '#4B7BFF',
+  legendary: '#F5A623',
+  mythic: '#D7263D',
 };
 
 export function rarityColor(rarity: string): string {
@@ -232,31 +232,33 @@ export function formatCountdown(target: string | number): string {
   return `${min}m ${sec.toString().padStart(2, '0')}s`;
 }
 
-// ─── Dark "radar" map style ─────────────────────────────────────────────────────
-// Near-black geometry, no POIs/labels except administrative outlines.
+// ─── Light "radar" map style ─────────────────────────────────────────────────
+// Clean neutral basemap matching the web cockpit. No POIs/labels except
+// administrative outlines (in blue). Fog is drawn on top as a translucent grey
+// veil by the Commander map layer; this basemap stays calm and readable.
 
 export const RADAR_MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#0C0914' }] },
+  { elementType: 'geometry', stylers: [{ color: '#EFEDE8' }] },
   { elementType: 'labels', stylers: [{ visibility: 'off' }] },
   { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#3A2E50' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#0C0914' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#7A7470' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#FFFFFF' }] },
   {
     featureType: 'administrative',
     elementType: 'geometry',
-    stylers: [{ color: '#2A1F3D' }, { visibility: 'on' }],
+    stylers: [{ color: '#C0BAB4' }, { visibility: 'on' }],
   },
   {
     featureType: 'administrative.locality',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#6B5A85' }, { visibility: 'on' }],
+    stylers: [{ color: '#1558F0' }, { visibility: 'on' }],
   },
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#0E0A18' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#150F22' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#0C0914' }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#DCE8D6' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#FFFFFF' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#E5E1DB' }] },
   { featureType: 'road', elementType: 'labels', stylers: [{ visibility: 'off' }] },
   { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0A0712' }] },
-  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#0C0914' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#CFE0F5' }] },
+  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#F6F4F1' }] },
 ];

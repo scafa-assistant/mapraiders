@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import type { Echo } from '../utils/types';
 
 // Echo markers are map content: the base color stays fixed regardless of the
-// app theme so it always matches the hardcoded rgba(123, 97, 255, …) glow.
-const ECHO_BASE_COLOR = '#7B61FF';
+// app theme so it always matches the hardcoded rgba(21, 88, 240, …) glow.
+const ECHO_BASE_COLOR = '#1558F0';
 
 interface EchoMarkerProps {
   /** The echo data to render. */
@@ -74,7 +74,7 @@ const EchoMarker: React.FC<EchoMarkerProps> = ({ echo, onPress, likes = 0 }) => 
 
   // Color intensity based on likes: more likes = more vivid
   const baseOpacity = Math.min(0.3 + likes * 0.05, 0.7);
-  const markerColor = likes > 10 ? '#FF6B9D' : likes > 5 ? '#C77DFF' : ECHO_BASE_COLOR;
+  const markerColor = likes > 10 ? '#4B7BFF' : likes > 5 ? '#1558F0' : ECHO_BASE_COLOR;
 
   return (
     <>
@@ -85,8 +85,8 @@ const EchoMarker: React.FC<EchoMarkerProps> = ({ echo, onPress, likes = 0 }) => 
           longitude: echo.location?.longitude ?? echo.lng ?? 0,
         }}
         radius={echo.radius}
-        fillColor={`rgba(123, 97, 255, ${baseOpacity * 0.15})`}
-        strokeColor={`rgba(123, 97, 255, ${baseOpacity * 0.4})`}
+        fillColor={`rgba(21, 88, 240, ${baseOpacity * 0.15})`}
+        strokeColor={`rgba(21, 88, 240, ${baseOpacity * 0.4})`}
         strokeWidth={1}
       />
 
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(123, 97, 255, 0.1)',
+    backgroundColor: 'rgba(21, 88, 240, 0.1)',
   },
   iconCircle: {
     width: 30,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#7B61FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 8,

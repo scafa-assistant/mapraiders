@@ -52,7 +52,7 @@ export async function startBackgroundTracking(): Promise<boolean> {
     foregroundService: {
       notificationTitle: 'MapRaiders',
       notificationBody: 'Recording your route...',
-      notificationColor: '#00D4FF',
+      notificationColor: '#1558F0',
     },
     pausesUpdatesAutomatically: false,
   });

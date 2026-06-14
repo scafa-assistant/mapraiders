@@ -244,7 +244,7 @@ export default function PetScreen({ navigation }: PetScreenProps) {
               disabled={!petName.trim()}
               activeOpacity={0.7}
             >
-              <Ionicons name="paw" size={20} color="#0A0E17" />
+              <Ionicons name="paw" size={20} color="#F6F4F1" />
               <Text style={styles.registerBtnText}>{S.profile.pet.registerDog}</Text>
             </TouchableOpacity>
 
@@ -356,9 +356,9 @@ const createStyles = (theme: Theme) =>
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(123, 97, 255, 0.12)',
+    backgroundColor: 'rgba(21,88,240,0.12)',
     borderWidth: 2,
-    borderColor: 'rgba(123, 97, 255, 0.3)',
+    borderColor: 'rgba(21,88,240,0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.lg,
@@ -421,7 +421,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.4,
   },
   registerBtnText: {
-    color: '#0A0E17',
+    color: '#F6F4F1',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },

@@ -37,12 +37,12 @@ const STEP_TYPE_ICONS: Record<QuestStepType, keyof typeof Ionicons.glyphMap> = {
 };
 
 const STEP_TYPE_COLORS: Record<QuestStepType, string> = {
-  FIND: '#00D4FF',
-  LISTEN: '#7B61FF',
-  CHALLENGE: '#FF4757',
-  SOLVE: '#FFB800',
-  COLLECT: '#00FF88',
-  DOG: '#7B61FF',
+  FIND: '#1558F0',
+  LISTEN: '#1558F0',
+  CHALLENGE: '#D7263D',
+  SOLVE: '#F5A623',
+  COLLECT: '#1B9E5A',
+  DOG: '#1558F0',
 };
 
 export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenProps) {
@@ -259,7 +259,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
       <SafeAreaView style={styles.completeContainer}>
         <View style={styles.completeContent}>
           <View style={styles.trophyCircle}>
-            <Ionicons name="trophy" size={56} color="#FFB800" />
+            <Ionicons name="trophy" size={56} color="#F5A623" />
           </View>
           <Text style={styles.completeTitle}>{S.quests.play.completeTitle}</Text>
           <Text style={styles.completeSubtitle}>{quest?.title}</Text>
@@ -277,7 +277,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
   if (!quest || !currentStep) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00D4FF" />
+        <ActivityIndicator size="large" color="#1558F0" />
         <Text style={styles.loadingText}>{S.quests.play.loadingQuest}</Text>
       </SafeAreaView>
     );
@@ -297,10 +297,10 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             disabled={isVerifying}
           >
             {isVerifying ? (
-              <ActivityIndicator color="#0A0E17" />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="camera" size={22} color="#0A0E17" />
+                <Ionicons name="camera" size={22} color="#FFFFFF" />
                 <Text style={styles.verifyButtonText}>{S.quests.play.takePhoto}</Text>
               </>
             )}
@@ -316,7 +316,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
                   styles.proximityFill,
                   {
                     width: `${Math.max(0, Math.min(100, (1 - dist / (currentStep.radius * 2)) * 100))}%`,
-                    backgroundColor: isNearStep ? '#00FF88' : stepColor,
+                    backgroundColor: isNearStep ? '#1B9E5A' : stepColor,
                   },
                 ]}
               />
@@ -326,15 +326,15 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             </Text>
             {isNearStep && (
               <TouchableOpacity
-                style={[styles.verifyButton, { backgroundColor: '#00FF88' }]}
+                style={[styles.verifyButton, { backgroundColor: '#1B9E5A' }]}
                 onPress={handleListenVerify}
                 disabled={isVerifying}
               >
                 {isVerifying ? (
-                  <ActivityIndicator color="#0A0E17" />
+                  <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <>
-                    <Ionicons name="ear" size={22} color="#0A0E17" />
+                    <Ionicons name="ear" size={22} color="#FFFFFF" />
                     <Text style={styles.verifyButtonText}>{S.quests.play.listen}</Text>
                   </>
                 )}
@@ -351,10 +351,10 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             disabled={isVerifying}
           >
             {isVerifying ? (
-              <ActivityIndicator color="#0A0E17" />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="videocam" size={22} color="#0A0E17" />
+                <Ionicons name="videocam" size={22} color="#FFFFFF" />
                 <Text style={styles.verifyButtonText}>{S.quests.play.recordVideo}</Text>
               </>
             )}
@@ -383,12 +383,12 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
                 disabled={!solveAnswer.trim() || isVerifying}
               >
                 {isVerifying ? (
-                  <ActivityIndicator color="#0A0E17" size="small" />
+                  <ActivityIndicator color="#FFFFFF" size="small" />
                 ) : (
                   <Ionicons
                     name="send"
                     size={18}
-                    color={solveAnswer.trim() ? '#0A0E17' : theme.textSecondary}
+                    color={solveAnswer.trim() ? '#FFFFFF' : theme.textSecondary}
                   />
                 )}
               </TouchableOpacity>
@@ -404,15 +404,15 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             </Text>
             {isNearStep && (
               <TouchableOpacity
-                style={[styles.verifyButton, { backgroundColor: '#00FF88' }]}
+                style={[styles.verifyButton, { backgroundColor: '#1B9E5A' }]}
                 onPress={handleCollectVerify}
                 disabled={isVerifying}
               >
                 {isVerifying ? (
-                  <ActivityIndicator color="#0A0E17" />
+                  <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <>
-                    <Ionicons name="hand-left" size={22} color="#0A0E17" />
+                    <Ionicons name="hand-left" size={22} color="#FFFFFF" />
                     <Text style={styles.verifyButtonText}>{S.quests.play.collect}</Text>
                   </>
                 )}
@@ -429,10 +429,10 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
             disabled={isVerifying}
           >
             {isVerifying ? (
-              <ActivityIndicator color="#0A0E17" />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="paw" size={22} color="#0A0E17" />
+                <Ionicons name="paw" size={22} color="#FFFFFF" />
                 <Text style={styles.verifyButtonText}>{S.quests.play.confirmWithDog}</Text>
               </>
             )}
@@ -469,7 +469,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         />
         <Marker coordinate={currentStep.location} anchor={{ x: 0.5, y: 0.5 }}>
           <View style={[styles.stepMarker, { backgroundColor: stepColor }]}>
-            <Ionicons name={STEP_TYPE_ICONS[currentStep.type]} size={18} color="#0A0E17" />
+            <Ionicons name={STEP_TYPE_ICONS[currentStep.type]} size={18} color="#FFFFFF" />
           </View>
         </Marker>
       </MapView>
@@ -477,7 +477,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
       {/* Top Bar */}
       <SafeAreaView style={styles.topBar} edges={['top']}>
         <TouchableOpacity style={styles.abandonButton} onPress={handleAbandon}>
-          <Ionicons name="close" size={22} color="#FF4757" />
+          <Ionicons name="close" size={22} color="#D7263D" />
         </TouchableOpacity>
 
         {/* Progress Bar */}
@@ -516,7 +516,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
               style={styles.hintButton}
               onPress={() => setShowHint(!showHint)}
             >
-              <Ionicons name="bulb" size={18} color="#FFB800" />
+              <Ionicons name="bulb" size={18} color="#F5A623" />
             </TouchableOpacity>
           )}
         </View>
@@ -525,7 +525,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
 
         {showHint && currentStep.hint && (
           <View style={styles.hintBox}>
-            <Ionicons name="bulb" size={14} color="#FFB800" />
+            <Ionicons name="bulb" size={14} color="#F5A623" />
             <Text style={styles.hintText}>{currentStep.hint}</Text>
           </View>
         )}
@@ -563,7 +563,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
         pointerEvents="none"
       >
         <View style={styles.successCircle}>
-          <Ionicons name="checkmark" size={48} color="#00FF88" />
+          <Ionicons name="checkmark" size={48} color="#1B9E5A" />
         </View>
         <Text style={styles.successText}>{S.quests.play.stepComplete}</Text>
       </Animated.View>
@@ -607,17 +607,17 @@ const createStyles = (theme: Theme) =>
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
   },
   progressContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -633,7 +633,7 @@ const createStyles = (theme: Theme) =>
   progressBarFill: {
     height: '100%',
     borderRadius: 3,
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
   },
   progressText: {
     color: theme.textSecondary,
@@ -647,7 +647,7 @@ const createStyles = (theme: Theme) =>
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: '#C0BAB4',
   },
   instructionCard: {
     flex: 1,
@@ -683,7 +683,7 @@ const createStyles = (theme: Theme) =>
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255, 184, 0, 0.15)',
+    backgroundColor: 'rgba(245, 166, 35, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -697,9 +697,9 @@ const createStyles = (theme: Theme) =>
   hintBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: 'rgba(255, 184, 0, 0.08)',
+    backgroundColor: 'rgba(245, 166, 35, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 184, 0, 0.2)',
+    borderColor: 'rgba(245, 166, 35, 0.2)',
     borderRadius: 10,
     padding: 12,
     marginBottom: 12,
@@ -707,7 +707,7 @@ const createStyles = (theme: Theme) =>
   },
   hintText: {
     flex: 1,
-    color: '#FFB800',
+    color: '#F5A623',
     fontSize: 13,
     lineHeight: 18,
   },
@@ -731,7 +731,7 @@ const createStyles = (theme: Theme) =>
     marginTop: 8,
   },
   verifyButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
     letterSpacing: 1,
@@ -797,14 +797,14 @@ const createStyles = (theme: Theme) =>
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    backgroundColor: 'rgba(27, 158, 90, 0.15)',
     borderWidth: 3,
-    borderColor: '#00FF88',
+    borderColor: '#1B9E5A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   successText: {
-    color: '#00FF88',
+    color: '#1B9E5A',
     fontSize: 22,
     fontWeight: '900',
     letterSpacing: 3,
@@ -825,20 +825,20 @@ const createStyles = (theme: Theme) =>
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(255, 184, 0, 0.1)',
+    backgroundColor: 'rgba(245, 166, 35, 0.1)',
     borderWidth: 3,
-    borderColor: '#FFB800',
+    borderColor: '#F5A623',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#FFB800',
+    shadowColor: '#F5A623',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 10,
   },
   completeTitle: {
-    color: '#FFB800',
+    color: '#F5A623',
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: 4,

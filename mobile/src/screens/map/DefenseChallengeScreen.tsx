@@ -315,13 +315,13 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
   // ─── Game Type Labels & Colors ────────────────────────────────────────
 
   const gameLabels: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
-    rock_paper_scissors: { label: S.map.defenseChallenge.gameRps, icon: 'hand-left-outline', color: '#7B61FF' },
-    sprint_race: { label: S.map.defenseChallenge.gameSprintRace, icon: 'speedometer-outline', color: '#00FF88' },
-    trivia: { label: S.map.defenseChallenge.gameTrivia, icon: 'help-circle-outline', color: '#00D4FF' },
-    coin_flip: { label: S.map.defenseChallenge.gameCoinFlip, icon: 'ellipse-outline', color: '#FFB800' },
+    rock_paper_scissors: { label: S.map.defenseChallenge.gameRps, icon: 'hand-left-outline', color: '#1558F0' },
+    sprint_race: { label: S.map.defenseChallenge.gameSprintRace, icon: 'speedometer-outline', color: '#1B9E5A' },
+    trivia: { label: S.map.defenseChallenge.gameTrivia, icon: 'help-circle-outline', color: '#1558F0' },
+    coin_flip: { label: S.map.defenseChallenge.gameCoinFlip, icon: 'ellipse-outline', color: '#F5A623' },
     odd_even: { label: S.map.defenseChallenge.gameOddEven, icon: 'finger-print-outline', color: '#FF69B4' },
-    tic_tac_toe: { label: S.map.defenseChallenge.gameTicTacToe, icon: 'grid-outline', color: '#00D4FF' },
-    mini_chess: { label: S.map.defenseChallenge.gameMiniChess, icon: 'trophy-outline', color: '#FFB800' },
+    tic_tac_toe: { label: S.map.defenseChallenge.gameTicTacToe, icon: 'grid-outline', color: '#1558F0' },
+    mini_chess: { label: S.map.defenseChallenge.gameMiniChess, icon: 'trophy-outline', color: '#F5A623' },
   };
 
   const gameInfo = gameLabels[gameType] || gameLabels.trivia;
@@ -386,9 +386,9 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
   const renderRpsGame = () => {
     const moves: { choice: RpsChoice; emoji: string; label: string; color: string; scale: Animated.Value }[] = [
-      { choice: 'rock', emoji: '🪨', label: S.map.defenseChallenge.rock, color: '#8892B0', scale: rpsScaleRock },
-      { choice: 'scissors', emoji: '✂️', label: S.map.defenseChallenge.scissors, color: '#FF4757', scale: rpsScaleScissors },
-      { choice: 'paper', emoji: '📄', label: S.map.defenseChallenge.paper, color: '#00D4FF', scale: rpsScalePaper },
+      { choice: 'rock', emoji: '🪨', label: S.map.defenseChallenge.rock, color: '#7A7470', scale: rpsScaleRock },
+      { choice: 'scissors', emoji: '✂️', label: S.map.defenseChallenge.scissors, color: '#D7263D', scale: rpsScaleScissors },
+      { choice: 'paper', emoji: '📄', label: S.map.defenseChallenge.paper, color: '#1558F0', scale: rpsScalePaper },
     ];
 
     return (
@@ -436,10 +436,10 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <ActivityIndicator size="small" color="#0A0E17" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="flash" size={20} color="#0A0E17" />
+                <Ionicons name="flash" size={20} color="#FFFFFF" />
                 <Text style={styles.submitBtnText}>{S.map.defenseChallenge.throwBtn}</Text>
               </>
             )}
@@ -467,7 +467,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
 
         {!isRacing && raceTime === 0 && result === null && (
           <TouchableOpacity style={styles.startRaceBtn} onPress={startRace}>
-            <Ionicons name="play" size={32} color="#0A0E17" />
+            <Ionicons name="play" size={32} color="#FFFFFF" />
             <Text style={styles.startRaceText}>{S.map.defenseChallenge.startBtn}</Text>
           </TouchableOpacity>
         )}
@@ -521,10 +521,10 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             disabled={!triviaAnswer.trim() || isSubmitting}
           >
             {isSubmitting ? (
-              <ActivityIndicator size="small" color="#0A0E17" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="send" size={20} color="#0A0E17" />
+                <Ionicons name="send" size={20} color="#FFFFFF" />
                 <Text style={styles.submitBtnText}>{S.map.defenseChallenge.submitBtn}</Text>
               </>
             )}
@@ -557,8 +557,8 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
                 style={[
                   styles.rpsButton,
                   { width: 130, height: 130 },
-                  { borderColor: coinChoice === s.side ? '#FFB800' : theme.border },
-                  coinChoice === s.side && { backgroundColor: 'rgba(255, 184, 0, 0.15)' },
+                  { borderColor: coinChoice === s.side ? '#F5A623' : theme.border },
+                  coinChoice === s.side && { backgroundColor: 'rgba(245,166,35,0.15)' },
                 ]}
                 onPress={() => {
                   if (!isSubmitting && result !== 'win' && result !== 'lose') {
@@ -569,7 +569,7 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
                 activeOpacity={0.7}
               >
                 <Text style={[styles.rpsEmoji, { fontSize: 44 }]}>{s.emoji}</Text>
-                <Text style={[styles.rpsLabel, coinChoice === s.side && { color: '#FFB800' }]}>
+                <Text style={[styles.rpsLabel, coinChoice === s.side && { color: '#F5A623' }]}>
                   {s.label}
                 </Text>
               </TouchableOpacity>
@@ -584,10 +584,10 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <ActivityIndicator size="small" color="#0A0E17" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <>
-                <Ionicons name="flash" size={20} color="#0A0E17" />
+                <Ionicons name="flash" size={20} color="#FFFFFF" />
                 <Text style={styles.submitBtnText}>{S.map.defenseChallenge.flipBtn}</Text>
               </>
             )}
@@ -635,10 +635,10 @@ export default function DefenseChallengeScreen({ route, navigation }: DefenseCha
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-            <ActivityIndicator size="small" color="#0A0E17" />
+            <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
             <>
-              <Ionicons name="hand-left" size={20} color="#0A0E17" />
+              <Ionicons name="hand-left" size={20} color="#FFFFFF" />
               <Text style={styles.submitBtnText}>{S.map.defenseChallenge.showBtn}</Text>
             </>
           )}
@@ -816,7 +816,7 @@ const createStyles = (theme: Theme) =>
     elevation: 8,
   },
   submitBtnText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
     letterSpacing: 2,
@@ -858,7 +858,7 @@ const createStyles = (theme: Theme) =>
     elevation: 12,
   },
   startRaceText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
     marginTop: 4,
@@ -912,7 +912,7 @@ const createStyles = (theme: Theme) =>
     borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.2)',
+    borderColor: 'rgba(21,88,240,0.2)',
     width: '100%',
   },
   triviaQuestionText: {
@@ -948,13 +948,13 @@ const createStyles = (theme: Theme) =>
     gap: SPACING.lg,
   },
   resultWin: {
-    backgroundColor: 'rgba(10, 14, 23, 0.95)',
+    backgroundColor: 'rgba(246,244,241,0.95)',
   },
   resultLose: {
-    backgroundColor: 'rgba(10, 14, 23, 0.95)',
+    backgroundColor: 'rgba(246,244,241,0.95)',
   },
   resultDraw: {
-    backgroundColor: 'rgba(10, 14, 23, 0.85)',
+    backgroundColor: 'rgba(246,244,241,0.85)',
   },
   resultTitle: {
     fontSize: 36,
@@ -985,7 +985,7 @@ const createStyles = (theme: Theme) =>
     marginTop: SPACING.md,
   },
   resultBtnText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: FONT_SIZE.lg,
     fontWeight: '800',
   },

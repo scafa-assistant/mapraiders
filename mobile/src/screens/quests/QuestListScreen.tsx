@@ -172,7 +172,7 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
               <Ionicons
                 name="rainy"
                 size={12}
-                color={filterWeatherActive ? '#00D4FF' : theme.textSecondary}
+                color={filterWeatherActive ? '#1558F0' : theme.textSecondary}
               />
               <Text
                 style={[
@@ -190,7 +190,7 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
       {/* Quest List */}
       {isLoading && nearbyQuests.length === 0 ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#00D4FF" />
+          <ActivityIndicator size="large" color="#1558F0" />
           <Text style={styles.loadingText}>{S.quests.list.scanning}</Text>
         </View>
       ) : (
@@ -205,8 +205,8 @@ export default function QuestListScreen({ navigation }: QuestListScreenProps) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#00D4FF"
-              colors={['#00D4FF']}
+              tintColor="#1558F0"
+              colors={['#1558F0']}
             />
           }
         />
@@ -254,8 +254,8 @@ const createStyles = (theme: Theme) =>
     borderColor: theme.border,
   },
   filterChipActive: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
-    borderColor: '#00D4FF',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
+    borderColor: '#1558F0',
   },
   filterChipText: {
     color: theme.textSecondary,
@@ -263,7 +263,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '600',
   },
   filterChipTextActive: {
-    color: '#00D4FF',
+    color: '#1558F0',
   },
   weatherFilterChip: {
     flexDirection: 'row',

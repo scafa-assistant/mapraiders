@@ -260,7 +260,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
     const rankLabel =
       item.rank === 'leader' ? S.profile.clan.rankLeader : item.rank === 'officer' ? S.profile.clan.rankOfficer : '';
     const rankColor =
-      item.rank === 'leader' ? '#FFB800' : item.rank === 'officer' ? theme.textSecondary : 'transparent';
+      item.rank === 'leader' ? '#F5A623' : item.rank === 'officer' ? theme.textSecondary : 'transparent';
     const rankIcon: keyof typeof Ionicons.glyphMap =
       item.rank === 'leader' ? 'star' : item.rank === 'officer' ? 'shield' : 'person-outline';
 
@@ -285,7 +285,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
           {/* Rank badge overlay */}
           {item.rank !== 'member' && (
             <View style={[styles.memberRankOverlay, { backgroundColor: rankColor }]}>
-              <Ionicons name={rankIcon} size={10} color="#0A0E17" />
+              <Ionicons name={rankIcon} size={10} color="#F6F4F1" />
             </View>
           )}
         </View>
@@ -328,7 +328,7 @@ export default function ClanScreen({ navigation }: ClanScreenProps) {
         onPress={() => navigation.navigate('CreateClan')}
         activeOpacity={0.8}
       >
-        <Ionicons name="add-circle" size={22} color="#0A0E17" />
+        <Ionicons name="add-circle" size={22} color="#F6F4F1" />
         <Text style={styles.createClanBtnText}>{S.profile.clan.createClan}</Text>
       </TouchableOpacity>
 
@@ -710,13 +710,13 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFB800',
+    backgroundColor: '#F5A623',
     borderRadius: RADIUS.lg,
     paddingVertical: 16,
     paddingHorizontal: 32,
     gap: 10,
     width: '100%',
-    shadowColor: '#FFB800',
+    shadowColor: '#F5A623',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
@@ -724,7 +724,7 @@ const createStyles = (theme: Theme) =>
     marginBottom: SPACING.md,
   },
   createClanBtnText: {
-    color: '#0A0E17',
+    color: '#F6F4F1',
     fontSize: FONT_SIZE.lg,
     fontWeight: '900',
     letterSpacing: 1,
@@ -767,7 +767,7 @@ const createStyles = (theme: Theme) =>
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(20,18,16,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
@@ -776,7 +776,7 @@ const createStyles = (theme: Theme) =>
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(20,18,16,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.md,
@@ -926,7 +926,7 @@ const createStyles = (theme: Theme) =>
     borderColor: theme.border,
   },
   memberRowMe: {
-    borderColor: 'rgba(0, 212, 255, 0.2)',
+    borderColor: 'rgba(21,88,240,0.2)',
   },
   memberAvatar: {
     width: 44,
@@ -1008,8 +1008,8 @@ const createStyles = (theme: Theme) =>
     paddingVertical: 14,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
-    backgroundColor: 'rgba(255, 71, 87, 0.08)',
+    borderColor: 'rgba(215,38,61,0.3)',
+    backgroundColor: 'rgba(215,38,61,0.08)',
     marginTop: SPACING.xl,
   },
   leaveBtnText: {

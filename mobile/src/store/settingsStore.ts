@@ -34,7 +34,7 @@ interface SettingsState {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  darkMapStyle: true,
+  darkMapStyle: false,
   hapticFeedback: true,
   pushNotifications: true,
   territoryAlerts: true,

@@ -6,11 +6,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0A0E17"
+      "backgroundColor": "#F6F4F1"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -37,7 +37,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0C0914"
+        "backgroundColor": "#F6F4F1"
       },
       "package": "com.mapraiders.app",
       "permissions": [
@@ -76,7 +76,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#9D4EDD"
+          "color": "#1558F0"
         }
       ],
       [

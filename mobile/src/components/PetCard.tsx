@@ -46,10 +46,10 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     <View style={styles.container}>
       {/* Paw decorations */}
       <View style={styles.pawDecor1}>
-        <Ionicons name="paw" size={60} color="rgba(123, 97, 255, 0.04)" />
+        <Ionicons name="paw" size={60} color="rgba(21, 88, 240, 0.04)" />
       </View>
       <View style={styles.pawDecor2}>
-        <Ionicons name="paw" size={40} color="rgba(0, 255, 136, 0.04)" />
+        <Ionicons name="paw" size={40} color="rgba(27, 158, 90, 0.04)" />
       </View>
 
       {/* Header: avatar + name/breed */}
@@ -142,7 +142,7 @@ const createStyles = (theme: Theme) =>
     borderWidth: 1,
     borderColor: theme.border,
     overflow: 'hidden',
-    shadowColor: '#7B61FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -169,9 +169,9 @@ const createStyles = (theme: Theme) =>
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: 'rgba(123, 97, 255, 0.12)',
+    backgroundColor: 'rgba(21, 88, 240, 0.12)',
     borderWidth: 2,
-    borderColor: 'rgba(123, 97, 255, 0.3)',
+    borderColor: 'rgba(21, 88, 240, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
@@ -218,7 +218,7 @@ const createStyles = (theme: Theme) =>
     gap: SPACING.md,
   },
   levelBadge: {
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
@@ -235,7 +235,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backgroundColor: 'rgba(20, 18, 16, 0.06)',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
   },
@@ -248,7 +248,7 @@ const createStyles = (theme: Theme) =>
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: 'rgba(20, 18, 16, 0.06)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 2,

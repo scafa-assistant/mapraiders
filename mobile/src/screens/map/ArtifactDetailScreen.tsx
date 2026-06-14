@@ -23,10 +23,10 @@ import { strings as S, t, plural } from '../../i18n';
 const { width } = Dimensions.get('window');
 
 const RARITY_COLORS: Record<string, string> = {
-  common: '#8892B0',
-  rare: '#00D4FF',
-  epic: '#7B61FF',
-  legendary: '#FFB800',
+  common: '#7A7470',
+  rare: '#1558F0',
+  epic: '#1558F0',
+  legendary: '#F5A623',
 };
 
 const getRarityLabels = (): Record<string, string> => ({
@@ -233,13 +233,13 @@ export default function ArtifactDetailScreen({ route, navigation }: ArtifactDeta
               activeOpacity={0.8}
             >
               {voting ? (
-                <ActivityIndicator color="#0A0E17" size="small" />
+                <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
                 <>
                   <Ionicons
                     name={artifact.voted ? 'checkmark-circle' : 'arrow-up-circle'}
                     size={22}
-                    color={artifact.voted ? theme.textSecondary : '#0A0E17'}
+                    color={artifact.voted ? theme.textSecondary : '#FFFFFF'}
                   />
                   <Text
                     style={[
@@ -396,7 +396,7 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+    backgroundColor: 'rgba(27,158,90,0.1)',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -407,7 +407,7 @@ const createStyles = (theme: Theme) =>
     fontWeight: '700',
   },
   description: {
-    color: '#B8C0D8',
+    color: '#141210',
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 14,
@@ -458,7 +458,7 @@ const createStyles = (theme: Theme) =>
   permanenceBarBg: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#2A3450',
+    backgroundColor: '#EFEDE8',
     overflow: 'hidden',
     marginBottom: 10,
   },
@@ -467,7 +467,7 @@ const createStyles = (theme: Theme) =>
     borderRadius: 4,
   },
   permanenceStatus: {
-    color: '#555E78',
+    color: '#7A7470',
     fontSize: 12,
   },
   voteSection: {
@@ -499,7 +499,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.7,
   },
   voteButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
@@ -525,7 +525,7 @@ const createStyles = (theme: Theme) =>
     width: 36,
     height: 36,
     borderRadius: 8,
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21,88,240,0.15)',
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',

@@ -316,7 +316,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress={() => navigation.navigate('Notifications')}
           activeOpacity={0.7}
         >
-          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.12)' }]}>
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(21, 88, 240, 0.12)' }]}>
             <Ionicons name="notifications" size={22} color={theme.primary} />
           </View>
           <View style={styles.petButtonContent}>
@@ -339,7 +339,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress={() => navigation.navigate('Friends' as any)}
           activeOpacity={0.7}
         >
-          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 212, 255, 0.12)' }]}>
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(21, 88, 240, 0.12)' }]}>
             <Ionicons name="people" size={22} color={theme.primary} />
           </View>
           <View style={styles.petButtonContent}>
@@ -355,7 +355,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress={() => navigation.navigate('Clan')}
           activeOpacity={0.7}
         >
-          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(255, 184, 0, 0.12)' }]}>
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(245, 166, 35, 0.12)' }]}>
             <Ionicons name="shield" size={22} color={theme.warning} />
           </View>
           <View style={styles.petButtonContent}>
@@ -371,7 +371,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress={() => navigation.navigate('Feed')}
           activeOpacity={0.7}
         >
-          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(0, 255, 136, 0.12)' }]}>
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(27, 158, 90, 0.12)' }]}>
             <Ionicons name="newspaper" size={22} color={theme.accent} />
           </View>
           <View style={styles.petButtonContent}>
@@ -387,7 +387,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress={() => navigation.navigate('Leaderboard')}
           activeOpacity={0.7}
         >
-          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(255, 71, 87, 0.12)' }]}>
+          <View style={[styles.navIconCircle, { backgroundColor: 'rgba(215, 38, 61, 0.12)' }]}>
             <Ionicons name="trophy" size={22} color={theme.danger} />
           </View>
           <View style={styles.petButtonContent}>
@@ -460,9 +460,9 @@ const createStyles = (theme: Theme) =>
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+    backgroundColor: 'rgba(21, 88, 240, 0.1)',
     borderWidth: 2,
-    borderColor: 'rgba(0, 212, 255, 0.3)',
+    borderColor: 'rgba(21, 88, 240, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -471,7 +471,7 @@ const createStyles = (theme: Theme) =>
     height: 80,
     borderRadius: 40,
     borderWidth: 2,
-    borderColor: 'rgba(0, 212, 255, 0.3)',
+    borderColor: 'rgba(21, 88, 240, 0.3)',
   },
   cameraOverlay: {
     position: 'absolute',
@@ -499,7 +499,7 @@ const createStyles = (theme: Theme) =>
     marginBottom: SPACING.md,
   },
   levelBadge: {
-    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
@@ -522,13 +522,13 @@ const createStyles = (theme: Theme) =>
   titleBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 184, 0, 0.1)',
+    backgroundColor: 'rgba(245, 166, 35, 0.1)',
     borderRadius: RADIUS.full,
     paddingHorizontal: 10,
     paddingVertical: 4,
     gap: 4,
     borderWidth: 1,
-    borderColor: 'rgba(255, 184, 0, 0.2)',
+    borderColor: 'rgba(245, 166, 35, 0.2)',
   },
   titleText: {
     color: theme.warning,
@@ -643,7 +643,7 @@ const createStyles = (theme: Theme) =>
   classBarOuter: {
     flex: 1,
     height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(20, 18, 16, 0.06)',
     borderRadius: 3,
     marginHorizontal: SPACING.sm,
     overflow: 'hidden',
@@ -673,7 +673,7 @@ const createStyles = (theme: Theme) =>
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(123, 97, 255, 0.12)',
+    backgroundColor: 'rgba(21, 88, 240, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,

@@ -129,12 +129,12 @@ const createStyles = (theme: Theme) =>
     borderBottomColor: theme.border,
   },
   currentUserContainer: {
-    backgroundColor: 'rgba(0, 212, 255, 0.06)',
+    backgroundColor: 'rgba(21, 88, 240, 0.06)',
     borderLeftWidth: 3,
     borderLeftColor: theme.primary,
   },
   topThreeContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backgroundColor: 'rgba(20, 18, 16, 0.06)',
   },
   rankContainer: {
     width: 36,

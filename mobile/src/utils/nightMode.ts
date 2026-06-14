@@ -19,8 +19,8 @@ export function isNightTime(): boolean {
  */
 export function getNightModeStyles() {
   return {
-    mapStyle: 'dark' as const,
-    accentColor: '#8B5CF6',   // purple instead of cyan
-    bgColor: '#050810',       // even darker background
+    mapStyle: 'light' as const,
+    accentColor: '#1558F0',   // brand blue
+    bgColor: '#EFEDE8',       // dimmed off-white surface for night
   };
 }

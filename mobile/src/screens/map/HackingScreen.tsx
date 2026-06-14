@@ -30,9 +30,9 @@ import PvEIntroCards from '../../components/PvEIntroCards';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const VRIL_PRIMARY = '#7B61FF';
-const VRIL_ACCENT = '#9D4EDD';
-const PLAYER_COLOR = '#00D4FF';
+const VRIL_PRIMARY = '#1558F0';
+const VRIL_ACCENT = '#1558F0';
+const PLAYER_COLOR = '#1558F0';
 const MATCH_THRESHOLD = 0.85;
 const HOLD_DURATION_MS = 2000;
 const TIMEOUT_SECS = 45;
@@ -99,7 +99,7 @@ function StepControl({ label, value, min, max, step, decimals = 1, onChange, col
   const increment = () => onChange(Math.min(max, parseFloat((value + step).toFixed(decimals))));
   return (
     <View style={stepStyles.row}>
-      <Text style={[stepStyles.label, { color: '#8892B0' }]}>{label}</Text>
+      <Text style={[stepStyles.label, { color: '#7A7470' }]}>{label}</Text>
       <TouchableOpacity style={stepStyles.btn} onPress={decrement} activeOpacity={0.7}>
         <Ionicons name="remove" size={18} color={color} />
       </TouchableOpacity>
@@ -126,7 +126,7 @@ const stepStyles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(123,97,255,0.4)',
+    borderColor: 'rgba(21,88,240,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 6,
@@ -331,7 +331,7 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
 
   const glowColor = glowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(123,97,255,0.1)', 'rgba(123,97,255,0.55)'],
+    outputRange: ['rgba(21,88,240,0.1)', 'rgba(21,88,240,0.55)'],
   });
 
   // ── Human-readable error messages
@@ -355,22 +355,22 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
 
   const matchColor =
     matchRatio >= MATCH_THRESHOLD
-      ? '#00FF88'
+      ? '#1B9E5A'
       : matchRatio >= 0.6
-        ? '#FFB800'
-        : '#FF4757';
+        ? '#F5A623'
+        : '#D7263D';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: '#0A0E17' }]} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: '#F6F4F1' }]} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="close" size={24} color="#8892B0" />
+          <Ionicons name="close" size={24} color="#7A7470" />
         </TouchableOpacity>
         <Text style={styles.title}>Frequenz-Hack</Text>
         <View style={[styles.timerBadge, secondsLeft <= 10 && styles.timerUrgent]}>
-          <Ionicons name="time" size={13} color={secondsLeft <= 10 ? '#FF4757' : '#8892B0'} />
-          <Text style={[styles.timerText, secondsLeft <= 10 && { color: '#FF4757' }]}>
+          <Ionicons name="time" size={13} color={secondsLeft <= 10 ? '#D7263D' : '#7A7470'} />
+          <Text style={[styles.timerText, secondsLeft <= 10 && { color: '#D7263D' }]}>
             {secondsLeft}s
           </Text>
         </View>
@@ -481,7 +481,7 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
         {/* Timeout */}
         {timedOut && !result && (
           <View style={styles.resultOverlay}>
-            <Ionicons name="time" size={48} color="#FF4757" />
+            <Ionicons name="time" size={48} color="#D7263D" />
             <Text style={styles.resultTitle}>Zeit abgelaufen</Text>
             <Text style={styles.resultMsg}>Die Verbindung wurde unterbrochen.</Text>
             <TouchableOpacity style={styles.dismissBtn} onPress={() => navigation.goBack()}>
@@ -508,27 +508,27 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
                   <View style={styles.lootList}>
                     {result.loot.resources?.energy != null && (
                       <View style={styles.lootRow}>
-                        <Ionicons name="flash" size={16} color="#FFB800" />
+                        <Ionicons name="flash" size={16} color="#F5A623" />
                         <Text style={styles.lootText}>+{result.loot.resources.energy} Energie</Text>
                       </View>
                     )}
                     {result.loot.resources?.tech != null && (
                       <View style={styles.lootRow}>
-                        <Ionicons name="hardware-chip" size={16} color="#00D4FF" />
+                        <Ionicons name="hardware-chip" size={16} color="#1558F0" />
                         <Text style={styles.lootText}>+{result.loot.resources.tech} Tech</Text>
                       </View>
                     )}
                     {result.loot.resources?.intel != null && (
                       <View style={styles.lootRow}>
-                        <Ionicons name="eye" size={16} color="#9D4EDD" />
+                        <Ionicons name="eye" size={16} color="#1558F0" />
                         <Text style={styles.lootText}>+{result.loot.resources.intel} Intel</Text>
                       </View>
                     )}
                     {result.loot.items?.map((item, idx) => (
                       <View key={idx} style={styles.lootRow}>
-                        <Ionicons name="cube" size={16} color="#8892B0" />
+                        <Ionicons name="cube" size={16} color="#7A7470" />
                         <Text style={styles.lootText}>{item.definition_id}</Text>
-                        <Text style={[styles.rarityBadge, { color: item.rarity === 'rare' ? '#00D4FF' : item.rarity === 'epic' ? VRIL_PRIMARY : '#8892B0' }]}>
+                        <Text style={[styles.rarityBadge, { color: item.rarity === 'rare' ? '#1558F0' : item.rarity === 'epic' ? VRIL_PRIMARY : '#7A7470' }]}>
                           {item.rarity}
                         </Text>
                       </View>
@@ -538,8 +538,8 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
               </>
             ) : (
               <>
-                <Ionicons name="close-circle" size={48} color="#FF4757" />
-                <Text style={[styles.resultTitle, { color: '#FF4757' }]}>Hack fehlgeschlagen</Text>
+                <Ionicons name="close-circle" size={48} color="#D7263D" />
+                <Text style={[styles.resultTitle, { color: '#D7263D' }]}>Hack fehlgeschlagen</Text>
                 <Text style={styles.resultMsg}>{errorMessage(result.message)}</Text>
               </>
             )}
@@ -558,7 +558,7 @@ export default function HackingScreen({ navigation, route }: HackingScreenProps)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: '#F6F4F1',
   },
   header: {
     flexDirection: 'row',
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A2340',
+    borderBottomColor: '#C0BAB4',
   },
   backBtn: {
     padding: SPACING.xs,
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#141210',
   },
   timerBadge: {
     flexDirection: 'row',
@@ -586,16 +586,16 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: RADIUS.sm,
     borderWidth: 1,
-    borderColor: '#1A2340',
-    backgroundColor: '#0D1220',
+    borderColor: '#C0BAB4',
+    backgroundColor: '#FFFFFF',
   },
   timerUrgent: {
-    borderColor: '#FF4757',
-    backgroundColor: 'rgba(255,71,87,0.1)',
+    borderColor: '#D7263D',
+    backgroundColor: 'rgba(215,38,61,0.1)',
   },
   timerText: {
     fontSize: FONT_SIZE.sm,
-    color: '#8892B0',
+    color: '#7A7470',
     fontWeight: '600',
   },
   scrollContent: {
@@ -611,29 +611,29 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: 'rgba(157,78,221,0.1)',
+    backgroundColor: 'rgba(21,88,240,0.1)',
     alignItems: 'center',
   },
   npcType: {
     fontSize: FONT_SIZE.md,
-    color: '#C77DFF',
+    color: '#1558F0',
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   npcLevel: {
     fontSize: FONT_SIZE.xs,
-    color: '#8892B0',
+    color: '#7A7470',
     marginTop: 2,
   },
   waveContainer: {
     alignItems: 'center',
-    backgroundColor: '#0D1220',
+    backgroundColor: '#FFFFFF',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
   },
   waveLabel: {
     fontSize: FONT_SIZE.xs,
@@ -655,7 +655,7 @@ const styles = StyleSheet.create({
   },
   matchLabel: {
     fontSize: FONT_SIZE.sm,
-    color: '#8892B0',
+    color: '#7A7470',
   },
   matchPct: {
     fontSize: FONT_SIZE.xl,
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
   },
   matchBarBg: {
     height: 8,
-    backgroundColor: '#1A2340',
+    backgroundColor: '#EFEDE8',
     borderRadius: 4,
     marginBottom: SPACING.md,
     overflow: 'hidden',
@@ -681,14 +681,14 @@ const styles = StyleSheet.create({
     top: 0,
     width: 2,
     height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.4)',
+    backgroundColor: 'rgba(20,18,16,0.4)',
   },
   controls: {
-    backgroundColor: '#0D1220',
+    backgroundColor: '#FFFFFF',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
     marginBottom: SPACING.md,
   },
   lockArea: {
@@ -697,12 +697,12 @@ const styles = StyleSheet.create({
   },
   holdHint: {
     fontSize: FONT_SIZE.xs,
-    color: '#8892B0',
+    color: '#7A7470',
     marginBottom: SPACING.sm,
   },
   adjustHint: {
     fontSize: FONT_SIZE.sm,
-    color: '#555E78',
+    color: '#7A7470',
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -719,7 +719,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: 'rgba(123,97,255,0.15)',
+    backgroundColor: 'rgba(21,88,240,0.15)',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -728,7 +728,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     height: '100%',
-    backgroundColor: 'rgba(123,97,255,0.35)',
+    backgroundColor: 'rgba(21,88,240,0.35)',
   },
   lockBtnText: {
     fontSize: FONT_SIZE.md,
@@ -742,19 +742,19 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     alignItems: 'center',
-    backgroundColor: '#0D1220',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1A2340',
+    borderColor: '#C0BAB4',
     gap: 12,
   },
   resultTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#141210',
   },
   resultMsg: {
     fontSize: FONT_SIZE.sm,
-    color: '#8892B0',
+    color: '#7A7470',
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -766,7 +766,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(20,18,16,0.06)',
     borderRadius: RADIUS.sm,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 6,
@@ -774,7 +774,7 @@ const styles = StyleSheet.create({
   lootText: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    color: '#FFFFFF',
+    color: '#141210',
   },
   rarityBadge: {
     fontSize: FONT_SIZE.xs,
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     borderWidth: 1,
     borderColor: VRIL_PRIMARY,
-    backgroundColor: 'rgba(123,97,255,0.12)',
+    backgroundColor: 'rgba(21,88,240,0.12)',
   },
   dismissText: {
     fontSize: FONT_SIZE.sm,

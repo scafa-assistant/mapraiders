@@ -12,7 +12,7 @@ export default function CommanderStack() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#0C0914' },
+        contentStyle: { backgroundColor: '#F6F4F1' },
         animation: 'slide_from_right',
       }}
     >

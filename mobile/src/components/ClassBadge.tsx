@@ -23,7 +23,7 @@ const ClassBadge: React.FC<ClassBadgeProps> = ({
   size = 'md',
   showLabel = false,
 }) => {
-  const color = CLASS_COLORS[movementClass] ?? '#8892B0';
+  const color = CLASS_COLORS[movementClass] ?? '#7A7470';
   const iconName = (CLASS_ICONS[movementClass] ?? 'help-outline') as keyof typeof Ionicons.glyphMap;
   const label = CLASS_LABELS[movementClass] ?? S.components.classBadge.unknown;
 

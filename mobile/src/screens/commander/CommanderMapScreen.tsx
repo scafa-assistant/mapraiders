@@ -543,9 +543,9 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
               <Polygon
                 key={`ai-${zone.h3_cell}`}
                 coordinates={coords}
-                strokeColor="#E5383B55"
+                strokeColor="#D7263D55"
                 strokeWidth={0.8}
-                fillColor={`#E5383B${fillAlpha}`}
+                fillColor={`#D7263D${fillAlpha}`}
               />
             );
           })}
@@ -592,7 +592,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
                 title={title}
               >
                 <View style={styles.objectiveDiamond}>
-                  <Ionicons name="diamond" size={12} color="#FFB300" />
+                  <Ionicons name="diamond" size={12} color="#F5A623" />
                 </View>
               </Marker>
             );
@@ -678,7 +678,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
         <View style={styles.strip}>
           {(mapData?.ai_zones ?? []).length > 0 ? (
             <View style={styles.aiWarningRow}>
-              <Ionicons name="warning" size={13} color="#E5383B" />
+              <Ionicons name="warning" size={13} color="#D7263D" />
               <Text style={styles.aiWarningText}>
                 {'⚠'} {(mapData?.ai_zones ?? []).length} cell{(mapData?.ai_zones ?? []).length !== 1 ? 's' : ''} under Hyperborean control
               </Text>
@@ -1932,7 +1932,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
-    backgroundColor: '#A16207', // amber-700-ish, distinct from attack red
+    backgroundColor: '#F5A623', // amber, distinct from attack red
     borderRadius: RADIUS.md,
     paddingVertical: 12,
     marginTop: SPACING.md,
@@ -1943,7 +1943,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderRadius: RADIUS.md,
-    backgroundColor: '#A16207',
+    backgroundColor: '#F5A623',
   },
 
   airstrikeBtn: {
@@ -1951,7 +1951,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
-    backgroundColor: '#B45309', // amber-700
+    backgroundColor: '#F5A623', // amber
     borderRadius: RADIUS.md,
     paddingVertical: 12,
     marginTop: SPACING.sm,
@@ -1978,7 +1978,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderRadius: RADIUS.md,
-    backgroundColor: '#B45309',
+    backgroundColor: '#F5A623',
   },
 
   // Confirm card
@@ -2102,10 +2102,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5383B33',
+    borderBottomColor: '#D7263D33',
   },
   aiWarningText: {
-    color: '#E5383B',
+    color: '#D7263D',
     fontSize: FONT_SIZE.xs,
     fontWeight: '700',
     letterSpacing: 0.3,
@@ -2121,7 +2121,7 @@ const styles = StyleSheet.create({
     borderBottomColor: C.border,
   },
   battleType: { color: C.text, fontSize: FONT_SIZE.sm, fontWeight: '600' },
-  battleOpponent: { color: '#E5383B', fontSize: FONT_SIZE.sm, fontWeight: '700' },
+  battleOpponent: { color: '#D7263D', fontSize: FONT_SIZE.sm, fontWeight: '700' },
   battleDate: { color: C.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 },
   battleResult: { fontSize: FONT_SIZE.sm, fontWeight: '800', letterSpacing: 0.5 },
 });

@@ -108,11 +108,11 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
     if (/[0-9]/.test(password)) score++;
     if (/[^A-Za-z0-9]/.test(password)) score++;
 
-    if (score <= 1) return { label: S.auth.register.strengthWeak, color: '#FF4757', width: '20%' };
-    if (score <= 2) return { label: S.auth.register.strengthFair, color: '#FFB800', width: '40%' };
-    if (score <= 3) return { label: S.auth.register.strengthGood, color: '#FFB800', width: '60%' };
-    if (score <= 4) return { label: S.auth.register.strengthStrong, color: '#00FF88', width: '80%' };
-    return { label: S.auth.register.strengthExcellent, color: '#00FF88', width: '100%' };
+    if (score <= 1) return { label: S.auth.register.strengthWeak, color: '#D7263D', width: '20%' };
+    if (score <= 2) return { label: S.auth.register.strengthFair, color: '#F5A623', width: '40%' };
+    if (score <= 3) return { label: S.auth.register.strengthGood, color: '#F5A623', width: '60%' };
+    if (score <= 4) return { label: S.auth.register.strengthStrong, color: '#1B9E5A', width: '80%' };
+    return { label: S.auth.register.strengthExcellent, color: '#1B9E5A', width: '100%' };
   };
 
   const strength = getPasswordStrength();
@@ -181,10 +181,10 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
           {/* Error Banner */}
           {error && (
             <View style={styles.errorBanner}>
-              <Ionicons name="alert-circle" size={18} color="#FF4757" />
+              <Ionicons name="alert-circle" size={18} color="#D7263D" />
               <Text style={styles.errorText}>{error}</Text>
               <TouchableOpacity onPress={clearError}>
-                <Ionicons name="close" size={18} color="#FF4757" />
+                <Ionicons name="close" size={18} color="#D7263D" />
               </TouchableOpacity>
             </View>
           )}
@@ -198,7 +198,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               activeOpacity={0.8}
             >
               {socialLoading === 'google' ? (
-                <ActivityIndicator color="#0A0E17" size="small" />
+                <ActivityIndicator color="#141210" size="small" />
               ) : (
                 <>
                   <Ionicons name="logo-google" size={20} color="#4285F4" style={styles.socialIcon} />
@@ -232,10 +232,10 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               activeOpacity={0.8}
             >
               {socialLoading === 'email' ? (
-                <ActivityIndicator color="#00D4FF" size="small" />
+                <ActivityIndicator color="#1558F0" size="small" />
               ) : (
                 <>
-                  <Ionicons name="mail-outline" size={20} color="#00D4FF" style={styles.socialIcon} />
+                  <Ionicons name="mail-outline" size={20} color="#1558F0" style={styles.socialIcon} />
                   <Text style={styles.emailLinkButtonText}>{S.auth.login.loginWithEmailLink}</Text>
                 </>
               )}
@@ -407,7 +407,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 onSubmitEditing={handleRegister}
               />
               {confirmPassword.length > 0 && password === confirmPassword && (
-                <Ionicons name="checkmark-circle" size={20} color="#00FF88" />
+                <Ionicons name="checkmark-circle" size={20} color="#1B9E5A" />
               )}
             </View>
             {validationErrors.confirmPassword && (
@@ -425,7 +425,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <Ionicons
                 name={acceptedTerms ? 'checkbox' : 'square-outline'}
                 size={22}
-                color={acceptedTerms ? '#00D4FF' : '#6B7A99'}
+                color={acceptedTerms ? '#1558F0' : '#7A7470'}
               />
               <Text style={styles.checkboxText}>
                 {S.auth.register.legalAcceptPrefix}
@@ -442,7 +442,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               <Ionicons
                 name={confirmedAge ? 'checkbox' : 'square-outline'}
                 size={22}
-                color={confirmedAge ? '#00D4FF' : '#6B7A99'}
+                color={confirmedAge ? '#1558F0' : '#7A7470'}
               />
               <Text style={styles.checkboxText}>
                 {S.auth.register.confirmAgeCheckbox}
@@ -458,7 +458,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
             activeOpacity={0.8}
           >
             {isLoading ? (
-              <ActivityIndicator color="#0A0E17" size="small" />
+              <ActivityIndicator color="#FFFFFF" size="small" />
             ) : (
               <Text style={styles.registerButtonText}>{S.auth.register.initializeWalker}</Text>
             )}
@@ -517,9 +517,9 @@ const createStyles = (theme: Theme) =>
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+    backgroundColor: 'rgba(215, 38, 61, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -528,7 +528,7 @@ const createStyles = (theme: Theme) =>
   },
   errorText: {
     flex: 1,
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 13,
   },
   socialSection: {
@@ -547,7 +547,7 @@ const createStyles = (theme: Theme) =>
     height: 52,
   },
   googleButtonText: {
-    color: '#0A0E17',
+    color: '#141210',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -572,10 +572,10 @@ const createStyles = (theme: Theme) =>
     borderRadius: 12,
     height: 52,
     borderWidth: 1.5,
-    borderColor: '#00D4FF',
+    borderColor: '#1558F0',
   },
   emailLinkButtonText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -617,7 +617,7 @@ const createStyles = (theme: Theme) =>
     height: 56,
   },
   inputError: {
-    borderColor: '#FF4757',
+    borderColor: '#D7263D',
   },
   inputIcon: {
     marginRight: 12,
@@ -632,7 +632,7 @@ const createStyles = (theme: Theme) =>
     padding: 4,
   },
   fieldError: {
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 12,
     marginTop: 6,
     marginLeft: 4,
@@ -659,13 +659,13 @@ const createStyles = (theme: Theme) =>
     fontWeight: '600',
   },
   registerButton: {
-    backgroundColor: '#7B61FF',
+    backgroundColor: '#1558F0',
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#7B61FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -690,7 +690,7 @@ const createStyles = (theme: Theme) =>
     fontSize: 14,
   },
   loginLinkAction: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -711,7 +711,7 @@ const createStyles = (theme: Theme) =>
     lineHeight: 20,
   },
   legalLink: {
-    color: '#00D4FF',
+    color: '#1558F0',
     textDecorationLine: 'underline',
   },
 });

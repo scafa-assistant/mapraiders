@@ -164,7 +164,7 @@ const createStyles = (theme: Theme) =>
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    backgroundColor: 'rgba(27, 158, 90, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -195,7 +195,7 @@ const createStyles = (theme: Theme) =>
   weatherBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 212, 255, 0.12)',
+    backgroundColor: 'rgba(21, 88, 240, 0.12)',
     borderRadius: RADIUS.full,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -223,7 +223,7 @@ const createStyles = (theme: Theme) =>
   distanceBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+    backgroundColor: 'rgba(21, 88, 240, 0.1)',
     paddingHorizontal: SPACING.sm,
     paddingVertical: 3,
     borderRadius: RADIUS.full,

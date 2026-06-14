@@ -34,12 +34,12 @@ interface Category {
 }
 
 const getCategories = (): Category[] => [
-  { key: 'dog_walk', label: S.map.meetupCreate.categoryDogWalk, emoji: '\uD83D\uDC15', color: '#FFB800' },
-  { key: 'sport', label: S.map.meetupCreate.categorySport, emoji: '\uD83C\uDFC3', color: '#00FF88' },
+  { key: 'dog_walk', label: S.map.meetupCreate.categoryDogWalk, emoji: '\uD83D\uDC15', color: '#F5A623' },
+  { key: 'sport', label: S.map.meetupCreate.categorySport, emoji: '\uD83C\uDFC3', color: '#1B9E5A' },
   { key: 'party', label: S.map.meetupCreate.categoryParty, emoji: '\uD83C\uDF89', color: '#FF69B4' },
-  { key: 'gaming', label: S.map.meetupCreate.categoryGaming, emoji: '\uD83C\uDFAE', color: '#7B61FF' },
-  { key: 'meetup', label: S.map.meetupCreate.categoryMeetup, emoji: '\uD83E\uDD1D', color: '#00D4FF' },
-  { key: 'other', label: S.map.meetupCreate.categoryOther, emoji: '\uD83D\uDCCC', color: '#8892B0' },
+  { key: 'gaming', label: S.map.meetupCreate.categoryGaming, emoji: '\uD83C\uDFAE', color: '#1558F0' },
+  { key: 'meetup', label: S.map.meetupCreate.categoryMeetup, emoji: '\uD83E\uDD1D', color: '#1558F0' },
+  { key: 'other', label: S.map.meetupCreate.categoryOther, emoji: '\uD83D\uDCCC', color: '#7A7470' },
 ];
 
 export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenProps) {
@@ -201,8 +201,8 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
             <Text style={styles.mapHint}>{S.map.meetupCreate.mapHint}</Text>
             {address ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 6, paddingHorizontal: 4 }}>
-                <Ionicons name="location-outline" size={14} color="#FFB800" />
-                <Text style={{ color: '#FFB800', fontSize: 12, fontWeight: '600', flex: 1 }} numberOfLines={1}>
+                <Ionicons name="location-outline" size={14} color="#F5A623" />
+                <Text style={{ color: '#F5A623', fontSize: 12, fontWeight: '600', flex: 1 }} numberOfLines={1}>
                   {address}
                 </Text>
               </View>
@@ -429,7 +429,7 @@ const createStyles = (theme: Theme) =>
     position: 'absolute',
     bottom: 8,
     alignSelf: 'center',
-    backgroundColor: 'rgba(10, 14, 23, 0.85)',
+    backgroundColor: 'rgba(246, 244, 241, 0.85)',
     color: theme.textSecondary,
     fontSize: FONT_SIZE.xs,
     paddingHorizontal: 10,

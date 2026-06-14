@@ -299,7 +299,7 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                   style={[
                     styles.verificationCard,
                     timeWindow === opt.value && (opt.value === 'night'
-                      ? { borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.08)' }
+                      ? { borderColor: '#1558F0', backgroundColor: 'rgba(21, 88, 240, 0.08)' }
                       : styles.verificationCardActive),
                   ]}
                   onPress={() => setTimeWindow(opt.value)}
@@ -308,12 +308,12 @@ export default function ChallengeCreateScreen({ navigation }: ChallengeCreateScr
                   <Ionicons
                     name={opt.icon}
                     size={22}
-                    color={timeWindow === opt.value ? (opt.value === 'night' ? '#8B5CF6' : theme.primary) : theme.textSecondary}
+                    color={timeWindow === opt.value ? (opt.value === 'night' ? '#1558F0' : theme.primary) : theme.textSecondary}
                   />
                   <Text
                     style={[
                       styles.verificationLabel,
-                      timeWindow === opt.value && { color: opt.value === 'night' ? '#8B5CF6' : theme.primary },
+                      timeWindow === opt.value && { color: opt.value === 'night' ? '#1558F0' : theme.primary },
                     ]}
                   >
                     {opt.label}
@@ -417,7 +417,7 @@ const createStyles = (theme: Theme) =>
   },
   templateCardActive: {
     borderColor: theme.primary,
-    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    backgroundColor: 'rgba(21, 88, 240, 0.08)',
   },
   templateName: {
     color: theme.text,
@@ -468,11 +468,11 @@ const createStyles = (theme: Theme) =>
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+    backgroundColor: 'rgba(21, 88, 240, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.2)',
+    borderColor: 'rgba(21, 88, 240, 0.2)',
   },
   paramInput: {
     flex: 1,
@@ -509,7 +509,7 @@ const createStyles = (theme: Theme) =>
   },
   verificationCardActive: {
     borderColor: theme.primary,
-    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    backgroundColor: 'rgba(21, 88, 240, 0.08)',
   },
   verificationLabel: {
     color: theme.text,
@@ -573,7 +573,7 @@ const createStyles = (theme: Theme) =>
   },
   weatherChipActive: {
     borderColor: theme.primary,
-    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    backgroundColor: 'rgba(21, 88, 240, 0.08)',
   },
   weatherChipText: {
     color: theme.textSecondary,

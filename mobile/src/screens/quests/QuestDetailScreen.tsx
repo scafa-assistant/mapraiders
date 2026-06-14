@@ -30,12 +30,12 @@ const STEP_TYPE_ICONS: Record<QuestStepType, keyof typeof Ionicons.glyphMap> = {
 };
 
 const STEP_TYPE_COLORS: Record<QuestStepType, string> = {
-  FIND: '#00D4FF',
-  LISTEN: '#7B61FF',
-  CHALLENGE: '#FF4757',
-  SOLVE: '#FFB800',
-  COLLECT: '#00FF88',
-  DOG: '#7B61FF',
+  FIND: '#1558F0',
+  LISTEN: '#1558F0',
+  CHALLENGE: '#D7263D',
+  SOLVE: '#F5A623',
+  COLLECT: '#1B9E5A',
+  DOG: '#1558F0',
 };
 
 const getStepTypeLabels = (): Record<QuestStepType, string> => ({
@@ -76,7 +76,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           key={star}
           name={star <= difficulty ? 'star' : 'star-outline'}
           size={16}
-          color={star <= difficulty ? '#FFB800' : theme.textSecondary}
+          color={star <= difficulty ? '#F5A623' : theme.textSecondary}
         />
       ))}
     </View>
@@ -85,7 +85,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00D4FF" />
+        <ActivityIndicator size="large" color="#1558F0" />
       </SafeAreaView>
     );
   }
@@ -93,7 +93,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
   if (!quest) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Ionicons name="alert-circle" size={48} color="#FF4757" />
+        <Ionicons name="alert-circle" size={48} color="#D7263D" />
         <Text style={styles.errorText}>{S.quests.detail.notFound}</Text>
         <TouchableOpacity style={styles.backLink} onPress={() => navigation.goBack()}>
           <Text style={styles.backLinkText}>{S.quests.detail.goBack}</Text>
@@ -156,7 +156,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           <View style={styles.questMeta}>
             {renderDifficultyStars(quest.difficulty)}
             <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={14} color="#FFB800" />
+              <Ionicons name="star" size={14} color="#F5A623" />
               <Text style={styles.ratingText}>{quest.rating.toFixed(1)}</Text>
             </View>
           </View>
@@ -192,7 +192,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
         {(quest as any).is_seed && (
           <View style={styles.growthSection}>
             <View style={styles.growthHeader}>
-              <Ionicons name="leaf" size={18} color="#00FF88" />
+              <Ionicons name="leaf" size={18} color="#1B9E5A" />
               <Text style={styles.growthTitle}>{S.quests.detail.seedQuest}</Text>
             </View>
             <View style={styles.growthLevelRow}>
@@ -214,7 +214,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
                     <Ionicons
                       name={iconNames[idx]}
                       size={isCurrent ? 22 : 16}
-                      color={isActive ? '#00FF88' : theme.textSecondary}
+                      color={isActive ? '#1B9E5A' : theme.textSecondary}
                     />
                     <Text style={[
                       styles.growthStageName,
@@ -243,7 +243,7 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
             )}
             {(quest as any).linked_quests && (quest as any).linked_quests.length > 0 && (
               <View style={styles.linkedSection}>
-                <Ionicons name="link" size={14} color="#00D4FF" />
+                <Ionicons name="link" size={14} color="#1558F0" />
                 <Text style={styles.linkedText}>
                   {plural((quest as any).linked_quests.length, S.quests.detail.linkedWithOne, S.quests.detail.linkedWithOther)}
                 </Text>
@@ -299,10 +299,10 @@ export default function QuestDetailScreen({ route, navigation }: QuestDetailScre
           activeOpacity={0.8}
         >
           {isLoading ? (
-            <ActivityIndicator color="#0A0E17" size="small" />
+            <ActivityIndicator color="#FFFFFF" size="small" />
           ) : (
             <>
-              <Ionicons name="play" size={22} color="#0A0E17" />
+              <Ionicons name="play" size={22} color="#FFFFFF" />
               <Text style={styles.startButtonText}>{S.quests.detail.startQuest}</Text>
             </>
           )}
@@ -326,7 +326,7 @@ const createStyles = (theme: Theme) =>
     gap: 12,
   },
   errorText: {
-    color: '#FF4757',
+    color: '#D7263D',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -334,7 +334,7 @@ const createStyles = (theme: Theme) =>
     marginTop: 8,
   },
   backLinkText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -349,7 +349,7 @@ const createStyles = (theme: Theme) =>
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(13, 18, 32, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -366,7 +366,7 @@ const createStyles = (theme: Theme) =>
     position: 'absolute',
     bottom: 12,
     right: 12,
-    backgroundColor: 'rgba(13, 18, 32, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -401,13 +401,13 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(255, 184, 0, 0.12)',
+    backgroundColor: 'rgba(245, 166, 35, 0.12)',
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   ratingText: {
-    color: '#FFB800',
+    color: '#F5A623',
     fontSize: 13,
     fontWeight: '700',
   },
@@ -426,7 +426,7 @@ const createStyles = (theme: Theme) =>
     fontSize: 13,
   },
   description: {
-    color: '#B8C0D8',
+    color: '#141210',
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 14,
@@ -496,7 +496,7 @@ const createStyles = (theme: Theme) =>
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(10, 14, 23, 0.95)',
+    backgroundColor: 'rgba(246, 244, 241, 0.95)',
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 36,
@@ -507,11 +507,11 @@ const createStyles = (theme: Theme) =>
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00D4FF',
+    backgroundColor: '#1558F0',
     borderRadius: 16,
     height: 56,
     gap: 10,
-    shadowColor: '#00D4FF',
+    shadowColor: '#1558F0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -521,7 +521,7 @@ const createStyles = (theme: Theme) =>
     opacity: 0.7,
   },
   startButtonText: {
-    color: '#0A0E17',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 2,
@@ -538,7 +538,7 @@ const createStyles = (theme: Theme) =>
     marginBottom: 14,
   },
   growthTitle: {
-    color: '#00FF88',
+    color: '#1B9E5A',
     fontSize: 16,
     fontWeight: '800',
   },
@@ -559,7 +559,7 @@ const createStyles = (theme: Theme) =>
     letterSpacing: 0.5,
   },
   growthStageNameActive: {
-    color: '#00FF88',
+    color: '#1B9E5A',
   },
   growthStageNameCurrent: {
     fontSize: 10,
@@ -580,13 +580,13 @@ const createStyles = (theme: Theme) =>
     alignItems: 'center',
     gap: 6,
     marginTop: 10,
-    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    backgroundColor: 'rgba(21, 88, 240, 0.08)',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
   linkedText: {
-    color: '#00D4FF',
+    color: '#1558F0',
     fontSize: 12,
     fontWeight: '600',
   },

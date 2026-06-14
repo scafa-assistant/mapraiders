@@ -35,7 +35,7 @@ const getCreateOptions = (): CreateOption[] => [
     title: S.create.menu.eventTitle,
     description: S.create.menu.eventDesc,
     icon: 'calendar-outline',
-    color: '#FFB800',
+    color: '#F5A623',
     screen: 'MeetupCreate',
     minLevel: 1,
     requiresTerritory: false,
@@ -45,7 +45,7 @@ const getCreateOptions = (): CreateOption[] => [
     title: S.create.menu.echoTitle,
     description: S.create.menu.echoDesc,
     icon: 'musical-note',
-    color: '#7B61FF',
+    color: '#1558F0',
     screen: 'EchoCreate',
     minLevel: 1,
     requiresTerritory: false,
@@ -55,7 +55,7 @@ const getCreateOptions = (): CreateOption[] => [
     title: S.create.menu.questTitle,
     description: S.create.menu.questDesc,
     icon: 'compass',
-    color: '#00D4FF',
+    color: '#1558F0',
     screen: 'QuestCreate',
     minLevel: 3,
     requiresTerritory: false,
@@ -65,7 +65,7 @@ const getCreateOptions = (): CreateOption[] => [
     title: S.create.menu.challengeTitle,
     description: S.create.menu.challengeDesc,
     icon: 'barbell',
-    color: '#FF4757',
+    color: '#D7263D',
     screen: 'ChallengeCreate',
     minLevel: 5,
     requiresTerritory: false,
@@ -75,7 +75,7 @@ const getCreateOptions = (): CreateOption[] => [
     title: S.create.menu.travelTitle,
     description: S.create.menu.travelDesc,
     icon: 'trail-sign',
-    color: '#555E78',
+    color: '#7A7470',
     screen: 'TravelRouteCreate',
     minLevel: 999,
     requiresTerritory: false,
@@ -184,7 +184,7 @@ export default function CreateMenuScreen({ navigation }: CreateMenuScreenProps) 
 
       {/* Info Card */}
       <View style={styles.infoCard}>
-        <Ionicons name="information-circle" size={20} color="#00D4FF" />
+        <Ionicons name="information-circle" size={20} color="#1558F0" />
         <Text style={styles.infoText}>
           {S.create.menu.info}
         </Text>
@@ -276,9 +276,9 @@ const createStyles = (theme: Theme) =>
     alignItems: 'flex-start',
     marginHorizontal: 20,
     marginTop: 24,
-    backgroundColor: 'rgba(0, 212, 255, 0.06)',
+    backgroundColor: 'rgba(21, 88, 240, 0.06)',
     borderWidth: 1,
-    borderColor: 'rgba(0, 212, 255, 0.15)',
+    borderColor: 'rgba(21, 88, 240, 0.15)',
     borderRadius: 14,
     padding: 16,
     gap: 12,

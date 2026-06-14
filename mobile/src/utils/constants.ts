@@ -3,13 +3,13 @@ import type { MovementClass } from './types';
 // ─── Class Visual Mappings ──────────────────────────────────────────────────
 
 export const CLASS_COLORS: Record<MovementClass, string> = {
-  walker: '#00D4FF',
-  runner: '#FF4757',
-  cyclist: '#00FF88',
-  skater: '#FFB800',
-  dog_walker: '#7B61FF',
-  driver: '#8892B0',
-  unknown: '#555E78',
+  walker: '#1558F0',
+  runner: '#D7263D',
+  cyclist: '#1B9E5A',
+  skater: '#F5A623',
+  dog_walker: '#4B7BFF',
+  driver: '#7A7470',
+  unknown: '#C0BAB4',
 };
 
 export const CLASS_ICONS: Record<MovementClass, string> = {
@@ -47,34 +47,39 @@ export interface Theme {
   border: string;
 }
 
-export const DARK_THEME: Theme = {
-  bg: '#0A0E17',
-  surface: '#141B2D',
-  primary: '#00D4FF',
-  secondary: '#7B61FF',
-  accent: '#00FF88',
-  warning: '#FFB800',
-  danger: '#FF4757',
-  text: '#FFFFFF',
-  textSecondary: '#8892B0',
-  border: '#1E293B',
-};
-
+// MapRaiders brand light/blue theme — matches web cockpit + landing page.
+// Both themes resolve to the SAME light palette so no dark/violet surface
+// can leak in regardless of the historic dark-mode toggle.
 export const LIGHT_THEME: Theme = {
-  bg: '#F5F5F5',
-  surface: '#FFFFFF',
-  primary: '#0099CC',
-  secondary: '#6B4EFF',
-  accent: '#00CC66',
-  warning: '#FF9900',
-  danger: '#FF3333',
-  text: '#1A1A1A',
-  textSecondary: '#666666',
-  border: '#E0E0E0',
+  bg: '#F6F4F1',          // warm off-white
+  surface: '#FFFFFF',     // cards
+  primary: '#1558F0',     // brand blue
+  secondary: '#4B7BFF',   // lighter blue
+  accent: '#1558F0',      // blue (was violet) — keep brand-consistent
+  warning: '#F5A623',     // amber
+  danger: '#D7263D',      // red
+  text: '#141210',        // near-black
+  textSecondary: '#7A7470', // muted
+  border: '#C0BAB4',      // dim border
 };
 
-// Backward compatibility — default export points to dark theme
-export const THEME = DARK_THEME;
+// DARK_THEME kept for API compatibility but now mirrors the light brand look
+// (the app ships light to match web). Secondary surface used for contrast.
+export const DARK_THEME: Theme = {
+  bg: '#EFEDE8',          // secondary surface (slightly deeper off-white)
+  surface: '#FFFFFF',
+  primary: '#1558F0',
+  secondary: '#4B7BFF',
+  accent: '#1558F0',
+  warning: '#F5A623',
+  danger: '#D7263D',
+  text: '#141210',
+  textSecondary: '#7A7470',
+  border: '#C0BAB4',
+};
+
+// Backward compatibility — default export points to the brand (light) theme
+export const THEME = LIGHT_THEME;
 
 // ─── Layout ─────────────────────────────────────────────────────────────────
 

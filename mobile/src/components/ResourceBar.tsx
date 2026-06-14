@@ -4,9 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { ResourceBalances } from '../store/resourceStore';
 
 // ─── Vril palette (shared with PvESpawnMarker / PvEIntroCards) ───────────────
-const VRIL_ACCENT = '#9D4EDD';
-const OBSIDIAN = 'rgba(13, 18, 32, 0.88)';
-const OBSIDIAN_BORDER = '#1A2340';
+const VRIL_ACCENT = '#1558F0';
+const OBSIDIAN = 'rgba(255, 255, 255, 0.92)';
+const OBSIDIAN_BORDER = '#C0BAB4';
 
 // ─── Compact number formatter: 1234 → "1.2k", 1200000 → "1.2m" ─────────────
 function formatCompact(n: number): string {
@@ -38,7 +38,7 @@ const RESOURCE_LABELS: Record<keyof ResourceBalances, string> = {
 const RESOURCE_LABEL_COLORS: Partial<Record<keyof ResourceBalances, string>> = {
   wood: '#A06A3C',
   stone: '#9CA3AF',
-  food: '#6FBF5B',
+  food: '#1B9E5A',
 };
 
 // Core HUD = energy/tech/intel. Raw economy resources only appear when present (> 0).
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     lineHeight: 10,
   },
   value: {
-    color: '#FFFFFF',
+    color: '#141210',
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 16,

@@ -223,7 +223,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
                     styles.waveBar,
                     {
                       height: Math.sin((i / 30) * Math.PI * 3) * 20 + 8,
-                      backgroundColor: isActive ? theme.secondary : '#2A3450',
+                      backgroundColor: isActive ? theme.secondary : '#EFEDE8',
                     },
                   ]}
                 />
@@ -337,7 +337,7 @@ export default function EchoDetailScreen({ route, navigation }: EchoDetailScreen
                 longitude: echo.location.longitude,
               }}
               radius={echo.radius}
-              fillColor="rgba(123, 97, 255, 0.15)"
+              fillColor="rgba(21, 88, 240, 0.15)"
               strokeColor={theme.secondary}
               strokeWidth={1.5}
             />
@@ -413,7 +413,7 @@ const createStyles = (theme: Theme) =>
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: 'rgba(123, 97, 255, 0.15)',
+    backgroundColor: 'rgba(21, 88, 240, 0.15)',
     borderWidth: 2,
     borderColor: theme.secondary,
     justifyContent: 'center',
@@ -453,7 +453,7 @@ const createStyles = (theme: Theme) =>
   progressBarBg: {
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#2A3450',
+    backgroundColor: '#EFEDE8',
     overflow: 'hidden',
     marginBottom: 8,
   },
@@ -512,8 +512,8 @@ const createStyles = (theme: Theme) =>
     borderColor: theme.border,
   },
   likeButtonActive: {
-    backgroundColor: 'rgba(255, 71, 87, 0.1)',
-    borderColor: 'rgba(255, 71, 87, 0.3)',
+    backgroundColor: 'rgba(215, 38, 61, 0.1)',
+    borderColor: 'rgba(215, 38, 61, 0.3)',
   },
   likeText: {
     color: theme.textSecondary,
@@ -553,7 +553,7 @@ const createStyles = (theme: Theme) =>
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(123, 97, 255, 0.2)',
+    backgroundColor: 'rgba(21, 88, 240, 0.2)',
     borderWidth: 2,
     borderColor: theme.secondary,
     justifyContent: 'center',

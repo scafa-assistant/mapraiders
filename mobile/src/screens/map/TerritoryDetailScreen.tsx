@@ -26,8 +26,8 @@ import BuildingPickerSheet from '../../components/BuildingPickerSheet';
 import type { Building } from '../../services/api';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
-  walker: '#00D4FF', runner: '#FF4757', cyclist: '#00FF88',
-  skater: '#FFB800', dog_walker: '#7B61FF', driver: '#8892B0', unknown: '#555E78',
+  walker: '#1558F0', runner: '#D7263D', cyclist: '#1B9E5A',
+  skater: '#F5A623', dog_walker: '#1558F0', driver: '#7A7470', unknown: '#7A7470',
 };
 const getClassLabels = (): Record<MovementClass, string> => ({
   walker: S.map.territoryDetail.classWalker,
@@ -44,23 +44,23 @@ const CLASS_ICONS: Record<MovementClass, keyof typeof Ionicons.glyphMap> = {
 };
 
 const getDefenseLabels = (): Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> => ({
-  rock_paper_scissors: { label: S.map.territoryDetail.gameRps, icon: 'hand-left-outline', color: '#7B61FF' },
-  sprint_race: { label: S.map.territoryDetail.gameSprintRace, icon: 'speedometer-outline', color: '#00FF88' },
-  trivia: { label: S.map.territoryDetail.gameTrivia, icon: 'help-circle-outline', color: '#00D4FF' },
-  coin_flip: { label: S.map.territoryDetail.gameCoinFlip, icon: 'ellipse-outline', color: '#FFB800' },
+  rock_paper_scissors: { label: S.map.territoryDetail.gameRps, icon: 'hand-left-outline', color: '#1558F0' },
+  sprint_race: { label: S.map.territoryDetail.gameSprintRace, icon: 'speedometer-outline', color: '#1B9E5A' },
+  trivia: { label: S.map.territoryDetail.gameTrivia, icon: 'help-circle-outline', color: '#1558F0' },
+  coin_flip: { label: S.map.territoryDetail.gameCoinFlip, icon: 'ellipse-outline', color: '#F5A623' },
   odd_even: { label: S.map.territoryDetail.gameOddEven, icon: 'finger-print-outline', color: '#FF69B4' },
-  tic_tac_toe: { label: S.map.territoryDetail.gameTicTacToe, icon: 'grid-outline', color: '#00D4FF' },
-  mini_chess: { label: S.map.territoryDetail.gameMiniChess, icon: 'trophy-outline', color: '#FFB800' },
-  challenge: { label: S.map.territoryDetail.gameChallenge, icon: 'flag-outline', color: '#FF4757' },
-  quest: { label: S.map.territoryDetail.gameQuest, icon: 'map-outline', color: '#00FF88' },
-  echo: { label: S.map.territoryDetail.gameEcho, icon: 'volume-high-outline', color: '#7B61FF' },
+  tic_tac_toe: { label: S.map.territoryDetail.gameTicTacToe, icon: 'grid-outline', color: '#1558F0' },
+  mini_chess: { label: S.map.territoryDetail.gameMiniChess, icon: 'trophy-outline', color: '#F5A623' },
+  challenge: { label: S.map.territoryDetail.gameChallenge, icon: 'flag-outline', color: '#D7263D' },
+  quest: { label: S.map.territoryDetail.gameQuest, icon: 'map-outline', color: '#1B9E5A' },
+  echo: { label: S.map.territoryDetail.gameEcho, icon: 'volume-high-outline', color: '#1558F0' },
 });
 
 // Phase F.1 — raw resource display metadata (icon, label, HUD color)
 const RESOURCE_META: Record<'wood' | 'stone' | 'food', { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
   wood: { label: 'Wood', icon: 'leaf', color: '#A06A3C' },
   stone: { label: 'Stone', icon: 'cube', color: '#9CA3AF' },
-  food: { label: 'Food', icon: 'nutrition', color: '#6FBF5B' },
+  food: { label: 'Food', icon: 'nutrition', color: '#1B9E5A' },
 };
 
 export default function TerritoryDetailScreen({ route, navigation }: TerritoryDetailScreenProps) {
@@ -390,10 +390,10 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                     key={i}
                     style={[
                       styles.slotDot,
-                      { backgroundColor: filled ? color : theme.border, borderColor: filled ? color : '#2A3350' },
+                      { backgroundColor: filled ? color : theme.border, borderColor: filled ? color : '#C0BAB4' },
                     ]}
                   >
-                    {filled && <Ionicons name="shield-checkmark" size={10} color="#0A0E17" />}
+                    {filled && <Ionicons name="shield-checkmark" size={10} color="#FFFFFF" />}
                   </View>
                 );
               })}
@@ -435,7 +435,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                       style={[styles.defenseCardAttack, { backgroundColor: info.color }]}
                       onPress={() => handleDefenseChallenge(defense)}
                     >
-                      <Ionicons name="flash" size={16} color="#0A0E17" />
+                      <Ionicons name="flash" size={16} color="#FFFFFF" />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -449,7 +449,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 onPress={() => navigation.navigate('DefenseSetup', { territoryId: territory.id })}
                 activeOpacity={0.8}
               >
-                <Ionicons name="add-circle-outline" size={22} color="#0A0E17" />
+                <Ionicons name="add-circle-outline" size={22} color="#FFFFFF" />
                 <Text style={styles.addDefenseButtonText}>
                   {t(S.map.territoryDetail.addDefense, { count: freeSlots })}
                 </Text>
@@ -473,7 +473,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 onPress={() => navigation.navigate('DefenseSetup', { territoryId: territory.id })}
                 activeOpacity={0.8}
               >
-                <Ionicons name="shield-outline" size={22} color="#0A0E17" />
+                <Ionicons name="shield-outline" size={22} color="#FFFFFF" />
                 <Text style={styles.setDefenseButtonText}>{S.map.territoryDetail.setupDefense}</Text>
               </TouchableOpacity>
             )}
@@ -485,7 +485,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 onPress={handleChallenge}
                 activeOpacity={0.8}
               >
-                <Ionicons name="flash" size={22} color="#0A0E17" />
+                <Ionicons name="flash" size={22} color="#FFFFFF" />
                 <Text style={styles.challengeButtonText}>{S.map.territoryDetail.challengeTerritoryBtn}</Text>
               </TouchableOpacity>
             )}
@@ -521,7 +521,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
             {buildingLoading ? (
               <View style={styles.defenseLoading}>
-                <ActivityIndicator size="small" color="#9D4EDD" />
+                <ActivityIndicator size="small" color="#1558F0" />
               </View>
             ) : (
               <>
@@ -536,10 +536,10 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 {buildings.map((building) => {
                   const isUnderConstruction = building.status === 'building';
                   const statusColor =
-                    building.status === 'active' ? '#00FF88' :
-                    building.status === 'building' ? '#9D4EDD' :
-                    building.status === 'damaged' ? '#FFB800' :
-                    '#FF4757';
+                    building.status === 'active' ? '#1B9E5A' :
+                    building.status === 'building' ? '#1558F0' :
+                    building.status === 'damaged' ? '#F5A623' :
+                    '#D7263D';
                   const canUpgrade = building.status === 'active' && building.tier < 3;
                   const TIER_LABELS = ['', 'I', 'II', 'III'];
 
@@ -571,7 +571,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                             onPress={() => handleUpgrade(building.id, getBuildingName(building.type))}
                             disabled={buildingLoading}
                           >
-                            <Ionicons name="arrow-up-circle-outline" size={13} color="#9D4EDD" />
+                            <Ionicons name="arrow-up-circle-outline" size={13} color="#1558F0" />
                             <Text style={styles.upgradeBtnText}>
                               Upgrade · {getUpgradeCost(building)}
                             </Text>
@@ -599,7 +599,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                   activeOpacity={0.8}
                   disabled={buildingLoading}
                 >
-                  <Ionicons name="add-circle-outline" size={20} color="#0A0E17" />
+                  <Ionicons name="add-circle-outline" size={20} color="#FFFFFF" />
                   <Text style={styles.buildNewBtnText}>Build</Text>
                 </TouchableOpacity>
               </>
@@ -671,7 +671,7 @@ const createStyles = (theme: Theme) =>
   ownerName: { color: theme.text, fontSize: 18, fontWeight: '700', marginBottom: 4 },
   classBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10 },
   classLabel: { fontSize: 12, fontWeight: '600' },
-  yoursBadge: { backgroundColor: 'rgba(0, 255, 136, 0.15)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
+  yoursBadge: { backgroundColor: 'rgba(27,158,90,0.15)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
   yoursText: { color: theme.accent, fontSize: 11, fontWeight: '800', letterSpacing: 1 },
   statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   statCard: { flex: 1, backgroundColor: theme.surface, borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: theme.border },
@@ -705,51 +705,51 @@ const createStyles = (theme: Theme) =>
 
   // Add defense button
   addDefenseButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.warning, borderRadius: 16, height: 52, gap: 10, marginTop: 4, marginBottom: 8 },
-  addDefenseButtonText: { color: '#0A0E17', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
+  addDefenseButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
 
   // Slots full
-  slotsFullNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(0, 255, 136, 0.08)', borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(0, 255, 136, 0.2)' },
+  slotsFullNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(27,158,90,0.08)', borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(27,158,90,0.2)' },
   slotsFullText: { flex: 1, color: theme.accent, fontSize: 12, fontWeight: '600' },
 
   // Set defense (first time)
   setDefenseButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.warning, borderRadius: 16, height: 56, gap: 10, shadowColor: theme.warning, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
-  setDefenseButtonText: { color: '#0A0E17', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
+  setDefenseButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
 
   // Challenge button
   challengeButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.danger, borderRadius: 16, height: 56, gap: 10, shadowColor: theme.danger, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
-  challengeButtonText: { color: '#0A0E17', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
+  challengeButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800', letterSpacing: 2 },
 
   // Challenge info
-  challengeInfo: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255, 184, 0, 0.08)', borderRadius: 12, padding: 12, marginTop: 8, borderWidth: 1, borderColor: 'rgba(255, 184, 0, 0.2)' },
+  challengeInfo: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(245,166,35,0.08)', borderRadius: 12, padding: 12, marginTop: 8, borderWidth: 1, borderColor: 'rgba(245,166,35,0.2)' },
   challengeInfoText: { flex: 1, color: theme.warning, fontSize: 12, fontWeight: '600' },
 
   // Owner notice
-  ownerNotice: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0, 255, 136, 0.08)', borderWidth: 1, borderColor: 'rgba(0, 255, 136, 0.2)', borderRadius: 12, padding: 16, gap: 12 },
+  ownerNotice: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(27,158,90,0.08)', borderWidth: 1, borderColor: 'rgba(27,158,90,0.2)', borderRadius: 12, padding: 16, gap: 12 },
   ownerNoticeText: { flex: 1, color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
 
   // Buildings section (resources feature flag)
-  buildingsSectionTitle: { marginTop: 28, color: '#9D4EDD' },
-  buildingsEmpty: { backgroundColor: theme.surface, borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#1A2340' },
+  buildingsSectionTitle: { marginTop: 28, color: '#1558F0' },
+  buildingsEmpty: { backgroundColor: theme.surface, borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#C0BAB4' },
   buildingsEmptyText: { color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
-  buildingCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#3A2060', padding: 14, marginBottom: 8, gap: 12 },
+  buildingCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#C0BAB4', padding: 14, marginBottom: 8, gap: 12 },
   buildingCardContent: { flex: 1 },
   buildingNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   buildingName: { color: theme.text, fontSize: 14, fontWeight: '700' },
-  tierBadge: { backgroundColor: 'rgba(157,78,221,0.2)', borderRadius: 5, paddingHorizontal: 5, paddingVertical: 1, borderWidth: 1, borderColor: 'rgba(157,78,221,0.5)' },
-  tierBadgeText: { color: '#9D4EDD', fontSize: 10, fontWeight: '800' },
+  tierBadge: { backgroundColor: 'rgba(21,88,240,0.2)', borderRadius: 5, paddingHorizontal: 5, paddingVertical: 1, borderWidth: 1, borderColor: 'rgba(21,88,240,0.5)' },
+  tierBadgeText: { color: '#1558F0', fontSize: 10, fontWeight: '800' },
   buildingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   buildingStatusDot: { width: 7, height: 7, borderRadius: 3.5 },
   buildingStatusText: { fontSize: 11, fontWeight: '600' },
-  upgradeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6, backgroundColor: 'rgba(157,78,221,0.1)', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: 'rgba(157,78,221,0.3)', alignSelf: 'flex-start' },
-  upgradeBtnText: { color: '#9D4EDD', fontSize: 10, fontWeight: '700' },
-  upgradingText: { color: '#9D4EDD', fontSize: 10, fontWeight: '600', marginTop: 4, fontStyle: 'italic' },
-  buildingDemolishBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,71,87,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,71,87,0.25)' },
-  buildNewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#9D4EDD', borderRadius: 14, height: 48, gap: 8, marginTop: 4, shadowColor: '#9D4EDD', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
-  buildNewBtnText: { color: '#0A0E17', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
+  upgradeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6, backgroundColor: 'rgba(21,88,240,0.1)', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: 'rgba(21,88,240,0.3)', alignSelf: 'flex-start' },
+  upgradeBtnText: { color: '#1558F0', fontSize: 10, fontWeight: '700' },
+  upgradingText: { color: '#1558F0', fontSize: 10, fontWeight: '600', marginTop: 4, fontStyle: 'italic' },
+  buildingDemolishBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(215,38,61,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(215,38,61,0.25)' },
+  buildNewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1558F0', borderRadius: 14, height: 48, gap: 8, marginTop: 4, shadowColor: '#1558F0', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
+  buildNewBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
 
   // Production / stockpile section (economy feature flag)
-  productionSectionTitle: { marginTop: 28, color: '#6FBF5B' },
-  stockpileCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#1A2340', padding: 12, marginBottom: 8, gap: 12 },
+  productionSectionTitle: { marginTop: 28, color: '#1B9E5A' },
+  stockpileCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#C0BAB4', padding: 12, marginBottom: 8, gap: 12 },
   stockpileIcon: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
   stockpileContent: { flex: 1, gap: 6 },
   stockpileTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
