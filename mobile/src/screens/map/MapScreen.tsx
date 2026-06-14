@@ -1344,7 +1344,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           <View style={styles.myTerrSheet}>
             <View style={styles.myTerrHandle} />
             <View style={styles.myTerrHeaderRow}>
-              <Text style={styles.myTerrTitle}>My Territories</Text>
+              <Text style={styles.myTerrTitle}>{S.map.mapScreen.myTerrTitle}</Text>
               <View style={styles.myTerrCountBadge}>
                 <Text style={styles.myTerrCountText}>{myTerritories.length}</Text>
               </View>
@@ -1361,7 +1361,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               <View style={styles.myTerrEmpty}>
                 <Ionicons name="flag-outline" size={32} color="#C0BAB4" />
                 <Text style={styles.myTerrEmptyText}>
-                  No territories yet — walk a route to claim one.
+                  {S.map.mapScreen.myTerrEmpty}
                 </Text>
               </View>
             ) : (

@@ -37,6 +37,8 @@ export const map = {
     later: 'Later',
     unprotectedBadge: 'UNPROTECTED',
     countdownNow: 'NOW!',
+    myTerrTitle: 'My Territories',
+    myTerrEmpty: 'No territories yet — walk a route to claim one.',
   },
 
   territoryDetail: {

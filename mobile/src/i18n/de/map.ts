@@ -39,6 +39,8 @@ export const map: typeof en = {
     later: 'Später',
     unprotectedBadge: 'UNGESCHÜTZT',
     countdownNow: 'JETZT!',
+    myTerrTitle: 'Meine Territorien',
+    myTerrEmpty: 'Noch keine Territorien — laufe eine Route um eines zu erobern.',
   },
 
   territoryDetail: {
