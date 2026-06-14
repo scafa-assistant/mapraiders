@@ -11,6 +11,7 @@
 // in the environment — is silently SKIPPED by the cascade, it never throws):
 //   GEMINI_API_KEY      → GeminiProvider     (Google Generative Language REST)
 //   OPENROUTER_API_KEY  → OpenRouterProvider (OpenRouter chat-completions REST)
+//   DEEPSEEK_API_KEY    → DeepSeekProvider   (api.deepseek.com, OpenAI-compatible)
 //   ANTHROPIC_API_KEY   → AnthropicProvider  (@anthropic-ai/sdk, optional/paid)
 //
 // No new npm SDKs: Gemini + OpenRouter use Node 20's global `fetch`. Anthropic
@@ -160,6 +161,61 @@ export class OpenRouterProvider implements LlmProvider {
   }
 }
 
+// ---- DeepSeek (native OpenAI-compatible chat completions REST) ------
+// api.deepseek.com is OpenAI-compatible. The native key is paid-but-cheap;
+// for our tiny cron volume (~dozens of ~600-token calls/day) it is effectively
+// free, and it is the most reliable always-on backend. JSON mode supported.
+
+export class DeepSeekProvider implements LlmProvider {
+  readonly name = 'deepseek';
+  private readonly model: string;
+
+  constructor(model: string = 'deepseek-chat') {
+    this.model = model || 'deepseek-chat';
+  }
+
+  isConfigured(): boolean {
+    return !!process.env.DEEPSEEK_API_KEY;
+  }
+
+  async complete(system: string, user: string, maxTokens: number): Promise<string> {
+    const key = process.env.DEEPSEEK_API_KEY;
+    if (!key) throw new Error('DEEPSEEK_API_KEY not set');
+
+    const body = {
+      model: this.model,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      max_tokens: maxTokens,
+      response_format: { type: 'json_object' },
+      temperature: 0.7,
+    };
+
+    const res = await fetchWithTimeout('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '');
+      throw new Error(`DeepSeek HTTP ${res.status}: ${detail.slice(0, 200)}`);
+    }
+
+    const data: any = await res.json();
+    const text: unknown = data?.choices?.[0]?.message?.content;
+    if (typeof text !== 'string' || text.trim() === '') {
+      throw new Error('DeepSeek: missing message content');
+    }
+    return text.trim();
+  }
+}
+
 // ---- Anthropic (optional, paid — wraps the installed SDK) -----------
 
 export class AnthropicProvider implements LlmProvider {
@@ -209,6 +265,7 @@ export class AnthropicProvider implements LlmProvider {
 export const PROVIDERS: Record<string, (model: string) => LlmProvider> = {
   gemini: (model) => new GeminiProvider(model),
   openrouter: (model) => new OpenRouterProvider(model),
+  deepseek: (model) => new DeepSeekProvider(model),
   anthropic: (model) => new AnthropicProvider(model),
 };
 
