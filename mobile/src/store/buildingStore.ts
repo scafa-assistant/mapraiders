@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { buildingApi, BuildingType } from '../services/api';
-import type { Building } from '../services/api';
+import type { Building, StockpileEntry } from '../services/api';
 import { useResourceStore } from './resourceStore';
 
 // ─── Error code → user-readable message map ──────────────────────────────────
@@ -16,6 +16,9 @@ const BUILD_ERROR_MESSAGES: Record<string, string> = {
   NOT_DEMOLISHABLE: 'This building cannot be demolished.',
   MAX_TIER: 'Already at maximum tier.',
   NOT_UPGRADABLE: 'Building must be active to upgrade.',
+  // Phase F.1 — biome extraction (economy flag)
+  BIOME_MISMATCH: "This territory isn't the right terrain for that building.",
+  FEATURE_DISABLED: 'This feature is not available yet.',
 };
 
 function resolveBuildError(message: string): string {
@@ -27,6 +30,8 @@ function resolveBuildError(message: string): string {
 interface BuildingState {
   /** Buildings keyed by territory ID. */
   buildingsByTerritory: Record<string, Building[]>;
+  /** Per-territory raw resource stockpile (Phase F.1) — empty when economy flag off. */
+  stockpileByTerritory: Record<string, StockpileEntry[]>;
   loading: boolean;
   error: string | null;
   // Actions
@@ -41,6 +46,7 @@ interface BuildingState {
 
 export const useBuildingStore = create<BuildingState>((set, get) => ({
   buildingsByTerritory: {},
+  stockpileByTerritory: {},
   loading: false,
   error: null,
 
@@ -53,8 +59,10 @@ export const useBuildingStore = create<BuildingState>((set, get) => ({
     try {
       const response = await buildingApi.list(territoryId);
       const buildings: Building[] = response.data?.data?.buildings ?? [];
+      const stockpile: StockpileEntry[] = response.data?.data?.stockpile ?? [];
       set((state) => ({
         buildingsByTerritory: { ...state.buildingsByTerritory, [territoryId]: buildings },
+        stockpileByTerritory: { ...state.stockpileByTerritory, [territoryId]: stockpile },
         loading: false,
       }));
     } catch {

@@ -685,9 +685,25 @@ export type BuildingType =
   | 'radar'
   | 'garrison'
   | 'silo'
-  | 'teleporter';
+  | 'teleporter'
+  // Phase F.1 — biome extraction buildings (gated by the 'economy' flag)
+  | 'sawmill'
+  | 'quarry'
+  | 'farm'
+  | 'fishery';
 
 export type BuildingStatus = 'building' | 'active' | 'damaged' | 'destroyed';
+
+/** Raw resource produced/stored per territory (Phase F.1, economy flag). */
+export type RawResource = 'wood' | 'stone' | 'food';
+
+/** Per-territory stockpile entry — the raw pile that grows over time. */
+export interface StockpileEntry {
+  resource: RawResource;
+  amount: number;
+  cap: number;
+  rate_per_hour: number;
+}
 
 export interface Building {
   id: string;
@@ -703,9 +719,12 @@ export interface Building {
 }
 
 export const buildingApi = {
-  /** List all buildings on a territory. */
+  /**
+   * List all buildings on a territory.
+   * `stockpile` is the per-territory raw resource pile (Phase F.1) — `[]` when the economy flag is off.
+   */
   list: (territoryId: string) =>
-    api.get<{ success: boolean; data: { buildings: Building[] } }>(`/buildings/territory/${territoryId}`),
+    api.get<{ success: boolean; data: { buildings: Building[]; stockpile?: StockpileEntry[] } }>(`/buildings/territory/${territoryId}`),
 
   /** Construct a new building on a territory. */
   build: (territoryId: string, type: BuildingType) =>

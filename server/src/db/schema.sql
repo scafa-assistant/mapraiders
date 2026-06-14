@@ -1513,6 +1513,29 @@ INSERT INTO feature_flags (key, enabled, rollout_percent, config)
 VALUES ('ai_general', FALSE, 100, '{}')
 ON CONFLICT (key) DO NOTHING;
 
+-- ============================================================
+-- Phase F.1 — Biome-based Resource Extraction (2026-06-14)
+-- Mirrors src/db/migrations/2026-06-14_phaseF1_extraction.sql.
+--
+-- Extraction buildings (sawmill / quarry / farm / fishery) accrue raw
+-- resources (wood / stone / food) into a per-TERRITORY stockpile over time.
+-- Hauling stockpile→player balance is a LATER phase. No change to buildings
+-- (type VARCHAR(30) / tier CHECK 1..3 already fit) nor player_resources
+-- (resource VARCHAR(15) already fits the new resource keys). Gated behind the
+-- `economy` feature flag (default OFF).
+-- ============================================================
+CREATE TABLE IF NOT EXISTS territory_stockpile (
+  territory_id UUID NOT NULL REFERENCES territories(id) ON DELETE CASCADE,
+  resource     VARCHAR(15) NOT NULL,
+  amount       BIGINT NOT NULL DEFAULT 0 CHECK (amount >= 0),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (territory_id, resource)
+);
+
+INSERT INTO feature_flags (key, enabled, rollout_percent, config)
+VALUES ('economy', FALSE, 100, '{}')
+ON CONFLICT (key) DO NOTHING;
+
 -- AI system user: unique-safe insert (a player may hold 'Hyperboreans');
 -- banned = TRUE hides it from player search + leaderboards (banned filters).
 INSERT INTO users (id, username, email, password_hash, banned)

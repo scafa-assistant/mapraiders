@@ -7,6 +7,10 @@ export interface ResourceBalances {
   energy: number;
   tech: number;
   intel: number;
+  // Phase F.1 — raw economy resources (0 when the economy flag is off)
+  wood: number;
+  stone: number;
+  food: number;
 }
 
 export interface ResourceTransaction {
@@ -22,6 +26,9 @@ const DEFAULT_BALANCES: ResourceBalances = {
   energy: 0,
   tech: 0,
   intel: 0,
+  wood: 0,
+  stone: 0,
+  food: 0,
 };
 
 interface ResourceState {
@@ -48,6 +55,9 @@ export const useResourceStore = create<ResourceState>((set) => ({
         energy: data.balances?.energy ?? 0,
         tech: data.balances?.tech ?? 0,
         intel: data.balances?.intel ?? 0,
+        wood: data.balances?.wood ?? 0,
+        stone: data.balances?.stone ?? 0,
+        food: data.balances?.food ?? 0,
       };
       const transactions: ResourceTransaction[] = data.transactions ?? [];
       set({ balances, transactions, isLoading: false });

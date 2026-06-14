@@ -56,6 +56,13 @@ const getDefenseLabels = (): Record<string, { label: string; icon: keyof typeof 
   echo: { label: S.map.territoryDetail.gameEcho, icon: 'volume-high-outline', color: '#7B61FF' },
 });
 
+// Phase F.1 — raw resource display metadata (icon, label, HUD color)
+const RESOURCE_META: Record<'wood' | 'stone' | 'food', { label: string; icon: keyof typeof Ionicons.glyphMap; color: string }> = {
+  wood: { label: 'Wood', icon: 'leaf', color: '#A06A3C' },
+  stone: { label: 'Stone', icon: 'cube', color: '#9CA3AF' },
+  food: { label: 'Food', icon: 'nutrition', color: '#6FBF5B' },
+};
+
 export default function TerritoryDetailScreen({ route, navigation }: TerritoryDetailScreenProps) {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -164,10 +171,13 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
   // ─── Buildings (resources feature flag) ────────────────────────────────────
   const isResourcesEnabled = useFeatureStore((s) => s.isEnabled('resources') && s.capabilities.resources);
-  const { buildingsByTerritory, loading: buildingLoading, build, upgrade, demolish } = useBuildingStore();
+  // Phase F.1 — biome extraction is its own flag, on top of resources.
+  const isEconomyEnabled = useFeatureStore((s) => s.isEnabled('economy') && s.isEnabled('resources') && s.capabilities.resources);
+  const { buildingsByTerritory, stockpileByTerritory, loading: buildingLoading, build, upgrade, demolish } = useBuildingStore();
   const { balances, fetchResources } = useResourceStore();
   const [showBuildPicker, setShowBuildPicker] = useState(false);
   const buildings = buildingsByTerritory[territory.id] ?? [];
+  const stockpile = stockpileByTerritory[territory.id] ?? [];
 
   // Fetch buildings and resource balances when the screen mounts (flag-gated)
   useEffect(() => {
@@ -222,6 +232,10 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
       garrison: 'Garrison',
       silo: 'Silo',
       teleporter: 'Teleporter',
+      sawmill: 'Sawmill',
+      quarry: 'Quarry',
+      farm: 'Farm',
+      fishery: 'Fishery',
     };
     return names[type] ?? type;
   };
@@ -235,6 +249,10 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
       garrison: { e: 250, t: 150 },
       silo: { e: 400, t: 250 },
       teleporter: { e: 300, t: 200 },
+      sawmill: { e: 120, t: 40 },
+      quarry: { e: 150, t: 60 },
+      farm: { e: 120, t: 30 },
+      fishery: { e: 130, t: 40 },
     };
     const base = BASE_COSTS[b.type] ?? { e: 0, t: 0 };
     const mult = Math.pow(2, b.tier);
@@ -586,6 +604,40 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 </TouchableOpacity>
               </>
             )}
+
+            {/* ─── PRODUCTION SECTION (economy flag, stockpile non-empty) ─── */}
+            {isEconomyEnabled && stockpile.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, styles.productionSectionTitle]}>
+                  PRODUCTION
+                </Text>
+                {stockpile.map((entry) => {
+                  const meta = RESOURCE_META[entry.resource];
+                  const pct = entry.cap > 0 ? Math.max(0, Math.min(100, (entry.amount / entry.cap) * 100)) : 0;
+                  return (
+                    <View key={entry.resource} style={styles.stockpileCard}>
+                      <View style={[styles.stockpileIcon, { backgroundColor: `${meta.color}1F` }]}>
+                        <Ionicons name={meta.icon} size={18} color={meta.color} />
+                      </View>
+                      <View style={styles.stockpileContent}>
+                        <View style={styles.stockpileTopRow}>
+                          <Text style={styles.stockpileName}>{meta.label}</Text>
+                          <Text style={styles.stockpileAmount}>
+                            {entry.amount}/{entry.cap}
+                          </Text>
+                          <Text style={[styles.stockpileRate, { color: meta.color }]}>
+                            +{entry.rate_per_hour}/h
+                          </Text>
+                        </View>
+                        <View style={styles.stockpileBarBg}>
+                          <View style={[styles.stockpileBarFill, { width: `${pct}%`, backgroundColor: meta.color }]} />
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })}
+              </>
+            )}
           </>
         )}
       </ScrollView>
@@ -596,6 +648,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           visible={showBuildPicker}
           balances={balances}
           loading={buildingLoading}
+          economyEnabled={isEconomyEnabled}
           onClose={() => setShowBuildPicker(false)}
           onBuild={handleBuild}
         />
@@ -693,4 +746,16 @@ const createStyles = (theme: Theme) =>
   buildingDemolishBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,71,87,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,71,87,0.25)' },
   buildNewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#9D4EDD', borderRadius: 14, height: 48, gap: 8, marginTop: 4, shadowColor: '#9D4EDD', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
   buildNewBtnText: { color: '#0A0E17', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
+
+  // Production / stockpile section (economy feature flag)
+  productionSectionTitle: { marginTop: 28, color: '#6FBF5B' },
+  stockpileCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#1A2340', padding: 12, marginBottom: 8, gap: 12 },
+  stockpileIcon: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
+  stockpileContent: { flex: 1, gap: 6 },
+  stockpileTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  stockpileName: { color: theme.text, fontSize: 13, fontWeight: '700', flex: 1 },
+  stockpileAmount: { color: theme.textSecondary, fontSize: 12, fontWeight: '600' },
+  stockpileRate: { fontSize: 11, fontWeight: '700' },
+  stockpileBarBg: { height: 6, borderRadius: 3, backgroundColor: theme.border, overflow: 'hidden' },
+  stockpileBarFill: { height: '100%', borderRadius: 3 },
 });

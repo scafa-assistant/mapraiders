@@ -92,7 +92,7 @@ export interface TerritoryDetail extends Territory {
 
 // ---- Resources ---------------------------------------------------------------
 
-export type ResourceType = 'energy' | 'tech' | 'intel';
+export type ResourceType = 'energy' | 'tech' | 'intel' | 'wood' | 'stone' | 'food';
 
 export type ResourceBalances = Record<ResourceType, number>;
 
@@ -103,13 +103,17 @@ export interface ResourcesResponse {
 
 // ---- Buildings ---------------------------------------------------------------
 
+/** Extraction buildings added in Phase F.1 */
+export type ExtractionBuildingType = 'sawmill' | 'quarry' | 'farm' | 'fishery';
+
 export type BuildingType =
   | 'shield_generator'
   | 'refinery'
   | 'radar'
   | 'garrison'
   | 'silo'
-  | 'teleporter';
+  | 'teleporter'
+  | ExtractionBuildingType;
 
 export type BuildingStatus = 'building' | 'active' | 'damaged' | 'destroyed';
 
@@ -124,6 +128,20 @@ export interface Building {
   completes_at: string | null;
   config: Record<string, unknown>;
   created_at: string;
+}
+
+/** Per-territory raw-resource pile returned by GET /buildings/territory/:id */
+export interface StockpileEntry {
+  resource: 'wood' | 'stone' | 'food' | string;
+  amount: number;
+  cap: number;
+  rate_per_hour: number;
+}
+
+export interface BuildingListResponse {
+  buildings: Building[];
+  /** Empty array when the economy feature flag is off. */
+  stockpile: StockpileEntry[];
 }
 
 // ---- Inventory ---------------------------------------------------------------

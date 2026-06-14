@@ -24,7 +24,7 @@ export class ResourceError extends Error {
   }
 }
 
-const RESOURCES: ResourceType[] = ['energy', 'tech', 'intel'];
+const RESOURCES: ResourceType[] = ['energy', 'tech', 'intel', 'wood', 'stone', 'food'];
 
 /**
  * Run `fn` inside the supplied client, or open a fresh transaction if no
@@ -53,7 +53,14 @@ class ResourceService {
       ),
     );
 
-    const balances: Record<ResourceType, number> = { energy: 0, tech: 0, intel: 0 };
+    const balances: Record<ResourceType, number> = {
+      energy: 0,
+      tech: 0,
+      intel: 0,
+      wood: 0,
+      stone: 0,
+      food: 0,
+    };
     for (const row of res.rows) {
       if (RESOURCES.includes(row.resource)) {
         balances[row.resource] = parseInt(row.balance, 10);

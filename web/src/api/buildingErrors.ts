@@ -16,6 +16,9 @@ const MESSAGES: Record<string, string> = {
   // Upgrade-specific codes
   MAX_TIER: 'Already at maximum tier.',
   NOT_UPGRADABLE: 'Building must be active to upgrade.',
+  // Extraction building (Phase F.1)
+  BIOME_MISMATCH: "This territory's terrain doesn't match the extractor's required biome.",
+  FEATURE_DISABLED: 'This feature is not yet enabled.',
 };
 
 export function readableBuildingError(code: string | undefined, fallback: string): string {

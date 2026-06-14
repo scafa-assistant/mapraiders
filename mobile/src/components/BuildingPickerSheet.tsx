@@ -92,12 +92,55 @@ const BUILDING_DEFS: BuildingDef[] = [
   },
 ];
 
+// ─── Phase F.1 — biome extraction buildings (gated by the 'economy' flag) ──────
+// Each requires a matching territory biome and produces a raw resource over time.
+const EXTRACTION_DEFS: BuildingDef[] = [
+  {
+    type: 'sawmill',
+    name: 'Sawmill',
+    effect: 'Forest terrain only — harvests wood over time.',
+    costEnergy: 120,
+    costTech: 40,
+    buildTimeHours: 2,
+    icon: 'leaf',
+  },
+  {
+    type: 'quarry',
+    name: 'Quarry',
+    effect: 'Industrial terrain only — extracts stone over time.',
+    costEnergy: 150,
+    costTech: 60,
+    buildTimeHours: 2,
+    icon: 'hammer',
+  },
+  {
+    type: 'farm',
+    name: 'Farm',
+    effect: 'Rural terrain only — grows food over time.',
+    costEnergy: 120,
+    costTech: 30,
+    buildTimeHours: 2,
+    icon: 'nutrition',
+  },
+  {
+    type: 'fishery',
+    name: 'Fishery',
+    effect: 'Water terrain only — produces food over time.',
+    costEnergy: 130,
+    costTech: 40,
+    buildTimeHours: 2,
+    icon: 'fish',
+  },
+];
+
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface BuildingPickerSheetProps {
   visible: boolean;
   balances: ResourceBalances;
   loading: boolean;
+  /** When true, the 4 biome-extraction buildings are offered (Phase F.1 'economy' flag). */
+  economyEnabled?: boolean;
   onClose: () => void;
   onBuild: (type: BuildingType) => void;
 }
@@ -114,10 +157,14 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
   visible,
   balances,
   loading,
+  economyEnabled = false,
   onClose,
   onBuild,
 }) => {
   const insets = useSafeAreaInsets();
+
+  // Extraction buildings only appear when the economy flag is on.
+  const defs = economyEnabled ? [...BUILDING_DEFS, ...EXTRACTION_DEFS] : BUILDING_DEFS;
 
   return (
     <Modal
@@ -149,7 +196,7 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
 
         {/* Building list rows */}
         <ScrollView showsVerticalScrollIndicator={false} style={styles.list}>
-          {BUILDING_DEFS.map((def) => {
+          {defs.map((def) => {
             const canAfford =
               balances.energy >= def.costEnergy && balances.tech >= def.costTech;
             return (

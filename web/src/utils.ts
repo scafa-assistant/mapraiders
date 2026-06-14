@@ -32,6 +32,11 @@ const BUILDING_LABELS: Record<string, string> = {
   garrison: 'Garrison',
   silo: 'Silo',
   teleporter: 'Teleporter',
+  // Phase F.1 — extraction buildings
+  sawmill: 'Sawmill',
+  quarry: 'Quarry',
+  farm: 'Farm',
+  fishery: 'Fishery',
 };
 
 export function buildingLabel(type: string): string {

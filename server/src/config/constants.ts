@@ -621,6 +621,11 @@ export const BUILDINGS = {
     garrison: { energy: 250, tech: 150 },
     silo: { energy: 400, tech: 250 },
     teleporter: { energy: 300, tech: 200 },
+    // Phase F.1 — biome-gated extraction buildings.
+    sawmill: { energy: 120, tech: 40 },
+    quarry: { energy: 150, tech: 60 },
+    farm: { energy: 120, tech: 30 },
+    fishery: { energy: 130, tech: 40 },
   } as Record<string, { energy: number; tech: number }>,
 
   /**
@@ -694,6 +699,42 @@ export const BUILDINGS = {
     MAX_ACCRUAL_HOURS: 168,
   },
 } as const;
+
+// ============================================================
+// EXTRACTION (Phase F.1) — Biome-gated resource extraction buildings.
+// Players build an extraction structure on a territory whose real-world OSM
+// biome matches the type's required biome. Each ACTIVE extraction building
+// accrues a RAW resource into the per-TERRITORY stockpile over time (NOT into
+// the player's balance — hauling stockpile→balance is a later phase).
+//
+// Production = ratePerHour × TIER_RATE_MULT[tier-1] × hours (capped at
+// MAX_ACCRUAL_HOURS), clamped to the per-resource stockpile `cap`. The four
+// types obey the SAME slot + max-1-per-type rules as Phase B/C buildings, and
+// the whole subsystem (build + accrual + cron) is gated behind the `economy`
+// feature flag (default OFF). All numbers are defaults; nothing here is
+// flag-overridable yet (F.1 keeps the config surface minimal).
+// ============================================================
+
+export const EXTRACTION = {
+  // building type -> { biome required, resource produced, base rate/hour, stockpile cap }
+  sawmill:  { biome: 'forest',     resource: 'wood',  ratePerHour: 12, cap: 600 },
+  quarry:   { biome: 'industrial', resource: 'stone', ratePerHour: 10, cap: 600 },
+  farm:     { biome: 'rural',      resource: 'food',  ratePerHour: 14, cap: 700 },
+  fishery:  { biome: 'water',      resource: 'food',  ratePerHour: 10, cap: 500 },
+  /** Output multiplier by tier (index tier-1). Upgrades scale production. */
+  TIER_RATE_MULT: [1, 1.5, 2],
+  /** Cap on accrual hours to prevent a windfall after long absence. */
+  MAX_ACCRUAL_HOURS: 168,
+} as const;
+
+/** The four Phase F.1 extraction building types. */
+export const EXTRACTION_TYPES = ['sawmill', 'quarry', 'farm', 'fishery'] as const;
+export type ExtractionType = (typeof EXTRACTION_TYPES)[number];
+
+/** Type guard: is `t` one of the extraction building types? */
+export function isExtractionType(t: string): t is ExtractionType {
+  return (EXTRACTION_TYPES as readonly string[]).includes(t);
+}
 
 // ============================================================
 // TERMINALS (Phase A.2) — Jump&Run terminals on landmark cells.

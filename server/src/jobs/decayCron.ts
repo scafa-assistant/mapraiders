@@ -36,6 +36,7 @@ import { runEnergyTick, runBuildingCompletion } from './phaseBJobs';
 import { runTroopArrivalTick, runVisibilityCleanup } from './phaseC1Jobs';
 import { runScoutVisionTick } from './phaseC2Jobs';
 import { runAiTriggerTick, runAiGeneralTick, runRuinsOvergrowth } from './phaseDJobs';
+import { runExtractionTick } from './phaseF1Jobs';
 
 /**
  * Setup all cron jobs. Call once at server start.
@@ -1161,6 +1162,41 @@ export function setupCronJobs(): void {
       });
     } finally {
       await releaseCronLock('ruins_overgrowth');
+    }
+  }, { timezone: 'UTC' });
+
+  // ------------------------------------------------------------------
+  // Hourly at :15 - Extraction tick: accrue per-territory stockpiles for
+  // territories with >= 1 active extraction building (Phase F.1). Gated on the
+  // `economy` flag (runExtractionTick no-ops while off). The lazy read path
+  // covers the gaps between ticks, so hourly is sufficient.
+  // ------------------------------------------------------------------
+  cron.schedule('15 * * * *', async () => {
+    const startTime = Date.now();
+    const locked = await acquireCronLock('extraction_tick', 1800);
+    if (!locked) return;
+
+    try {
+      const processed = await runExtractionTick();
+      await recordCronRun({
+        job: 'extraction_tick',
+        status: 'success',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: processed,
+      });
+    } catch (err) {
+      console.error('[CRON] Extraction tick failed:', err);
+      await recordCronRun({
+        job: 'extraction_tick',
+        status: 'failure',
+        startedAt: new Date(startTime).toISOString(),
+        durationMs: Date.now() - startTime,
+        recordsProcessed: 0,
+        error: String(err),
+      });
+    } finally {
+      await releaseCronLock('extraction_tick');
     }
   }, { timezone: 'UTC' });
 

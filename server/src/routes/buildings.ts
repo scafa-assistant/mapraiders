@@ -14,10 +14,13 @@ import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { featureService } from '../services/featureService';
 import { buildingEngine } from '../services/buildingEngine';
+import { extractionService } from '../services/extractionService';
+import { isExtractionType } from '../config/constants';
 
 const router = Router();
 
 const RESOURCES_FLAG = 'resources';
+const ECONOMY_FLAG = 'economy';
 
 /** Valid building types the client may request. */
 const VALID_TYPES = [
@@ -27,6 +30,11 @@ const VALID_TYPES = [
   'garrison',
   'silo',
   'teleporter',
+  // Phase F.1 — extraction buildings (additionally gated behind `economy`).
+  'sawmill',
+  'quarry',
+  'farm',
+  'fishery',
 ] as const;
 type BuildingType = (typeof VALID_TYPES)[number];
 
@@ -63,7 +71,23 @@ router.get('/territory/:territoryId', authenticate, async (req: Request, res: Re
     }
 
     const buildings = await buildingEngine.getBuildings(territoryId, userId);
-    return res.json({ success: true, data: { buildings } });
+
+    // Phase F.1 — territory stockpile (raw extraction resources). Only surfaced
+    // when the `economy` flag is on for this user; otherwise an empty list so
+    // the client can render uniformly without learning the feature exists.
+    let stockpile: { resource: string; amount: number; cap: number; rate_per_hour: number }[] = [];
+    const economyEnabled = await featureService.isEnabledFor(userId, ECONOMY_FLAG);
+    if (economyEnabled) {
+      const sp = await extractionService.getStockpile(territoryId);
+      stockpile = sp.map((e) => ({
+        resource: e.resource,
+        amount: e.amount,
+        cap: e.cap,
+        rate_per_hour: e.ratePerHour,
+      }));
+    }
+
+    return res.json({ success: true, data: { buildings, stockpile } });
   } catch (err: any) {
     console.error('[Buildings] GET /territory/:territoryId error:', err);
     return res.status(500).json({ success: false, message: 'Failed to load buildings' });
@@ -99,6 +123,16 @@ router.post('/territory/:territoryId', authenticate, async (req: Request, res: R
         success: false,
         message: `type must be one of: ${VALID_TYPES.join(', ')}`,
       });
+    }
+
+    // Phase F.1 — extraction buildings need the `economy` flag ON in addition
+    // to `resources`. Off → 403 FEATURE_DISABLED. Existing (non-extraction)
+    // builds are unaffected and never read the economy flag.
+    if (isExtractionType(type)) {
+      const economyEnabled = await featureService.isEnabledFor(userId, ECONOMY_FLAG);
+      if (!economyEnabled) {
+        return res.status(403).json({ success: false, message: 'FEATURE_DISABLED' });
+      }
     }
 
     const building = await buildingEngine.build(userId, territoryId, type);

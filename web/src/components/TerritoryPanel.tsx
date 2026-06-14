@@ -2,6 +2,8 @@
 // Side panel — territory details + building management.
 // Buildings only appear when the `resources` flag is on AND the territory
 // belongs to the signed-in user (the only GPS-free actions in v1).
+// Phase F.1: extraction buildings (sawmill/quarry/farm/fishery) gated by
+// BOTH `resources` AND `economy` flags. Stockpile display added.
 // ============================================================
 
 import { useCallback, useEffect, useState } from 'react';
@@ -12,12 +14,22 @@ import { useAuthStore } from '../store/authStore';
 import { useFeatureStore } from '../store/featureStore';
 import { useResourceStore } from '../store/resourceStore';
 import { buildingLabel, countdownTo, formatArea, tierNumeral, upgradeCost } from '../utils';
-import type { Building, BuildingType, TerritoryDetail } from '../api/types';
+import type { Building, BuildingType, ExtractionBuildingType, StockpileEntry, TerritoryDetail } from '../api/types';
 
 interface Props {
   territoryId: string;
   onClose: () => void;
 }
+
+// ---- Standard military buildings ----
+const MILITARY_TYPES = [
+  'shield_generator',
+  'refinery',
+  'radar',
+  'garrison',
+  'silo',
+  'teleporter',
+] as const satisfies BuildingType[];
 
 const BUILD_COSTS: Record<BuildingType, { energy: number; tech: number }> = {
   shield_generator: { energy: 200, tech: 100 },
@@ -26,6 +38,11 @@ const BUILD_COSTS: Record<BuildingType, { energy: number; tech: number }> = {
   garrison: { energy: 250, tech: 150 },
   silo: { energy: 400, tech: 250 },
   teleporter: { energy: 300, tech: 200 },
+  // Extraction buildings (Phase F.1)
+  sawmill: { energy: 120, tech: 40 },
+  quarry: { energy: 150, tech: 60 },
+  farm: { energy: 120, tech: 30 },
+  fishery: { energy: 130, tech: 40 },
 };
 
 const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -35,6 +52,47 @@ const BUILDING_ICONS: Record<BuildingType, string> = {
   garrison: '🏰',
   silo: '☄',
   teleporter: '🌀',
+  // Extraction
+  sawmill: '🪓',
+  quarry: '⛏',
+  farm: '🌾',
+  fishery: '🐟',
+};
+
+// ---- Extraction building metadata ----
+interface ExtractionMeta {
+  type: ExtractionBuildingType;
+  label: string;
+  biomeHint: string;
+  resource: string;
+}
+
+const EXTRACTION_BUILDINGS: ExtractionMeta[] = [
+  { type: 'sawmill',  label: 'Sawmill',  biomeHint: 'needs forest terrain',    resource: 'wood' },
+  { type: 'quarry',   label: 'Quarry',   biomeHint: 'needs industrial terrain', resource: 'stone' },
+  { type: 'farm',     label: 'Farm',     biomeHint: 'needs farmland terrain',   resource: 'food' },
+  { type: 'fishery',  label: 'Fishery',  biomeHint: 'needs water terrain',      resource: 'food' },
+];
+
+// Friendly BIOME_MISMATCH hints per extractor type (shown instead of generic error).
+const BIOME_MISMATCH_HINTS: Record<ExtractionBuildingType, string> = {
+  sawmill:  "This territory isn't forest — a sawmill needs forest terrain.",
+  quarry:   "This territory isn't industrial — a quarry needs industrial terrain.",
+  farm:     "This territory isn't farmland — a farm needs farmland terrain.",
+  fishery:  "This territory isn't water — a fishery needs water terrain.",
+};
+
+// Stockpile resource colours
+const STOCKPILE_COLORS: Record<string, string> = {
+  wood:  '#A06A3C',
+  stone: '#9CA3AF',
+  food:  '#6FBF5B',
+};
+
+const STOCKPILE_ICONS: Record<string, string> = {
+  wood:  '🪵',
+  stone: '🪨',
+  food:  '🌾',
 };
 
 // Re-render countdowns once a second so "building" timers tick down live.
@@ -51,10 +109,12 @@ function useTick(active: boolean): number {
 export default function TerritoryPanel({ territoryId, onClose }: Props) {
   const userId = useAuthStore((s) => s.user?.id);
   const resourcesEnabled = useFeatureStore((s) => s.isEnabled('resources'));
+  const economyEnabled = useFeatureStore((s) => s.isEnabled('economy'));
   const refreshResources = useResourceStore((s) => s.refresh);
 
   const [territory, setTerritory] = useState<TerritoryDetail | null>(null);
   const [buildings, setBuildings] = useState<Building[]>([]);
+  const [stockpile, setStockpile] = useState<StockpileEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -62,6 +122,7 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
 
   const isOwn = Boolean(territory && userId && territory.owner_id === userId);
   const showBuildings = resourcesEnabled && isOwn;
+  const showExtraction = showBuildings && economyEnabled;
 
   const hasBuildingInProgress = buildings.some((b) => b.status === 'building');
   useTick(hasBuildingInProgress);
@@ -69,10 +130,12 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
   const loadBuildings = useCallback(async () => {
     if (!resourcesEnabled) return;
     try {
-      const list = await buildingApi.list(territoryId);
-      setBuildings(list);
+      const result = await buildingApi.list(territoryId);
+      setBuildings(result.buildings);
+      setStockpile(result.stockpile);
     } catch {
       setBuildings([]);
+      setStockpile([]);
     }
   }, [territoryId, resourcesEnabled]);
 
@@ -101,11 +164,16 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
     };
   }, [territoryId, loadBuildings]);
 
-  function reportActionError(err: unknown) {
+  function reportActionError(err: unknown, attemptedType?: BuildingType) {
     // The buildings route returns message = machine code on domain failure.
     if (axios.isAxiosError(err)) {
       const code = (err.response?.data as { message?: string } | undefined)?.message;
-      setActionError(readableBuildingError(code, errorMessage(err, 'Action failed')));
+      // For BIOME_MISMATCH show a type-specific friendly message when available.
+      if (code === 'BIOME_MISMATCH' && attemptedType && attemptedType in BIOME_MISMATCH_HINTS) {
+        setActionError(BIOME_MISMATCH_HINTS[attemptedType as ExtractionBuildingType]);
+      } else {
+        setActionError(readableBuildingError(code, errorMessage(err, 'Action failed')));
+      }
     } else {
       setActionError(errorMessage(err, 'Action failed'));
     }
@@ -118,7 +186,7 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
       await buildingApi.build(territoryId, type);
       await Promise.all([loadBuildings(), refreshResources()]);
     } catch (err) {
-      reportActionError(err);
+      reportActionError(err, type);
     } finally {
       setBusy(false);
     }
@@ -134,7 +202,7 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
       await buildingApi.demolish(building.id);
       await Promise.all([loadBuildings(), refreshResources()]);
     } catch (err) {
-      reportActionError(err);
+      reportActionError(err, undefined);
     } finally {
       setBusy(false);
     }
@@ -147,7 +215,7 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
       await buildingApi.upgrade(building.id);
       await Promise.all([loadBuildings(), refreshResources()]);
     } catch (err) {
-      reportActionError(err);
+      reportActionError(err, undefined);
     } finally {
       setBusy(false);
     }
@@ -272,8 +340,10 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
                 );
               })}
 
+              {/* ---- Military build picker ---- */}
+              <div className="section-title" style={{ marginTop: 14 }}>Build (Military)</div>
               <div className="build-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                {(Object.keys(BUILD_COSTS) as BuildingType[]).map((type) => {
+                {MILITARY_TYPES.map((type) => {
                   const cost = BUILD_COSTS[type];
                   const already = existingTypes.has(type);
                   return (
@@ -295,6 +365,99 @@ export default function TerritoryPanel({ territoryId, onClose }: Props) {
                   );
                 })}
               </div>
+
+              {/* ---- Extraction build picker (economy flag) ---- */}
+              {showExtraction && (
+                <>
+                  <div className="section-title" style={{ marginTop: 14 }}>Build (Extraction)</div>
+                  <div
+                    className="build-options"
+                    style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}
+                  >
+                    {EXTRACTION_BUILDINGS.map(({ type, label, biomeHint, resource }) => {
+                      const cost = BUILD_COSTS[type];
+                      const already = existingTypes.has(type);
+                      return (
+                        <button
+                          key={type}
+                          className="build-btn"
+                          disabled={busy || already}
+                          onClick={() => void onBuild(type)}
+                          title={already ? 'Already built here' : biomeHint}
+                          style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2, padding: '7px 8px' }}
+                        >
+                          <span style={{ fontSize: 13 }}>
+                            {BUILDING_ICONS[type]}{' '}
+                            {already ? `${label} ✓` : `Build ${label}`}
+                          </span>
+                          <span className="cost" style={{ fontSize: 10 }}>
+                            {cost.energy}⚡ {cost.tech}⚙
+                          </span>
+                          <span style={{ fontSize: 10, opacity: 0.65 }}>
+                            {biomeHint} → {resource}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+              {/* ---- Stockpile display ---- */}
+              {showExtraction && stockpile.length > 0 && (
+                <>
+                  <div className="section-title" style={{ marginTop: 18 }}>Production / Stockpile</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {stockpile.map((entry) => {
+                      const color = STOCKPILE_COLORS[entry.resource] ?? '#9A8FB0';
+                      const icon = STOCKPILE_ICONS[entry.resource] ?? '📦';
+                      const pct = entry.cap > 0 ? Math.min(100, (entry.amount / entry.cap) * 100) : 0;
+                      return (
+                        <div
+                          key={entry.resource}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            fontSize: 12,
+                          }}
+                        >
+                          <span style={{ fontSize: 15, lineHeight: 1 }}>{icon}</span>
+                          <span style={{ color, fontWeight: 600, minWidth: 44, textTransform: 'capitalize' }}>
+                            {entry.resource}
+                          </span>
+                          {/* progress bar */}
+                          <div
+                            style={{
+                              flex: 1,
+                              height: 6,
+                              background: 'var(--border)',
+                              borderRadius: 3,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: `${pct}%`,
+                                height: '100%',
+                                background: color,
+                                borderRadius: 3,
+                                transition: 'width 0.4s ease',
+                              }}
+                            />
+                          </div>
+                          <span style={{ color, whiteSpace: 'nowrap' }}>
+                            {Math.round(entry.amount).toLocaleString()} / {Math.round(entry.cap).toLocaleString()}
+                          </span>
+                          <span style={{ color: 'var(--text-dim)', whiteSpace: 'nowrap', fontSize: 11 }}>
+                            +{entry.rate_per_hour}/h
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </>
           )}
         </>

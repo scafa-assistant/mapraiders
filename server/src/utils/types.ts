@@ -674,8 +674,16 @@ export interface ItemInstanceWithDefinition extends ItemInstance {
 
 // ---- Resource Ledger (E2) -------------------------------------------
 
-/** The three player resources tracked in the ledger. */
-export type ResourceType = 'energy' | 'tech' | 'intel';
+/**
+ * Player resources tracked in the ledger.
+ *   energy / tech / intel — the Phase 0 "soft" resources (claim/loot/energy-tick).
+ *   wood / stone / food    — Phase F.1 raw extraction resources. These accrue
+ *                            into a per-territory stockpile; hauling them into a
+ *                            player's balance is a LATER phase, so for now they
+ *                            are first-class balance keys (default 0) but only
+ *                            ever credited via the future haul flow.
+ */
+export type ResourceType = 'energy' | 'tech' | 'intel' | 'wood' | 'stone' | 'food';
 
 /** Resource balance row (`player_resources`). */
 export interface PlayerResource {

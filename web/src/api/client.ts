@@ -13,6 +13,7 @@ import type {
   BattleDetail,
   BattleSummary,
   Building,
+  BuildingListResponse,
   BuildingType,
   ClientFeatureFlag,
   InventoryItem,
@@ -22,6 +23,7 @@ import type {
   PveSpawn,
   ResourcesResponse,
   RunnerLevel,
+  StockpileEntry,
   Territory,
   TerritoryDetail,
   TerminalLeaderboardResponse,
@@ -188,11 +190,14 @@ export const inventoryApi = {
 };
 
 export const buildingApi = {
-  async list(territoryId: string): Promise<Building[]> {
-    const res = await api.get<ApiEnvelope<{ buildings: Building[] }>>(
+  async list(territoryId: string): Promise<BuildingListResponse> {
+    const res = await api.get<ApiEnvelope<BuildingListResponse>>(
       `/buildings/territory/${territoryId}`,
     );
-    return res.data.data?.buildings ?? [];
+    return {
+      buildings: res.data.data?.buildings ?? [],
+      stockpile: res.data.data?.stockpile ?? [],
+    };
   },
   async build(territoryId: string, type: BuildingType): Promise<Building> {
     const res = await api.post<ApiEnvelope<{ building: Building }>>(
@@ -355,4 +360,4 @@ export const battlesApi = {
 };
 
 // Re-export types that components need without reaching into api/types directly.
-export type { LeaderboardEntry, RunnerLevel };
+export type { LeaderboardEntry, RunnerLevel, StockpileEntry };

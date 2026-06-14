@@ -15,7 +15,7 @@ interface ResourceState {
   refresh: () => Promise<void>;
 }
 
-const ZERO: ResourceBalances = { energy: 0, tech: 0, intel: 0 };
+const ZERO: ResourceBalances = { energy: 0, tech: 0, intel: 0, wood: 0, stone: 0, food: 0 };
 
 export const useResourceStore = create<ResourceState>((set) => ({
   balances: ZERO,
@@ -26,7 +26,9 @@ export const useResourceStore = create<ResourceState>((set) => ({
     set({ loading: true });
     try {
       const data = await resourceApi.get();
-      set({ balances: data.balances ?? ZERO, loaded: true, loading: false });
+      // Merge fetched balances over ZERO so that new keys (wood/stone/food)
+      // default to 0 even if the server omits them (old build / flag off).
+      set({ balances: { ...ZERO, ...data.balances }, loaded: true, loading: false });
     } catch {
       set({ loading: false });
     }

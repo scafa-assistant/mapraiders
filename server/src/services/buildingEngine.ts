@@ -14,10 +14,11 @@
 
 import { PoolClient } from 'pg';
 import { transaction } from '../config/database';
-import { BUILDINGS } from '../config/constants';
+import { BUILDINGS, EXTRACTION, isExtractionType, ExtractionType } from '../config/constants';
 import { resourceService } from './resourceService';
 import { featureService } from './featureService';
 import { wsService } from './wsService';
+import { getContext } from './osmContextService';
 
 /** Domain error carrying a stable machine-readable `code`. */
 export class BuildingError extends Error {
@@ -41,8 +42,16 @@ export const BUILDING_TYPES = [
   'garrison',
   'silo',
   'teleporter',
+  // Phase F.1 — biome-gated extraction buildings (gated behind the `economy` flag).
+  'sawmill',
+  'quarry',
+  'farm',
+  'fishery',
 ] as const;
 export type BuildingType = (typeof BUILDING_TYPES)[number];
+
+/** How many of a territory's H3 cells we probe for biome eligibility. */
+const BIOME_PROBE_CELLS = 5;
 
 export interface Building {
   id: string;
@@ -169,6 +178,61 @@ class BuildingEngine {
   /** Max building slots for a territory by area (mirrors defense slots). */
   private maxSlotsForArea(areaSqM: number): number {
     return BUILDINGS.SLOTS.maxByArea(areaSqM);
+  }
+
+  // ---- Biome gate (Phase F.1) ---------------------------------------
+
+  /**
+   * Throw BuildingError('BIOME_MISMATCH') unless the territory's real-world
+   * biome matches the extraction type's required biome.
+   *
+   * Resolves the territory's h3_cells (POOL read) and probes the first few via
+   * osmContextService.getContext() (Overpass/cache, also a POOL read). If ANY
+   * probed cell reports the required biome, the build is allowed.
+   *
+   * IMPORTANT: this is called from build() BEFORE the transaction opens, so all
+   * reads here go through the pool — never inside a tx client holding row locks.
+   * A territory with no h3_cells yet (pre-backfill) cannot satisfy the gate and
+   * is rejected with BIOME_MISMATCH.
+   */
+  private async assertBiomeEligible(
+    territoryId: string,
+    type: ExtractionType,
+  ): Promise<void> {
+    const required = EXTRACTION[type].biome;
+
+    // Pool read: the territory's H3 res-8 cells.
+    const terr = await transaction((c) =>
+      c.query<{ h3_cells: string[] | null }>(
+        `SELECT h3_cells FROM territories WHERE id = $1`,
+        [territoryId],
+      ),
+    );
+    if (terr.rowCount === 0) {
+      throw new BuildingError('TERRITORY_NOT_FOUND', 'Territory does not exist');
+    }
+    const cells = (terr.rows[0].h3_cells ?? []).slice(0, BIOME_PROBE_CELLS);
+
+    let matched = false;
+    for (const cell of cells) {
+      try {
+        const ctx = await getContext(cell);
+        if (ctx.biome === required) {
+          matched = true;
+          break;
+        }
+      } catch {
+        // A single cell's context failure must not allow nor force the build —
+        // keep probing the remaining cells.
+      }
+    }
+
+    if (!matched) {
+      throw new BuildingError(
+        'BIOME_MISMATCH',
+        `A ${type} needs ${required} terrain on this territory.`,
+      );
+    }
   }
 
   // ---- Reads --------------------------------------------------------
@@ -332,6 +396,14 @@ class BuildingEngine {
     const cfg = await this.getConfig();
     const cost = this.resolveCost(buildType, cfg);
     const buildHours = this.resolveBuildHours(cfg);
+
+    // Phase F.1 — biome gate for extraction buildings. This is an Overpass /
+    // osm_context POOL read (potentially slow, possibly a network round-trip),
+    // so it MUST run BEFORE the build transaction opens — never while holding
+    // the territory FOR UPDATE lock. Non-extraction types skip this entirely.
+    if (isExtractionType(buildType)) {
+      await this.assertBiomeEligible(territoryId, buildType);
+    }
 
     return transaction(async (c) => {
       // 1. Lock territory + measure its area

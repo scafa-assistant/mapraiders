@@ -20,13 +20,30 @@ const RESOURCE_ICONS: Record<keyof ResourceBalances, string> = {
   energy: '⚡',
   tech: '⚙',
   intel: '👁',
+  wood: '🪵',
+  stone: '🪨',
+  food: '🌾',
 };
 
 const RESOURCE_LABELS: Record<keyof ResourceBalances, string> = {
   energy: 'NRG',
   tech: 'TECH',
   intel: 'INT',
+  wood: 'WOOD',
+  stone: 'STONE',
+  food: 'FOOD',
 };
+
+// Per-resource label accent. Defaults to the Vril accent for the base trio.
+const RESOURCE_LABEL_COLORS: Partial<Record<keyof ResourceBalances, string>> = {
+  wood: '#A06A3C',
+  stone: '#9CA3AF',
+  food: '#6FBF5B',
+};
+
+// Core HUD = energy/tech/intel. Raw economy resources only appear when present (> 0).
+const CORE_KEYS: Array<keyof ResourceBalances> = ['energy', 'tech', 'intel'];
+const ECONOMY_KEYS: Array<keyof ResourceBalances> = ['wood', 'stone', 'food'];
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -44,15 +61,21 @@ interface ResourceBarProps {
 const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
   const insets = useSafeAreaInsets();
 
+  // Economy resources are only shown once the player actually has some (economy flag on + extraction running).
+  const economyKeys = ECONOMY_KEYS.filter((key) => balances[key] > 0);
+  const keys: Array<keyof ResourceBalances> = [...CORE_KEYS, ...economyKeys];
+
   return (
     <View style={[styles.container, { top: insets.top + 58 }]}>
-      {(Object.keys(RESOURCE_ICONS) as Array<keyof ResourceBalances>).map((key, idx) => (
+      {keys.map((key, idx) => (
         <React.Fragment key={key}>
           {idx > 0 && <View style={styles.divider} />}
           <View style={styles.item}>
             <Text style={styles.icon}>{RESOURCE_ICONS[key]}</Text>
             <View style={styles.textCol}>
-              <Text style={styles.label}>{RESOURCE_LABELS[key]}</Text>
+              <Text style={[styles.label, RESOURCE_LABEL_COLORS[key] ? { color: RESOURCE_LABEL_COLORS[key] } : null]}>
+                {RESOURCE_LABELS[key]}
+              </Text>
               <Text style={styles.value}>{formatCompact(balances[key])}</Text>
             </View>
           </View>
