@@ -826,10 +826,20 @@ export const AI = {
   PROBE_INTENSITY_UNITS: (i: number) => Math.max(1, Math.round(i * 4)), // intensity 0..1 -> 1..4 units
   INVASION_STRENGTH_THRESHOLD: 20,
   // LLM
-  LLM_MODEL: 'claude-haiku-4-5',
+  LLM_MODEL: 'claude-haiku-4-5',   // legacy default (Anthropic); kept for reference
   LLM_MAX_TOKENS: 400,
   LLM_CALL_INTERVAL_HOURS: 6,
   LLM_MAX_CALLS_PER_DAY: 200,      // flags.config max_calls_per_day overrides
+  // Provider cascade: tried IN ORDER, first valid JSON wins, else fallback FSM.
+  // Anthropic is intentionally NOT here (user moved off paid). It stays
+  // available — add { provider: 'anthropic', model: 'claude-haiku-4-5' } to the
+  // ai_general flag's config.llm_cascade to enable it live (no deploy). Adding/
+  // reordering ANY model is a one-line config.llm_cascade edit.
+  LLM_PROVIDER_CASCADE: [
+    { provider: 'gemini',     model: 'gemini-2.0-flash' },
+    { provider: 'openrouter', model: 'deepseek/deepseek-chat-v3-0324:free' },
+    { provider: 'openrouter', model: 'google/gemma-3-27b-it:free' },
+  ] as Array<{ provider: string; model: string }>,
   // Ruins
   RUIN_OVERGROWTH_PER_NIGHT: 1,
   RUIN_NEST_THRESHOLD: 7,          // overgrowth >= this -> spawns a ruin_cache pve spawn

@@ -9,11 +9,16 @@
 // the deterministic aiSimEngine later executes.
 //
 // Robustness ladder (per design):
-//   1. Anthropic call (model AI.LLM_MODEL). ONE retry with a correction line
-//      on parse/validation failure.
-//   2. Second failure OR missing ANTHROPIC_API_KEY OR daily budget cap reached
+//   1. PROVIDER CASCADE (AI.LLM_PROVIDER_CASCADE, overridable live via the
+//      ai_general flag's config.llm_cascade). Each entry {provider,model} is
+//      tried IN ORDER: unconfigured providers (no env key) are skipped; for a
+//      configured one we check budget, call it, and zod-validate. On a parse/
+//      call failure we do ONE retry with a correction line on the SAME provider,
+//      then move to the NEXT cascade entry. First valid JSON wins.
+//   2. All providers unconfigured/exhausted/failing OR daily budget cap reached
 //      → fallbackGeneral(): a deterministic FSM produces the directive instead.
-// Either way a row lands in ai_directives (source 'llm' | 'fallback').
+// Either way a row lands in ai_directives (source 'llm' | 'fallback'); on the
+// LLM path raw_response is prefixed with `[provider model]` for auditability.
 //
 // The optional `story` becomes a sanitised push to sector players. The
 // sanitiser strips URLs/markup and runs the slot text through the existing
@@ -23,7 +28,6 @@
 // (directive row, last_llm_at stamp) — never a pool query while holding a tx.
 // ============================================================
 
-import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { query, transaction } from '../config/database';
 import redis from '../config/redis';
@@ -32,6 +36,7 @@ import { RES_SECTOR, parent, cellForPoint, RES_SPAWN } from './h3Service';
 import { featureService } from '../services/featureService';
 import { moderationService } from './moderationService';
 import { sendPushToUser } from './pushService';
+import { buildProvider } from './llmProviders';
 import type { AiRegionState } from './aiSimEngine';
 
 // ---- zod schema (EXACTLY per design) --------------------------------
@@ -98,15 +103,6 @@ function sanitizeSlot(raw: unknown): string {
 
 // Tiny extra blocklist on top of moderationService (defence in depth).
 const SLOT_BLOCKLIST = ['http', 'script', 'select ', 'drop table'];
-
-// ---- Anthropic client (lazy) ----------------------------------------
-
-let _client: Anthropic | null = null;
-function anthropic(): Anthropic | null {
-  if (!process.env.ANTHROPIC_API_KEY) return null;
-  if (!_client) _client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
-  return _client;
-}
 
 // ---- Flag config helpers --------------------------------------------
 
@@ -364,68 +360,112 @@ export function fallbackGeneral(state: AiRegionState): AiDirectivePayload {
   return { directives: [{ command: 'EXPAND', intensity: 0.3 }] };
 }
 
-// ---- LLM call + parse + one retry -----------------------------------
+// ---- JSON extractor + zod validation --------------------------------
 
-async function callLlm(
+/** Extract the first {...} block defensively, then zod-validate. */
+function parsePayload(text: string): AiDirectivePayload | null {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start < 0 || end <= start) return null;
+  try {
+    const obj = JSON.parse(text.slice(start, end + 1));
+    const result = AiDirective.safeParse(obj);
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
+}
+
+// ---- LLM provider cascade -------------------------------------------
+
+const CORRECTION_LINE =
+  'Deine letzte Antwort war ungültig. Antworte AUSSCHLIESSLICH mit dem gültigen JSON, ohne weiteren Text.';
+
+/** Cascade entry shape (mirrors AI.LLM_PROVIDER_CASCADE / config.llm_cascade). */
+interface CascadeEntry {
+  provider: string;
+  model: string;
+}
+
+/** Read the effective cascade: live config.llm_cascade if present, else default. */
+function resolveCascade(cfg: Record<string, any>): CascadeEntry[] {
+  const live = cfg?.llm_cascade;
+  if (Array.isArray(live)) {
+    const entries = live
+      .filter((e) => e && typeof e.provider === 'string' && typeof e.model === 'string')
+      .map((e) => ({ provider: e.provider as string, model: e.model as string }));
+    if (entries.length > 0) return entries;
+  }
+  return AI.LLM_PROVIDER_CASCADE.map((e) => ({ provider: e.provider, model: e.model }));
+}
+
+/**
+ * Try each cascade provider IN ORDER. For each: skip if unconfigured (no env
+ * key); else check the shared daily budget BEFORE the call (fail closed),
+ * incrBudget, call, zod-validate. On call/parse failure do ONE same-provider
+ * retry with a correction line, then advance. The shared budget counts EVERY
+ * attempt across all providers. Returns the winning payload + provider/model,
+ * or null (→ caller uses fallbackGeneral, exactly as today).
+ */
+async function callLlmCascade(
   systemPrompt: string,
   userPrompt: string,
-): Promise<{ payload: AiDirectivePayload; raw: string } | null> {
-  const client = anthropic();
-  if (!client) return null;
+  cascade: CascadeEntry[],
+  maxPerDay: number,
+): Promise<{ payload: AiDirectivePayload; raw: string; provider: string; model: string } | null> {
+  for (const entry of cascade) {
+    const provider = buildProvider(entry.provider, entry.model);
+    if (!provider) {
+      console.debug(`[AIGeneral] unknown provider '${entry.provider}' in cascade — skipping`);
+      continue;
+    }
+    if (!provider.isConfigured()) {
+      console.debug(`[AIGeneral] provider '${entry.provider}' not configured (no env key) — skipping`);
+      continue;
+    }
 
-  const attempt = async (extraUser?: string): Promise<{ text: string } | null> => {
-    try {
-      const res = await client.messages.create({
-        model: AI.LLM_MODEL,
-        max_tokens: AI.LLM_MAX_TOKENS,
-        system: systemPrompt,
-        messages: [
-          { role: 'user', content: extraUser ? `${userPrompt}\n\n${extraUser}` : userPrompt },
-        ],
-      });
-      const text = res.content
-        .map((b) => (b.type === 'text' ? b.text : ''))
-        .join('')
-        .trim();
-      return { text };
-    } catch (err: any) {
-      console.warn('[AIGeneral] LLM call failed:', err?.message ?? err);
+    const attempt = async (extraUser?: string): Promise<string | null> => {
+      // Budget is the single shared daily ceiling across all providers; check
+      // BEFORE the call (fail closed) and count every attempt.
+      if (await budgetExhausted(maxPerDay)) return null;
+      await incrBudget();
+      const fullUser = extraUser ? `${userPrompt}\n\n${extraUser}` : userPrompt;
+      try {
+        return await provider.complete(systemPrompt, fullUser, AI.LLM_MAX_TOKENS);
+      } catch (err: any) {
+        console.warn(
+          `[AIGeneral] ${entry.provider}/${entry.model} call failed:`,
+          err?.message ?? err,
+        );
+        return null;
+      }
+    };
+
+    // First attempt on this provider.
+    const first = await attempt();
+    if (first === null && (await budgetExhausted(maxPerDay))) {
+      // Budget ran out mid-cascade → no point trying further providers.
       return null;
     }
-  };
+    if (first) {
+      const p = parsePayload(first);
+      if (p) return { payload: p, raw: first, provider: entry.provider, model: entry.model };
+    }
 
-  const parse = (text: string): AiDirectivePayload | null => {
-    // Extract the first {...} block defensively, then zod-validate.
-    const start = text.indexOf('{');
-    const end = text.lastIndexOf('}');
-    if (start < 0 || end <= start) return null;
-    try {
-      const obj = JSON.parse(text.slice(start, end + 1));
-      const result = AiDirective.safeParse(obj);
-      return result.success ? result.data : null;
-    } catch {
+    // ONE retry on the SAME provider with the correction line.
+    const second = await attempt(CORRECTION_LINE);
+    if (second === null && (await budgetExhausted(maxPerDay))) {
       return null;
     }
-  };
+    if (second) {
+      const p = parsePayload(second);
+      if (p) return { payload: p, raw: second, provider: entry.provider, model: entry.model };
+    }
 
-  await incrBudget();
-  const first = await attempt();
-  if (first) {
-    const p = parse(first.text);
-    if (p) return { payload: p, raw: first.text };
+    // Both attempts on this provider failed → advance to the next entry.
   }
 
-  // ONE retry with a correction line appended.
-  await incrBudget();
-  const second = await attempt(
-    'Deine letzte Antwort war ungültig. Antworte AUSSCHLIESSLICH mit dem gültigen JSON, ohne weiteren Text.',
-  );
-  if (second) {
-    const p = parse(second.text);
-    if (p) return { payload: p, raw: second.text };
-  }
-
-  return null; // both attempts failed → caller uses fallback
+  return null; // all providers unconfigured/exhausted/failing → caller uses fallback
 }
 
 // ---- Story → push ---------------------------------------------------
@@ -524,22 +564,32 @@ export async function runGeneralForSector(sector: string): Promise<void> {
   const cfg = await aiFlagConfig();
   const maxPerDay =
     typeof cfg.max_calls_per_day === 'number' ? cfg.max_calls_per_day : AI.LLM_MAX_CALLS_PER_DAY;
+  const cascade = resolveCascade(cfg);
 
   let payload: AiDirectivePayload;
   let source: 'llm' | 'fallback';
   let raw: string | null = null;
 
+  // Any configured provider in the cascade? (When NONE has an env key the
+  // cascade is effectively empty → fallback, same as today with no key.)
+  const anyConfigured = cascade.some((e) => {
+    const p = buildProvider(e.provider, e.model);
+    return p?.isConfigured() ?? false;
+  });
+
   const overBudget = await budgetExhausted(maxPerDay);
-  if (overBudget || !anthropic()) {
+  if (overBudget || !anyConfigured) {
     payload = fallbackGeneral(state);
     source = 'fallback';
   } else {
     const agg = await gatherAggregates(sector, state);
     const { system, user } = buildPrompt(agg);
-    const llm = await callLlm(system, user);
+    const llm = await callLlmCascade(system, user, cascade, maxPerDay);
     if (llm) {
       payload = llm.payload;
-      raw = llm.raw;
+      // Prefix the raw response with the winning provider+model so the LLM
+      // path stays auditable without an ai_directives schema change.
+      raw = `[${llm.provider} ${llm.model}]\n${llm.raw}`;
       source = 'llm';
     } else {
       payload = fallbackGeneral(state);
