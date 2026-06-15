@@ -51,8 +51,13 @@ for f in files:
 by_url = {norm(v['url']): f for f, v in info.items()}
 
 errors = defaultdict(list)
+warnings = defaultdict(list)
 
 for f, v in info.items():
+    # Blindstelle sichtbar machen: indexierbare Seite ohne JEGLICHES hreflang
+    # (kein Fehler -> faellt das Gate nicht, aber dokumentiert die Waisen)
+    if not v['alts'] and v['indexable'] and not is_home(v['url']):
+        warnings['indexierbar_ohne_hreflang'].append(f)
     if not v['alts']: continue
     if v['noindex']:
         errors['hreflang_auf_noindex_seite'].append(f)
@@ -98,6 +103,9 @@ print(f"Geprüfte Seiten: {len(files)}")
 for k, v in sorted(errors.items()):
     print(f"FEHLER {k}: {len(v)}")
     for item in v[:5]: print("   ", item)
+for k, v in sorted(warnings.items()):
+    print(f"WARNUNG {k}: {len(v)} (kein Gate-Fehler — Cluster-/Content-Aufgabe)")
+    for item in v[:5]: print("   ", item)
 if total == 0:
-    print("OK — alle Prüfungen bestanden.")
+    print("OK — alle Gate-Prüfungen bestanden.")
 sys.exit(1 if total else 0)
