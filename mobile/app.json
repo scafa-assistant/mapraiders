@@ -4,6 +4,13 @@
     "slug": "mapraiders",
     "scheme": "mapraiders",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/11263b5c-0b4f-4039-bc2a-9f9ebe3c0769",
+      "fallbackToCacheTimeout": 0
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
