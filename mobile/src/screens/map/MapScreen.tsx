@@ -106,6 +106,10 @@ function getPolygonCentroid(polygon: any[]): { latitude: number; longitude: numb
 
 export default function MapScreen({ navigation }: MapScreenProps) {
   const mapRef = useRef<MapView>(null);
+  // True only once the native map finished initializing. getMapBoundaries()
+  // crashes NATIVELY (uncatchable NPE) if called before this — so every bbox
+  // read gates on it. Set in <MapView onMapReady>.
+  const mapReadyRef = useRef(false);
   const pulseAnim = useRef(new Animated.Value(0)).current;
   const recordingPulse = useRef(new Animated.Value(0)).current;
 
@@ -313,7 +317,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
   // Helper to get current map bounding box
   const getMapBounds = useCallback(async () => {
-    if (!mapRef.current) return null;
+    // Guard against the native getMapBoundaries() NPE: never call it before
+    // the map reports ready (the JS ref exists well before the native map does).
+    if (!mapRef.current || !mapReadyRef.current) return null;
     try {
       const bounds = await mapRef.current.getMapBoundaries();
       return {
@@ -718,6 +724,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 longitudeDelta: 0.01,
               }
         }
+        onMapReady={() => {
+          // Native map is now initialized — bbox reads are safe from here on.
+          mapReadyRef.current = true;
+        }}
         onRegionChangeComplete={handleRegionChange}
         onLongPress={handleMapLongPress}
       >
@@ -755,7 +765,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             territory.defenseGameType === 'sprint_race' ? '#1B9E5A' :
             territory.defenseGameType === 'trivia' ? '#1558F0' :
             territory.defenseGameType === 'coin_flip' ? '#F5A623' :
-            territory.defenseGameType === 'odd_even' ? '#FF69B4' :
+            territory.defenseGameType === 'odd_even' ? '#0E9CB0' :
             territory.defenseGameType === 'tic_tac_toe' ? '#1558F0' :
             territory.defenseGameType === 'mini_chess' ? '#F5A623' :
             '#F5A623';
