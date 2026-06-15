@@ -48,7 +48,7 @@ const getDefenseLabels = (): Record<string, { label: string; icon: keyof typeof 
   sprint_race: { label: S.map.territoryDetail.gameSprintRace, icon: 'speedometer-outline', color: '#1B9E5A' },
   trivia: { label: S.map.territoryDetail.gameTrivia, icon: 'help-circle-outline', color: '#1558F0' },
   coin_flip: { label: S.map.territoryDetail.gameCoinFlip, icon: 'ellipse-outline', color: '#F5A623' },
-  odd_even: { label: S.map.territoryDetail.gameOddEven, icon: 'finger-print-outline', color: '#FF69B4' },
+  odd_even: { label: S.map.territoryDetail.gameOddEven, icon: 'finger-print-outline', color: '#0E9CB0' },
   tic_tac_toe: { label: S.map.territoryDetail.gameTicTacToe, icon: 'grid-outline', color: '#1558F0' },
   mini_chess: { label: S.map.territoryDetail.gameMiniChess, icon: 'trophy-outline', color: '#F5A623' },
   challenge: { label: S.map.territoryDetail.gameChallenge, icon: 'flag-outline', color: '#D7263D' },
@@ -200,23 +200,23 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
     setShowBuildPicker(false);
     const result = await build(territory.id, type);
     if (!result.success && result.message) {
-      Alert.alert('Build failed', result.message);
+      Alert.alert(S.map.territoryDetail.buildFailedTitle, result.message);
     }
   }, [build, territory.id]);
 
   const handleDemolish = useCallback((buildingId: string, buildingName: string) => {
     Alert.alert(
-      'Demolish building?',
-      `"${buildingName}" will be demolished. You get 50% of construction costs back.`,
+      S.map.territoryDetail.demolishTitle,
+      t(S.map.territoryDetail.demolishMsg, { name: buildingName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: S.common.cancel, style: 'cancel' },
         {
-          text: 'Demolish',
+          text: S.map.territoryDetail.demolishAction,
           style: 'destructive',
           onPress: async () => {
             const result = await demolish(buildingId, territory.id);
             if (!result.success && result.message) {
-              Alert.alert('Error', result.message);
+              Alert.alert(S.common.error, result.message);
             }
           },
         },
@@ -226,16 +226,16 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
   const getBuildingName = (type: BuildingType): string => {
     const names: Record<BuildingType, string> = {
-      shield_generator: 'Shield Generator',
-      refinery: 'Refinery',
-      radar: 'Radar',
-      garrison: 'Garrison',
-      silo: 'Silo',
-      teleporter: 'Teleporter',
-      sawmill: 'Sawmill',
-      quarry: 'Quarry',
-      farm: 'Farm',
-      fishery: 'Fishery',
+      shield_generator: S.map.territoryDetail.buildingShieldGenerator,
+      refinery: S.map.territoryDetail.buildingRefinery,
+      radar: S.map.territoryDetail.buildingRadar,
+      garrison: S.map.territoryDetail.buildingGarrison,
+      silo: S.map.territoryDetail.buildingSilo,
+      teleporter: S.map.territoryDetail.buildingTeleporter,
+      sawmill: S.map.territoryDetail.buildingSawmill,
+      quarry: S.map.territoryDetail.buildingQuarry,
+      farm: S.map.territoryDetail.buildingFarm,
+      fishery: S.map.territoryDetail.buildingFishery,
     };
     return names[type] ?? type;
   };
@@ -261,16 +261,16 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
 
   const handleUpgrade = useCallback((buildingId: string, buildingName: string) => {
     Alert.alert(
-      'Upgrade building?',
-      `Upgrade "${buildingName}" to tier ${/* shown below via cost */''} next tier?`,
+      S.map.territoryDetail.upgradeDialogTitle,
+      t(S.map.territoryDetail.upgradeDialogMsg, { name: buildingName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: S.common.cancel, style: 'cancel' },
         {
-          text: 'Upgrade',
+          text: S.map.territoryDetail.upgradeAction,
           onPress: async () => {
             const result = await upgrade(buildingId, territory.id);
             if (!result.success && result.message) {
-              Alert.alert('Upgrade failed', result.message);
+              Alert.alert(S.map.territoryDetail.upgradeFailedTitle, result.message);
             }
           },
         },
@@ -281,12 +281,12 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   const getCountdownText = (completesAt: string | null): string => {
     if (!completesAt) return '';
     const msLeft = new Date(completesAt).getTime() - now;
-    if (msLeft <= 0) return 'completing…';
+    if (msLeft <= 0) return S.map.territoryDetail.upgradingText;
     const mins = Math.ceil(msLeft / 60_000);
-    if (mins < 60) return `${mins}m remaining`;
+    if (mins < 60) return `${mins}m`;
     const hrs = Math.floor(mins / 60);
     const rem = mins % 60;
-    return rem > 0 ? `${hrs}h ${rem}m remaining` : `${hrs}h remaining`;
+    return rem > 0 ? `${hrs}h ${rem}m` : `${hrs}h`;
   };
 
   return (
@@ -512,11 +512,14 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           </>
         )}
 
-        {/* ─── BUILDINGS SECTION (resources feature flag, owner only) ─── */}
+        {/* ─── VERTEIDIGUNGSANLAGEN SECTION (resources feature flag, owner only) ─── */}
         {isResourcesEnabled && isOwner && (
           <>
             <Text style={[styles.sectionTitle, styles.buildingsSectionTitle]}>
-              BUILDINGS
+              {S.map.territoryDetail.defensesTitle}
+            </Text>
+            <Text style={styles.buildingsSubtitle}>
+              {S.map.territoryDetail.defensesSubtitle}
             </Text>
 
             {buildingLoading ? (
@@ -528,7 +531,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                 {buildings.length === 0 && (
                   <View style={styles.buildingsEmpty}>
                     <Text style={styles.buildingsEmptyText}>
-                      No buildings yet. Construct one to strengthen this territory.
+                      {S.map.territoryDetail.buildingsEmpty}
                     </Text>
                   </View>
                 )}
@@ -573,13 +576,13 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                           >
                             <Ionicons name="arrow-up-circle-outline" size={13} color="#1558F0" />
                             <Text style={styles.upgradeBtnText}>
-                              Upgrade · {getUpgradeCost(building)}
+                              {t(S.map.territoryDetail.upgradeBtn, { cost: getUpgradeCost(building) })}
                             </Text>
                           </TouchableOpacity>
                         )}
                         {/* Upgrading countdown */}
                         {isUnderConstruction && building.tier > 1 && (
-                          <Text style={styles.upgradingText}>Upgrading…</Text>
+                          <Text style={styles.upgradingText}>{S.map.territoryDetail.upgradingText}</Text>
                         )}
                       </View>
                       <TouchableOpacity
@@ -600,7 +603,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                   disabled={buildingLoading}
                 >
                   <Ionicons name="add-circle-outline" size={20} color="#FFFFFF" />
-                  <Text style={styles.buildNewBtnText}>Build</Text>
+                  <Text style={styles.buildNewBtnText}>{S.map.territoryDetail.buildBtn}</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -609,7 +612,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             {isEconomyEnabled && stockpile.length > 0 && (
               <>
                 <Text style={[styles.sectionTitle, styles.productionSectionTitle]}>
-                  PRODUCTION
+                  {S.map.territoryDetail.productionTitle}
                 </Text>
                 {stockpile.map((entry) => {
                   const meta = RESOURCE_META[entry.resource];
@@ -729,6 +732,7 @@ const createStyles = (theme: Theme) =>
 
   // Buildings section (resources feature flag)
   buildingsSectionTitle: { marginTop: 28, color: '#1558F0' },
+  buildingsSubtitle: { color: theme.textSecondary, fontSize: 12, lineHeight: 17, marginBottom: 14, marginTop: -8 },
   buildingsEmpty: { backgroundColor: theme.surface, borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#C0BAB4' },
   buildingsEmptyText: { color: theme.textSecondary, fontSize: 13, lineHeight: 18 },
   buildingCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: theme.surface, borderRadius: 14, borderWidth: 1, borderColor: '#C0BAB4', padding: 14, marginBottom: 8, gap: 12 },

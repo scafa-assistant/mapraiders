@@ -13,8 +13,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BuildingType } from '../services/api';
 import type { ResourceBalances } from '../store/resourceStore';
+import { strings as S } from '../i18n';
 
-// ─── Vril palette ─────────────────────────────────────────────────────────────
+// ─── Brand palette (MapRaiders: white/blue, accent #1558F0) ──────────────────
 const VRIL_ACCENT = '#1558F0';
 const VRIL_PRIMARY = '#1558F0';
 const OBSIDIAN = '#F6F4F1';
@@ -35,11 +36,11 @@ interface BuildingDef {
   icon: keyof typeof Ionicons.glyphMap;
 }
 
-const BUILDING_DEFS: BuildingDef[] = [
+const getBuildingDefs = (): BuildingDef[] => [
   {
     type: 'shield_generator',
-    name: 'Shield Generator',
-    effect: 'Blocks first takeover attempt every 24h.',
+    name: S.map.territoryDetail.buildingShieldGenerator,
+    effect: S.map.territoryDetail.buildingEffectShieldGenerator,
     costEnergy: 200,
     costTech: 100,
     buildTimeHours: 2,
@@ -47,8 +48,8 @@ const BUILDING_DEFS: BuildingDef[] = [
   },
   {
     type: 'refinery',
-    name: 'Refinery',
-    effect: '+25% energy generation for this territory.',
+    name: S.map.territoryDetail.buildingRefinery,
+    effect: S.map.territoryDetail.buildingEffectRefinery,
     costEnergy: 150,
     costTech: 80,
     buildTimeHours: 2,
@@ -56,8 +57,8 @@ const BUILDING_DEFS: BuildingDef[] = [
   },
   {
     type: 'radar',
-    name: 'Radar',
-    effect: 'Reveals 2/3/4 cell vision ring (by tier).',
+    name: S.map.territoryDetail.buildingRadar,
+    effect: S.map.territoryDetail.buildingEffectRadar,
     costEnergy: 180,
     costTech: 120,
     buildTimeHours: 4,
@@ -65,8 +66,8 @@ const BUILDING_DEFS: BuildingDef[] = [
   },
   {
     type: 'garrison',
-    name: 'Garrison',
-    effect: '+4/+6/+8 garrison slots (by tier).',
+    name: S.map.territoryDetail.buildingGarrison,
+    effect: S.map.territoryDetail.buildingEffectGarrison,
     costEnergy: 250,
     costTech: 150,
     buildTimeHours: 4,
@@ -74,8 +75,8 @@ const BUILDING_DEFS: BuildingDef[] = [
   },
   {
     type: 'silo',
-    name: 'Silo',
-    effect: 'Airstrike 50/75/100 dmg, 6h cooldown (by tier).',
+    name: S.map.territoryDetail.buildingSilo,
+    effect: S.map.territoryDetail.buildingEffectSilo,
     costEnergy: 400,
     costTech: 250,
     buildTimeHours: 4,
@@ -83,8 +84,8 @@ const BUILDING_DEFS: BuildingDef[] = [
   },
   {
     type: 'teleporter',
-    name: 'Teleporter',
-    effect: 'Instant reinforce between own teleporter pads.',
+    name: S.map.territoryDetail.buildingTeleporter,
+    effect: S.map.territoryDetail.buildingEffectTeleporter,
     costEnergy: 300,
     costTech: 200,
     buildTimeHours: 4,
@@ -94,11 +95,11 @@ const BUILDING_DEFS: BuildingDef[] = [
 
 // ─── Phase F.1 — biome extraction buildings (gated by the 'economy' flag) ──────
 // Each requires a matching territory biome and produces a raw resource over time.
-const EXTRACTION_DEFS: BuildingDef[] = [
+const getExtractionDefs = (): BuildingDef[] => [
   {
     type: 'sawmill',
-    name: 'Sawmill',
-    effect: 'Forest terrain only — harvests wood over time.',
+    name: S.map.territoryDetail.buildingSawmill,
+    effect: S.map.territoryDetail.buildingEffectSawmill,
     costEnergy: 120,
     costTech: 40,
     buildTimeHours: 2,
@@ -106,8 +107,8 @@ const EXTRACTION_DEFS: BuildingDef[] = [
   },
   {
     type: 'quarry',
-    name: 'Quarry',
-    effect: 'Industrial terrain only — extracts stone over time.',
+    name: S.map.territoryDetail.buildingQuarry,
+    effect: S.map.territoryDetail.buildingEffectQuarry,
     costEnergy: 150,
     costTech: 60,
     buildTimeHours: 2,
@@ -115,8 +116,8 @@ const EXTRACTION_DEFS: BuildingDef[] = [
   },
   {
     type: 'farm',
-    name: 'Farm',
-    effect: 'Rural terrain only — grows food over time.',
+    name: S.map.territoryDetail.buildingFarm,
+    effect: S.map.territoryDetail.buildingEffectFarm,
     costEnergy: 120,
     costTech: 30,
     buildTimeHours: 2,
@@ -124,8 +125,8 @@ const EXTRACTION_DEFS: BuildingDef[] = [
   },
   {
     type: 'fishery',
-    name: 'Fishery',
-    effect: 'Water terrain only — produces food over time.',
+    name: S.map.territoryDetail.buildingFishery,
+    effect: S.map.territoryDetail.buildingEffectFishery,
     costEnergy: 130,
     costTech: 40,
     buildTimeHours: 2,
@@ -164,7 +165,9 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
   const insets = useSafeAreaInsets();
 
   // Extraction buildings only appear when the economy flag is on.
-  const defs = economyEnabled ? [...BUILDING_DEFS, ...EXTRACTION_DEFS] : BUILDING_DEFS;
+  const defs = economyEnabled
+    ? [...getBuildingDefs(), ...getExtractionDefs()]
+    : getBuildingDefs();
 
   return (
     <Modal
@@ -182,7 +185,7 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
 
         {/* Title row */}
         <View style={styles.titleRow}>
-          <Text style={styles.title}>Construct Building</Text>
+          <Text style={styles.title}>{S.map.territoryDetail.buildPickerTitle}</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeBtnText}>✕</Text>
           </TouchableOpacity>
@@ -236,7 +239,7 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
                   ) : (
                     <View style={[styles.buildBtn, !canAfford && styles.buildBtnDisabled]}>
                       <Text style={styles.buildBtnText}>
-                        {canAfford ? 'Build' : '—'}
+                        {canAfford ? S.map.territoryDetail.buildPickerBuildBtn : '—'}
                       </Text>
                     </View>
                   )}
