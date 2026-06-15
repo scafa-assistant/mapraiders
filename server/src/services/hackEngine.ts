@@ -13,11 +13,27 @@ import { randomInt } from 'crypto';
 import { transaction } from '../config/database';
 import redis from '../config/redis';
 import { PVE } from '../config/constants';
+import { getAllFlags } from './featureService';
 import { itemService } from './itemService';
 import { resourceService } from './resourceService';
 import { awardXp } from './progressionEngine';
 import { wsService } from './wsService';
 import { ResourceType } from '../utils/types';
+
+/**
+ * Reads the `pve_spawns` feature-flag config. `require_proximity` (default true)
+ * gates the 75 m physical-proximity check — set it to false to allow hacking
+ * from anywhere (test/dev mode), mirroring the terminals `require_proximity`.
+ */
+async function getPveConfig(): Promise<Record<string, any>> {
+  try {
+    const flags = await getAllFlags();
+    const flag = flags.find((f) => f.key === 'pve_spawns');
+    return (flag?.config as Record<string, any>) ?? {};
+  } catch {
+    return {};
+  }
+}
 import { SpawnLoot } from './pveSpawnEngine';
 
 // ---- Types --------------------------------------------------
@@ -104,6 +120,11 @@ export async function attemptHack(
     return { success: false, message: 'DAILY_CAP' };
   }
 
+  // Read the proximity toggle BEFORE the tx (never query a separate pool
+  // connection while holding the tx client — pool-deadlock class).
+  const pveCfg = await getPveConfig();
+  const requireProximity = pveCfg.require_proximity !== false;
+
   return transaction(async (c: PoolClient) => {
     // ---- (a) Load + lock the spawn ----
     const spawnRes = await c.query<{
@@ -139,26 +160,28 @@ export async function attemptHack(
       return { success: false, message: 'SPAWN_UNAVAILABLE' };
     }
 
-    // ---- (b) Proximity check (<= 75 m) ----
-    const loc = inputTrace?.playerLocation;
-    if (
-      !loc ||
-      typeof loc.latitude !== 'number' ||
-      typeof loc.longitude !== 'number'
-    ) {
-      return { success: false, message: 'NO_LOCATION' };
-    }
+    // ---- (b) Proximity check (<= 75 m), gated by pve_spawns.require_proximity ----
+    if (requireProximity) {
+      const loc = inputTrace?.playerLocation;
+      if (
+        !loc ||
+        typeof loc.latitude !== 'number' ||
+        typeof loc.longitude !== 'number'
+      ) {
+        return { success: false, message: 'NO_LOCATION' };
+      }
 
-    const near = await c.query<{ ok: boolean }>(
-      `SELECT ST_DWithin(
-                ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
-                ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography,
-                $5
-              ) AS ok`,
-      [spawn.lng, spawn.lat, loc.longitude, loc.latitude, PVE.HACK_RADIUS_M],
-    );
-    if (!near.rows[0]?.ok) {
-      return { success: false, message: 'TOO_FAR' };
+      const near = await c.query<{ ok: boolean }>(
+        `SELECT ST_DWithin(
+                  ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
+                  ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography,
+                  $5
+                ) AS ok`,
+        [spawn.lng, spawn.lat, loc.longitude, loc.latitude, PVE.HACK_RADIUS_M],
+      );
+      if (!near.rows[0]?.ok) {
+        return { success: false, message: 'TOO_FAR' };
+      }
     }
 
     // ---- (d) Server resolution ----
