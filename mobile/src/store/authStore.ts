@@ -79,6 +79,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Forward capabilities to featureStore if the server sends them
       const caps = response.data.data.capabilities;
       if (caps) useFeatureStore.getState().setCapabilities(caps);
+      // Load the server feature-flag list — gates the Commander tab, the
+      // territory build engine (resources) and economy. Without this the flags
+      // map stays empty and isEnabled() is always false (features hidden).
+      void useFeatureStore.getState().loadFeatures();
 
       // Register push token after login
       registerForPushNotifications().then((pushToken) => {
@@ -102,6 +106,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Forward capabilities to featureStore if the server sends them
       const caps = response.data.data.capabilities;
       if (caps) useFeatureStore.getState().setCapabilities(caps);
+      // Load the server feature-flag list — gates the Commander tab, the
+      // territory build engine (resources) and economy. Without this the flags
+      // map stays empty and isEnabled() is always false (features hidden).
+      void useFeatureStore.getState().loadFeatures();
 
       // Register push token after registration
       registerForPushNotifications().then((pushToken) => {
@@ -125,6 +133,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Forward capabilities to featureStore if the server sends them
       const caps = response.data.data.capabilities;
       if (caps) useFeatureStore.getState().setCapabilities(caps);
+      // Load the server feature-flag list — gates the Commander tab, the
+      // territory build engine (resources) and economy. Without this the flags
+      // map stays empty and isEnabled() is always false (features hidden).
+      void useFeatureStore.getState().loadFeatures();
 
       // Register push token after web3 login
       registerForPushNotifications().then((pushToken) => {
@@ -168,6 +180,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const data = response.data?.data ?? response.data;
       set({ user: mapServerUser(data) });
       if (data?.capabilities) useFeatureStore.getState().setCapabilities(data.capabilities);
+      // Load the server feature-flag list (gates Commander tab, build engine, economy).
+      void useFeatureStore.getState().loadFeatures();
     } catch (_err) {
       // Token expired or invalid — clear it
       await clearTokens();
