@@ -1,7 +1,7 @@
 import './src/polyfills';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator, StyleSheet, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,12 +12,19 @@ import OnboardingScreen from './src/screens/onboarding/OnboardingScreen';
 import { offlineQueue } from './src/services/offlineQueue';
 import { mapRaidersWs } from './src/services/websocket';
 import { setupWsEventHandlers } from './src/services/wsEventHandler';
-import { registerForPushNotifications } from './src/services/notifications';
+import {
+  registerForPushNotifications,
+  setupNotificationHandler,
+  setNotificationNavigationCallback,
+} from './src/services/notifications';
 import { userApi } from './src/services/api';
 import { useSettingsStore } from './src/store/settingsStore';
 import { initLocale, onLanguageChange } from './src/i18n';
 
 const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
+
+// Navigation ref so tapped push-notifications can deep-link into the app.
+export const navigationRef = createNavigationContainerRef();
 
 function AppContent() {
   const { token, isLoading, refreshProfile, restoreSession } = useAuthStore();
@@ -81,6 +88,22 @@ function AppContent() {
     }
   }, [token]);
 
+  // Wire tapped/received push-notifications to navigation (deep-link router).
+  // Without this the notification listeners are never installed, so tapping a
+  // push does nothing.
+  useEffect(() => {
+    setNotificationNavigationCallback((screen, params) => {
+      if (navigationRef.isReady()) {
+        // Screen names (TerritoryDetail/QuestDetail/MapMain/ProfileMain) are
+        // unique across the nav tree, so navigate-by-name resolves them.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (navigationRef.navigate as any)(screen, params);
+      }
+    });
+    const cleanup = setupNotificationHandler();
+    return cleanup;
+  }, []);
+
   // Re-register push token on app foreground resume (tokens can change)
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
@@ -95,8 +118,8 @@ function AppContent() {
 
   if (isLoading || restoringSession || onboardingComplete === null) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00D4FF" />
+      <View style={[styles.loadingContainer, { backgroundColor: '#F6F4F1' }]}>
+        <ActivityIndicator size="large" color="#1558F0" />
       </View>
     );
   }
@@ -125,28 +148,29 @@ function AppShell() {
     return onLanguageChange(() => setLangVersion((v) => v + 1));
   }, []);
 
+  // Brand nav theme — white/blue regardless of the map's dark-tile toggle.
   const navTheme = useMemo(() => ({
-    dark: isDark,
+    dark: false,
     colors: {
-      primary: isDark ? '#00D4FF' : '#0099CC',
-      background: isDark ? '#0A0E17' : '#F5F5F5',
-      card: isDark ? '#0D1220' : '#FFFFFF',
-      text: isDark ? '#FFFFFF' : '#1A1A1A',
-      border: isDark ? '#1A2340' : '#E0E0E0',
-      notification: '#FF4757',
+      primary: '#1558F0',
+      background: '#F6F4F1',
+      card: '#FFFFFF',
+      text: '#141210',
+      border: '#C0BAB4',
+      notification: '#D7263D',
     },
-  }), [isDark]);
+  }), []);
 
   if (!localeReady || !settingsLoaded) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: isDark ? '#0A0E17' : '#F5F5F5' }]}>
-        <ActivityIndicator size="large" color="#00D4FF" />
+      <View style={[styles.loadingContainer, { backgroundColor: '#F6F4F1' }]}>
+        <ActivityIndicator size="large" color="#1558F0" />
       </View>
     );
   }
 
   return (
-    <NavigationContainer key={langVersion} theme={navTheme}>
+    <NavigationContainer ref={navigationRef} key={langVersion} theme={navTheme}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <AppContent />
     </NavigationContainer>
