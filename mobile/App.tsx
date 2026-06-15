@@ -19,6 +19,7 @@ import {
 } from './src/services/notifications';
 import { userApi } from './src/services/api';
 import { useSettingsStore } from './src/store/settingsStore';
+import { useFeatureStore } from './src/store/featureStore';
 import { initLocale, onLanguageChange } from './src/i18n';
 
 const ONBOARDING_KEY = '@mapraiders_onboarding_complete';
@@ -96,8 +97,14 @@ function AppContent() {
       if (navigationRef.isReady()) {
         // Screen names (TerritoryDetail/QuestDetail/MapMain/ProfileMain) are
         // unique across the nav tree, so navigate-by-name resolves them.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (navigationRef.navigate as any)(screen, params);
+        // Guarded: a target that isn't currently mounted (gated tab) must not
+        // crash the app on a notification tap.
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (navigationRef.navigate as any)(screen, params);
+        } catch (e) {
+          console.warn('[Notifications] deep-link navigate failed:', screen, e);
+        }
       }
     });
     const cleanup = setupNotificationHandler();
@@ -111,6 +118,10 @@ function AppContent() {
         registerForPushNotifications().then((pushToken) => {
           if (pushToken) userApi.updatePushToken(pushToken).catch(() => {});
         });
+        // Resilience: re-fetch feature flags on foreground. If the initial
+        // load failed (transient network), this recovers the gated UI
+        // (Commander/economy/buildings) instead of leaving it hidden.
+        void useFeatureStore.getState().loadFeatures();
       }
     });
     return () => subscription.remove();

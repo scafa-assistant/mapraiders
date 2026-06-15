@@ -59,8 +59,10 @@ export const useFeatureStore = create<FeatureState>((set, get) => ({
 
       set({ features, loaded: true });
     } catch {
-      // Feature flags must not block app start — resolve with empty state
-      set({ features: {}, loaded: true });
+      // Transient failure: do NOT wipe a previously-loaded map (that would
+      // re-hide Commander/economy/etc). Just mark loaded so the app proceeds;
+      // a later loadFeatures() (App foreground) can still populate it.
+      set({ loaded: true });
     }
   },
 
