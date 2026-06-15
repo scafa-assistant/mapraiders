@@ -37,7 +37,8 @@ def transform(html):
     def repl(m):
         nonlocal changed
         indent, body, nl = m.group(1), m.group(2), m.group(3)
-        if 'aggregateRating' not in body and '"review"' not in body:
+        if ('aggregateRating' not in body and '"review"' not in body
+                and '"Review"' not in body):
             return m.group(0)
         try:
             data = json.loads(body)
@@ -48,10 +49,16 @@ def transform(html):
             mini = json.dumps(d, ensure_ascii=False, separators=(',', ':'))
             return f'{indent}<script type="application/ld+json">{mini}</script>{nl}'
 
-        # Fall A: eigenstaendiges MobileApplication-Objekt NUR mit Rating/Review -> ganzen Block loeschen
+        # Fall A: eigenstaendiges MobileApplication- ODER Review-Objekt NUR mit Rating/Review
+        #         -> ganzen Block loeschen
         if (isinstance(data, dict) and '@graph' not in data
-                and data.get('@type') == 'MobileApplication'
-                and ('aggregateRating' in data or 'review' in data)):
+                and data.get('@type') in ('MobileApplication', 'Review')
+                and ('aggregateRating' in data or 'review' in data
+                     or data.get('@type') == 'Review')):
+            if data.get('@type') == 'Review':
+                stats['script_removed'] += 1
+                changed = True
+                return ''
             extra = [k for k in data if k not in ('@context', '@type', 'name', 'url',
                                                   'aggregateRating', 'review')]
             if not extra:
@@ -64,19 +71,42 @@ def transform(html):
             changed = True
             return emit(data)
 
-        # Fall B: Rating/Review in einem @graph- oder Listen-Node eingebettet -> nur die Properties strippen
-        nodes = data['@graph'] if isinstance(data, dict) and isinstance(data.get('@graph'), list) \
-            else (data if isinstance(data, list) else [data] if isinstance(data, dict) else [])
+        # Fall B: @graph/Liste -> Rating/Review-Properties strippen UND eigenstaendige
+        #         Review-Nodes (Geschwister) ganz entfernen
+        is_graph = isinstance(data, dict) and isinstance(data.get('@graph'), list)
+        if is_graph:
+            nodes = data['@graph']
+        elif isinstance(data, list):
+            nodes = data
+        elif isinstance(data, dict):
+            nodes = [data]
+        else:
+            return m.group(0)
         local = False
+        kept = []
         for node in nodes:
             if isinstance(node, dict):
+                if node.get('@type') == 'Review':
+                    local = True
+                    stats['review_node_removed'] += 1
+                    continue  # Review-Geschwister-Node entfernen
                 if node.pop('aggregateRating', None) is not None: local = True
                 if node.pop('review', None) is not None: local = True
-        if local:
+            kept.append(node)
+        if not local:
+            return m.group(0)
+        changed = True
+        meaningful = [n for n in kept if isinstance(n, dict)
+                      and any(k not in ('@context', '@type') for k in n)]
+        if not meaningful:
+            stats['script_removed'] += 1
+            return ''
+        if is_graph:
+            data['@graph'] = kept
             stats['node_stripped'] += 1
-            changed = True
             return emit(data)
-        return m.group(0)
+        stats['node_stripped'] += 1
+        return emit(kept if isinstance(data, list) else kept[0])
 
     html2 = SCRIPT.sub(repl, html)
     html3, n_stars = STARS.subn('', html2)
@@ -99,4 +129,5 @@ print('Dateien geprueft :', len(files))
 print('Dateien geaendert:', touched)
 print('  JSON-LD Bloecke komplett geloescht (Fall A):', stats['script_removed'])
 print('  JSON-LD Nodes gestrippt (Fall B)           :', stats['node_stripped'])
+print('  Eigenstaendige Review-Nodes entfernt       :', stats['review_node_removed'])
 print('  Sichtbare fr-stars entfernt                :', stats['stars_removed'])
