@@ -125,7 +125,16 @@ export async function attemptHack(
   const pveCfg = await getPveConfig();
   const requireProximity = pveCfg.require_proximity !== false;
 
-  return transaction(async (c: PoolClient) => {
+  // Deferred post-commit side effects. awardXp() opens its OWN pool connection
+  // and does SELECT ... FROM users FOR UPDATE; running it inside the tx below
+  // self-deadlocks against the row locks this tx holds (Postgres can't detect
+  // it — the tx sits "idle in transaction" → infinite hang). So we run it AFTER
+  // commit. (Was never hit before: every hack failed the proximity check first.)
+  let didResolve = false;
+  let didSucceed = false;
+  let bcast: { lat: number; lng: number; npc: string; id: string } | null = null;
+
+  const result = await transaction(async (c: PoolClient) => {
     // ---- (a) Load + lock the spawn ----
     const spawnRes = await c.query<{
       id: string;
@@ -250,22 +259,11 @@ export async function attemptHack(
       [spawn.id, userId, success, JSON.stringify(inputTrace ?? {})],
     );
 
-    // ---- XP (post-grant, best effort) ----
-    if (success) {
-      try {
-        await awardXp(userId, HACK_XP_REWARD, 'hack_reward');
-      } catch (err: any) {
-        console.warn(`[Hack] awardXp failed for ${userId}: ${err?.message}`);
-      }
-    }
-
-    // ---- (f) Broadcast to nearby players ----
-    wsService.broadcastNearby(spawn.lat, spawn.lng, 2000, 'pve_hacked', {
-      spawnId: spawn.id,
-      npcType: spawn.npc_type,
-      success,
-      hackedBy: userId,
-    });
+    // XP grant + nearby broadcast are deferred to AFTER commit (see the
+    // post-commit block below) — running awardXp here self-deadlocks the tx.
+    didResolve = true;
+    didSucceed = success;
+    bcast = { lat: spawn.lat, lng: spawn.lng, npc: spawn.npc_type, id: spawn.id };
 
     return {
       success,
@@ -278,6 +276,30 @@ export async function attemptHack(
       },
     };
   });
+
+  // ---- Post-commit side effects (tx released → pool is safe to use) ----
+  // Cast needed: TS can't see the in-callback assignment, so it narrows bcast
+  // to `never` inside the guard otherwise.
+  const bc = bcast as { lat: number; lng: number; npc: string; id: string } | null;
+  if (didResolve) {
+    if (didSucceed) {
+      try {
+        await awardXp(userId, HACK_XP_REWARD, 'hack_reward');
+      } catch (err: any) {
+        console.warn(`[Hack] awardXp failed for ${userId}: ${err?.message}`);
+      }
+    }
+    if (bc) {
+      wsService.broadcastNearby(bc.lat, bc.lng, 2000, 'pve_hacked', {
+        spawnId: bc.id,
+        npcType: bc.npc,
+        success: didSucceed,
+        hackedBy: userId,
+      });
+    }
+  }
+
+  return result;
 }
 
 export const hackEngine = { attemptHack };
