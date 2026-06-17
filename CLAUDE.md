@@ -99,6 +99,16 @@ mobile/src/
 - Run cross-analysis (Kreuzanalyse) after major feature additions
 - Commit after each phase with detailed messages
 
+## OTA-Updates (EAS Update) , Standing Rule
+Wenn eine Änderung verifiziert gut ist, rollt der Agent sie selbst per OTA aus, René muss es nicht manuell tun. Aber NUR unter diesen Wächtern (OTA geht ohne Store-Review direkt auf Tester-Handys, ein grüner Build kann zur Laufzeit trotzdem crashen):
+
+1. **Nur JS/Assets:** Texte, Logik, Farben, Screens, Bugfix → OTA möglich. Native Änderung (AndroidManifest, neue Permission/Library, App-Version, neue Expo-Module) → KANN NICHT OTA, braucht vollen `eas build`. Der Agent erkennt das selbst und meldet es statt zu pushen.
+2. **Gate vorher:** `cd server && npx tsc --noEmit` = 0 Fehler (bzw. der betroffene Workspace baut), und die Änderung ist wirklich nur JS/Assets.
+3. **Channel-Disziplin:** Routine-Updates immer auf `preview` (Tester). `production` NIE automatisch, nur auf Renés ausdrückliches "Production raus".
+4. **Transparenz:** Agent meldet in einer Zeile "OTA raus: <was>"; René kann jederzeit "nicht pushen" sagen, dann hält der Agent.
+
+Befehl (aus `mobile/`): `npx eas-cli update --branch preview -m "<knappe Beschreibung>"`. Native Build (wenn nötig): `npx eas-cli build -p android --profile preview`. Auth steht lokal; läuft wie `git push` direkt aus dem Terminal. EAS Project ID `11263b5c-0b4f-4039-bc2a-9f9ebe3c0769`, Channel `preview` aktiv. Native Switch (ENABLED=true + UPDATE_URL + runtimeVersion "1.0.0") committet dfc186e.
+
 ## Production
 - Domain: mapraiders.com
 - API: api.mapraiders.com
