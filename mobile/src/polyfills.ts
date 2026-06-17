@@ -1,4 +1,10 @@
 // Polyfills for React Native
+// WHATWG URL polyfill MUST load first: Hermes ships an incomplete `URL`, and
+// axios 1.x calls `new URL(...)` on every request (same-origin/XSRF check in
+// resolveConfig). On a standalone Hermes release that throws before the request
+// is sent, surfacing as "Network Error" on login (works in Expo Go / dev where
+// a fuller URL exists). See login-network-error investigation 2026-06-17.
+import 'react-native-url-polyfill/auto';
 import 'react-native-get-random-values';
 import { Buffer } from 'buffer';
 (global as any).Buffer = Buffer;
