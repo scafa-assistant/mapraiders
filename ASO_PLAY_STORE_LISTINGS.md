@@ -1,6 +1,8 @@
 # MapRaiders — ASO Play Store Listings (13 Languages)
 ## Pre-Launch Ready | Developer: SCAFA INVESTMENTS LLC | Package: com.mapraiders.app
 
+> ⚠️ EN + DE SUPERSEDED (2026-06-17): Die aktuellen, einreichfertigen EN- und DE-Texte (erweitert auf ~3.6k/3.9k Zeichen, echter Live-Hook, nur belegte Features) stehen in `PLAY_CONSOLE_HANDOFF_MAPRAIDERS.md`. Für Play-Console-Eintrag von dort nehmen, NICHT die EN/DE-Blöcke unten (älter). Die übrigen 11 Sprachen unten bleiben gültig.
+
 ---
 
 ## ASO-Algorithmus-Prinzipien
