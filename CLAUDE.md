@@ -99,8 +99,12 @@ mobile/src/
 - Run cross-analysis (Kreuzanalyse) after major feature additions
 - Commit after each phase with detailed messages
 
-## OTA-Updates (EAS Update) , Standing Rule
-Wenn eine Änderung verifiziert gut ist, rollt der Agent sie selbst per OTA aus, René muss es nicht manuell tun. Aber NUR unter diesen Wächtern (OTA geht ohne Store-Review direkt auf Tester-Handys, ein grüner Build kann zur Laufzeit trotzdem crashen):
+## OTA-Updates (EAS Update) , Standing Rule, AKTUELL GEPARKT
+**Status (2026-06-17): GEPARKT bis nach Launch.** `ENABLED=false` (vc2-Zustand). Grund: bei 3 Testern + 5-min-Gradle-Build löst OTA ein Problem, das es noch nicht gibt, und schiebt JS ohne Review direkt auf Tester-Handys. Außerdem fehlt dem lokalen Gradle-Build der Channel-Header (`expo-channel-name`), den nur der EAS-Cloud-Build automatisch einspritzt, OTA wäre also bei lokalen APKs ohnehin halb. **WICHTIG: APK wird LOKAL mit Gradle gebaut (`mobile/android/gradlew`, ~5 min), NICHT per EAS-Cloud-Build (20 min Queue). Bauen und OTA sind getrennte Dinge; die externe `u.expo.dev`-URL ist nur der OTA-Briefkasten, keine Bau-Voraussetzung.**
+
+Reaktivieren (NUR nach Launch / auf Renés Ansage): `ENABLED=true` + Channel-Header ins Manifest (oder via EAS-Build), dann gilt unten. Bis dahin: kein `eas update`, kein `eas build`.
+
+Wenn aktiviert, gelten diese Wächter (OTA geht ohne Store-Review direkt auf Tester-Handys, ein grüner Build kann zur Laufzeit trotzdem crashen):
 
 1. **Nur JS/Assets:** Texte, Logik, Farben, Screens, Bugfix → OTA möglich. Native Änderung (AndroidManifest, neue Permission/Library, App-Version, neue Expo-Module) → KANN NICHT OTA, braucht vollen `eas build`. Der Agent erkennt das selbst und meldet es statt zu pushen.
 2. **Gate vorher:** `cd server && npx tsc --noEmit` = 0 Fehler (bzw. der betroffene Workspace baut), und die Änderung ist wirklich nur JS/Assets.
