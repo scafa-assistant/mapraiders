@@ -137,13 +137,18 @@ FAQ-Schema, interne Links auf vs-Seiten + Nischen-Seiten + Play-CTA mit UTM.
   vs-Seite = 1:1-Vergleich. Gegenseitig verlinken, Canonicals getrennt.
 
 ### 2.3 ADHS / Bewegungsmotivation (TOFU, Prio 3 — NEUE Nische #16)
-- [ ] `/en/adhd-walking-motivation.html` (EN zuerst; DE nach Performance-Check)
+- [x] `/en/adhd-walking-motivation.html` ✅ Commit `7d5f7c7`, live. Honesty-
+      Corner statt Gesundheits-Claims; Review-Fix: erfundener Kosmetik-IAP-
+      Claim entfernt (App hat keine IAP). DE nach Performance-Check.
 - Frame: Gamification, sichtbarer Fortschritt, Streaks, "der Spaziergang hat
   ein Ziel" — KEINE Therapie-/Gesundheits-Claims, keine Heilversprechen.
 - [x] Nischen-Memory um Nische 16 (ADHS) + Soundmap-Wettbewerber ergänzt ✅
 
 ### 2.4 Early-Adopter / "Claim your empty city" (BOFU, Prio 4)
-- [ ] `/en/claim-your-city.html` + `/de/erobere-deine-stadt.html`
+- [x] `/en/claim-your-city.html` + `/erobere-deine-stadt.html` ✅ Commit
+      `7d5f7c7`, live. Pioneer-Titel code-belegt (constants.ts: erste 100 pro
+      Stadt). CTA = mailto-Muster (Site ist pre-launch); UTM-Play-URL
+      (`utm_campaign=pioneer`) liegt dokumentiert für den Launch-Swap → Phase 4.2.
 - Anti-Geisterstadt-Spin als Stärke: "Das weiße Blatt. Jede Straße noch frei.
   Pionier-Titel für die Ersten." (pioneer-Badge existiert in der App — Beleg!)
 - Direktester Install-Intent → prominenter Play-CTA, UTM `utm_campaign=pioneer`.
