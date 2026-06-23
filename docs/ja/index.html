@@ -70,6 +70,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 [data-rv]{opacity:1 !important;transform:none !important}
 @media (prefers-reduced-motion: reduce){*{animation:none !important}}
 .mh0:hover{color:#141210}.mh1:hover{color:#141210}.mh2:hover{color:#141210}.mh3:hover{color:#141210}.mh4:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(21,88,240,.42)}.mh5:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(21,88,240,.42)}.mh6:hover{border-color:#141210;color:#141210;transform:translateY(-2px)}.mh7:hover{transform:translateY(-2px);box-shadow:0 16px 40px -8px rgba(245,166,35,.65)}.mh8:hover{transform:translateY(-2px);box-shadow:0 16px 44px -8px rgba(46,107,255,.75)}.mh9:hover{color:#EDEFF6}.mh10:hover{color:#EDEFF6}.mh11:hover{color:#EDEFF6}.mh12:hover{color:#EDEFF6}.mh13:hover{color:#EDEFF6}.mh14:hover{color:#EDEFF6}.mh15:hover{color:#EDEFF6}.mh16:hover{color:#EDEFF6}.mh17:hover{color:#EDEFF6}.mh18:hover{color:#EDEFF6}.mh19:hover{color:#EDEFF6}.mh20:hover{color:#EDEFF6}.mr-navlnk{transition:color .2s}.mr-navlnk:hover{color:#141210}
+.mr-lang{position:relative}
+.mr-lang>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#756F6A;-webkit-user-select:none;user-select:none}
+.mr-lang>summary::-webkit-details-marker{display:none}
+.mr-lang[open]>summary{color:#141210}
+.mr-lang-menu{position:absolute;top:calc(100% + 14px);right:0;background:#fff;border:1px solid rgba(20,18,16,.1);border-radius:13px;box-shadow:0 20px 48px -16px rgba(8,14,40,.34);padding:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px;min-width:270px;z-index:40}
+.mr-lang-menu a,.mr-lang-menu span{display:block;font-size:13px;padding:8px 11px;border-radius:8px;color:#56504B;white-space:nowrap}
+.mr-lang-menu a:hover{background:#F2F0EC;color:#141210}
+.mr-lang-menu .active{color:#1558F0;font-weight:700;background:rgba(21,88,240,.07)}
+@media(max-width:760px){#mr-nav .mr-navlnk{display:none}#mr-nav .mh4{display:none}.mr-navwrap{padding:0 16px !important}.mr-rgroup{gap:13px !important}.mr-lang-menu{position:fixed;left:12px;right:12px;top:62px;grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
@@ -77,18 +86,19 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <!-- ============ NAV ============ -->
 <nav id="mr-nav" style="position:fixed;top:0;left:0;right:0;z-index:900;padding:18px 0;background:rgba(246,244,241,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(20,18,16,.07);transition:padding .35s ease,box-shadow .35s ease">
-  <div style="max-width:1200px;margin:0 auto;padding:0 30px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+  <div class="mr-navwrap" style="max-width:1200px;margin:0 auto;padding:0 30px;display:flex;align-items:center;justify-content:space-between;gap:14px">
     <a href="#mr" style="display:flex;align-items:center;gap:11px">
       <span style="width:30px;height:30px;border-radius:9px;background:#1558F0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(21,88,240,.32)">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="2.6"/></svg>
       </span>
       <span style="font-size:15px;font-weight:800;letter-spacing:2.5px;color:#141210">MAP<span style="color:#1558F0">RAIDERS</span></span>
     </a>
-    <div style="display:flex;gap:28px;align-items:center">
+    <div class="mr-rgroup" style="display:flex;gap:24px;align-items:center">
       <a href="#feat" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh0">仕組み</a>
       <a href="#pillars" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh1">機能</a>
       <a href="#privacy" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh2">プライバシー</a>
       <a href="#faq" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh3">よくある質問</a>
+      <details class="mr-lang"><summary><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20a15.3 15.3 0 0 1 0-20z"/></svg>JA<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="mr-lang-menu"><a href="/">Deutsch</a><a href="/en/">English</a><a href="/en-in/">English (IN)</a><a href="/fr/">Français</a><a href="/it/">Italiano</a><a href="/es-mx/">Español</a><a href="/pt-br/">Português</a><a href="/tr/">Türkçe</a><a href="/ru/">Русский</a><span class="active">日本語</span><a href="/ko/">한국어</a><a href="/zh-cn/">简体中文</a><a href="/zh-tw/">繁體中文</a><a href="/id/">Bahasa Indonesia</a><a href="/hi/">हिन्दी</a><a href="/ar/">العربية</a></div></details>
       <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;letter-spacing:.3px;padding:10px 20px;border-radius:8px;background:#1558F0;color:#fff;box-shadow:0 3px 16px rgba(21,88,240,.3);transition:transform .2s,box-shadow .2s" class="mh4">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         ベータに参加
