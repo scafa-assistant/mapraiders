@@ -795,6 +795,60 @@ export const pveApi = {
     api.post(`/pve/spawns/${spawnId}/hack`, { inputTrace }),
 };
 
+// ─── Streifzug API (Patrol Mode, Stage 1) ────────────────────────────────────
+//
+// Foreground patrol session: start/stop a session, then ping with the
+// current GPS point. The server surfaces at most one nearby PvE spawn as an
+// "encounter" (paced + deduped server-side). The encounter carries a full
+// spawn descriptor so the client can hand it straight to HackingScreen.
+
+export interface StreifzugEncounter {
+  spawnId: string;
+  npcType: 'scout_disc' | 'tech_drone' | 'aether_leech' | 'water_strider_source' | 'forest_construct_source';
+  kind: 'loot' | 'recruit' | 'threat';
+  distanceM: number;
+  bearingDeg: number;
+  latitude: number;
+  longitude: number;
+  level: 1 | 2 | 3;
+  biome: string;
+  expiresAt: string;
+  title: string;
+  body: string;
+}
+
+export interface StreifzugPingData {
+  active: boolean;
+  encounter: StreifzugEncounter | null;
+  reason?: string;
+}
+
+export interface StreifzugStatusData {
+  active: boolean;
+  startedAt?: number;
+}
+
+export const streifzugApi = {
+  /** Begin a patrol session. */
+  start: () =>
+    api.post<{ success: boolean; data: StreifzugStatusData }>('/streifzug/start'),
+
+  /** End the patrol session. */
+  stop: () =>
+    api.post<{ success: boolean; data: StreifzugStatusData }>('/streifzug/stop'),
+
+  /** Is a session active? */
+  status: () =>
+    api.get<{ success: boolean; data: StreifzugStatusData }>('/streifzug/status'),
+
+  /** Heartbeat: report position, receive the surfaced encounter (or null). */
+  ping: (latitude: number, longitude: number) =>
+    api.post<{ success: boolean; data: StreifzugPingData }>('/streifzug/ping', {
+      latitude,
+      longitude,
+    }),
+};
+
 // ─── Commander API ─────────────────────────────────────────────────────────────
 //
 // Indoor strategy layer: fog-of-war hex map (H3 res-8), scout dispatch (C.1)

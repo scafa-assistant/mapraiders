@@ -156,6 +156,15 @@ export function setupNotificationHandler(): () => void {
           });
           break;
 
+        case 'streifzug_encounter':
+          // Tapping a patrol encounter push centres the map on the spawn.
+          navigationCallback('MapMain', {
+            focusLat: data.latitude,
+            focusLng: data.longitude,
+            streifzugSpawnId: data.spawnId,
+          });
+          break;
+
         case 'echo_liked':
           navigationCallback('MapMain', {
             focusEcho: data.echoId,

@@ -28,6 +28,8 @@ import { echoProximityService } from '../../services/echoProximity';
 import { echoApi, artifactApi, weatherApi, silentZoneApi, resonanceApi, meetupApi, territoryApi, MyTerritory } from '../../services/api';
 import EchoMarker from '../../components/EchoMarker';
 import PvESpawnMarker, { TerminalMarker } from '../../components/PvESpawnMarker';
+import StreifzugEncounterCard from '../../components/StreifzugEncounterCard';
+import { useStreifzug } from '../../hooks/useStreifzug';
 import { useFeatureStore } from '../../store/featureStore';
 import { usePveStore } from '../../store/pveStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -136,6 +138,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   // PvE feature gate — spawns only rendered when flag + capability are both active
   const isPveEnabled = useFeatureStore((s) => s.isEnabled('pve_spawns') && s.capabilities.pve);
   const { spawns: pveSpawns, fetchSpawns: fetchPveSpawns } = usePveStore();
+
+  // Streifzug (patrol mode, Stage 1) — foreground session that surfaces nearby
+  // encounters. Gated behind the same pve_spawns feature (encounters ARE spawns).
+  const streifzug = useStreifzug();
 
   // Terminals feature gate — Terminal markers only when flag + capability are both active
   const isTerminalsEnabled = useFeatureStore((s) => s.isEnabled('terminals') && s.capabilities.terminals);
@@ -1208,7 +1214,47 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         >
           <Ionicons name="layers" size={22} color={theme.primary} />
         </TouchableOpacity>
+        {isPveEnabled && (
+          <TouchableOpacity
+            style={[styles.controlButton, {
+              backgroundColor: streifzug.active
+                ? theme.primary
+                : (settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)'),
+              borderColor: streifzug.active ? theme.primary : '#C0BAB4',
+            }]}
+            onPress={() => (streifzug.active ? streifzug.stop() : streifzug.start())}
+            disabled={streifzug.starting}
+          >
+            <Ionicons
+              name="walk"
+              size={22}
+              color={streifzug.active ? '#FFFFFF' : theme.primary}
+            />
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Streifzug encounter overlay */}
+      {streifzug.encounter && (
+        <StreifzugEncounterCard
+          encounter={streifzug.encounter}
+          onDismiss={streifzug.dismissEncounter}
+          onEngage={(enc) => {
+            streifzug.dismissEncounter();
+            navigation.navigate('HackingScreen', {
+              spawn: {
+                id: enc.spawnId,
+                npc_type: enc.npcType,
+                level: enc.level,
+                latitude: enc.latitude,
+                longitude: enc.longitude,
+                biome: enc.biome,
+                expires_at: enc.expiresAt,
+              },
+            });
+          }}
+        />
+      )}
 
       {/* City/Place Search Overlay */}
       {showSearch && (

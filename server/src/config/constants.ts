@@ -604,6 +604,30 @@ export const PVE = {
 } as const;
 
 // ============================================================
+// STREIFZUG (Patrol Mode) — Stage 1: foreground encounter loop.
+// While a player's Streifzug session is active, each GPS ping looks
+// for nearby PvE spawns (the existing pveSpawnEngine content) and
+// surfaces the nearest fresh one as an "encounter" + a push. No new
+// content engine: this is an orchestration layer over PvE spawns.
+// Stage 2 (true background tracking) is parked — see Streifzug_Modus_Spec.md.
+// ============================================================
+
+export const STREIFZUG = {
+  /** Spawns within this radius (m) of the ping point count as an encounter. */
+  ENCOUNTER_RADIUS_M: 150,
+  /** Auto-stop a session after this idle TTL (s) as a safety net (4 h). */
+  SESSION_TTL_SEC: 4 * 3600,
+  /** Min seconds between two encounter pushes per user (paces notifications). */
+  PING_COOLDOWN_SEC: 90,
+  /** Don't re-surface the same spawn to the same user within this window (s). */
+  ENCOUNTER_DEDUP_SEC: 3600,
+  /** Max encounters surfaced to one user per UTC day (anti-spam / pity ceiling). */
+  DAILY_ENCOUNTER_CAP: 20,
+  /** Ignore a ping as implausible if it implies a speed above this (km/h). */
+  MAX_PLAUSIBLE_SPEED_KMH: 200,
+} as const;
+
+// ============================================================
 // BUILDINGS (Phase B) — Tier-1 structures on owned territories.
 // All numbers here are DEFAULTS; the `resources` feature flag's
 // `config` block can override them live (no deploy) — e.g.
