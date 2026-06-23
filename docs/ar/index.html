@@ -1,778 +1,738 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="light">
+<html lang="ar" dir="rtl">
 <head>
-<!-- COMING-SOON-MODE -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MapRaiders — وسائل التواصل الاجتماعي. معادة التعريف. | تطبيق اجتماعي خارجي</title>
-<meta name="description" content="MapRaiders هو تطبيق التواصل الاجتماعي الخارجي. اغزُ الأراضي، اترك رسائل صدى، التقِ بأشخاص حقيقيين على الخريطة. مجاني لأجهزة Android.">
+<title>MapRaiders: لعبة استراتيجية جماعية على الخريطة الحقيقية | اغزُ أرضك</title>
+<meta name="description" content="يحوّل MapRaiders مدينتك إلى لعبة استراتيجية. اغزُ أرضاً حقيقية عبر تحديد الموقع، ابنِ إمبراطورية، استكشف خصومك ونازِل على الأرض. خالية من الإعلانات، بلا وسيط بيانات. نسخة تجريبية لأندرويد.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://mapraiders.com/ar/" />
-  <link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/">
-  <link rel="alternate" hreflang="de" href="https://mapraiders.com/">
-  <link rel="alternate" hreflang="en" href="https://mapraiders.com/en/">
-  <link rel="alternate" hreflang="en-IN" href="https://mapraiders.com/en-in/">
-  <link rel="alternate" hreflang="es" href="https://mapraiders.com/es-mx/">
-  <link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/">
-  <link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/">
-  <link rel="alternate" hreflang="id" href="https://mapraiders.com/id/">
-  <link rel="alternate" hreflang="it" href="https://mapraiders.com/it/">
-  <link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/">
-  <link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/">
-  <link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt-br/">
-  <link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/">
-  <link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/">
-  <link rel="alternate" hreflang="zh-Hans" href="https://mapraiders.com/zh-cn/">
-  <link rel="alternate" hreflang="zh-Hant" href="https://mapraiders.com/zh-tw/">
-  <link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/">
-<meta property="og:title" content="MapRaiders — وسائل التواصل الاجتماعي. معادة التعريف.">
-<meta property="og:description" content="الخريطة هي شبكتك الاجتماعية. اغزُ الأراضي، اترك رسائل صدى، التقِ بأشخاص حقيقيين في الخارج.">
+<link rel="canonical" href="https://mapraiders.com/ar/">
+<link rel="alternate" hreflang="de" href="https://mapraiders.com/">
+<link rel="alternate" hreflang="en" href="https://mapraiders.com/en/">
+<link rel="alternate" hreflang="en-IN" href="https://mapraiders.com/en-in/">
+<link rel="alternate" hreflang="fr" href="https://mapraiders.com/fr/">
+<link rel="alternate" hreflang="it" href="https://mapraiders.com/it/">
+<link rel="alternate" hreflang="es" href="https://mapraiders.com/es-mx/">
+<link rel="alternate" hreflang="pt" href="https://mapraiders.com/pt-br/">
+<link rel="alternate" hreflang="tr" href="https://mapraiders.com/tr/">
+<link rel="alternate" hreflang="ru" href="https://mapraiders.com/ru/">
+<link rel="alternate" hreflang="ja" href="https://mapraiders.com/ja/">
+<link rel="alternate" hreflang="ko" href="https://mapraiders.com/ko/">
+<link rel="alternate" hreflang="zh-Hans" href="https://mapraiders.com/zh-cn/">
+<link rel="alternate" hreflang="zh-Hant" href="https://mapraiders.com/zh-tw/">
+<link rel="alternate" hreflang="id" href="https://mapraiders.com/id/">
+<link rel="alternate" hreflang="hi" href="https://mapraiders.com/hi/">
+<link rel="alternate" hreflang="ar" href="https://mapraiders.com/ar/">
+<link rel="alternate" hreflang="x-default" href="https://mapraiders.com/en/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mapraiders.com/ar/">
-<meta property="og:image" content="https://mapraiders.com/ar/og-image.png">
+<meta property="og:title" content="MapRaiders: لعبة استراتيجية جماعية على الخريطة الحقيقية">
+<meta property="og:description" content="الخريطة هي الرقعة. مشيك هو النقلة. اغزُ أرضاً، ابنِ إمبراطورية، نازِل على الأرض. خالية من الإعلانات، بلا وسيط بيانات.">
+<meta property="og:image" content="https://mapraiders.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MapRaiders — وسائل التواصل الاجتماعي. معادة التعريف.">
-<meta name="twitter:description" content="الخريطة هي شبكتك الاجتماعية. اغزُ الأراضي، اترك رسائل صدى، التقِ بأشخاص حقيقيين.">
-<meta name="twitter:image" content="https://mapraiders.com/ar/og-image.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"MapRaiders","description":"MapRaiders هو تطبيق التواصل الاجتماعي الخارجي بدون إعلانات لنظام Android. استحوذ على أراضٍ حقيقية بالتحرك، واترك أصداءً مرتبطة بالموقع، والتقِ أشخاصًا في فعاليات تلقائية على الخريطة.","url":"https://mapraiders.com/ar/","applicationCategory":"GameApplication","applicationSubCategory":"SocialNetworkingApplication","operatingSystem":"Android","inLanguage":["ar","en","de","fr","es","it","pt","tr","ru","ja","ko","zh","hi"],"featureList":["الاستحواذ على الأراضي عبر GPS (المشي، الجري، ركوب الدراجات)","أصداء مرتبطة بالموقع (صوت، صورة، فيديو)","فعاليات تلقائية فورية على الخريطة","ألعاب دفاع (إكس-أو، حجر-ورقة-مقص، شطرنج مصغر)","عشائر وصداقات","مهام وتحديات","بدون إعلانات، بدون خلاصة، بدون خوارزمية","13 لغة"],"screenshot":"https://mapraiders.com/og-image.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD","availability":"https://schema.org/PreOrder","priceValidUntil":"2026-12-31"},"author":{"@type":"Organization","name":"Scafa Investments LLC","url":"https://scafa-investments.com/"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"MapRaiders","url":"https://mapraiders.com/ar/","genre":["Location-based game","Territory conquest","Fitness game","MMO"],"gamePlatform":"Android","operatingSystem":"Android","applicationCategory":"Game","playMode":"https://schema.org/MultiPlayer","author":{"@type":"Organization","name":"Scafa Investments LLC","url":"https://scafa-investments.com/"},"description":"MapRaiders هو تطبيق التواصل الاجتماعي الخارجي بدون إعلانات لنظام Android. استحوذ على أراضٍ حقيقية بالتحرك، واترك أصداءً مرتبطة بالموقع، والتقِ أشخاصًا في فعاليات تلقائية على الخريطة.","inLanguage":["ar","en","de","fr","es","it","pt","tr","ru","ja","ko","zh","hi"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD","availability":"https://schema.org/PreOrder","priceValidUntil":"2026-12-31"},"screenshot":"https://mapraiders.com/og-image.png"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MapRaiders","url":"https://mapraiders.com","logo":"https://mapraiders.com/og-image.png","description":"تطور MapRaiders تطبيقات ألعاب اجتماعية خارجية تربط الناس من خلال التفاعلات على خريطة العالم الحقيقي.","founder":{"@type":"Organization","name":"Scafa Investments LLC","url":"https://scafa-investments.com/"},"email":"info@scafa-investments.com","sameAs":[]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MapRaiders","url":"https://mapraiders.com","inLanguage":"ar","potentialAction":{"@type":"SearchAction","target":"https://mapraiders.com/ar/?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"ما هو MapRaiders؟","acceptedAnswer":{"@type":"Answer","text":"MapRaiders تطبيق اجتماعي خارجي مجاني لنظام Android. يستحوذ اللاعبون على أراضٍ حقيقية بالمشي أو الجري أو ركوب الدراجات، ويتركون رسائل مرتبطة بالموقع تسمى الأصداء، ويلتقون بمستخدمين آخرين في فعاليات حية على الخريطة."}},{"@type":"Question","name":"كيف تعمل الأراضي في MapRaiders؟","acceptedAnswer":{"@type":"Answer","text":"يستحوذ اللاعبون على مناطق بالمرور خلالها فعليًا. تظهر الأرض المستحوَذ عليها بلون اللاعب على خريطة حقيقية. يمكن للاعبين الآخرين تحديها عبر ألعاب الدفاع — إكس-أو، حجر-ورقة-مقص، أو شطرنج مصغر."}},{"@type":"Question","name":"ما هي الأصداء في MapRaiders؟","acceptedAnswer":{"@type":"Answer","text":"الأصداء رسائل مرتبطة بالموقع — تسجيلات صوتية وصور ومقاطع فيديو — تُترك في أماكن حقيقية. يكتشفها المستخدمون الآخرون عند زيارة نفس المكان."}},{"@type":"Question","name":"هل MapRaiders مجاني؟","acceptedAnswer":{"@type":"Answer","text":"نعم. MapRaiders مجاني تمامًا، بدون إعلانات وبدون تكاليف خفية. لا يتم تحقيق دخل من بيانات المستخدم أو الإعلانات."}},{"@type":"Question","name":"على أي منصات يتوفر MapRaiders؟","acceptedAnswer":{"@type":"Answer","text":"يتوفر MapRaiders حاليًا لنظام Android كتحميل APK من mapraiders.com. إصدار iOS قيد التطوير."}},{"@type":"Question","name":"ما الفرق بينه وبين Pokémon GO؟","acceptedAnswer":{"@type":"Answer","text":"على عكس Pokémon GO، لا يستخدم MapRaiders الواقع المعزز ولا يحتوي على كائنات افتراضية. يركّز على ملكية أراضٍ حقيقية، واستكشاف فعلي، ولقاءات حقيقية وجهًا لوجه بين اللاعبين. وهو أيضًا خالٍ تمامًا من الإعلانات."}}]}</script>
+<meta name="twitter:title" content="MapRaiders: لعبة استراتيجية جماعية على الخريطة الحقيقية">
+<meta name="twitter:description" content="اغزُ أرضاً حقيقية، ابنِ إمبراطورية، نازِل على الأرض. خالية من الإعلانات، بلا وسيط بيانات.">
+<meta name="twitter:image" content="https://mapraiders.com/og-image.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"MapRaiders","description":"MapRaiders لعبة استراتيجية جماعية مجانية وخالية من الإعلانات لأندرويد. اغزُ أرضاً حقيقية عبر الحركة، ابنِ إمبراطورية، أدِر اقتصاداً قائماً على البيئات الطبيعية، استكشف خصومك ونازِل على الأرض.","url":"https://mapraiders.com","applicationCategory":"GameApplication","applicationSubCategory":"StrategyGame","operatingSystem":"Android","inLanguage":["ar","en","de","fr","es","it","pt","tr","ru","ja","ko","zh","hi"],"featureList":["اغزُ أرضاً حقيقية عبر تحديد الموقع","ابنِ منشآت: بوابات نقل، رادار، حامية","اقتصاد وموارد قائمة على البيئات الطبيعية","ضباب الحرب والتجسس","مبارزات ومعارك ووحدات حاسوبية","عشائر ولوحات صدارة ومكافآت رؤوس","خالية من الإعلانات، بلا وسيط بيانات","13 لغة"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD","availability":"https://schema.org/PreOrder"},"author":{"@type":"Organization","name":"Scafa Investments LLC","url":"https://scafa-investments.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"ما هي MapRaiders؟","acceptedAnswer":{"@type":"Answer","text":"لعبة استراتيجية جماعية مجانية وخالية من الإعلانات لأندرويد. تغزو أرضاً حقيقية عبر الحركة، تبني إمبراطورية، تستكشف خصومك وتنازل على الأرض."}},{"@type":"Question","name":"هل هي لعبة لياقة بدنية؟","acceptedAnswer":{"@type":"Answer","text":"لا. الحركة مجرد وسيلة الإدخال. MapRaiders لعبة استراتيجية: تغزو، تبني، تدير اقتصاداً، تستكشف وتنازل. الأمر يتعلق بالنفوذ والإمبراطورية، لا بالسعرات الحرارية."}},{"@type":"Question","name":"كيف تعمل الأراضي؟","acceptedAnswer":{"@type":"Answer","text":"تستحوذ على الأرض بعبورها فعلياً، سيراً على الأقدام أو بالدراجة أو أثناء تنزّه الكلب. الأرض غير المصانة تتآكل يومياً، فتبقى الخريطة متنازعاً عليها."}},{"@type":"Question","name":"ماذا يحدث لموقعي؟","acceptedAnswer":{"@type":"Answer","text":"يُستخدم لأجل اللعبة، لا يُباع. بلا حزمة إعلانات، بلا ملف تتبّع، بلا وسيط بيانات خلفه. تبني MapRaiders شركة Scafa Investments LLC."}},{"@type":"Question","name":"هل هي مجانية؟ وعلى أي منصة؟","acceptedAnswer":{"@type":"Answer","text":"مجانية بالكامل وخالية من الإعلانات، بلا تكاليف خفية. حالياً على أندرويد، والنسخة التجريبية متاحة. ونسخة iOS قيد التطوير."}},{"@type":"Question","name":"كيف تختلف عن Pokemon GO؟","acceptedAnswer":{"@type":"Answer","text":"بلا واقع معزّز وبلا وسيط بيانات في الخلفية. بل غزو حقيقي وبناء واقتصاد وقتال، إضافة إلى احترام موقعك."}},{"@type":"Question","name":"ما هو وضع Streifzug؟","acceptedAnswer":{"@type":"Answer","text":"وضع قادم: يتفاعل التطبيق مع حركتك في الخلفية ويرسل إليك مواجهات عفوية عبر الإشعارات. قيد التطوير، غير قابل للعب بعد."}}]}</script>
 <style>
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;overflow-x:hidden}
-body{overflow-x:hidden;-webkit-font-smoothing:antialiased;font-family:'Outfit',sans-serif;direction:rtl;text-align:right}
-a{color:inherit;text-decoration:none}
+html{scroll-behavior:smooth}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-family:'Outfit','Cairo',sans-serif;background:#F6F4F1}
 img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
-:root{
-  --bg:#F6F4F1;--bg-alt:#EFEDE8;--surface:#FFFFFF;
-  --border:rgba(20,18,16,.07);--border-s:rgba(20,18,16,.13);
-  --text:#141210;--muted:#756F6A;--dim:#C0BAB4;
-  --accent:#1558F0;--accent-m:rgba(21,88,240,.07);--accent-b:rgba(21,88,240,.18);
-  --sh-sm:0 1px 4px rgba(20,18,16,.05);--sh-md:0 4px 20px rgba(20,18,16,.07);--sh-lg:0 20px 60px rgba(20,18,16,.1);
-  --nav-bg:rgba(246,244,241,.9);
-}
-[data-theme="dark"]{
-  --bg:#0D0C0A;--bg-alt:#161410;--surface:#1C1916;
-  --border:rgba(255,255,255,.06);--border-s:rgba(255,255,255,.11);
-  --text:#EAE7E2;--muted:#7A7470;--dim:#3E3B37;
-  --accent:#4B7BFF;--accent-m:rgba(75,123,255,.1);--accent-b:rgba(75,123,255,.22);
-  --sh-sm:0 1px 4px rgba(0,0,0,.2);--sh-md:0 4px 20px rgba(0,0,0,.3);--sh-lg:0 20px 60px rgba(0,0,0,.55);
-  --nav-bg:rgba(13,12,10,.9);
-}
-body{background:var(--bg);color:var(--text);transition:background .4s,color .4s}
-.mx{max-width:1180px;margin:0 auto;padding:0 28px}
-.rv{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
-.rv.on{opacity:1;transform:none}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
-.d4{transition-delay:.32s}.d5{transition-delay:.4s}
-.nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:20px 0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .4s}
-.nav.scroll{padding:13px 0}
-.nav-i{display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-size:14px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--text)}
-.nav-logo b{color:var(--accent)}
-.nav-r{display:flex;gap:24px;align-items:center}
-.nav-r a.lnk{font-size:13px;font-weight:500;color:var(--muted);transition:color .2s}
-.nav-r a.lnk:hover{color:var(--text)}
-.btn-dl{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.5px;padding:9px 20px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 14px rgba(21,88,240,.25);transition:opacity .2s,transform .2s}
-.btn-dl:hover{opacity:.88;transform:translateY(-1px)}
-#thm{display:flex;align-items:center;color:var(--muted);transition:color .2s;cursor:pointer}
-#thm:hover{color:var(--text)}
-@media(max-width:740px){.nav-r a.lnk{display:none}.nav-logo{font-size:12px}}
-.lang-sw{position:relative}
-.lsw-btn{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;background:none;border:none;font-family:inherit}
-.lsw-btn:hover{color:var(--text);background:var(--surface)}
-.lsw-btn .chev{width:9px;height:9px;opacity:.5;transition:transform .2s}
-.lang-sw:hover .lsw-btn .chev,.lang-sw:focus-within .lsw-btn .chev{transform:rotate(180deg)}
-.lsw-drop{position:absolute;top:calc(100% + 6px);right:auto;left:0;background:var(--bg);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;padding:6px;min-width:148px;display:none;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.10);flex-direction:column;gap:1px}
-.lang-sw:hover .lsw-drop,.lang-sw:focus-within .lsw-drop{display:flex}
-.lswi{font-size:13px;font-weight:500;color:var(--muted);padding:7px 12px;border-radius:7px;text-decoration:none;white-space:nowrap;transition:all .15s;display:block}
-.lswi:hover{color:var(--text);background:var(--surface)}
-.lswi.on{color:var(--accent);background:var(--accent-m);font-weight:700;pointer-events:none}
-@media(max-width:900px){.lang-sw{display:none}}
-.hero{display:grid;grid-template-columns:5fr 7fr;min-height:100dvh;overflow:hidden;position:relative}
-@media(max-width:860px){.hero{grid-template-columns:1fr;min-height:auto}}
-.hero-left{display:flex;flex-direction:column;justify-content:center;padding:120px max(24px,4vw) 80px max(28px,calc((100vw - 1180px)/2 + 28px));position:relative;z-index:2}
-@media(max-width:860px){.hero-left{padding:120px 28px 48px}}
-.h-badge{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);padding:6px 14px;border-radius:4px;background:var(--accent-m);border:1px solid var(--accent-b);margin-bottom:32px;width:fit-content;animation:fi .6s .1s both}
-.h-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pdot 2s infinite}
-@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
-.hero h1{font-size:clamp(40px,6vw,78px);font-weight:900;line-height:1.02;letter-spacing:-2.5px;margin-bottom:22px;animation:fi .7s .25s both}
-.hero h1 em{font-style:normal;color:var(--accent)}
-.hero-sub{font-size:17px;color:var(--muted);line-height:1.72;max-width:430px;margin-bottom:40px;animation:fi .7s .4s both}
-.hero-sub strong{color:var(--text);font-weight:600}
-.hero-acts{display:flex;gap:12px;flex-wrap:wrap;animation:fi .7s .55s both}
-.btn-p{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:14px 28px;border-radius:6px;background:var(--accent);color:#fff;box-shadow:0 2px 18px rgba(21,88,240,.28);transition:all .25s}
-.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(21,88,240,.38)}
-.btn-g{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:14px 24px;border-radius:6px;border:1px solid var(--border-s);color:var(--muted);transition:all .25s}
-.btn-g:hover{color:var(--text);border-color:var(--text);background:var(--surface)}
-@keyframes fi{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-.hero-right{position:relative;overflow:hidden;background:var(--bg-alt)}
-@media(max-width:860px){.hero-right{height:300px}}
-.map-grid{display:grid;gap:2px;position:absolute;inset:0}
-.mc{border-radius:2px;background:var(--accent);opacity:.055;transition:opacity .6s ease}
-.mc.soft{opacity:.2}.mc.on{opacity:.72}
-.map-fade{position:absolute;inset:0;pointer-events:none;z-index:2;background:linear-gradient(to left,var(--bg-alt) 0%,transparent 18%,transparent 82%,var(--bg-alt) 100%)}
-@media(max-width:860px){.map-fade{background:linear-gradient(to bottom,transparent 0%,var(--bg-alt) 100%)}}
-.map-pin{position:absolute;z-index:3;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 0 10px var(--accent-m),0 4px 20px rgba(21,88,240,.3);animation:pin-pulse 3s ease-in-out infinite}
-@keyframes pin-pulse{0%,100%{box-shadow:0 0 0 10px var(--accent-m),0 4px 20px rgba(21,88,240,.3)}50%{box-shadow:0 0 0 18px var(--accent-m),0 6px 28px rgba(21,88,240,.4)}}
-.hook{padding:120px 0;border-top:1px solid var(--border)}
-.hook-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:start}
-@media(max-width:820px){.hook-grid{grid-template-columns:1fr;gap:40px}}
-.hook h2{font-size:clamp(28px,4.5vw,52px);font-weight:800;line-height:1.08;letter-spacing:-1.5px;margin-bottom:20px}
-.hook h2 del{text-decoration-color:var(--accent);text-decoration-thickness:3px;color:var(--muted)}
-.hook-body{font-size:17px;color:var(--muted);line-height:1.75;max-width:430px}
-.hook-body strong{color:var(--text);font-weight:600}
-.hook-qs{display:flex;flex-direction:column;gap:10px;padding-top:4px}
-.hq{padding:18px 22px;background:var(--surface);border:1px solid var(--border);border-right:3px solid;border-radius:8px;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s}
-.hq:hover{transform:translateX(-6px);box-shadow:var(--sh-md)}
-.hq-t{font-size:15px;font-weight:600;line-height:1.4;margin-bottom:4px}
-.hq-m{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
-.hq.a{border-right-color:var(--accent)}
-.hq.a .hq-t{color:var(--accent)}
-.stats{padding:72px 0;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.stats-g{display:grid;grid-template-columns:repeat(4,1fr)}
-@media(max-width:620px){.stats-g{grid-template-columns:repeat(2,1fr)}}
-.st{padding:20px 32px;border-left:1px solid var(--border)}
-.st:last-child{border-left:none}
-@media(max-width:620px){.st:nth-child(2){border-left:none}}
-.sn{font-size:clamp(34px,5vw,58px);font-weight:900;line-height:1;letter-spacing:-2.5px;color:var(--text)}
-.sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-top:8px}
-.features{padding:120px 0}
-.feat-intro{margin-bottom:80px}
-.sec-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
-.sec-title{font-size:clamp(28px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:12px}
-.sec-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:460px}
-.feat-rows{border-top:1px solid var(--border)}
-.fr{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
-@media(max-width:760px){.fr{grid-template-columns:1fr}}
-.fr-text{padding:56px 48px;display:flex;flex-direction:column;justify-content:center}
-@media(max-width:760px){.fr-text{padding:40px 28px}}
-.fr-vis{background:var(--bg-alt);display:flex;align-items:center;justify-content:center;min-height:260px;border-right:1px solid var(--border);overflow:hidden;position:relative}
-@media(max-width:760px){.fr-vis{border-right:none;border-top:1px solid var(--border);min-height:180px}}
-.fr:nth-child(even) .fr-text{order:2}
-.fr:nth-child(even) .fr-vis{order:1;border-right:none;border-left:1px solid var(--border)}
-@media(max-width:760px){.fr:nth-child(even) .fr-text{order:1}.fr:nth-child(even) .fr-vis{order:2;border-left:none}}
-.f-icon{width:52px;height:52px;border-radius:10px;background:var(--accent-m);border:1px solid var(--accent-b);display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:22px}
-.fr-text h3{font-size:21px;font-weight:700;letter-spacing:-.4px;margin-bottom:10px}
-.fr-text p{font-size:15px;color:var(--muted);line-height:1.7;max-width:360px}
-.f-more{display:inline-flex;align-items:center;gap:6px;margin-top:20px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);transition:gap .2s}
-.f-more:hover{gap:10px}
-.fv-mini-map{display:grid;gap:3px;width:160px;height:120px}
-.fv-mini-map .c{border-radius:2px;background:var(--dim)}
-.fv-mini-map .c.on{background:var(--accent)}
-.fv-rings{position:relative;width:160px;height:160px}
-.fv-ring{position:absolute;inset:0;border:1px solid var(--accent-b);border-radius:50%;animation:ro 3.5s ease-out infinite}
-.fv-ring:nth-child(2){animation-delay:.8s}.fv-ring:nth-child(3){animation-delay:1.6s}
-@keyframes ro{0%{transform:scale(.25);opacity:1}100%{transform:scale(1.4);opacity:0}}
-.fv-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff}
-.fv-bolt{color:var(--accent);opacity:.7}
-.fv-board{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:120px}
-.fv-board .sq{aspect-ratio:1;border-radius:4px;background:var(--dim);display:flex;align-items:center;justify-content:center}
-.fv-board .sq.x{background:var(--accent-m);color:var(--accent)}
-.fv-net{position:relative;width:140px;height:120px}
-.fv-path-svg{position:absolute;inset:0;overflow:visible}
-.fv-compass{color:var(--accent)}
-.compare{padding:120px 0}
-.cmp-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:14px;overflow:hidden;box-shadow:var(--sh-lg)}
-@media(max-width:680px){.cmp-grid{grid-template-columns:1fr}}
-.cmp-l{padding:56px 48px;background:var(--bg-alt);border-left:1px solid var(--border)}
-.cmp-r{padding:56px 48px;background:var(--surface)}
-@media(max-width:680px){.cmp-l,.cmp-r{padding:40px 28px}.cmp-l{border-left:none;border-bottom:1px solid var(--border)}}
-.cmp-tag{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:20px}
-.cmp-num{font-size:clamp(52px,9vw,100px);font-weight:900;line-height:.9;letter-spacing:-4px;color:var(--dim);margin-bottom:14px}
-.cmp-r .cmp-num{color:var(--accent)}
-.cmp-lbl{font-size:16px;font-weight:700;color:var(--muted);margin-bottom:14px}
-.cmp-r .cmp-lbl{color:var(--text)}
-.cmp-desc{font-size:14px;color:var(--muted);line-height:1.75}
-.cmp-quote{text-align:center;margin-top:56px;font-size:clamp(18px,2.5vw,27px);font-weight:700;line-height:1.45;letter-spacing:-.5px;color:var(--text)}
-.cmp-quote em{font-style:normal;color:var(--accent)}
-.echo{padding:140px 0;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.echo-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:center}
-@media(max-width:820px){.echo-grid{grid-template-columns:1fr;gap:48px}}
-.echo-vis{display:flex;justify-content:center}
-.rings-w{position:relative;width:220px;height:220px}
-.ering{position:absolute;inset:0;border:1px solid var(--accent-b);border-radius:50%;animation:ro 4s ease-out infinite}
-.ering:nth-child(2){animation-delay:1s}.ering:nth-child(3){animation-delay:2s}.ering:nth-child(4){animation-delay:3s}
-.echo-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 24px rgba(21,88,240,.3)}
-.echo-t h2{font-size:clamp(24px,3.8vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:20px}
-.echo-t h2 em{font-style:normal;color:var(--accent)}
-.echo-t p{font-size:16px;color:var(--muted);line-height:1.75;margin-bottom:16px;max-width:400px}
-.terminal{font-family:ui-monospace,'Cascadia Code','Fira Code',monospace;font-size:13px;color:var(--accent);padding:13px 18px;border:1px solid var(--accent-b);border-radius:7px;background:var(--accent-m);display:inline-block;min-height:44px}
-.blink::after{content:'_';animation:bl 1s step-end infinite}
-@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
-.eventsec{padding:120px 0;text-align:center}
-.eventsec h2{font-size:clamp(22px,3.5vw,38px);font-weight:800;letter-spacing:-1.2px;line-height:1.2;margin:0 auto 56px;max-width:520px}
-.ev-card{max-width:380px;margin:0 auto;background:var(--surface);border:1px solid var(--border-s);border-radius:14px;padding:36px 32px;box-shadow:var(--sh-md);position:relative}
-.ev-card::before{content:'';position:absolute;top:-1px;left:24px;right:24px;height:2px;background:var(--accent);border-radius:0 0 2px 2px}
-.ev-live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding:5px 12px;border-radius:4px;background:var(--accent-m);border:1px solid var(--accent-b)}
-.ev-ldt{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pdot 1.5s infinite}
-.ev-name{font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px}
-.ev-meta{font-size:13px;color:var(--muted);margin-bottom:20px}
-.ev-timer{font-size:clamp(44px,8vw,68px);font-weight:900;letter-spacing:-3px;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
-.ev-ppl{font-size:13px;color:var(--muted);margin-top:16px}
-.ev-ppl strong{color:var(--text)}
-.manifesto{padding:140px 0}
-.mani-grid{display:grid;grid-template-columns:1fr 2.5fr;gap:64px;align-items:start}
-@media(max-width:760px){.mani-grid{grid-template-columns:1fr;gap:32px}}
-.mani-label{display:flex;flex-direction:column;align-items:flex-end;gap:16px;padding-top:6px}
-.mani-line{width:1px;height:60px;background:var(--accent);opacity:.5}
-.mani-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent)}
-.mani-body{font-size:clamp(19px,2.6vw,30px);font-weight:700;line-height:1.6;letter-spacing:-.3px}
-.mani-body em{font-style:normal;color:var(--accent)}
-.mani-body span{color:var(--muted)}
-.cta{padding:120px 0;background:var(--bg-alt);border-top:1px solid var(--border)}
-.cta-grid{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
-@media(max-width:640px){.cta-grid{grid-template-columns:1fr;text-align:center}}
-.cta-grid h2{font-size:clamp(28px,5vw,54px);font-weight:800;letter-spacing:-2px;line-height:1.02}
-.cta-grid p{font-size:14px;color:var(--muted);margin-top:12px;line-height:1.6}
-.cta-side{display:flex;flex-direction:column;align-items:flex-start;gap:10px;flex-shrink:0}
-@media(max-width:640px){.cta-side{align-items:center}}
-.cta-note{font-size:11px;color:var(--dim)}
-.facts{padding:120px 0;border-top:1px solid var(--border)}
-.facts .sec-title{margin-bottom:32px}
-.facts-list{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:960px}
-@media(max-width:720px){.facts-list{grid-template-columns:1fr}}
-.facts-list li{padding:18px 22px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;font-size:15px;line-height:1.6;color:var(--text)}
-.faq{padding:120px 0;background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.faq .sec-title{margin-bottom:40px}
-.faq-list{display:flex;flex-direction:column;gap:12px;max-width:820px}
-.faq-item{padding:24px 28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;transition:box-shadow .3s,transform .3s cubic-bezier(.16,1,.3,1)}
-.faq-item:hover{box-shadow:var(--sh-md);transform:translateY(-1px)}
-.faq-item h3{font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:10px;color:var(--text)}
-.faq-item p{font-size:15px;color:var(--muted);line-height:1.7}
-.faq-item p strong{color:var(--text);font-weight:600}
-footer{padding:40px 0 32px;border-top:1px solid var(--border)}
-.f-i{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-.f-logo{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
-.f-links{display:flex;gap:22px;flex-wrap:wrap}
-.f-links a{font-size:12px;color:var(--muted);transition:color .2s}
-.f-links a:hover{color:var(--text)}
-.f-copy{width:100%;text-align:center;margin-top:20px;font-size:11px;color:var(--dim)}
+::selection{background:rgba(21,88,240,.18)}
+@keyframes mrFi{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes mrFiL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes mrFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+@keyframes mrFloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes mrPhone{0%,100%{transform:translate(-50%,-50%) rotate(-3deg) translateY(0)}50%{transform:translate(-50%,-50%) rotate(-3deg) translateY(-12px)}}
+@keyframes mrPdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+@keyframes mrRing{0%{transform:scale(.35);opacity:.85}100%{transform:scale(1.5);opacity:0}}
+@keyframes mrPing{0%{transform:translate(-50%,-50%) scale(.4);opacity:.8}80%,100%{transform:translate(-50%,-50%) scale(2.6);opacity:0}}
+@keyframes mrBlink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes mrFlow{to{stroke-dashoffset:-220}}
+@keyframes mrFlowS{to{stroke-dashoffset:-120}}
+@keyframes mrSpin{to{transform:rotate(360deg)}}
+@keyframes mrGlow{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes mrFlag{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes mrSheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(320%)}}
+
+[data-rv]{opacity:1 !important;transform:none !important}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+.mh0:hover{color:#141210}.mh1:hover{color:#141210}.mh2:hover{color:#141210}.mh3:hover{color:#141210}.mh4:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(21,88,240,.42)}.mh5:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(21,88,240,.42)}.mh6:hover{border-color:#141210;color:#141210;transform:translateY(-2px)}.mh7:hover{transform:translateY(-2px);box-shadow:0 16px 40px -8px rgba(245,166,35,.65)}.mh8:hover{transform:translateY(-2px);box-shadow:0 16px 44px -8px rgba(46,107,255,.75)}.mh9:hover{color:#EDEFF6}.mh10:hover{color:#EDEFF6}.mh11:hover{color:#EDEFF6}.mh12:hover{color:#EDEFF6}.mh13:hover{color:#EDEFF6}.mh14:hover{color:#EDEFF6}.mh15:hover{color:#EDEFF6}.mh16:hover{color:#EDEFF6}.mh17:hover{color:#EDEFF6}.mh18:hover{color:#EDEFF6}.mh19:hover{color:#EDEFF6}.mh20:hover{color:#EDEFF6}.mr-navlnk{transition:color .2s}.mr-navlnk:hover{color:#141210}
 </style>
-<!-- PHASE-K-FOUNDER-JSONLD -->
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"René Scafarti","jobTitle":"المؤسس وصاحب الرؤية، MapRaiders","founder":{"@type":"Organization","name":"Scafa Investments LLC","url":"https://scafa-investments.com/"},"description":"بنيت MapRaiders لأن ألعاب GPS إما تجبرك على الدفع أو تتركك وحدك. هنا كل خطوة تصنع منطقة حقيقية — وكل خريطة تتحول إلى شبكة اجتماعية لمدينتك."}</script>
-<!-- PHASE-0A-DEFINEDTERMSET -->
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"DefinedTermSet","name":"MapRaiders Brand Vocabulary (AR)","inLanguage":"ar","hasDefinedTerm":[{"@type":"DefinedTerm","name":"منطقة","description":"منطقة على الخريطة تم احتلالها وتم تخصيصها بشكل دائم للاعب أو العشيرة","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"صدى","description":"إشارة صوتية أو صورة أو فيديو تركها لاعب في موقع، يمكن لآخرين اكتشافها","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"لعبة دفاع مصغرة","description":"لعبة مصغرة (إكس-أوه، حجر-ورقة-مقص، شطرنج مصغر) يتم تشغيلها أثناء النزاع على المنطقة","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"مهمة","description":"مهمة مصغرة أنشأها لاعب يمكن للآخرين إكمالها في العالم الحقيقي","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"قطعة أثرية","description":"عنصر قابل للجمع، صنعه لاعب ووضعه في منطقة","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"عشيرة","description":"مجموعة عضوية من اللاعبين يحتفظون ويدافعون عن المناطق معاً","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"اترك صدى","description":"إجراء ترك صدى في موقع حقيقي","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"},{"@type":"DefinedTerm","name":"تلاشي المنطقة","description":"آلية يتم بموجبها تدهور المناطق المهجورة بمرور الوقت","inDefinedTermSet":"https://mapraiders.com/#brand-vocab"}]}</script>
-<!-- PHASE-0B-FONTS-PRELOAD -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&display=swap">
-<style>body,h1,h2,h3,h4,h5,h6,p,a,span,div,blockquote{font-family:Outfit,"Noto Sans Arabic",system-ui,sans-serif}</style>
 </head>
 <body>
+<div id="mr" dir="rtl" style="position:relative;background:#F6F4F1;color:#141210;font-family:'Outfit','Cairo',sans-serif;overflow:hidden">
 
-<nav class="nav" id="nav">
-<div class="nav-i mx">
-  <a href="/ar/" class="nav-logo">MAP<b>RAIDERS</b></a>
-  <div class="nav-r">
-    <a href="#feat" class="lnk">المميزات</a>
-    <a href="#echo" class="lnk">الأصداء</a>
-    <a href="#mani" class="lnk">الرؤية</a>
-    <div class="lang-sw">
-      <button class="lsw-btn">AR <svg class="chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="lsw-drop">
-        <a href="/" class="lswi">Deutsch</a>
-        <a href="/en/" class="lswi">English</a>
-        <a href="/fr/" class="lswi">Français</a>
-        <a href="/es-mx/" class="lswi">Español</a>
-        <a href="/it/" class="lswi">Italiano</a>
-        <a href="/pt-br/" class="lswi">Português</a>
-        <a href="/tr/" class="lswi">Türkçe</a>
-        <a href="/ru/" class="lswi">Русский</a>
-        <a href="/ja/" class="lswi">日本語</a>
-        <a href="/ko/" class="lswi">한국어</a>
-        <a href="/zh-cn/" class="lswi">中文</a>
-        <span class="lswi on">العربية</span>
-        <a href="/hi/" class="lswi">हिन्दी</a>
-      </div>
-    </div>
-    <button id="thm" aria-label="تبديل المظهر">
-      <svg id="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-      <svg id="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-    <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" class="btn-dl">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-      قريباً
+<!-- ============ NAV ============ -->
+<nav id="mr-nav" style="position:fixed;top:0;left:0;right:0;z-index:900;padding:18px 0;background:rgba(246,244,241,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(20,18,16,.07);transition:padding .35s ease,box-shadow .35s ease">
+  <div style="max-width:1200px;margin:0 auto;padding:0 30px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+    <a href="#mr" style="display:flex;align-items:center;gap:11px">
+      <span style="width:30px;height:30px;border-radius:9px;background:#1558F0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(21,88,240,.32)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="2.6"/></svg>
+      </span>
+      <span style="font-size:15px;font-weight:800;letter-spacing:2.5px;color:#141210">MAP<span style="color:#1558F0">RAIDERS</span></span>
     </a>
+    <div style="display:flex;gap:28px;align-items:center">
+      <a href="#feat" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh0">كيف تعمل</a>
+      <a href="#pillars" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh1">المزايا</a>
+      <a href="#privacy" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh2">الخصوصية</a>
+      <a href="#faq" class="mr-navlnk" style="font-size:13.5px;font-weight:500;color:#756F6A" class="mh3">الأسئلة الشائعة</a>
+      <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;letter-spacing:.3px;padding:10px 20px;border-radius:8px;background:#1558F0;color:#fff;box-shadow:0 3px 16px rgba(21,88,240,.3);transition:transform .2s,box-shadow .2s" class="mh4">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        انضم إلى النسخة التجريبية
+      </a>
+    </div>
   </div>
-</div>
 </nav>
 
-<section class="hero">
-  <div class="hero-left">
-    <div class="h-badge"><span class="h-dot"></span>نسخة تجريبية</div>
-    <h1>الخريطة هي<br>شبكتك <em>الاجتماعية</em>.</h1>
-    <p class="hero-sub">لا تغذيات. لا تمرير. لا إعجابات مزيفة.<br><strong>امشِ، استكشف، اترك أثرك</strong> في العالم الحقيقي.</p>
-    <div class="hero-acts">
-      <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" class="btn-p">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        Android APK
-      </a>
-      <a href="#feat" class="btn-g">
-        كيف يعمل
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-    </div>
-  </div>
-  <div class="hero-right">
-    <div class="map-grid" id="mapGrid"></div>
-    <div class="map-fade"></div>
-    <div class="map-pin" id="mapPin">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    </div>
-  </div>
-</section>
+<!-- ============ HERO ============ -->
+<section style="position:relative;min-height:100dvh;display:flex;align-items:center;padding:118px 30px 64px;max-width:1200px;margin:0 auto">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:48px 40px;width:100%">
 
-<section class="hook">
-<div class="mx"><div class="hook-grid">
-  <div class="rv">
-    <h2>ما زلت <del>تتصفح</del>؟<br>نحن بالفعل في الخارج.</h2>
-    <p class="hook-body">كانت وسائل التواصل الاجتماعي تغذيات وخوارزميات. <strong>MapRaiders هو الشارع نفسه.</strong> كل خطوة تُحسب. كل شارع يحكي قصة.</p>
-  </div>
-  <div class="hook-qs">
-    <div class="hq a rv d1">
-      <div class="hq-t">توقف عن التمرير. ابدأ بالمشي.</div>
-      <div class="hq-m">الطريقة الجديدة للتواصل</div>
-    </div>
-    <div class="hq rv d2" style="border-right-color:var(--muted)">
-      <div class="hq-t">مدينتك. ملعبك. قواعدك.</div>
-      <div class="hq-m">اغزُ الأراضي</div>
-    </div>
-    <div class="hq rv d3" style="border-right-color:var(--muted)">
-      <div class="hq-t">فعاليات حقيقية. أشخاص حقيقيون. مغامرات حقيقية.</div>
-      <div class="hq-m">فعاليات عفوية على الخريطة</div>
-    </div>
-  </div>
-</div></div>
-</section>
-
-<section class="stats">
-<div class="mx"><div class="stats-g">
-  <div class="st rv"><div class="sn" data-c="73">0</div><div class="sl">أراضٍ</div></div>
-  <div class="st rv d1"><div class="sn" data-c="11">0</div><div class="sl">فعاليات مباشرة</div></div>
-  <div class="st rv d2"><div class="sn" data-c="26">0</div><div class="sl">لاعبون نشطون</div></div>
-  <div class="st rv d3"><div class="sn" data-c="7">0</div><div class="sl">ألعاب مصغرة</div></div>
-</div></div>
-</section>
-
-<section class="features" id="feat">
-<div class="mx">
-  <div class="feat-intro rv">
-    <div class="sec-label">المميزات</div>
-    <h2 class="sec-title">ما ينتظرك</h2>
-    <p class="sec-sub">لا توجد ميزة بلا هدف. كل ميزة تربطك بالعالم الحقيقي.</p>
-  </div>
-</div>
-<div class="feat-rows">
-
-  <div class="fr">
-    <div class="fr-text rv">
-      <div class="f-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+    <!-- LEFT -->
+    <div style="flex:1 1 430px;min-width:300px;position:relative;z-index:3">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1558F0;padding:7px 14px;border-radius:99px;background:rgba(21,88,240,.07);border:1px solid rgba(21,88,240,.2);margin-bottom:28px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#1558F0;animation:mrPdot 1.8s infinite"></span>لعبة استراتيجية جماعية · النسخة التجريبية متاحة
       </div>
-      <h3>غزو الأراضي</h3>
-      <p>امشِ، اركض، اركب الدراجة — استولِ على الأرض تحت قدميك. لونك على خريطة العالم الحقيقي.</p>
-      <a href="/ar/features/territories.html" class="f-more">مناطق GPS حقيقية <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <h1 style="font-size:clamp(38px,5.2vw,70px);font-weight:900;line-height:1.0;letter-spacing:-2.6px;margin-bottom:22px">حوّل مدينتك<br>إلى <span style="position:relative;color:#1558F0;white-space:nowrap">لعبة استراتيجية<span style="position:absolute;left:0;right:0;bottom:4px;height:11px;background:rgba(21,88,240,.16);z-index:-1;border-radius:3px"></span></span>.</h1>
+      <p style="font-size:clamp(16px,1.5vw,18px);color:#756F6A;line-height:1.66;max-width:466px;margin-bottom:18px">اغزُ أرضاً حقيقية، ابنِ إمبراطورية، استكشف خصومك ونازِل على الأرض. <strong style="color:#141210;font-weight:600">الخريطة هي الرقعة. مشيك هو النقلة.</strong></p>
+      <div style="margin-bottom:32px">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A39C96;margin-bottom:12px">من ستكون؟</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px">
+        <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#56504B;padding:6px 13px 6px 10px;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:99px;box-shadow:0 1px 3px rgba(20,18,16,.04)"><span style="width:9px;height:9px;border-radius:3px;background:#1558F0"></span>غازٍ</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#56504B;padding:6px 13px 6px 10px;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:99px;box-shadow:0 1px 3px rgba(20,18,16,.04)"><span style="width:9px;height:9px;border-radius:3px;background:#D7263D"></span>قائد</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#56504B;padding:6px 13px 6px 10px;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:99px;box-shadow:0 1px 3px rgba(20,18,16,.04)"><span style="width:9px;height:9px;border-radius:3px;background:#F5A623"></span>جاسوس</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#56504B;padding:6px 13px 6px 10px;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:99px;box-shadow:0 1px 3px rgba(20,18,16,.04)"><span style="width:9px;height:9px;border-radius:3px;background:#1B9E5A"></span>زعيم عشيرة</span>
+        </div>
+        <div style="font-size:13px;color:#8A847F;line-height:1.5;max-width:430px">سيراً على الأقدام أو بالدراجة أو أثناء تنزّه الكلب، كل خطوة تُحتسب.</div>
+      </div>
+      <div style="display:flex;gap:13px;flex-wrap:wrap;align-items:center">
+        <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" style="display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;padding:15px 28px;border-radius:11px;background:#1558F0;color:#fff;box-shadow:0 6px 24px rgba(21,88,240,.32);transition:transform .22s,box-shadow .22s" class="mh5">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          احصل على وصول النسخة التجريبية
+        </a>
+        <a href="#feat" style="display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;padding:15px 24px;border-radius:11px;border:1px solid rgba(20,18,16,.16);color:#56504B;background:#fff;transition:border-color .22s,color .22s,transform .22s" class="mh6">
+          كيف تعمل
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
     </div>
-    <div class="fr-vis">
-      <div class="fv-mini-map rv" id="minimap" style="grid-template-columns:repeat(8,1fr);display:grid;gap:3px;width:180px;height:130px"></div>
-    </div>
-  </div>
 
-  <div class="fr">
-    <div class="fr-vis">
-      <div class="fv-rings rv">
-        <div class="fv-ring"></div><div class="fv-ring"></div><div class="fv-ring"></div>
-        <div class="fv-center">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    <!-- RIGHT: dark map board + phone -->
+    <div style="flex:1 1 470px;min-width:320px;position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center;min-height:600px">
+      <!-- board -->
+      <div style="position:absolute;inset:8px;border-radius:30px;overflow:hidden;background:radial-gradient(125% 95% at 72% 14%,#1a2a55 0%,#0d1838 44%,#070d22 100%);border:1px solid rgba(120,150,230,.2);box-shadow:0 40px 90px -30px rgba(8,14,40,.6),inset 0 1px 0 rgba(160,185,255,.1)">
+        <svg viewBox="0 0 470 600" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
+          <defs>
+            <pattern id="mrGrid" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="rotate(0)"><path d="M34 0H0V34" fill="none" stroke="rgba(140,170,245,.085)" stroke-width="1"/></pattern>
+            <filter id="mrBlur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="30"/></filter>
+            <filter id="mrBlur2" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9"/></filter>
+          </defs>
+          <rect width="470" height="600" fill="url(#mrGrid)"/>
+          <g filter="url(#mrBlur)" opacity=".55">
+            <circle cx="250" cy="250" r="120" fill="#1558F0"/>
+            <circle cx="400" cy="130" r="80" fill="#D7263D"/>
+            <circle cx="95" cy="450" r="80" fill="#F5A623"/>
+            <circle cx="385" cy="470" r="72" fill="#1B9E5A"/>
+          </g>
+          <g stroke="rgba(150,180,250,.16)" stroke-width="2" fill="none" stroke-linecap="round">
+            <path d="M-10 180 Q160 150 250 220 T490 250"/>
+            <path d="M120 -10 Q150 200 90 360 T140 610"/>
+            <path d="M-10 470 Q200 430 320 470 T490 430"/>
+          </g>
+          <path d="M70 540 C120 480 100 410 160 380 S250 300 215 235 250 150 320 130" fill="none" stroke="#4B7BFF" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 9" opacity=".75" style="animation:mrFlow 6s linear infinite"/>
+        </svg>
+        <!-- glow behind phone -->
+        <div style="position:absolute;left:54%;top:50%;width:330px;height:330px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(75,123,255,.45),transparent 68%);filter:blur(14px)"></div>
+      </div>
+
+      <!-- floating chip: territory -->
+      <div style="position:absolute;left:-6px;top:84px;z-index:5;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid rgba(20,18,16,.06);border-radius:14px;padding:11px 15px 11px 12px;box-shadow:0 18px 40px -14px rgba(8,14,40,.4);animation:mrFloat 5.5s ease-in-out infinite">
+        <span style="width:38px;height:38px;border-radius:10px;background:rgba(21,88,240,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="2.2" height="18" rx="1.1" fill="#1558F0"/><path d="M7.2 4.2 L18 8 L7.2 11.8 Z" fill="#1558F0"/></svg>
+        </span>
+        <div><div style="font-size:14.5px;font-weight:800;letter-spacing:-.3px;color:#141210">+0.42 كم&sup2;</div><div style="font-size:11px;color:#8A847F;font-weight:500">أرض مستحوذ عليها</div></div>
+      </div>
+
+      <!-- floating chip: radar -->
+      <div style="position:absolute;left:-18px;bottom:96px;z-index:5;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid rgba(20,18,16,.06);border-radius:14px;padding:11px 15px 11px 12px;box-shadow:0 18px 40px -14px rgba(8,14,40,.4);animation:mrFloat2 4.8s ease-in-out infinite .6s">
+        <span style="width:38px;height:38px;border-radius:10px;background:rgba(245,166,35,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12 19 5M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="12" r="4"/></svg>
+        </span>
+        <div><div style="font-size:14.5px;font-weight:800;letter-spacing:-.3px;color:#141210">إشارة رادار</div><div style="font-size:11px;color:#8A847F;font-weight:500">خصم على بعد 300 م</div></div>
+      </div>
+
+      <!-- floating chip: events live -->
+      <div style="position:absolute;right:2px;top:128px;z-index:5;display:inline-flex;align-items:center;gap:8px;background:#101a38;border:1px solid rgba(120,150,230,.28);border-radius:99px;padding:8px 14px;box-shadow:0 16px 34px -12px rgba(8,14,40,.55);animation:mrFloat2 5.2s ease-in-out infinite .3s">
+        <span style="width:7px;height:7px;border-radius:50%;background:#FF5A6E;box-shadow:0 0 8px #FF5A6E;animation:mrPdot 1.4s infinite"></span>
+        <span style="font-size:12px;font-weight:700;color:#E8ECF7;letter-spacing:.2px">معركة مباشرة</span>
+      </div>
+
+      <!-- PHONE -->
+      <div style="position:absolute;left:54%;top:50%;width:262px;height:540px;transform:translate(-50%,-50%) rotate(-3deg);z-index:6;animation:mrPhone 7s ease-in-out infinite">
+        <div style="position:absolute;inset:0;border-radius:42px;background:linear-gradient(150deg,#23262e,#0c0d11);padding:9px;box-shadow:0 50px 90px -24px rgba(8,12,30,.75),0 0 0 1.5px rgba(255,255,255,.06),inset 0 0 0 2px rgba(255,255,255,.04)">
+          <div style="position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:#E9E6DF">
+            <!-- in-app map -->
+            <svg viewBox="0 0 244 522" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
+              <rect width="244" height="522" fill="#E9E6DF"/>
+              <g opacity=".9"><path d="M-20 150 Q90 130 150 175 T280 200" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path d="M70 -20 Q95 160 60 300 T120 560" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path d="M-20 380 Q120 350 200 390 T300 360" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/></g>
+              <g opacity=".7"><path d="M0 90 H244 M0 460 H244" stroke="#fff" stroke-width="4"/></g>
+              <path d="M168 250 q44 16 30 96 q-50 26 -96 -2 q-20 -54 18 -86 q24 -16 48 -8Z" fill="rgba(27,158,90,.16)" stroke="#1B9E5A" stroke-width="2"/>
+              <!-- territories -->
+              <polygon points="34,196 104,168 150,214 132,292 56,306 22,248" fill="rgba(21,88,240,.2)" stroke="#1558F0" stroke-width="2.6" stroke-linejoin="round"/>
+              <polygon points="150,120 214,104 236,150 196,186 150,162" fill="rgba(215,38,61,.17)" stroke="#D7263D" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="62,360 150,344 182,398 128,442 60,420" fill="rgba(27,158,90,.16)" stroke="#1B9E5A" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="176,250 230,256 240,304 200,322 174,288" fill="rgba(245,166,35,.2)" stroke="#F5A623" stroke-width="2.4" stroke-linejoin="round"/>
+              <!-- route -->
+              <path d="M64 408 C96 372 86 320 118 300 S168 250 150 214" fill="none" stroke="#1558F0" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8" opacity=".85" style="animation:mrFlowS 4s linear infinite"/>
+              <!-- user location -->
+              <circle cx="118" cy="300" r="17" fill="rgba(21,88,240,.16)"/>
+              <circle cx="118" cy="300" r="6.5" fill="#1558F0" stroke="#fff" stroke-width="2.5"/>
+            </svg>
+            <!-- planted flag on blue territory -->
+            <div style="position:absolute;left:33.5%;top:39%;transform-origin:bottom center;animation:mrFlag 3.5s ease-in-out infinite">
+              <svg width="26" height="30" viewBox="0 0 26 30" fill="none"><rect x="6" y="2" width="2.4" height="26" rx="1.2" fill="#1C2440"/><path d="M8.4 3.5 L21 8.5 L8.4 13.5 Z" fill="#F5A623"/></svg>
+            </div>
+            <!-- building markers -->
+            <div style="position:absolute;left:15%;top:49%;width:19px;height:19px;border-radius:5px;background:#fff;border:1px solid rgba(20,18,16,.12);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V8M6 13l6-6 6 6"/></svg></div>
+            <div style="position:absolute;left:41%;top:55%;width:19px;height:19px;border-radius:5px;background:#fff;border:1px solid rgba(20,18,16,.12);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D7263D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><path d="M12 4a8 8 0 0 1 8 8"/></svg></div>
+            <!-- echo pin -->
+            <div style="position:absolute;right:13%;top:24%"><span style="position:absolute;left:50%;top:50%;width:30px;height:30px;border:1.5px solid rgba(245,166,35,.6);border-radius:50%;transform:translate(-50%,-50%);animation:mrPing 2.6s ease-out infinite"></span><span style="position:relative;display:flex;width:13px;height:13px;border-radius:50%;background:#F5A623;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25)"></span></div>
+
+            <!-- status bar -->
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12.5px;font-weight:700;color:#141210">
+              <span style="letter-spacing:-.2px">9:41</span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <svg width="16" height="11" viewBox="0 0 18 12" fill="#141210"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1.5" width="3" height="10.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+                <svg width="22" height="12" viewBox="0 0 24 12" fill="none"><rect x="1" y="1.5" width="19" height="9" rx="2.5" stroke="#141210" stroke-opacity=".5"/><rect x="3" y="3.5" width="13" height="5" rx="1" fill="#141210"/><rect x="21" y="4" width="2" height="4" rx="1" fill="#141210" opacity=".5"/></svg>
+              </span>
+            </div>
+
+            <!-- top HUD -->
+            <div style="position:absolute;top:48px;left:14px;right:14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.86);backdrop-filter:blur(8px);border:1px solid rgba(20,18,16,.06);border-radius:13px;padding:7px 12px 7px 9px;box-shadow:0 6px 18px -8px rgba(8,14,40,.3)">
+                <span style="width:28px;height:28px;border-radius:8px;background:rgba(21,88,240,.12);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="2" height="18" rx="1" fill="#1558F0"/><path d="M7 4 L17 7.5 L7 11 Z" fill="#1558F0"/></svg></span>
+                <div style="line-height:1.05"><div style="font-size:12px;font-weight:800;color:#141210">غازٍ</div><div style="font-size:9.5px;font-weight:600;color:#8A847F">المستوى 7 · 1,240 نقطة خبرة</div></div>
+              </div>
+              <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.86);backdrop-filter:blur(8px);border:1px solid rgba(20,18,16,.06);border-radius:11px;padding:7px 11px;box-shadow:0 6px 18px -8px rgba(8,14,40,.3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="#F5A623" stroke="none"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></svg><span style="font-size:11px;font-weight:800;color:#141210">2.4k</span></span>
+            </div>
+
+            <!-- bottom tab bar -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:62px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid rgba(20,18,16,.07);display:flex;align-items:flex-start;justify-content:space-around;padding:9px 6px 0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;width:44px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 4 8v11l5-2 6 2 5-2V6l-5 2-6-2Z"/><path d="M9 6v11M15 8v11"/></svg><span style="font-size:8.5px;font-weight:700;color:#1558F0">خريطة</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;width:44px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A938D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5"/></svg><span style="font-size:8.5px;font-weight:600;color:#9A938D">قاعدة</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;width:44px;margin-top:-14px"><span style="width:46px;height:46px;border-radius:15px;background:#1558F0;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -4px rgba(21,88,240,.5)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;width:44px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A938D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-3.5 7-9V5l-7-3-7 3v8c0 5.5 7 9 7 9z"/></svg><span style="font-size:8.5px;font-weight:600;color:#9A938D">قتال</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;width:44px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A938D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg><span style="font-size:8.5px;font-weight:600;color:#9A938D">الملف الشخصي</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="fr-text rv">
-      <div class="f-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-      </div>
-      <h3>رسائل الصدى</h3>
-      <p>اترك رسائل في المواقع. صوت، صور، مقاطع فيديو — ليكتشفها الغرباء. لكل مكان قصة.</p>
-      <a href="/ar/features/echos.html" class="f-more">اكتشف أصداء المواقع <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-    </div>
   </div>
 
-  <div class="fr">
-    <div class="fr-text rv">
-      <div class="f-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      </div>
-      <h3>الفعاليات</h3>
-      <p>نزهة مشي خلال 30 دقيقة؟ حفلة الليلة؟ الفعاليات تنبض على الخريطة مباشرة. انضم قبل أن تنتهي.</p>
-      <a href="/ar/features/events.html" class="f-more">أحداث الخريطة المباشرة <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-    </div>
-    <div class="fr-vis">
-      <svg class="fv-bolt rv" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    </div>
+  <div style="position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:#B4ADA7">
+    <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase">مرّر</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
   </div>
-
-  <div class="fr">
-    <div class="fr-vis">
-      <div class="fv-board rv">
-        <div class="sq"></div><div class="sq x"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><div class="sq"></div>
-        <div class="sq x"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><div class="sq"></div><div class="sq x"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
-        <div class="sq"></div><div class="sq"></div><div class="sq x"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
-      </div>
-    </div>
-    <div class="fr-text rv">
-      <div class="f-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <h3>الدفاع عن الأراضي</h3>
-      <p>احمِ أرضك بالإكس والأوه، حجر-ورقة-مقص أو الشطرنج المصغر. من يفوز يحتفظ بالأرض.</p>
-      <a href="/ar/features/defense.html" class="f-more">ألعاب الدفاع المصغرة <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-    </div>
-  </div>
-
-  <div class="fr">
-    <div class="fr-text rv">
-      <div class="f-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <h3>العشائر والأصدقاء</h3>
-      <p>كوِّن مجموعات. اعثر على أشخاص متشابهين. تحدَّ الغرباء. روابط حقيقية من خلال لقاءات حقيقية.</p>
-      <a href="/ar/features/clans.html" class="f-more">معارك العشائر الحقيقية <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-    </div>
-    <div class="fr-vis">
-      <div class="fv-net rv">
-        <svg class="fv-path-svg" viewBox="0 0 140 120" fill="none">
-          <line x1="70" y1="60" x2="28" y2="30" stroke="var(--accent-b)" stroke-width="1.5"/>
-          <line x1="70" y1="60" x2="112" y2="28" stroke="var(--accent-b)" stroke-width="1.5"/>
-          <line x1="70" y1="60" x2="30" y2="95" stroke="var(--accent-b)" stroke-width="1.5"/>
-          <line x1="70" y1="60" x2="110" y2="92" stroke="var(--accent-b)" stroke-width="1.5"/>
-          <line x1="28" y1="30" x2="112" y2="28" stroke="var(--accent-b)" stroke-width="1.5" opacity=".5"/>
-          <circle cx="70" cy="60" r="9" fill="var(--accent)" opacity=".85"/>
-          <circle cx="28" cy="30" r="6" fill="var(--accent)" opacity=".55"/>
-          <circle cx="112" cy="28" r="6" fill="var(--accent)" opacity=".55"/>
-          <circle cx="30" cy="95" r="6" fill="var(--accent)" opacity=".55"/>
-          <circle cx="110" cy="92" r="6" fill="var(--accent)" opacity=".55"/>
-        </svg>
-      </div>
-    </div>
-  </div>
-
-  <div class="fr">
-    <div class="fr-vis">
-      <svg class="fv-compass rv" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
-        <circle cx="12" cy="12" r="10"/>
-        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
-      </svg>
-    </div>
-    <div class="fr-text rv">
-      <div class="f-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-      </div>
-      <h3>المهام والتحديات</h3>
-      <p>أنشئ مغامرات. تحديات الخطوات، سباقات الوقت، مهام الاستكشاف. المدينة هي دنجونك.</p>
-      <a href="/ar/features/quests.html" class="f-more">ابدأ مهام المدينة <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-    </div>
-  </div>
-
-</div>
 </section>
 
-<section class="compare">
-<div class="mx">
-  <div class="cmp-grid rv">
-    <div class="cmp-l">
-      <div class="cmp-tag">العالم الرقمي</div>
-      <div class="cmp-num" data-c="1000">0</div>
-      <div class="cmp-lbl">إعجاب</div>
-      <p class="cmp-desc">تجلس وحيداً. إبهامك يتمرر. قلب هنا، قلب هناك. لا شيء من ذلك حقيقي. لا أحد يعرف وجهك. لا أحد يشارك طريقك.</p>
-    </div>
-    <div class="cmp-r">
-      <div class="cmp-tag">العالم الحقيقي</div>
-      <div class="cmp-num">1</div>
-      <div class="cmp-lbl">لقاء حقيقي</div>
-      <p class="cmp-desc">يلتقي شخصان على الخريطة. ضحكة. مصافحة. قصة تدوم. هذا يساوي أكثر من أي خط زمني.</p>
-    </div>
+<!-- ============ PROMISE BAND ============ -->
+<section style="background:#EFEDE8;border-top:1px solid rgba(20,18,16,.07);border-bottom:1px solid rgba(20,18,16,.07)">
+  <div style="max-width:1200px;margin:0 auto;padding:17px 30px;display:flex;flex-wrap:wrap;gap:12px 36px;align-items:center;justify-content:center">
+    <span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#56504B"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>بلا وسيط بيانات</span>
+    <span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#56504B"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>خالية من الإعلانات وبلا تتبّع</span>
+    <span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#56504B"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>موقعك محترَم</span>
+    <span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#56504B"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>مجانية إلى الأبد</span>
   </div>
-  <p class="cmp-quote rv d1">اللقاءات الحقيقية تستحق <em>أكثر</em> من ألف إعجاب.</p>
-</div>
 </section>
 
-<section class="echo" id="echo">
-<div class="mx"><div class="echo-grid">
-  <div class="echo-vis rv">
-    <div class="rings-w">
-      <div class="ering"></div><div class="ering"></div>
-      <div class="ering"></div><div class="ering"></div>
-      <div class="echo-center">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+<!-- ============ HOOK ============ -->
+<section style="max-width:1200px;margin:0 auto;padding:clamp(74px,9vw,118px) 30px">
+  <div style="display:flex;flex-wrap:wrap;gap:44px 64px;align-items:center">
+    <div data-rv style="flex:1 1 380px;min-width:300px;opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <h2 style="font-size:clamp(30px,4.4vw,52px);font-weight:800;line-height:1.05;letter-spacing:-1.8px;margin-bottom:22px">الحركة<br>تصبح <span style="color:#1558F0">استراتيجية</span>.</h2>
+      <p style="font-size:clamp(16px,1.5vw,18px);color:#756F6A;line-height:1.72;max-width:438px">ألعاب تحديد الموقع الأخرى تجعلك تجمع العملات. <strong style="color:#141210;font-weight:600">أما MapRaiders فتمنحك إمبراطورية.</strong> كل خطوة ترسم الحدود وتبني المنشآت وتحسم المعارك.</p>
+    </div>
+    <div style="flex:1 1 380px;min-width:300px;display:flex;flex-direction:column;gap:12px">
+      <div data-rv style="opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .04s,transform .7s cubic-bezier(.16,1,.3,1) .04s;display:flex;gap:15px;align-items:flex-start;padding:19px 22px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:13px;box-shadow:0 2px 12px rgba(20,18,16,.05)">
+        <span style="width:38px;height:38px;border-radius:10px;background:rgba(21,88,240,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="18" height="18" viewBox="0 0 24 24" fill="#1558F0" stroke="none"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>
+        <div><div style="font-size:16px;font-weight:700;letter-spacing:-.3px;color:#141210;margin-bottom:3px">ارسم الحدود. استحوذ على أرض حقيقية.</div><div style="font-size:11px;font-weight:600;color:#A39C96;text-transform:uppercase;letter-spacing:1px">الغزو والإمبراطورية</div></div>
+      </div>
+      <div data-rv style="opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .12s,transform .7s cubic-bezier(.16,1,.3,1) .12s;display:flex;gap:15px;align-items:flex-start;padding:19px 22px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #D7263D;border-radius:13px;box-shadow:0 2px 12px rgba(20,18,16,.05)">
+        <span style="width:38px;height:38px;border-radius:10px;background:rgba(215,38,61,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D7263D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+        <div><div style="font-size:16px;font-weight:700;letter-spacing:-.3px;color:#141210;margin-bottom:3px">انشر وحداتك. رُدّ الضربة.</div><div style="font-size:11px;font-weight:600;color:#A39C96;text-transform:uppercase;letter-spacing:1px">القتال والمعارك</div></div>
+      </div>
+      <div data-rv style="opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .2s,transform .7s cubic-bezier(.16,1,.3,1) .2s;display:flex;gap:15px;align-items:flex-start;padding:19px 22px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1B9E5A;border-radius:13px;box-shadow:0 2px 12px rgba(20,18,16,.05)">
+        <span style="width:38px;height:38px;border-radius:10px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5"/></svg></span>
+        <div><div style="font-size:16px;font-weight:700;letter-spacing:-.3px;color:#141210;margin-bottom:3px">ابنِ بوابات نقل ورادارات ودروعاً.</div><div style="font-size:11px;font-weight:600;color:#A39C96;text-transform:uppercase;letter-spacing:1px">البناء والترقية</div></div>
       </div>
     </div>
   </div>
-  <div class="echo-t">
-    <div class="sec-label rv">الأصداء</div>
-    <h2 class="rv d1">اترك <em>صدىً</em></h2>
-    <p class="rv d2">تمشي في شارع غير مألوف. يهتز هاتفك بهدوء. رسالة — من شخص كان هنا قبلك. صوت. صورة. سر.</p>
-    <p class="rv d3">والآن تخيل: <strong>أنت</strong> تترك واحدة. في مكانك المفضل. سيجدها أحدهم. ويتساءل...</p>
-    <div class="terminal rv d4"><span id="tw"></span><span class="blink"></span></div>
+</section>
+
+<!-- ============ STATS (dark) ============ -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(130% 130% at 50% -12%,#1b2c57 0%,#0c1636 55%,#070d22 100%)">
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(150,180,250,.07) 0 1px,transparent 1px 42px),repeating-linear-gradient(90deg,rgba(150,180,250,.07) 0 1px,transparent 1px 42px);opacity:.8;-webkit-mask-image:radial-gradient(circle at 50% 38%,#000,transparent 78%);mask-image:radial-gradient(circle at 50% 38%,#000,transparent 78%)"></div>
+  <div style="position:relative;max-width:1080px;margin:0 auto;padding:clamp(56px,7vw,84px) 30px;display:flex;flex-wrap:wrap;gap:28px 16px;justify-content:center;text-align:center">
+    <div data-rv style="flex:1 1 190px;opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)"><div style="font-size:clamp(44px,6vw,66px);font-weight:900;letter-spacing:-2.5px;color:#5C8BFF;line-height:1" data-count="10" data-suffix="+">+10</div><div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#93A3C9;font-weight:600;margin-top:10px">أنواع المنشآت</div></div>
+    <div data-rv style="flex:1 1 190px;opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .08s,transform .6s cubic-bezier(.16,1,.3,1) .08s"><div style="font-size:clamp(44px,6vw,66px);font-weight:900;letter-spacing:-2.5px;color:#FF6B7A;line-height:1" data-count="3">3</div><div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#93A3C9;font-weight:600;margin-top:10px">مستويات ضباب الحرب</div></div>
+    <div data-rv style="flex:1 1 190px;opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .16s,transform .6s cubic-bezier(.16,1,.3,1) .16s"><div style="font-size:clamp(44px,6vw,66px);font-weight:900;letter-spacing:-2.5px;color:#46E08A;line-height:1" data-count="13">13</div><div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#93A3C9;font-weight:600;margin-top:10px">لغة حول العالم</div></div>
+    <div data-rv style="flex:1 1 190px;opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .24s,transform .6s cubic-bezier(.16,1,.3,1) .24s"><div style="font-size:clamp(44px,6vw,66px);font-weight:900;letter-spacing:-2.5px;color:#FFB23E;line-height:1">مجاناً</div><div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#93A3C9;font-weight:600;margin-top:10px">خالية من الإعلانات وعادلة</div></div>
   </div>
-</div></div>
 </section>
-
-<section class="eventsec">
-<div class="mx">
-  <h2 class="rv">ماذا لو جاءتك<br>المغامرة؟</h2>
-  <div class="ev-card rv d1">
-    <div class="ev-live"><span class="ev-ldt"></span>فعالية عفوية</div>
-    <div class="ev-name">نزهة مشي في الحديقة</div>
-    <div class="ev-meta">على بعد 500م &bull; تبدأ خلال</div>
-    <div class="ev-timer" id="cd">27:59</div>
-    <div class="ev-ppl"><strong id="ppl">23</strong> مشارك في الطريق</div>
+<!-- ============ FEATURES ============ -->
+<section id="feat" style="max-width:1200px;margin:0 auto;padding:clamp(80px,10vw,128px) 30px">
+  <div data-rv style="max-width:580px;margin-bottom:clamp(40px,5vw,60px);opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:14px">كيف تعمل</div>
+    <h2 style="font-size:clamp(30px,4.2vw,48px);font-weight:800;letter-spacing:-1.6px;line-height:1.06;margin-bottom:14px">لعبة استراتيجية<br>على الخريطة الحقيقية.</h2>
+    <p style="font-size:clamp(15px,1.4vw,17px);color:#756F6A;line-height:1.7">اغزُ، ابنِ، أدِر اقتصاداً، استكشف، قاتل. أربعة أنظمة متشابكة، كلها متاحة في النسخة الحالية.</p>
   </div>
-</div>
-</section>
 
-<section class="manifesto" id="mani">
-<div class="mx">
-  <div class="mani-grid rv">
-    <div class="mani-label">
-      <div class="mani-line"></div>
-      <div class="mani-tag">البيان</div>
+  <div style="display:flex;flex-direction:column;gap:clamp(20px,2.4vw,26px)">
+
+    <!-- ROW 1: Territory (text | visual) -->
+    <div data-rv style="display:flex;flex-wrap:wrap;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:22px;overflow:hidden;box-shadow:0 6px 30px -16px rgba(20,18,16,.2);opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="flex:1 1 360px;min-width:280px;padding:clamp(32px,3.6vw,52px);display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1558F0;margin-bottom:14px;display:flex;align-items:center;gap:9px"><span style="font-variant-numeric:tabular-nums">01</span><span style="width:18px;height:1.5px;background:#1558F0;opacity:.4"></span>الغزو والإمبراطورية</div>
+        <h3 style="font-size:clamp(23px,2.6vw,31px);font-weight:800;letter-spacing:-.8px;line-height:1.08;margin-bottom:13px">اغزُ أرضاً حقيقية</h3>
+        <p style="font-size:15.5px;color:#756F6A;line-height:1.72;max-width:400px;margin-bottom:20px">ارسم الحدود، استحوذ على الأرض، فتصبح مساراتك مملكتك. لكن انتبه: الأرض غير المصانة تتآكل يومياً. لا وجود لمبدأ "استحوذ مرة واحتفظ إلى الأبد".</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;font-weight:600;color:#1558F0;background:rgba(21,88,240,.08);border:1px solid rgba(21,88,240,.16);border-radius:99px;padding:6px 12px">استحواذ عبر تحديد الموقع</span>
+          <span style="font-size:12px;font-weight:600;color:#1558F0;background:rgba(21,88,240,.08);border:1px solid rgba(21,88,240,.16);border-radius:99px;padding:6px 12px">نظام التآكل</span>
+          <span style="font-size:12px;font-weight:600;color:#1558F0;background:rgba(21,88,240,.08);border:1px solid rgba(21,88,240,.16);border-radius:99px;padding:6px 12px">مملكة متنامية</span>
+        </div>
+      </div>
+      <div style="flex:1 1 360px;min-width:280px;background:#EEF3FE;display:flex;align-items:center;justify-content:center;padding:clamp(28px,3vw,44px);min-height:300px;position:relative">
+        <div style="position:relative;width:100%;max-width:330px">
+          <div style="border-radius:16px;overflow:hidden;border:1px solid rgba(20,18,16,.08);box-shadow:0 16px 38px -16px rgba(20,30,60,.32)">
+            <svg viewBox="0 0 330 244" preserveAspectRatio="xMidYMid slice" style="width:100%;height:244px;display:block">
+              <rect width="330" height="244" fill="#E9E6DF"/>
+              <g opacity=".95"><path d="M-20 84 Q120 62 210 102 T370 112" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M126 -10 Q156 112 104 250" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round"/><path d="M-10 186 Q156 164 248 196 T372 176" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/></g>
+              <polygon points="42,112 114,88 156,130 132,192 58,202 28,152" fill="rgba(21,88,240,.2)" stroke="#1558F0" stroke-width="2.8" stroke-linejoin="round"/>
+              <polygon points="184,54 248,42 270,84 230,114 184,92" fill="rgba(215,38,61,.16)" stroke="#D7263D" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="206,152 264,152 284,200 230,218 202,186" fill="rgba(245,166,35,.18)" stroke="#F5A623" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="72,206 144,202 156,242 98,246 64,232" fill="rgba(27,158,90,.16)" stroke="#1B9E5A" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M72 214 C104 184 96 152 124 136 S154 112 156 130" fill="none" stroke="#1558F0" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round" opacity=".85" style="animation:mrFlowS 4s linear infinite"/>
+              <circle cx="124" cy="136" r="15" fill="rgba(21,88,240,.16)"/><circle cx="124" cy="136" r="6" fill="#1558F0" stroke="#fff" stroke-width="2.4"/>
+            </svg>
+          </div>
+          <div style="position:absolute;left:28%;top:42%;transform-origin:bottom center;animation:mrFlag 3.6s ease-in-out infinite"><svg width="22" height="27" viewBox="0 0 26 30"><rect x="6" y="2" width="2.6" height="26" rx="1.3" fill="#141210"/><path d="M8.6 3.5 L21 8.5 L8.6 13.5 Z" fill="#F5A623"/></svg></div>
+          <div style="position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:9px;padding:6px 11px;box-shadow:0 6px 18px -8px rgba(20,30,60,.3);font-size:11.5px;font-weight:700;color:#141210"><span style="width:8px;height:8px;border-radius:2px;background:#1558F0"></span>أرضك &middot; 4.2 كم&sup2;</div>
+        </div>
+      </div>
     </div>
-    <p class="mani-body rv d1">
-      نؤمن بأن <em>اللقاءات الحقيقية</em> تستحق أكثر من ألف إعجاب.
-      وأن <em>الشارع</em> هو الشبكة الاجتماعية الأفضل.
-      وأن <em>المغامرات</em> تنتظر خارج بابك مباشرة — لا خلف شاشة.
-      <span>وأنك مستعد لها.</span>
-    </p>
+
+    <!-- ROW 2: Build & economy (visual | text) -->
+    <div data-rv style="display:flex;flex-wrap:wrap;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:22px;overflow:hidden;box-shadow:0 6px 30px -16px rgba(20,18,16,.2);opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="flex:1 1 360px;min-width:280px;background:#EDF6F0;display:flex;align-items:center;justify-content:center;padding:clamp(28px,3vw,44px);min-height:300px;order:1">
+        <div style="width:100%;max-width:316px;background:#fff;border-radius:16px;border:1px solid rgba(20,18,16,.08);box-shadow:0 16px 38px -16px rgba(20,40,30,.3);overflow:hidden">
+          <div style="display:flex;align-items:center;gap:15px;padding:12px 15px;background:#0c1636">
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#E8ECF7"><svg width="13" height="13" viewBox="0 0 24 24" fill="#F5A623"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></svg>2.4k</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#E8ECF7"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5C8BFF" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7"/></svg>180</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#E8ECF7"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#46E08A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8M12 8c0-3-2-6-7-6 0 4 2 6 7 6zM12 11c0-3 2-6 7-6 0 4-2 6-7 6z"/></svg>920</span>
+            <span style="margin-left:auto;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7E8FB5">قاعدة</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 6px;background:#F4F8F5;border:1px solid rgba(20,18,16,.06);border-radius:10px"><span style="width:30px;height:30px;border-radius:8px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7.5 13.5 12 9l4.5 4.5"/><ellipse cx="12" cy="20" rx="6" ry="1.8"/></svg></span><span style="font-size:9px;font-weight:700;color:#3a3633">بوابة نقل</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 6px;background:#F4F8F5;border:1px solid rgba(20,18,16,.06);border-radius:10px"><span style="width:30px;height:30px;border-radius:8px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><path d="M12 4a8 8 0 0 1 8 8M12 12 17.5 6.5"/></svg></span><span style="font-size:9px;font-weight:700;color:#3a3633">رادار</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 6px;background:#F4F8F5;border:1px solid rgba(20,18,16,.06);border-radius:10px"><span style="width:30px;height:30px;border-radius:8px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-3.5 7-9V5l-7-3-7 3v8c0 5.5 7 9 7 9z"/></svg></span><span style="font-size:9px;font-weight:700;color:#3a3633">حامية</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 6px;background:#F4F8F5;border:1px solid rgba(20,18,16,.06);border-radius:10px"><span style="width:30px;height:30px;border-radius:8px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-3 6-8V5l-6-2.5L6 5v8c0 5 6 8 6 8z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></span><span style="font-size:9px;font-weight:700;color:#3a3633">درع</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 6px;background:#F4F8F5;border:1px solid rgba(20,18,16,.06);border-radius:10px"><span style="width:30px;height:30px;border-radius:8px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V11l5 3V11l5 3V7l4 3v11"/></svg></span><span style="font-size:9px;font-weight:700;color:#3a3633">مصفاة</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:11px 6px;background:#F4F8F5;border:1px solid rgba(20,18,16,.06);border-radius:10px"><span style="width:30px;height:30px;border-radius:8px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v12c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6"/></svg></span><span style="font-size:9px;font-weight:700;color:#3a3633">صومعة</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1 1 360px;min-width:280px;padding:clamp(32px,3.6vw,52px);display:flex;flex-direction:column;justify-content:center;order:2">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#178A4E;margin-bottom:14px;display:flex;align-items:center;gap:9px"><span style="font-variant-numeric:tabular-nums">02</span><span style="width:18px;height:1.5px;background:#1B9E5A"></span>البناء والاقتصاد</div>
+        <h3 style="font-size:clamp(23px,2.6vw,31px);font-weight:800;letter-spacing:-.8px;line-height:1.08;margin-bottom:13px">وسّع إمبراطوريتك</h3>
+        <p style="font-size:15.5px;color:#756F6A;line-height:1.72;max-width:400px;margin-bottom:20px">شيّد منشآت ذات وظيفة حقيقية: بوابات نقل للتنقل السريع، رادارات للاستكشاف، حاميات للدفاع. وتستخرج منشآت الموارد ما تقدّمه البيئة الحقيقية تحتك، حتى دون اتصال.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;font-weight:600;color:#178A4E;background:rgba(27,158,90,.08);border:1px solid rgba(27,158,90,.18);border-radius:99px;padding:6px 12px">بوابة نقل</span>
+          <span style="font-size:12px;font-weight:600;color:#178A4E;background:rgba(27,158,90,.08);border:1px solid rgba(27,158,90,.18);border-radius:99px;padding:6px 12px">حامية ودرع</span>
+          <span style="font-size:12px;font-weight:600;color:#178A4E;background:rgba(27,158,90,.08);border:1px solid rgba(27,158,90,.18);border-radius:99px;padding:6px 12px">استخراج من البيئة</span>
+          <span style="font-size:12px;font-weight:600;color:#178A4E;background:rgba(27,158,90,.08);border:1px solid rgba(27,158,90,.18);border-radius:99px;padding:6px 12px">عملات متعددة</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: Recon & fog of war (text | visual) -->
+    <div data-rv style="display:flex;flex-wrap:wrap;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:22px;overflow:hidden;box-shadow:0 6px 30px -16px rgba(20,18,16,.2);opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="flex:1 1 360px;min-width:280px;padding:clamp(32px,3.6vw,52px);display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C8860F;margin-bottom:14px;display:flex;align-items:center;gap:9px"><span style="font-variant-numeric:tabular-nums">03</span><span style="width:18px;height:1.5px;background:#F5A623"></span>الاستطلاع والتخفّي</div>
+        <h3 style="font-size:clamp(23px,2.6vw,31px);font-weight:800;letter-spacing:-.8px;line-height:1.08;margin-bottom:13px">استكشف قبل أن تضرب</h3>
+        <p style="font-size:15.5px;color:#756F6A;line-height:1.72;max-width:400px;margin-bottom:20px">ثلاثة مستويات لضباب الحرب على طراز Anno: غير مستكشَف، مستكشَف، نشط. الكشّافة يكشفون الخريطة قطعةً قطعةً، ويتسع مداهم مع ارتفاع مستواك. إضافة إلى رادار التجسس والمناطق الصامتة والفخاخ للكمين.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;font-weight:600;color:#C8860F;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.24);border-radius:99px;padding:6px 12px">ضباب الحرب: 3 مستويات</span>
+          <span style="font-size:12px;font-weight:600;color:#C8860F;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.24);border-radius:99px;padding:6px 12px">رادار التجسس</span>
+          <span style="font-size:12px;font-weight:600;color:#C8860F;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.24);border-radius:99px;padding:6px 12px">مناطق صامتة وفخاخ</span>
+        </div>
+      </div>
+      <div style="flex:1 1 360px;min-width:280px;background:#FBF4E6;display:flex;align-items:center;justify-content:center;padding:clamp(28px,3vw,44px);min-height:300px;position:relative">
+        <div style="position:relative;width:100%;max-width:330px">
+          <div style="border-radius:16px;overflow:hidden;border:1px solid rgba(20,18,16,.08);box-shadow:0 16px 38px -16px rgba(40,30,10,.3);position:relative">
+            <svg viewBox="0 0 330 244" preserveAspectRatio="xMidYMid slice" style="width:100%;height:244px;display:block">
+              <rect width="330" height="244" fill="#E9E6DF"/>
+              <g opacity=".9"><path d="M-20 90 Q120 70 210 110 T372 120" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M150 -10 Q176 120 120 250" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/></g>
+              <polygon points="244,58 300,48 316,94 280,126 240,102" fill="rgba(215,38,61,.2)" stroke="#D7263D" stroke-width="2.2" stroke-linejoin="round"/>
+            </svg>
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 52%,transparent 0%,transparent 24%,rgba(10,16,38,.32) 40%,rgba(10,16,38,.55) 55%,rgba(10,16,38,.88) 80%)"></div>
+            <div style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:0;height:0"><span style="position:absolute;left:50%;top:50%;width:54px;height:54px;border-radius:50%;background:rgba(245,166,35,.3);animation:mrPing 2.6s ease-out infinite"></span><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:#F5A623;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(245,166,35,.55)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></span></div>
+          </div>
+          <div style="position:absolute;top:11px;left:11px;display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.94);border-radius:9px;padding:8px 11px;box-shadow:0 6px 16px -8px rgba(20,30,60,.3)">
+            <span style="display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:700;color:#3a3633"><span style="width:8px;height:8px;border-radius:50%;background:#F5A623"></span>نشط</span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:600;color:#8A847F"><span style="width:8px;height:8px;border-radius:50%;background:#9FB0D0"></span>مستكشَف</span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:600;color:#8A847F"><span style="width:8px;height:8px;border-radius:50%;background:#1b2c57"></span>غير مستكشَف</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: Combat (visual | text) -->
+    <div data-rv style="display:flex;flex-wrap:wrap;background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:22px;overflow:hidden;box-shadow:0 6px 30px -16px rgba(20,18,16,.2);opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="flex:1 1 360px;min-width:280px;background:#FCEEEF;display:flex;align-items:center;justify-content:center;padding:clamp(28px,3vw,44px);min-height:300px;order:1">
+        <div style="position:relative;width:100%;max-width:330px">
+          <div style="border-radius:16px;overflow:hidden;border:1px solid rgba(20,18,16,.08);box-shadow:0 16px 38px -16px rgba(60,20,20,.3)">
+            <svg viewBox="0 0 330 244" preserveAspectRatio="xMidYMid slice" style="width:100%;height:244px;display:block">
+              <rect width="330" height="244" fill="#E9E6DF"/>
+              <g opacity=".9"><path d="M165 -10 V254" fill="none" stroke="#fff" stroke-width="9"/><path d="M-20 130 H350" fill="none" stroke="#fff" stroke-width="8"/></g>
+              <polygon points="34,70 130,52 156,120 120,196 40,200 18,130" fill="rgba(21,88,240,.18)" stroke="#1558F0" stroke-width="2.4" stroke-linejoin="round"/>
+              <polygon points="180,52 300,60 312,140 270,200 184,188 168,118" fill="rgba(215,38,61,.18)" stroke="#D7263D" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M165 16 V230" fill="none" stroke="#D7263D" stroke-width="2.5" stroke-dasharray="3 7" opacity=".8" style="animation:mrFlowS 4s linear infinite"/>
+              <g fill="#1558F0"><circle cx="96" cy="108" r="6"/><circle cx="118" cy="130" r="6"/><circle cx="90" cy="150" r="6"/></g>
+              <g fill="#D7263D"><circle cx="232" cy="112" r="6"/><circle cx="252" cy="138" r="6"/><circle cx="228" cy="158" r="6"/></g>
+            </svg>
+          </div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0"><span style="position:absolute;left:50%;top:50%;width:58px;height:58px;border-radius:50%;background:rgba(215,38,61,.28);animation:mrPing 2.2s ease-out infinite"></span><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:#D7263D;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(215,38,61,.5)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m7 17-4 4"/></svg></span></div>
+          <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:10px;padding:8px 13px;box-shadow:0 8px 22px -10px rgba(60,20,20,.4);white-space:nowrap"><span style="font-size:12px;font-weight:800;color:#1558F0">12</span><span style="font-size:10.5px;font-weight:600;color:#8A847F">وحدة</span><span style="color:#C4BEB7;font-weight:700">ضد</span><span style="font-size:12px;font-weight:800;color:#D7263D">9</span><span style="font-size:10.5px;font-weight:600;color:#8A847F">وحدة</span></div>
+        </div>
+      </div>
+      <div style="flex:1 1 360px;min-width:280px;padding:clamp(32px,3.6vw,52px);display:flex;flex-direction:column;justify-content:center;order:2">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#D7263D;margin-bottom:14px;display:flex;align-items:center;gap:9px"><span style="font-variant-numeric:tabular-nums">04</span><span style="width:18px;height:1.5px;background:#D7263D"></span>القتال</div>
+        <h3 style="font-size:clamp(23px,2.6vw,31px);font-weight:800;letter-spacing:-.8px;line-height:1.08;margin-bottom:13px">نازِل على كل شبر من الأرض</h3>
+        <p style="font-size:15.5px;color:#756F6A;line-height:1.72;max-width:400px;margin-bottom:20px">مبارزات في حلبة 1 ضد 1، ومعارك كبيرة بوحدات منشورة. أعداء حاسوبيون يظهرون حسب البيئة على الخريطة الحقيقية، فيمتلئ العالم حتى دون لاعبين آخرين. إضافة إلى ألعاب دفاع مصغّرة وغارات جوية واختراقات.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;font-weight:600;color:#D7263D;background:rgba(215,38,61,.08);border:1px solid rgba(215,38,61,.18);border-radius:99px;padding:6px 12px">مبارزات 1 ضد 1</span>
+          <span style="font-size:12px;font-weight:600;color:#D7263D;background:rgba(215,38,61,.08);border:1px solid rgba(215,38,61,.18);border-radius:99px;padding:6px 12px">معارك ووحدات</span>
+          <span style="font-size:12px;font-weight:600;color:#D7263D;background:rgba(215,38,61,.08);border:1px solid rgba(215,38,61,.18);border-radius:99px;padding:6px 12px">أعداء حاسوبيون</span>
+          <span style="font-size:12px;font-weight:600;color:#D7263D;background:rgba(215,38,61,.08);border:1px solid rgba(215,38,61,.18);border-radius:99px;padding:6px 12px">غارات جوية واختراقات</span>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+
 </section>
 
-<!-- PHASE5-FACTS -->
-<section class="facts" id="facts">
-<div class="mx">
-  <div class="sec-label rv">حقائق</div>
-  <h2 class="sec-title rv d1">MapRaiders — حقائق</h2>
-  <ul class="facts-list rv d2">
-    <li>MapRaiders تطبيق اجتماعي خارجي مجاني وبدون إعلانات لنظام Android.</li>
-    <li>يستحوذ المستخدمون على أراضٍ حقيقية بالمشي أو الجري أو ركوب الدراجات.</li>
-    <li>تتيح الأصداء ترك رسائل صوتية وصور ومقاطع فيديو في أماكن فعلية.</li>
-    <li>تظهر الفعاليات التلقائية فوريًا على خريطة حية.</li>
-    <li>متوفر بـ 13 لغة: الألمانية، الإنجليزية، الفرنسية، الإسبانية، الإيطالية، البرتغالية، التركية، الروسية، اليابانية، الكورية، الصينية، العربية، الهندية.</li>
-    <li>بدون خلاصة اجتماعية، بدون محتوى خوارزمي، بدون إعلانات.</li>
-    <li>تحدد ألعاب الدفاع (إكس-أو، حجر-ورقة-مقص، شطرنج مصغر) ملكية الأراضي.</li>
-    <li>تطور MapRaiders بواسطة Scafa Investments LLC في الولايات المتحدة.</li>
-  </ul>
-</div>
-</section>
+<!-- ============ PILLARS (full breakdown) ============ -->
+<section id="pillars" style="background:#EFEDE8;border-top:1px solid rgba(20,18,16,.07);border-bottom:1px solid rgba(20,18,16,.07)">
+  <div style="max-width:1200px;margin:0 auto;padding:clamp(80px,10vw,120px) 30px">
+    <div data-rv style="max-width:580px;margin-bottom:clamp(40px,5vw,56px);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:14px">كل الأنظمة</div>
+      <h2 style="font-size:clamp(28px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.06;margin-bottom:14px">كل ما في اللعبة</h2>
+      <p style="font-size:clamp(15px,1.4vw,17px);color:#756F6A;line-height:1.7">كل نظام هنا مُتحقَّق منه ومتاح في النسخة الحالية، لا وعد لن يجده أول مختبِر.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,316px),1fr));gap:clamp(16px,2vw,20px)">
 
-<section class="faq" id="faq">
-<div class="mx">
-  <div class="sec-label rv">الأسئلة الشائعة</div>
-  <h2 class="sec-title rv d1">الأسئلة الشائعة</h2>
-  <div class="faq-list">
-    <div class="faq-item rv d2">
-      <h3>ما هو MapRaiders؟</h3>
-      <p>MapRaiders تطبيق اجتماعي خارجي مجاني لنظام Android. يستحوذ اللاعبون على أراضٍ حقيقية بالمشي أو الجري أو ركوب الدراجات، ويتركون رسائل مرتبطة بالموقع تسمى الأصداء، ويلتقون بمستخدمين آخرين في فعاليات حية على الخريطة.</p>
+      <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:18px;padding:28px 26px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:44px;height:44px;border-radius:12px;background:rgba(21,88,240,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="2.2" height="18" rx="1.1" fill="#1558F0"/><path d="M7.2 4.2 L18 8 L7.2 11.8 Z" fill="#1558F0"/></svg></span>
+          <h4 style="font-size:18px;font-weight:800;letter-spacing:-.4px">الغزو والإمبراطورية</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1558F0;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">استحواذ على الأرض</strong> , رسم الحدود عبر تحديد الموقع</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1558F0;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">نظام التآكل</strong> , الأرض تتلاشى دون صيانة</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1558F0;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">مملكة متنامية</strong> , شارعاً بشارع نحو إمبراطورية</span></div>
+        </div>
+      </div>
+
+      <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:18px;padding:28px 26px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .06s,transform .7s cubic-bezier(.16,1,.3,1) .06s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:44px;height:44px;border-radius:12px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5"/></svg></span>
+          <h4 style="font-size:18px;font-weight:800;letter-spacing:-.4px">البناء والترقية</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">بوابة نقل</strong> , تنقل سريع عبر الخريطة</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">رادار</strong> , استطلاع أرض العدو</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">حامية ودرع</strong> , دفاع أكبر وحماية</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">منشآت الموارد</strong> , مصفاة، منشرة، مزرعة، صومعة</span></div>
+        </div>
+      </div>
+
+      <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:18px;padding:28px 26px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .12s,transform .7s cubic-bezier(.16,1,.3,1) .12s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:44px;height:44px;border-radius:12px;background:rgba(245,166,35,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#E0950A" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7"/><path d="M12 22V12M3 7l9 5 9-5"/></svg></span>
+          <h4 style="font-size:18px;font-weight:800;letter-spacing:-.4px">اقتصاد حيّ</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#F5A623;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">استخراج من البيئة</strong> , غابة، مدينة، ماء عبر بيانات OSM</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#F5A623;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">النقل واللوجستيات</strong> , ابنِ خطوط إمداد</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#F5A623;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">عملات متعددة</strong> , طاقة، تقنية وأكثر</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#F5A623;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">محطات</strong> , مراكز تجارة ولوجستيات</span></div>
+        </div>
+      </div>
+
+      <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:18px;padding:28px 26px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:44px;height:44px;border-radius:12px;background:rgba(75,123,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#3C6FE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+          <h4 style="font-size:18px;font-weight:800;letter-spacing:-.4px">الاستطلاع والتخفّي</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#4B7BFF;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">رادار التجسس</strong> , بدورة حياة، قط وفأر</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#4B7BFF;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">ضباب الحرب</strong> , 3 مستويات، الكشّافة يكشفونه</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#4B7BFF;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">مناطق صامتة وفخاخ</strong> , كمائن ومناطق هادئة</span></div>
+        </div>
+      </div>
+
+      <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:18px;padding:28px 26px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .06s,transform .7s cubic-bezier(.16,1,.3,1) .06s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:44px;height:44px;border-radius:12px;background:rgba(215,38,61,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#D7263D" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m7 17-4 4"/></svg></span>
+          <h4 style="font-size:18px;font-weight:800;letter-spacing:-.4px">القتال</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#D7263D;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">مبارزات</strong> , حلبة 1 ضد 1</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#D7263D;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">معارك ووحدات</strong> , نازِل على الأرض</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#D7263D;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">أعداء حاسوبيون / PvE</strong> , ظهور حسب البيئة مع غنائم</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#D7263D;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">غارات جوية واختراقات</strong> , خيارات هجوم تكتيكية</span></div>
+        </div>
+      </div>
+
+      <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-radius:18px;padding:28px 26px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .12s,transform .7s cubic-bezier(.16,1,.3,1) .12s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:44px;height:44px;border-radius:12px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <h4 style="font-size:18px;font-weight:800;letter-spacing:-.4px">الجانب الاجتماعي والتنافس</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">عشائر</strong> , تتشكّل عضوياً ويدوياً</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">لوحات صدارة وألقاب</strong> , ألقاب تُكتسب وترتيبات</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">فعاليات ومكافآت رؤوس</strong> , أهداف مستمرة ومكافآت</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">مهام وأصداء وقطع أثرية</strong> , اللاعبون يملؤون العالم</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">أصدقاء ولقاءات وأصداء</strong> , الخريطة تُظهر من كان أين</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px"><span style="width:6px;height:6px;border-radius:2px;background:#1B9E5A;flex-shrink:0;transform:translateY(5px)"></span><span style="font-size:13.5px;line-height:1.5;color:#756F6A"><strong style="color:#141210;font-weight:700">حيوانات أليفة وسباقات وطقس</strong> , عالم حيّ بعمق إضافي</span></div>
+        </div>
+      </div>
+
     </div>
-    <div class="faq-item rv d3">
-      <h3>كيف تعمل الأراضي في MapRaiders؟</h3>
-      <p>يستحوذ اللاعبون على مناطق بالمرور خلالها فعليًا. تظهر الأرض المستحوَذ عليها بلون اللاعب على خريطة حقيقية. يمكن للاعبين الآخرين تحديها عبر ألعاب الدفاع — إكس-أو، حجر-ورقة-مقص، أو شطرنج مصغر.</p>
-    </div>
-    <div class="faq-item rv d4">
-      <h3>ما هي الأصداء في MapRaiders؟</h3>
-      <p>الأصداء رسائل مرتبطة بالموقع — تسجيلات صوتية وصور ومقاطع فيديو — تُترك في أماكن حقيقية. يكتشفها المستخدمون الآخرون عند زيارة نفس المكان.</p>
-    </div>
-    <div class="faq-item rv d5">
-      <h3>هل MapRaiders مجاني؟</h3>
-      <p>نعم. MapRaiders مجاني تمامًا، بدون إعلانات وبدون تكاليف خفية. لا يتم تحقيق دخل من بيانات المستخدم أو الإعلانات.</p>
-    </div>
-    <div class="faq-item rv ">
-      <h3>على أي منصات يتوفر MapRaiders؟</h3>
-      <p>يتوفر MapRaiders حاليًا لنظام Android كتحميل APK من mapraiders.com. إصدار iOS قيد التطوير.</p>
-    </div>
-    <div class="faq-item rv ">
-      <h3>ما الفرق بينه وبين Pokémon GO؟</h3>
-      <p>على عكس Pokémon GO، لا يستخدم MapRaiders الواقع المعزز ولا يحتوي على كائنات افتراضية. يركّز على ملكية أراضٍ حقيقية، واستكشاف فعلي، ولقاءات حقيقية وجهًا لوجه بين اللاعبين. وهو أيضًا خالٍ تمامًا من الإعلانات.</p>
+
+    <!-- Anti-cheat highlight -->
+    <div data-rv style="display:flex;flex-wrap:wrap;align-items:center;gap:18px 26px;margin-top:clamp(20px,2.4vw,24px);background:#fff;border:1px solid rgba(20,18,16,.08);border-left:4px solid #1558F0;border-radius:18px;padding:clamp(26px,3.4vw,40px);box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <span style="width:54px;height:54px;border-radius:14px;background:rgba(21,88,240,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
+      <div style="flex:1 1 360px;min-width:280px">
+        <h3 style="font-size:clamp(19px,2.2vw,24px);font-weight:800;letter-spacing:-.5px;margin-bottom:7px">الحركة الحقيقية هي التي تُحتسب. لا المزيّفة.</h3>
+        <p style="font-size:14.5px;color:#756F6A;line-height:1.65;max-width:640px">يكشف نظام مكافحة الغش تزييف الموقع وحيل النقل الفوري. من يغش يخرج. عدلٌ لكل من يخرج فعلاً، منذ اليوم الأول.</p>
+      </div>
     </div>
   </div>
-</div>
+</section>
+<!-- ============ PRIVACY ============ -->
+<section id="privacy" style="max-width:1080px;margin:0 auto;padding:clamp(72px,9vw,110px) 30px">
+  <div data-rv style="max-width:600px;margin:0 auto clamp(36px,4vw,48px);text-align:center;opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:14px">الخصوصية</div>
+    <h2 style="font-size:clamp(28px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.06">لا يوجد وسيط بيانات<br>خلف MapRaiders.</h2>
+  </div>
+  <div data-rv style="display:flex;flex-wrap:wrap;border-radius:22px;overflow:hidden;box-shadow:0 26px 60px -30px rgba(20,18,16,.4);border:1px solid rgba(20,18,16,.08);opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+    <div style="flex:1 1 300px;min-width:260px;padding:clamp(34px,4vw,54px);background:#ECEAE4">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A39C96;margin-bottom:18px">تطبيقات موقع أخرى</div>
+      <div style="font-size:clamp(46px,7vw,78px);font-weight:900;letter-spacing:-3px;color:#C4BEB7;line-height:.9;margin-bottom:14px">سلعة</div>
+      <div style="font-size:16px;font-weight:700;color:#8A847F;margin-bottom:14px">موقعك</div>
+      <p style="font-size:14px;color:#8A847F;line-height:1.72;max-width:340px">يُجمع ويُحلَّل ويُباع لشبكات الإعلانات. تبتلعه شركات تتاجر بتحركاتك.</p>
+    </div>
+    <div style="flex:1 1 300px;min-width:260px;padding:clamp(34px,4vw,54px);background:#fff;position:relative">
+      <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#1558F0"></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:18px">MapRaiders</div>
+      <div style="font-size:clamp(46px,7vw,78px);font-weight:900;letter-spacing:-3px;color:#1558F0;line-height:.9;margin-bottom:14px">ملكك</div>
+      <div style="font-size:16px;font-weight:700;color:#141210;margin-bottom:14px">موقعك</div>
+      <p style="font-size:14px;color:#756F6A;line-height:1.72;max-width:340px">يُستخدم لأجل اللعبة، لا يُباع. بلا حزمة إعلانات، بلا ملف تتبّع. تبنيه SCAFA INVESTMENTS LLC، لا وسيط بيانات.</p>
+    </div>
+  </div>
+  <p data-rv style="text-align:center;margin-top:clamp(36px,4vw,56px);font-size:clamp(19px,2.6vw,29px);font-weight:700;line-height:1.4;letter-spacing:-.6px;color:#141210;max-width:760px;margin-left:auto;margin-right:auto;opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .1s,transform .7s cubic-bezier(.16,1,.3,1) .1s">موقعك ملك لك. <span style="color:#1558F0">لا يوجد وسيط بيانات خلف MapRaiders.</span></p>
 </section>
 
-<section class="cta">
-<div class="mx">
-  <div class="cta-grid rv">
-    <div>
-      <h2>مستعد للخروج<br>إلى الهواء الطلق؟</h2>
-      <p>مجاني. بلا إعلانات. بلا تكاليف خفية.<br>فقط أنت، الخريطة والناس الحقيقيون.</p>
+<!-- ============ STREIFZUG (coming soon teaser) ============ -->
+<section id="streifzug" style="position:relative;overflow:hidden;background:radial-gradient(120% 120% at 24% 18%,#1b2c57 0%,#0c1636 52%,#070d22 100%)">
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(150,180,250,.06) 0 1px,transparent 1px 44px),repeating-linear-gradient(90deg,rgba(150,180,250,.06) 0 1px,transparent 1px 44px);-webkit-mask-image:radial-gradient(circle at 26% 40%,#000,transparent 75%);mask-image:radial-gradient(circle at 26% 40%,#000,transparent 75%)"></div>
+  <div style="position:relative;max-width:1140px;margin:0 auto;padding:clamp(84px,11vw,136px) 30px;display:flex;flex-wrap:wrap;gap:52px 64px;align-items:center">
+    <div data-rv style="flex:1 1 320px;min-width:260px;display:flex;flex-direction:column;gap:13px;opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)">
+      <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.97);border-radius:16px;padding:14px 16px;box-shadow:0 20px 44px -18px rgba(0,0,0,.55);transform:rotate(-1.4deg)"><span style="width:34px;height:34px;border-radius:9px;background:#1558F0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="2.6"/></svg></span><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:3px"><span style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#1558F0">MapRaiders</span><span style="font-size:10px;color:#A39C96">الآن</span></div><div style="font-size:13.5px;font-weight:600;color:#141210;line-height:1.4">شيء يلمع على بعد 80 م أمامك.</div></div></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.97);border-radius:16px;padding:14px 16px;box-shadow:0 20px 44px -18px rgba(0,0,0,.55);transform:rotate(1deg);margin-left:18px"><span style="width:34px;height:34px;border-radius:9px;background:#F5A623;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg></span><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:3px"><span style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#1558F0">MapRaiders</span><span style="font-size:10px;color:#A39C96">الآن</span></div><div style="font-size:13.5px;font-weight:600;color:#141210;line-height:1.4">مرتزق عند حافة الغابة يريد الانضمام إليك.</div></div></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.97);border-radius:16px;padding:14px 16px;box-shadow:0 20px 44px -18px rgba(0,0,0,.55);transform:rotate(-.8deg)"><span style="width:34px;height:34px;border-radius:9px;background:#D7263D;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:3px"><span style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#1558F0">MapRaiders</span><span style="font-size:10px;color:#A39C96">الآن</span></div><div style="font-size:13.5px;font-weight:600;color:#141210;line-height:1.4">تدخل أرضاً معادية. حارس يوقفك.</div></div></div>
     </div>
-    <div class="cta-side">
-      <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" class="btn-p" style="font-size:14px;padding:16px 32px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        حمِّل مجاناً الآن
+    <div data-rv style="flex:1 1 380px;min-width:280px;opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1) .1s,transform .8s cubic-bezier(.16,1,.3,1) .1s">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFB23E;padding:6px 13px;border-radius:99px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);margin-bottom:18px">قريباً &middot; قيد التطوير</div>
+      <h2 style="font-size:clamp(26px,3.6vw,42px);font-weight:800;letter-spacing:-1.4px;line-height:1.06;margin-bottom:20px;color:#EDEFF6">وضع <span style="color:#FFB23E">Streifzug</span></h2>
+      <p style="font-size:16px;color:#9FB0D0;line-height:1.74;margin-bottom:15px;max-width:440px">يبقى التطبيق متيقّظاً في الخلفية. وبينما تمضي في يومك، تحدث أمور: كنز يلمع بجانب الطريق، مرتزق ينضم إليك، فرقة معادية توقفك. إشعار واحد، وتقرر في ثوانٍ.</p>
+      <p style="font-size:16px;color:#EDEFF6;font-weight:600;line-height:1.6;margin-bottom:26px;max-width:440px">في وضع الاستعداد، تأتيك اللعبة، أينما كنت.</p>
+      <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Streifzug%20Waitlist" style="display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;padding:14px 28px;border-radius:11px;background:#F5A623;color:#1a1205;box-shadow:0 10px 30px -8px rgba(245,166,35,.5);transition:transform .22s,box-shadow .22s" class="mh7"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM22 6l-10 7L2 6"/></svg>انضم إلى قائمة الانتظار للإطلاق</a>
+      <div style="font-size:12px;color:#7E8FB5;margin-top:13px">غير قابل للعب بعد، قيد التطوير النشط.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANIFESTO ============ -->
+<section id="mani" style="background:#EFEDE8;border-top:1px solid rgba(20,18,16,.07);border-bottom:1px solid rgba(20,18,16,.07)">
+  <div style="max-width:1100px;margin:0 auto;padding:clamp(84px,11vw,140px) 30px">
+    <div data-rv style="display:flex;flex-wrap:wrap;gap:32px 64px;opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)">
+      <div style="flex:0 0 auto;display:flex;flex-direction:column;gap:16px;padding-top:8px">
+        <div style="width:2px;height:56px;background:#1558F0;opacity:.5"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0">البيان</div>
+      </div>
+      <p style="flex:1 1 480px;min-width:300px;font-size:clamp(19px,2.5vw,30px);font-weight:700;line-height:1.55;letter-spacing:-.4px;color:#141210">نؤمن بأن <span style="color:#1558F0">العالم الحقيقي</span> هو أفضل رقعة. وأن <span style="color:#1558F0">الاستراتيجية</span> تشدّك أكثر من الجمع. وأن <span style="color:#1558F0">موقعك ملك لك</span>، لا لوسيط بيانات. <span style="color:#A39C96">وأن أعظم مغامرة تبدأ خارج بابك مباشرة.</span></p>
+    </div>
+  </div>
+</section>
+<!-- ============ REVIEWS ============ -->
+<section style="max-width:1180px;margin:0 auto;padding:clamp(80px,10vw,120px) 30px">
+  <div data-rv style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:22px;opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">من المؤسس</div>
+  <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-left:4px solid #1558F0;border-radius:18px;padding:clamp(30px,4vw,46px);box-shadow:0 4px 24px -14px rgba(20,18,16,.18);max-width:840px;opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .06s,transform .7s cubic-bezier(.16,1,.3,1) .06s">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="rgba(21,88,240,.14)" style="margin-bottom:8px"><path d="M9.5 8H6a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v3H5v-2H4v4h6v-7a2 2 0 0 0-.5-1.3zM20 8h-3.5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v3h-3v-2h-1v4h6v-7A2 2 0 0 0 20 8z"/></svg>
+    <p style="font-size:clamp(18px,2.1vw,23px);line-height:1.6;color:#141210;font-weight:500;margin-bottom:24px;letter-spacing:-.2px">بنيتُ MapRaiders لأن ألعاب تحديد الموقع إما تدفعك نحو محفظتك أو تتركك وحدك. هنا كل خطوة تُشكّل أرضاً حقيقية، تبني إمبراطورية، ولا يبيع أي وسيط بيانات مسارك.</p>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="width:46px;height:46px;border-radius:50%;background:#1558F0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;letter-spacing:.5px">RS</span>
+      <div><div style="font-size:15px;font-weight:700;color:#141210">Ren&eacute; Scafarti</div><div style="font-size:13px;color:#8A847F;margin-top:1px">المؤسس وصاحب الرؤية، MapRaiders</div></div>
+    </div>
+  </div>
+
+  <div data-rv style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin:clamp(48px,6vw,64px) 0 24px;opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">ما يقوله المختبرون</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(16px,2vw,22px)">
+    <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-top:3px solid #4B7BFF;border-radius:16px;padding:30px 28px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <span style="display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#1558F0;background:rgba(21,88,240,.07);border:1px solid rgba(21,88,240,.16);padding:4px 9px;border-radius:99px;margin-bottom:14px">من النسخة التجريبية المغلقة</span>
+      <div style="display:flex;gap:3px;margin-bottom:13px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg></div>
+      <p style="font-size:14.5px;color:#3a3633;line-height:1.66;margin-bottom:18px">أتنزّه بالكلب حول الحي على أي حال، والآن أستحوذ على حيّي وأنا أفعل ذلك وأحافظ عليه ضد الجيران. تنزّه الكلب صار حرب حدود.</p>
+      <div style="font-size:13.5px;font-weight:700;color:#141210">Ron C.</div><div style="font-size:12.5px;color:#8A847F">صاحب كلب، مختبِر</div>
+    </div>
+    <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-top:3px solid #D7263D;border-radius:16px;padding:30px 28px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .08s,transform .7s cubic-bezier(.16,1,.3,1) .08s">
+      <span style="display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#1558F0;background:rgba(21,88,240,.07);border:1px solid rgba(21,88,240,.16);padding:4px 9px;border-radius:99px;margin-bottom:14px">من النسخة التجريبية المغلقة</span>
+      <div style="display:flex;gap:3px;margin-bottom:13px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg></div>
+      <p style="font-size:14.5px;color:#3a3633;line-height:1.66;margin-bottom:18px">صرتُ أخطط مساراتي كأنها حملة عسكرية: أبني الرادار أولاً، ثم أهاجم جناح الخصم المكشوف. لا لعبة أخرى تجعل مدينتي بهذه الإثارة.</p>
+      <div style="font-size:13.5px;font-weight:700;color:#141210">Vivian N.</div><div style="font-size:12.5px;color:#8A847F">لاعبة شغوفة، مختبِرة</div>
+    </div>
+    <div data-rv style="background:#fff;border:1px solid rgba(20,18,16,.08);border-top:3px solid #1B9E5A;border-radius:16px;padding:30px 28px;box-shadow:0 3px 18px -10px rgba(20,18,16,.14);opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .16s,transform .7s cubic-bezier(.16,1,.3,1) .16s">
+      <span style="display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#1558F0;background:rgba(21,88,240,.07);border:1px solid rgba(21,88,240,.16);padding:4px 9px;border-radius:99px;margin-bottom:14px">من النسخة التجريبية المغلقة</span>
+      <div style="display:flex;gap:3px;margin-bottom:13px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#F5A623"><path d="M12 2l2.9 6.3 6.8.6-5.1 4.5 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.3 8.9l6.8-.6z"/></svg></div>
+      <p style="font-size:14.5px;color:#3a3633;line-height:1.66;margin-bottom:18px">كشف ضباب الحرب ورؤية أين يضعف الخصم أمر يسبّب الإدمان. ألعب MapRaiders كالشطرنج، إلا أن الرقعة هي مدينتي.</p>
+      <div style="font-size:13.5px;font-weight:700;color:#141210">Aljoscha P.</div><div style="font-size:12.5px;color:#8A847F">مستكشف حضري، مختبِر</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FACTS ============ -->
+<section id="facts" style="border-top:1px solid rgba(20,18,16,.07)">
+  <div style="max-width:1180px;margin:0 auto;padding:clamp(72px,9vw,110px) 30px">
+    <div data-rv style="opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:14px">حقائق</div>
+      <h2 style="font-size:clamp(26px,3.6vw,40px);font-weight:800;letter-spacing:-1.2px;margin-bottom:32px">MapRaiders في لمحة</h2>
+    </div>
+    <ul data-rv style="list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:13px;opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .08s,transform .7s cubic-bezier(.16,1,.3,1) .08s">
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">MapRaiders لعبة استراتيجية جماعية مجانية وخالية من الإعلانات لأندرويد.</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">تغزو أرضاً حقيقية عبر تحديد الموقع، والأرض غير المصانة تتآكل يومياً.</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">على أرضك تبني بوابات نقل ورادارات وحاميات ومنشآت موارد.</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">الاقتصاد قائم على البيئة: الغابة والمدينة والماء تعطي موارد مختلفة عبر OSM.</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">ضباب حرب بثلاثة مستويات، رادار تجسس، مناطق صامتة وفخاخ للعب التكتيكي.</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">قتال عبر مبارزات ومعارك بوحدات وأعداء حاسوبيين حسب البيئة (PvE وPvP).</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">يكشف نظام مكافحة الغش تزييف الموقع وحيل النقل الفوري، الحركة الحقيقية وحدها تُحتسب.</li>
+
+
+        <li style="padding:17px 20px;background:#fff;border:1px solid rgba(20,18,16,.07);border-left:3px solid #1558F0;border-radius:9px;font-size:14.5px;line-height:1.58;color:#2a2724">متاحة بـ 13 لغة. بلا وسيط بيانات، تبنيها Scafa Investments LLC (الولايات المتحدة).</li>
+
+    </ul>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" style="background:#EFEDE8;border-top:1px solid rgba(20,18,16,.07);border-bottom:1px solid rgba(20,18,16,.07)">
+  <div style="max-width:880px;margin:0 auto;padding:clamp(72px,9vw,110px) 30px">
+    <div data-rv style="opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1558F0;margin-bottom:14px">الأسئلة الشائعة</div>
+      <h2 style="font-size:clamp(26px,3.6vw,40px);font-weight:800;letter-spacing:-1.2px;margin-bottom:36px">أسئلة يتكرر طرحها</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">ما هي MapRaiders؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">لعبة استراتيجية جماعية مجانية وخالية من الإعلانات لأندرويد. تغزو أرضاً حقيقية عبر الحركة، تبني إمبراطورية، تستكشف خصومك وتنازل على الأرض.</p></div>
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .05s,transform .6s cubic-bezier(.16,1,.3,1) .05s"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">هل هي لعبة لياقة بدنية؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">لا. الحركة مجرد وسيلة الإدخال. MapRaiders لعبة استراتيجية: تغزو، تبني، تدير اقتصاداً، تستكشف وتنازل. الأمر يتعلق بالنفوذ والإمبراطورية، <strong style="color:#141210;font-weight:600">لا بالسعرات الحرارية</strong>.</p></div>
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .1s,transform .6s cubic-bezier(.16,1,.3,1) .1s"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">كيف تعمل الأراضي؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">تستحوذ على الأرض بعبورها فعلياً، سيراً على الأقدام أو بالدراجة أو أثناء تنزّه الكلب. الأرض غير المصانة تتآكل يومياً (<strong style="color:#141210;font-weight:600">التآكل</strong>)، فتبقى الخريطة متنازعاً عليها.</p></div>
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .12s,transform .6s cubic-bezier(.16,1,.3,1) .12s"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">ماذا يحدث لموقعي؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">يُستخدم لأجل اللعبة، لا يُباع. بلا حزمة إعلانات، بلا ملف تتبّع، بلا وسيط بيانات خلفه. تبني MapRaiders شركة Scafa Investments LLC.</p></div>
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .14s,transform .6s cubic-bezier(.16,1,.3,1) .14s"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">هل هي مجانية؟ وعلى أي منصة؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">مجانية بالكامل وخالية من الإعلانات، بلا تكاليف خفية. حالياً على أندرويد، والنسخة التجريبية متاحة. ونسخة iOS قيد التطوير.</p></div>
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .16s,transform .6s cubic-bezier(.16,1,.3,1) .16s"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">كيف تختلف عن Pokemon GO؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">بلا واقع معزّز وبلا وسيط بيانات في الخلفية. بل غزو حقيقي وبناء واقتصاد وقتال، إضافة إلى احترام موقعك.</p></div>
+      <div data-rv style="padding:24px 28px;background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;box-shadow:0 1px 3px rgba(20,18,16,.04);opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1) .18s,transform .6s cubic-bezier(.16,1,.3,1) .18s"><h3 style="font-size:17.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:9px">ما هو وضع Streifzug؟</h3><p style="font-size:14.5px;color:#756F6A;line-height:1.7">وضع قادم: يتفاعل التطبيق مع حركتك في الخلفية ويرسل إليك مواجهات عفوية عبر الإشعارات. <strong style="color:#141210;font-weight:600">قيد التطوير، غير قابل للعب بعد.</strong></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA (dark) ============ -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(125% 130% at 80% 18%,#1d2f5c 0%,#0c1636 50%,#070d22 100%)">
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(150,180,250,.06) 0 1px,transparent 1px 44px),repeating-linear-gradient(90deg,rgba(150,180,250,.06) 0 1px,transparent 1px 44px);-webkit-mask-image:radial-gradient(circle at 70% 50%,#000,transparent 80%);mask-image:radial-gradient(circle at 70% 50%,#000,transparent 80%)"></div>
+  <svg viewBox="0 0 300 240" style="position:absolute;left:-20px;bottom:-30px;width:340px;height:auto;opacity:.5"><polygon points="60,80 140,52 200,100 176,180 86,200 36,140" fill="rgba(21,88,240,.18)" stroke="rgba(92,139,255,.55)" stroke-width="2"/></svg>
+  <div style="position:absolute;left:96px;bottom:118px;transform-origin:bottom center;animation:mrFlag 3.6s ease-in-out infinite"><svg width="30" height="36" viewBox="0 0 26 30"><rect x="6" y="2" width="2.6" height="26" rx="1.3" fill="#EDEFF6"/><path d="M8.6 3.5 L21 8.5 L8.6 13.5 Z" fill="#F5A623"/></svg></div>
+  <div style="position:relative;max-width:1140px;margin:0 auto;padding:clamp(76px,9vw,120px) 30px;display:flex;flex-wrap:wrap;gap:36px 48px;align-items:center;justify-content:space-between">
+    <div data-rv style="opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)">
+      <h2 style="font-size:clamp(36px,5.6vw,66px);font-weight:900;letter-spacing:-2.6px;line-height:.98;color:#EDEFF6">هل أنت مستعد<br>للغزو؟</h2>
+      <p style="font-size:15px;color:#9FB0D0;margin-top:18px;line-height:1.62;max-width:390px">مجانية، خالية من الإعلانات، بلا وسيط بيانات. احصل على وصول النسخة التجريبية وكن غازياً من الساعة الأولى.</p>
+    </div>
+    <div data-rv style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1) .1s,transform .7s cubic-bezier(.16,1,.3,1) .1s">
+      <a href="mailto:info@scafa-investments.com?subject=MapRaiders%20Launch%20Notify" style="display:inline-flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;padding:17px 34px;border-radius:12px;background:#2E6BFF;color:#fff;box-shadow:0 10px 34px -8px rgba(46,107,255,.6);transition:transform .22s,box-shadow .22s" class="mh8">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        احصل على وصول النسخة التجريبية
       </a>
-      <div class="cta-note">Android APK &bull; iOS قريباً</div>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- PHASE-K-FOUNDER-REVIEWS -->
-<style>
-.fr-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(0,0,0,0.04);border:1px solid var(--border);padding:4px 10px;border-radius:99px;margin-bottom:14px}
-.fr-sec{padding:80px 0;border-top:1px solid var(--border);background:var(--bg-alt)}
-.fr-sec .mx{max-width:1180px;margin:0 auto;padding:0 28px}
-.fr-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
-.fr-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px;margin-bottom:32px;box-shadow:0 2px 12px rgba(20,18,16,.04)}
-.fr-card.founder{border-left:4px solid var(--accent)}
-.fr-quote{font-size:18px;line-height:1.65;color:var(--text);font-weight:500;margin-bottom:20px;font-style:italic}
-.fr-author{font-size:14px;font-weight:700;color:var(--text)}
-.fr-role{font-size:13px;color:var(--muted);margin-top:2px}
-.fr-stars{color:#F5A623;font-size:14px;letter-spacing:2px;margin-bottom:14px}
-.fr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px}
-.fr-grid .fr-card{margin-bottom:0}
-@media(max-width:640px){.fr-sec{padding:60px 0}.fr-card{padding:28px}}
-</style>
-<section class="fr-sec">
-  <div class="mx">
-    <div class="fr-label">من المؤسس</div>
-    <div class="fr-card founder">
-      <div class="fr-quote">بنيت MapRaiders لأن ألعاب GPS إما تجبرك على الدفع أو تتركك وحدك. هنا كل خطوة تصنع منطقة حقيقية — وكل خريطة تتحول إلى شبكة اجتماعية لمدينتك.</div>
-      <div class="fr-author">René Scafarti</div>
-      <div class="fr-role">المؤسس وصاحب الرؤية، MapRaiders</div>
-    </div>
-    <div class="fr-label" style="margin-top:48px">ماذا يقول مختبرو النسخة التجريبية</div>
-    <div class="fr-grid">
-      <div class="fr-card">
-        <div class="fr-pill">من النسخة التجريبية المغلقة</div>
-        <div class="fr-quote">كلبي يحب نزهته — وأنا أحب أن كل نزهة تجعل حيي أكثر ظهوراً على الخريطة. غزوت شارعي كله الآن.</div>
-        <div class="fr-author">Ron C.</div>
-        <div class="fr-role">صاحب كلب، مختبر تجريبي</div>
-      </div>
-      <div class="fr-card">
-        <div class="fr-pill">من النسخة التجريبية المغلقة</div>
-        <div class="fr-quote">أركض كل صباح أصلاً. مع MapRaiders كل مسار له هدف: الحفاظ على المنطقة أو استعادتها. حماسي للكارديو انفجر.</div>
-        <div class="fr-author">Vivian N.</div>
-        <div class="fr-role">عدّاءة، مختبرة تجريبية</div>
-      </div>
-      <div class="fr-card">
-        <div class="fr-pill">من النسخة التجريبية المغلقة</div>
-        <div class="fr-quote">ترك أصداء ورؤية من يجدها مثل لعبة بحث عن الكنز مفتوحة عبر المدينة كلها. أكتشف زوايا لم أرها من قبل.</div>
-        <div class="fr-author">Aljoscha P.</div>
-        <div class="fr-role">مستكشف مديني، مختبر تجريبي</div>
-      </div>
+      <span style="font-size:12px;color:#7E8FB5;letter-spacing:.2px">نسخة أندرويد التجريبية &middot; iOS قيد التطوير</span>
     </div>
   </div>
 </section>
 
-<!-- PHASE-0B-SHARING -->
-<style>.mr-share{margin:32px 0 16px 0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:16px 24px;background:rgba(0,0,0,.02);border-radius:10px}.mr-share__label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted,#666);margin-right:8px}.mr-share__btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface,#fff);border:1px solid var(--border,#e0e0e0);border-radius:99px;font-size:13px;font-weight:500;color:var(--text,#222);text-decoration:none;transition:all .15s ease}.mr-share__btn:hover{border-color:var(--accent,#000);transform:translateY(-1px)}.mr-share__icon{font-size:14px}</style>
-<div class="mr-share" aria-label="مشاركة"><span class="mr-share__label">مشاركة:</span><a class="mr-share__btn" href="https://www.snapchat.com/scan?attachmentUrl=https%3A%2F%2Fmapraiders.com%2Far%2F" target="_blank" rel="noopener noreferrer" aria-label="Snapchat"><span class="mr-share__icon">👻</span>Snapchat</a><a class="mr-share__btn" href="https://wa.me/?text=https%3A%2F%2Fmapraiders.com%2Far%2F" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><span class="mr-share__icon">💬</span>WhatsApp</a></div>
-<footer>
-<div class="mx">
-  <div class="f-i">
-    <div class="f-logo">MapRaiders</div>
-    <div class="f-links">
-      <a href="/agb.html">الشروط</a>
-      <a href="/datenschutz.html">الخصوصية</a>
-      <a href="/impressum.html">بيانات النشر</a>
-      <a href="/kontakt.html">تواصل معنا</a>
+<!-- ============ FOOTER ============ -->
+<footer style="background:#0a0f1f;color:#8090b0">
+  <div style="max-width:1180px;margin:0 auto;padding:46px 30px 36px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:18px">
+      <a href="#mr" style="display:flex;align-items:center;gap:10px">
+        <span style="width:26px;height:26px;border-radius:8px;background:#1558F0;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="2.6"/></svg></span>
+        <span style="font-size:13px;font-weight:800;letter-spacing:2.5px;color:#C7D2E8">MAP<span style="color:#5C8BFF">RAIDERS</span></span>
+      </a>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <a href="/agb.html" style="font-size:13px;color:#8090b0" class="mh9">الشروط</a>
+        <a href="/datenschutz.html" style="font-size:13px;color:#8090b0" class="mh10">الخصوصية</a>
+        <a href="/impressum.html" style="font-size:13px;color:#8090b0" class="mh11">بيانات الناشر</a>
+        <a href="/kontakt.html" style="font-size:13px;color:#8090b0" class="mh12">اتصل بنا</a>
+      </div>
     </div>
+    <div style="height:1px;background:rgba(150,170,210,.12);margin:26px 0"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:9px 18px;margin-bottom:22px">
+      <span style="font-size:12px;color:#5E6E92;margin-right:4px">اللغة:</span>
+      <span style="font-size:12px;color:#5C8BFF;font-weight:600">العربية</span>
+      <a href="/" style="font-size:12px;color:#8090b0" class="mh13">Deutsch</a>
+      <a href="/en/" style="font-size:12px;color:#8090b0" class="mh14">English</a>
+      <a href="/fr/" style="font-size:12px;color:#8090b0" class="mh15">Fran&ccedil;ais</a>
+      <a href="/es-mx/" style="font-size:12px;color:#8090b0" class="mh16">Espa&ntilde;ol</a>
+      <a href="/it/" style="font-size:12px;color:#8090b0" class="mh17">Italiano</a>
+      <a href="/pt-br/" style="font-size:12px;color:#8090b0" class="mh18">Portugu&ecirc;s</a>
+      <a href="/tr/" style="font-size:12px;color:#8090b0" class="mh19">T&uuml;rk&ccedil;e</a>
+      <a href="/ja/" style="font-size:12px;color:#8090b0" class="mh20">&#26085;&#26412;&#35486;</a>
+    </div>
+    <p style="font-size:12px;color:#5E6E92">&copy; 2026 MapRaiders، لعبة الاستراتيجية على الخريطة الحقيقية. &middot; مشروع من Scafa Investments LLC</p>
   </div>
-  <p class="f-copy">&copy; 2026 MapRaiders &mdash; اغزُ العالم. خطوةً بخطوة.</p>
-</div>
 </footer>
-
-<script>
-(function(){
-  const t=localStorage.getItem('mr-theme')||'light';
-  document.documentElement.dataset.theme=t;
-  document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';
-  document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';
-})();
-document.getElementById('thm').addEventListener('click',function(){
-  const h=document.documentElement;
-  const t=h.dataset.theme==='dark'?'light':'dark';
-  h.dataset.theme=t;
-  localStorage.setItem('mr-theme',t);
-  document.getElementById('ico-sun').style.display=t==='dark'?'none':'block';
-  document.getElementById('ico-moon').style.display=t==='dark'?'block':'none';
-});
-window.addEventListener('scroll',function(){
-  document.getElementById('nav').classList.toggle('scroll',scrollY>60);
-});
-const io=new IntersectionObserver(function(entries){
-  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
-},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
-const co=new IntersectionObserver(function(entries){
-  entries.forEach(function(e){
-    if(!e.isIntersecting)return;
-    const el=e.target,target=+el.dataset.c;
-    let cur=0;
-    const step=Math.max(1,Math.ceil(target/36));
-    const iv=setInterval(function(){cur+=step;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur.toLocaleString('ar-SA');},42);
-    co.unobserve(el);
-  });
-},{threshold:.5});
-document.querySelectorAll('[data-c]').forEach(function(el){co.observe(el);});
-(function(){
-  const wrap=document.getElementById('mapGrid');
-  const pin=document.getElementById('mapPin');
-  if(!wrap)return;
-  const sz=30;let cols,rows,cells=[];
-  function build(){
-    wrap.innerHTML='';cells=[];
-    cols=Math.ceil(wrap.offsetWidth/sz)+1;rows=Math.ceil(wrap.offsetHeight/sz)+1;
-    wrap.style.gridTemplateColumns='repeat('+cols+',1fr)';
-    for(let i=0;i<cols*rows;i++){const c=document.createElement('div');c.className='mc';wrap.appendChild(c);cells.push(c);}
-    const cx=Math.floor(cols*0.48);const cy=Math.floor(rows*0.5);
-    pin.style.left=(cx/cols*100)+'%';pin.style.top=(cy/rows*100)+'%';
-    animate(cx,cy);
-  }
-  function animate(cx,cy){
-    const territory=[];
-    for(let r=-3;r<=3;r++){for(let c=-4;c<=4;c++){if(Math.abs(r)+Math.abs(c)<6){const idx=(cy+r)*cols+(cx+c);if(idx>=0&&idx<cells.length)territory.push(idx);}}}
-    territory.forEach(function(idx,i){setTimeout(function(){if(cells[idx])cells[idx].classList.add('on');},i*40);});
-  }
-  build();
-  window.addEventListener('resize',build);
-})();
-(function(){
-  const mm=document.getElementById('minimap');
-  if(!mm)return;
-  const total=8*6;
-  for(let i=0;i<total;i++){const c=document.createElement('div');c.className='c';mm.appendChild(c);}
-  const claimed=[9,10,11,17,18,19,20,25,26,27,28,33,34,35];
-  claimed.forEach(function(i){if(mm.children[i])mm.children[i].classList.add('on');});
-})();
-(function(){
-  const tw=document.getElementById('tw');
-  if(!tw)return;
-  const msgs=["صدى عند الجسر القديم...","وجدت شيئاً هنا...","كنت هنا في الفجر."];
-  let mi=0,ci=0;
-  function type(){
-    if(ci<msgs[mi].length){tw.textContent+=msgs[mi][ci++];setTimeout(type,60);}
-    else{setTimeout(function(){tw.textContent='';ci=0;mi=(mi+1)%msgs.length;type();},2200);}
-  }
-  type();
-})();
-(function(){
-  const cd=document.getElementById('cd');
-  const ppl=document.getElementById('ppl');
-  if(!cd)return;
-  let s=27*60+59;
-  setInterval(function(){s=Math.max(0,s-1);const m=Math.floor(s/60),sec=s%60;cd.textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;},1000);
-  if(ppl){let p=23;setInterval(function(){if(Math.random()<.3){p+=Math.random()<.7?1:-1;p=Math.max(18,Math.min(40,p));ppl.textContent=p;}},3000);}
-})();
-</script>
+<!-- SECTIONS-END -->
+</div>
 </body>
 </html>
