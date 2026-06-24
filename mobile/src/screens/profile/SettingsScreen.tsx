@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { fx } from '../../services/fx';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAuthStore } from '../../store/authStore';
@@ -295,6 +296,14 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             S.profile.settings.hapticFeedbackSubtitle,
             settings.hapticFeedback,
             (val) => updateSetting('hapticFeedback', val),
+            theme.primary
+          )}
+          {renderToggleRow(
+            'volume-high-outline',
+            S.profile.settings.soundEffects,
+            S.profile.settings.soundEffectsSubtitle,
+            settings.soundEffects,
+            (val) => { updateSetting('soundEffects', val); if (val) fx.soft(); },
             theme.primary
           )}
           {settings.hapticFeedback && (

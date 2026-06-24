@@ -57,6 +57,8 @@ export const profile: typeof en = {
     languageGerman: 'Deutsch',
     hapticFeedback: 'Haptisches Feedback',
     hapticFeedbackSubtitle: 'Vibration bei Aktionen und Buttons',
+    soundEffects: 'Soundeffekte',
+    soundEffectsSubtitle: 'Töne bei Eroberung, Bau und Kampf',
     testHaptics: 'Haptik testen',
     territoryColor: 'Territorium-Farbe',
     territoryColorHint: 'Wähle die Farbe deiner Territorien auf der Karte',

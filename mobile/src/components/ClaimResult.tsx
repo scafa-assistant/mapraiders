@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
@@ -6,6 +6,9 @@ import { Theme, RADIUS, SPACING, FONT_SIZE } from '../utils/constants';
 import { strings as S, t } from '../i18n';
 import { formatArea, formatXP } from '../utils/formatters';
 import type { ClaimResult as ClaimResultType } from '../utils/types';
+import { fx } from '../services/fx';
+import { ParticleBurst } from './fx/ParticleBurst';
+import { useReducedMotion } from './fx/useReducedMotion';
 
 interface ClaimResultProps {
   /** The claim result data. */
@@ -33,8 +36,24 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
   const starBurst1 = useRef(new Animated.Value(0)).current;
   const starBurst2 = useRef(new Animated.Value(0)).current;
   const starBurst3 = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+  const reduced = useReducedMotion();
+  const [burst, setBurst] = useState(0);
 
   useEffect(() => {
+    // Juice: sound + haptic + particle/shake celebration on claim success.
+    fx.victory();
+    if (!reduced) {
+      setBurst(Date.now());
+      Animated.sequence([
+        Animated.delay(360),
+        Animated.timing(shakeAnim, { toValue: 1, duration: 55, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -1, duration: 55, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 0.6, duration: 45, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 0, duration: 45, useNativeDriver: true }),
+      ]).start();
+    }
+
     // Entrance animation sequence
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -97,7 +116,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
       <Animated.View
         style={[
           styles.card,
-          { transform: [{ scale: scaleAnim }] },
+          { transform: [{ scale: scaleAnim }, { translateX: shakeAnim.interpolate({ inputRange: [-1, 1], outputRange: [-7, 7] }) }] },
         ]}
       >
         {/* Celebration header */}
@@ -194,6 +213,7 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
           </TouchableOpacity>
         </View>
       </Animated.View>
+      <ParticleBurst fireKey={burst} />
     </Animated.View>
   );
 };

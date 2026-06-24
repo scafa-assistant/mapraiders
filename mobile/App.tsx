@@ -19,6 +19,7 @@ import {
 } from './src/services/notifications';
 import { userApi } from './src/services/api';
 import { useSettingsStore } from './src/store/settingsStore';
+import { fx } from './src/services/fx';
 import { useFeatureStore } from './src/store/featureStore';
 import { initLocale, onLanguageChange } from './src/i18n';
 
@@ -55,6 +56,7 @@ function AppContent() {
 
   // Initialize offline queue and network listener on mount
   useEffect(() => {
+    void fx.preload();
     offlineQueue.init().then(() => {
       // After loading persisted queue, set up auto-sync on reconnect
       networkCleanupRef.current = offlineQueue.setupNetworkListener();

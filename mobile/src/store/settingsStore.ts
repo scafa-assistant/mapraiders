@@ -20,6 +20,7 @@ function syncNativeColorScheme(darkMode: boolean): void {
 interface AppSettings {
   darkMapStyle: boolean;
   hapticFeedback: boolean;
+  soundEffects: boolean;
   pushNotifications: boolean;
   territoryAlerts: boolean;
   questNearby: boolean;
@@ -36,6 +37,7 @@ interface SettingsState {
 const DEFAULT_SETTINGS: AppSettings = {
   darkMapStyle: false,
   hapticFeedback: true,
+  soundEffects: true,
   pushNotifications: true,
   territoryAlerts: true,
   questNearby: true,
