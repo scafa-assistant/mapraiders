@@ -76,10 +76,10 @@ mobile/src/
 ```
 
 ## Key Design Documents (read these for game design context)
-- `Gridwalker_GDD.md` — Full Game Design Document
-- `Gridwalker_Mechanismus_Analyse.md` — Technical mechanics deep-dive
-- `Gridwalker_Marktanalyse.md` — Market analysis + 6 innovative ideas
-- `Kreuzanalyse_Mechaniken.md` — Interaction matrix, game loops, feedback cycles
+- `_docs/gdd/Gridwalker_GDD.md` — Full Game Design Document
+- `_docs/gdd/Gridwalker_Mechanismus_Analyse.md` — Technical mechanics deep-dive
+- `_docs/gdd/Gridwalker_Marktanalyse.md` — Market analysis + 6 innovative ideas
+- `_docs/gdd/Kreuzanalyse_Mechaniken.md` — Interaction matrix, game loops, feedback cycles
 
 ## Database
 - PostgreSQL 16 + PostGIS 3.4

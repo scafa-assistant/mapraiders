@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+@keyframes mrPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+@keyframes mrPing{0%{transform:translate(-50%,-50%) scale(.5);opacity:.7}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+@keyframes mrFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes mrFlag{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes mrUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes mrSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes mrScrim{from{opacity:0}to{opacity:1}}
+@keyframes mrDot{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes mrShake{0%,100%{transform:translate(0,0)}15%{transform:translate(-5px,3px)}30%{transform:translate(5px,-3px)}45%{transform:translate(-4px,-2px)}60%{transform:translate(4px,2px)}75%{transform:translate(-2px,1px)}}
+@keyframes mrParticle{0%{transform:translate(-50%,-50%) translate(0,0) scale(1);opacity:1}100%{transform:translate(-50%,-50%) translate(var(--mx),var(--my)) scale(.2) rotate(var(--mr));opacity:0}}
+@keyframes mrRingPop{0%{transform:translate(-50%,-50%) scale(.2);opacity:.9}100%{transform:translate(-50%,-50%) scale(3.2);opacity:0}}
+@keyframes mrPop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes mrBadge{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}30%{transform:translate(-50%,-50%) scale(1.15);opacity:1}80%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}
+@keyframes mrPlant{0%{transform:translateY(-26px) scale(.4);opacity:0}55%{transform:translateY(3px) scale(1.1);opacity:1}100%{transform:translateY(0) scale(1)}}
+@keyframes mrCount{0%{transform:scale(1)}40%{transform:scale(1.35);color:#1B9E5A}100%{transform:scale(1)}}
+@keyframes mrSpin{to{transform:rotate(360deg)}}
+@keyframes mrConstruct{0%{transform:scale(.3);opacity:0}55%{transform:scale(1.14);opacity:1}70%{box-shadow:0 0 0 7px rgba(27,158,90,.4)}100%{transform:scale(1);opacity:1;box-shadow:0 0 0 0 rgba(27,158,90,0)}}
+@keyframes mrDust{0%{transform:translate(-50%,0) scale(.4);opacity:.8}100%{transform:translate(-50%,-22px) scale(1.4);opacity:0}}
+@keyframes mrToastIn{0%{transform:translate(-50%,16px) scale(.8);opacity:0}25%{transform:translate(-50%,0) scale(1.06);opacity:1}80%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-6px) scale(.96);opacity:0}}
+@keyframes mrVS{0%{transform:scale(0) rotate(-25deg);opacity:0}60%{transform:scale(1.25) rotate(8deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes mrResultIn{0%{transform:scale(.5);opacity:0}55%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 50% 0%,#1b2440 0%,#0c1020 60%,#070a14 100%);padding:24px;font-family:'Outfit',sans-serif">
+  <!-- PHONE -->
+  <div style="position:relative;width:390px;height:844px;background:#0a0d16;border-radius:46px;padding:11px;box-shadow:0 50px 110px -30px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06)">
+    <div style="position:relative;width:100%;height:100%;background:#F6F4F1;border-radius:36px;overflow:hidden;display:flex;flex-direction:column">
+
+      <!-- status bar -->
+      <div style="position:absolute;top:0;left:0;right:0;height:46px;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:0 26px;pointer-events:none">
+        <span style="font-size:13px;font-weight:700;font-family:'Space Grotesk',monospace;color:{{ statusColor }}">9:41</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="{{ statusColor }}"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="1"/><rect x="9" y="2" width="3" height="10" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="{{ statusColor }}"><path d="M8 2.5c2.3 0 4.4.9 6 2.4l-1.4 1.5A6.6 6.6 0 0 0 8 5.6 6.6 6.6 0 0 0 3.4 6.4L2 4.9A8.6 8.6 0 0 1 8 2.5Z"/><path d="M8 7c1 0 1.9.4 2.6 1.1L8 10.8 5.4 8.1A3.7 3.7 0 0 1 8 7Z"/></svg>
+          <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="2.5" stroke="{{ statusColor }}" stroke-opacity=".5" stroke-width="1.2"/><rect x="2.5" y="2.5" width="15" height="7" rx="1.2" fill="{{ statusColor }}"/><rect x="22" y="4" width="1.6" height="4" rx=".8" fill="{{ statusColor }}" fill-opacity=".5"/></svg>
+        </div>
+      </div>
+
+      <!-- FX toggle -->
+      <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openSettings }}" title="Einstellungen" style="position:absolute;bottom:16px;left:14px;z-index:45;width:36px;height:36px;border:none;border-radius:12px;background:{{ fxBg }};backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px -8px rgba(8,14,40,.5);transition:transform .12s cubic-bezier(.2,.7,.3,1.4),background .2s" style-active="transform:scale(.9)">{{ fxIcon }}</button>
+      </sc-if>
+
+      <!-- SCREEN CONTENT -->
+      <div style="flex:1;position:relative;overflow:hidden;animation:{{ shakeAnim }}">
+
+        <!-- ONBOARDING -->
+        <sc-if value="{{ isOnboarding }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:radial-gradient(125% 115% at 50% 12%,#22325e 0%,#0c1636 55%,#070d22 100%);color:#EDEFF6">
+            <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(150,180,250,.06) 0 1px,transparent 1px 46px),repeating-linear-gradient(90deg,rgba(150,180,250,.06) 0 1px,transparent 1px 46px);-webkit-mask-image:radial-gradient(circle at 50% 36%,#000,transparent 78%);mask-image:radial-gradient(circle at 50% 36%,#000,transparent 78%)"></div>
+            <div key="{{ onbKey }}" style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 36px;animation:mrUp .5s ease both">
+              <div style="margin-bottom:34px">{{ onbArt }}</div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#FFB23E;margin-bottom:16px">{{ onbKicker }}</div>
+              <h1 style="font-size:30px;font-weight:900;letter-spacing:-1.2px;line-height:1.08;margin-bottom:16px;text-wrap:balance">{{ onbTitle }}</h1>
+              <p style="font-size:15.5px;line-height:1.62;color:#9FB0D0;max-width:300px;text-wrap:pretty">{{ onbBody }}</p>
+            </div>
+            <div style="position:relative;padding:0 30px 46px">
+              <div style="display:flex;justify-content:center;gap:7px;margin-bottom:26px">
+                <sc-for list="{{ onbDots }}" as="d" hint-placeholder-count="4"><span style="width:{{ d.w }};height:7px;border-radius:99px;background:{{ d.c }};transition:all .3s"></span></sc-for>
+              </div>
+              <button onClick="{{ onbNext }}" style="width:100%;height:54px;border:none;border-radius:15px;background:#2E6BFF;color:#fff;font-family:'Outfit';font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 14px 34px -10px rgba(46,107,255,.7);transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.96)">{{ onbCta }}</button>
+              <button onClick="{{ onbSkip }}" style="width:100%;height:38px;margin-top:6px;border:none;background:none;color:#7E8FB5;font-family:'Outfit';font-size:13.5px;font-weight:600;cursor:pointer">{{ onbSkipLabel }}</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- APP SCREENS -->
+        <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0">
+            <div data-screen-label="{{ tab }}" key="{{ tab }}" style="position:absolute;inset:0;animation:mrUp .32s ease both">
+              <!-- KARTE -->
+              <sc-if value="{{ isKarte }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column">
+                  <!-- map -->
+                  <div style="position:absolute;inset:0;background:#E7E3DB">
+                    <svg viewBox="0 0 390 760" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">
+                      <rect width="390" height="760" fill="#E9E5DD"/>
+                      <g opacity=".95" stroke="#fff" stroke-linecap="round" fill="none">
+                        <path d="M-20 150 Q120 120 220 180 T420 200" stroke-width="13"/>
+                        <path d="M120 -20 Q150 220 90 460 T140 800" stroke-width="13"/>
+                        <path d="M-20 470 Q160 440 280 500 T430 470" stroke-width="11"/>
+                        <path d="M250 -20 Q280 200 230 420 T300 800" stroke-width="11"/>
+                        <path d="M-20 300 Q140 280 250 320 T430 330" stroke-width="8"/>
+                      </g>
+                      <polygon points="40,210 118,180 168,250 150,360 60,386 22,300" fill="rgba(21,88,240,.22)" stroke="#1558F0" stroke-width="2.8" stroke-linejoin="round"/>
+                      <polygon points="236,150 330,138 360,210 320,266 240,240" fill="rgba(215,38,61,.18)" stroke="#D7263D" stroke-width="2.4" stroke-linejoin="round"/>
+                      <polygon points="250,430 348,430 372,520 300,560 244,500" fill="rgba(27,158,90,.16)" stroke="#1B9E5A" stroke-width="2.4" stroke-linejoin="round"/>
+                    </svg>
+                    <!-- fog overlay (recon layer) -->
+                    <sc-if value="{{ showFog }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;inset:0;background:radial-gradient(circle at 28% 38%,transparent 0%,transparent 20%,rgba(10,16,38,.55) 46%,rgba(10,16,38,.9) 72%);pointer-events:none"></div>
+                    </sc-if>
+                    <!-- own flag -->
+                    <div style="position:absolute;left:24%;top:36%;transform-origin:bottom center;animation:mrFlag 3.4s ease-in-out infinite"><svg width="26" height="32" viewBox="0 0 26 32"><rect x="6" y="3" width="2.6" height="27" rx="1.3" fill="#1C2440"/><path d="M8.6 4.5 L21 9.5 L8.6 14.5 Z" fill="#1558F0"/></svg></div>
+                    <!-- enemy flag -->
+                    <div style="position:absolute;left:74%;top:23%"><svg width="22" height="28" viewBox="0 0 26 32"><rect x="6" y="3" width="2.6" height="27" rx="1.3" fill="#1C2440"/><path d="M8.6 4.5 L21 9.5 L8.6 14.5 Z" fill="#D7263D"/></svg></div>
+                    <!-- encounter -->
+                    <div onClick="{{ openEncounter }}" style="position:absolute;left:64%;top:62%;transform:translate(-50%,-50%);cursor:pointer;width:0;height:0">
+                      <span style="position:absolute;left:50%;top:50%;width:54px;height:54px;border-radius:50%;background:rgba(245,166,35,.4);animation:mrPing 2.4s ease-out infinite"></span>
+                      <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:#F5A623;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(245,166,35,.5);border:2.5px solid #fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v6c0 5 8 9 8 9s8-4 8-9V7z"/></svg></span>
+                    </div>
+                    <!-- combat markers (combat layer) -->
+                    <sc-if value="{{ showCombat }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;left:62%;top:24%;transform:translate(-50%,-50%);width:0;height:0"><span style="position:absolute;left:50%;top:50%;width:46px;height:46px;border-radius:50%;background:rgba(215,38,61,.32);animation:mrPing 2s ease-out infinite"></span><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:#D7263D;display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 4px 12px rgba(215,38,61,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-4 4"/></svg></span></div>
+                    </sc-if>
+                  </div>
+
+                  <!-- CELEBRATION -->
+                  <sc-if value="{{ celebrate }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;inset:0;z-index:15;pointer-events:none;overflow:hidden">
+                      <div style="position:absolute;left:50%;top:46%">
+                        <span style="position:absolute;left:50%;top:50%;width:80px;height:80px;border-radius:50%;border:3px solid #1B9E5A;animation:mrRingPop .7s ease-out forwards"></span>
+                        <span style="position:absolute;left:50%;top:50%;width:80px;height:80px;border-radius:50%;border:2px solid #1558F0;animation:mrRingPop .9s ease-out .12s forwards"></span>
+                        <sc-for list="{{ particles }}" as="p" hint-placeholder-count="0"><span style="{{ p.style }}"></span></sc-for>
+                      </div>
+                      <div style="position:absolute;left:50%;top:38%;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.96);border:1px solid rgba(27,158,90,.3);border-radius:99px;padding:11px 20px;box-shadow:0 18px 40px -14px rgba(27,158,90,.5);animation:mrBadge 1.4s ease forwards;white-space:nowrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span style="font-size:16px;font-weight:900;color:#141210;letter-spacing:-.4px">{{ celebrateMsg }}</span>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- HUD top -->
+                  <div style="position:relative;z-index:10;padding:52px 16px 0">
+                    <div data-teach-anchor="hud" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid rgba(20,18,16,.06);border-radius:16px;padding:8px 10px;box-shadow:0 8px 24px -12px rgba(8,14,40,.3)">
+                      <span style="width:34px;height:34px;border-radius:10px;background:#1558F0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0">RS</span>
+                      <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:800;color:#141210;line-height:1.1">Eroberer</div><div style="font-size:10px;font-weight:600;color:#8A847F">Lvl 7 &middot; {{ rankTitle }}</div></div>
+                      <div style="display:flex;gap:5px">
+                        <span style="display:inline-flex;align-items:center;gap:4px;background:#FBF4E6;border-radius:8px;padding:5px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="#F5A623"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></svg><span key="{{ energyKey }}" style="font-size:11px;font-weight:800;color:#141210;font-family:'Space Grotesk';display:inline-block;animation:{{ energyAnim }}">{{ resEnergy }}</span></span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF3FE;border-radius:8px;padding:5px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7"/></svg><span style="font-size:11px;font-weight:800;color:#141210;font-family:'Space Grotesk'">{{ resTech }}</span></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Streifzug toggle -->
+                  <button onClick="{{ startStreifzug }}" style="position:absolute;top:104px;right:14px;z-index:12;display:flex;align-items:center;gap:7px;border:1px solid rgba(245,166,35,.3);cursor:pointer;font-family:'Outfit';background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-radius:99px;padding:8px 13px;box-shadow:0 8px 22px -10px rgba(8,14,40,.3);transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.95)">
+                    <span style="display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8860F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 12 7 7M12 7v5h5"/></svg></span>
+                    <span style="font-size:12px;font-weight:700;color:#56504B">{{ streifBtnLabel }}</span>
+                    <span style="font-size:8.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:#F5A623;border-radius:5px;padding:2px 5px">Beta</span>
+                  </button>
+
+                  <!-- Streifzug push -->
+                  <sc-if value="{{ streifPushActive }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;top:52px;left:12px;right:12px;z-index:52;background:rgba(255,255,255,.98);backdrop-filter:blur(14px);border:1px solid rgba(20,18,16,.08);border-radius:20px;padding:15px;box-shadow:0 24px 54px -18px rgba(8,14,40,.5);animation:mrUp .4s cubic-bezier(.16,1,.3,1) both">
+                      <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
+                        <span style="width:42px;height:42px;border-radius:12px;background:{{ streifIconBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ streifIcon }}</span>
+                        <div style="flex:1;min-width:0">
+                          <div style="display:flex;align-items:center;gap:6px"><span style="font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:{{ streifAccent }}">Streifzug</span><span style="width:5px;height:5px;border-radius:50%;background:#1B9E5A;animation:mrDot 1.4s infinite"></span><span style="font-size:10px;color:#A39C96">jetzt</span></div>
+                          <div style="font-size:14.5px;font-weight:800;color:#141210;letter-spacing:-.3px;line-height:1.15;margin-top:1px">{{ streifTitle }}</div>
+                        </div>
+                      </div>
+                      <p style="font-size:12.5px;color:#56504B;line-height:1.5;margin-bottom:13px">{{ streifBody }}</p>
+                      <div style="display:flex;gap:9px">
+                        <button onClick="{{ streifDismiss }}" style="flex:0 0 auto;border:1px solid rgba(20,18,16,.1);cursor:pointer;font-family:'Outfit';background:#fff;color:#56504B;border-radius:11px;padding:11px 16px;font-size:13.5px;font-weight:700;transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.96)">Ignorieren</button>
+                        <button onClick="{{ streifAccept }}" style="flex:1;border:none;cursor:pointer;font-family:'Outfit';background:{{ streifAccent }};color:#fff;border-radius:11px;padding:11px 16px;font-size:13.5px;font-weight:700;box-shadow:0 10px 24px -10px rgba(8,14,40,.4);transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.97)">{{ streifAcceptLabel }}</button>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- layer switch -->
+                  <div style="position:absolute;left:50%;bottom:118px;transform:translateX(-50%);z-index:10;display:flex;gap:3px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid rgba(20,18,16,.06);border-radius:13px;padding:4px;box-shadow:0 10px 28px -12px rgba(8,14,40,.34)">
+                    <sc-for list="{{ layers }}" as="l" hint-placeholder-count="3">
+                      <button onClick="{{ l.on }}" style="border:none;cursor:pointer;font-family:'Outfit';font-size:12px;font-weight:700;padding:8px 13px;border-radius:10px;background:{{ l.bg }};color:{{ l.fg }}">{{ l.label }}</button>
+                    </sc-for>
+                  </div>
+
+                  <!-- primary action -->
+                  <div style="position:absolute;left:16px;right:16px;bottom:64px;z-index:10">
+                    <button data-teach-anchor="claim" onClick="{{ claim }}" style="width:100%;height:54px;border:none;border-radius:15px;background:{{ claimBg }};color:#fff;font-family:'Outfit';font-size:15.5px;font-weight:700;cursor:pointer;box-shadow:0 14px 32px -10px {{ claimShadow }};display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .12s cubic-bezier(.2,.7,.3,1.4),background .3s" style-active="transform:scale(.95)">
+                      {{ claimIcon }}{{ claimLabel }}
+                    </button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <!-- IMPERIUM placeholder (filled stage 2) -->
+              <sc-if value="{{ isImperium }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;overflow-y:auto;background:#F6F4F1">
+                  <!-- command header -->
+                  <div style="position:relative;padding:54px 20px 22px;background:radial-gradient(125% 130% at 80% 0%,#22325e 0%,#0c1636 60%,#070d22 100%);color:#EDEFF6;overflow:hidden">
+                    <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(150,180,250,.06) 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,rgba(150,180,250,.06) 0 1px,transparent 1px 40px);-webkit-mask-image:radial-gradient(circle at 75% 20%,#000,transparent 80%)"></div>
+                    <div style="position:relative">
+                      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFB23E;margin-bottom:8px">Hauptquartier</div>
+                      <div style="font-size:24px;font-weight:900;letter-spacing:-.8px;margin-bottom:4px">Dein Imperium</div>
+                      <div style="font-size:13px;color:#9FB0D0">{{ builtCount }} Gebäude &middot; 3 Territorien &middot; Level 7</div>
+                    </div>
+                  </div>
+
+                  <!-- resources -->
+                  <div data-teach-anchor="res" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px 16px 6px">
+                    <div style="background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;padding:11px 8px;text-align:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="#F5A623" style="margin-bottom:4px"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></svg><div style="font-size:14px;font-weight:800;color:#141210;font-family:'Space Grotesk'">{{ resEnergy }}</div><div style="font-size:9px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.5px">Energie</div></div>
+                    <div style="background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;padding:11px 8px;text-align:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2" stroke-linejoin="round" style="margin-bottom:4px"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7"/></svg><div style="font-size:14px;font-weight:800;color:#141210;font-family:'Space Grotesk'">{{ resTech }}</div><div style="font-size:9px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.5px">Tech</div></div>
+                    <div style="background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;padding:11px 8px;text-align:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:4px"><path d="M12 22V8M12 8c0-3-2-6-7-6 0 4 2 6 7 6zM12 11c0-3 2-6 7-6 0 4-2 6-7 6z"/></svg><div style="font-size:14px;font-weight:800;color:#141210;font-family:'Space Grotesk'">340</div><div style="font-size:9px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.5px">Holz</div></div>
+                    <div style="background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:13px;padding:11px 8px;text-align:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:4px"><path d="M3 21h18M5 21V11l5 3V11l5 3V7l4 3v11"/></svg><div style="font-size:14px;font-weight:800;color:#141210;font-family:'Space Grotesk'">210</div><div style="font-size:9px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.5px">Stein</div></div>
+                  </div>
+
+                  <!-- base grid -->
+                  <div style="padding:14px 16px 6px;position:relative">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><span style="font-size:15px;font-weight:800;letter-spacing:-.3px;color:#141210">Deine Basis</span><span style="font-size:12px;font-weight:600;color:#8A847F">Tippe ein Feld zum Bauen</span></div>
+                    <sc-if value="{{ buildToast }}" hint-placeholder-val="{{ false }}">
+                      <div key="{{ buildToastKey }}" style="position:absolute;left:50%;top:46px;z-index:20;display:flex;align-items:center;gap:8px;background:#1B9E5A;color:#fff;border-radius:99px;padding:9px 16px;box-shadow:0 16px 34px -12px rgba(27,158,90,.7);animation:mrToastIn 1.5s ease forwards;white-space:nowrap;pointer-events:none">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span style="font-size:13.5px;font-weight:800;letter-spacing:-.2px">{{ buildToastName }} errichtet!</span>
+                      </div>
+                    </sc-if>
+                    <div data-teach-anchor="base" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                      <sc-for list="{{ baseCells }}" as="cell" hint-placeholder-count="6">
+                        <button key="{{ cell.key }}" onClick="{{ cell.on }}" style="border:{{ cell.border }};cursor:pointer;font-family:'Outfit';aspect-ratio:1;border-radius:16px;background:{{ cell.bg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:8px;transition:transform .12s cubic-bezier(.2,.7,.3,1.4);animation:{{ cell.anim }}" style-active="transform:scale(.93)">
+                          {{ cell.icon }}
+                          <span style="font-size:10.5px;font-weight:700;color:{{ cell.c }};text-align:center;line-height:1.15">{{ cell.name }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </div>
+
+                  <!-- actions -->
+                  <div style="padding:12px 16px 28px;display:flex;flex-direction:column;gap:10px">
+                    <button onClick="{{ openTroops }}" style="width:100%;border:none;cursor:pointer;font-family:'Outfit';background:#D7263D;color:#fff;border-radius:14px;padding:15px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 28px -12px rgba(215,38,61,.6)">
+                      <span style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-4 4"/></svg></span>
+                      <span style="flex:1;text-align:left"><span style="display:block;font-size:14.5px;font-weight:800">Truppen aufstellen</span><span style="display:block;font-size:11.5px;font-weight:500;opacity:.85">12 Einheiten bereit</span></span>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                    <button onClick="{{ openRecon }}" style="width:100%;border:1px solid rgba(20,18,16,.08);cursor:pointer;font-family:'Outfit';background:#fff;color:#141210;border-radius:14px;padding:15px;display:flex;align-items:center;gap:12px">
+                      <span style="width:36px;height:36px;border-radius:10px;background:rgba(245,166,35,.13);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C8860F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12 19 5M12 2a10 10 0 1 0 10 10M12 8a4 4 0 1 0 4 4"/></svg></span>
+                      <span style="flex:1;text-align:left"><span style="display:block;font-size:14.5px;font-weight:800">Aufklärung aktivieren</span><span style="display:block;font-size:11.5px;font-weight:500;color:#8A847F">Radar &middot; Nebel des Krieges</span></span>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A39C96" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </sc-if>
+              <!-- ERSTELLEN -->
+              <sc-if value="{{ isErstellen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;overflow-y:auto;background:#F6F4F1">
+                  <div style="padding:56px 20px 16px"><div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C8860F;margin-bottom:8px">Erstellen</div><h1 style="font-size:25px;font-weight:900;letter-spacing:-.8px;color:#141210;margin-bottom:5px">Fülle die Welt</h1><p style="font-size:13.5px;color:#8A847F;line-height:1.5">Hinterlasse etwas an einem echten Ort. Andere finden es, wenn sie vorbeikommen.</p></div>
+                  <div style="padding:8px 16px 28px;display:flex;flex-direction:column;gap:11px">
+                    <sc-for list="{{ createItems }}" as="c" hint-placeholder-count="4">
+                      <div style="background:#fff;border:1px solid rgba(20,18,16,.07);border-left:4px solid {{ c.c }};border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px -8px rgba(20,18,16,.14)">
+                        <span style="width:46px;height:46px;border-radius:13px;background:{{ c.bg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ c.icon }}</span>
+                        <div style="flex:1;min-width:0"><div style="font-size:15.5px;font-weight:800;color:#141210">{{ c.name }}</div><div style="font-size:12.5px;color:#8A847F;line-height:1.4">{{ c.desc }}</div></div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C4BEB7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <!-- SOZIAL -->
+              <sc-if value="{{ isSozial }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;overflow-y:auto;background:#F6F4F1">
+                  <!-- profile header -->
+                  <div style="padding:54px 20px 20px;background:#fff;border-bottom:1px solid rgba(20,18,16,.06)">
+                    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+                      <span style="width:58px;height:58px;border-radius:17px;background:#1558F0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:21px">RS</span>
+                      <div style="flex:1"><div style="font-size:19px;font-weight:800;color:#141210;letter-spacing:-.3px">René S.</div><div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#C8860F;background:rgba(245,166,35,.12);border-radius:99px;padding:3px 10px;margin-top:3px">Newcomer · Level 7</div></div>
+                    </div>
+                    <div style="display:flex;gap:8px">
+                      <div style="flex:1;text-align:center;background:#F6F4F1;border-radius:12px;padding:11px"><div style="font-size:18px;font-weight:900;color:#141210;font-family:'Space Grotesk'">3</div><div style="font-size:10px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.4px">Gebiete</div></div>
+                      <div style="flex:1;text-align:center;background:#F6F4F1;border-radius:12px;padding:11px"><div style="font-size:18px;font-weight:900;color:#141210;font-family:'Space Grotesk'">1,2</div><div style="font-size:10px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.4px">km² gesamt</div></div>
+                      <div style="flex:1;text-align:center;background:#F6F4F1;border-radius:12px;padding:11px"><div style="font-size:18px;font-weight:900;color:#141210;font-family:'Space Grotesk'">12</div><div style="font-size:10px;font-weight:600;color:#8A847F;text-transform:uppercase;letter-spacing:.4px">Streak</div></div>
+                    </div>
+                  </div>
+                  <!-- clan -->
+                  <div style="padding:18px 16px 6px"><div style="font-size:13px;font-weight:800;color:#141210;margin-bottom:10px;letter-spacing:-.2px">Dein Clan</div>
+                    <div style="background:linear-gradient(135deg,#1558F0,#1140b8);border-radius:18px;padding:18px;color:#fff;box-shadow:0 14px 30px -14px rgba(21,88,240,.6)">
+                      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><div style="flex:1"><div style="font-size:16px;font-weight:800">Nordstadt-Wölfe</div><div style="font-size:12px;opacity:.85">Rang 4 · 28 Mitglieder</div></div></div>
+                      <div style="display:flex;justify-content:space-between;font-size:12px;opacity:.9"><span>Bezirks-Kontrolle</span><span style="font-weight:800">62%</span></div>
+                      <div style="height:6px;border-radius:99px;background:rgba(255,255,255,.2);margin-top:6px;overflow:hidden"><div style="width:62%;height:100%;background:#FFB23E;border-radius:99px"></div></div>
+                    </div>
+                  </div>
+                  <!-- leaderboard -->
+                  <div style="padding:14px 16px 28px"><div style="font-size:13px;font-weight:800;color:#141210;margin-bottom:10px;letter-spacing:-.2px">Rangliste · dein Bezirk</div>
+                    <div style="background:#fff;border:1px solid rgba(20,18,16,.07);border-radius:16px;overflow:hidden">
+                      <sc-for list="{{ leaderboard }}" as="r" hint-placeholder-count="4">
+                        <div style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid rgba(20,18,16,.05);background:{{ r.bg }}">
+                          <span style="font-size:13px;font-weight:900;color:{{ r.rankColor }};width:20px;font-family:'Space Grotesk'">{{ r.rank }}</span>
+                          <span style="width:32px;height:32px;border-radius:9px;background:{{ r.av }};display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800">{{ r.in }}</span>
+                          <span style="flex:1;font-size:14px;font-weight:{{ r.weight }};color:#141210">{{ r.name }}</span>
+                          <span style="font-size:13px;font-weight:800;color:#8A847F;font-family:'Space Grotesk'">{{ r.km }} km²</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- BOTTOM SHEETS -->
+        <sc-if value="{{ sheetActive }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;z-index:50">
+            <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(8,11,22,.5);animation:mrScrim .25s ease both"></div>
+            <div key="{{ sheet }}" style="position:absolute;left:0;right:0;bottom:0;max-height:86%;overflow-y:auto;background:#fff;border-radius:26px 26px 0 0;box-shadow:0 -20px 60px -20px rgba(0,0,0,.45);animation:mrSheet .34s cubic-bezier(.16,1,.3,1) both">
+              <div style="position:sticky;top:0;background:#fff;padding:14px 0 6px;display:flex;justify-content:center;z-index:2"><span style="width:42px;height:5px;border-radius:99px;background:rgba(20,18,16,.14)"></span></div>
+              <div style="padding:6px 22px 30px">
+                <!-- BUILD -->
+                <sc-if value="{{ isBuildSheet }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1558F0;margin-bottom:6px">Bauen</div>
+                    <h2 style="font-size:22px;font-weight:800;letter-spacing:-.6px;color:#141210;margin-bottom:4px">Wähle ein Gebäude</h2>
+                    <p style="font-size:13.5px;color:#8A847F;line-height:1.5;margin-bottom:18px">Jedes Gebäude hat eine echte Funktion. Kosten werden von deiner Energie abgezogen.</p>
+                    <div style="display:flex;flex-direction:column;gap:9px">
+                      <sc-for list="{{ buildList }}" as="b" hint-placeholder-count="6">
+                        <button onClick="{{ b.on }}" style="border:1px solid rgba(20,18,16,.08);cursor:pointer;font-family:'Outfit';background:#fff;border-radius:14px;padding:13px;display:flex;align-items:center;gap:13px;text-align:left;transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.97)">
+                          <span style="width:42px;height:42px;border-radius:11px;background:{{ b.bg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ b.icon }}</span>
+                          <span style="flex:1;min-width:0"><span style="display:block;font-size:14.5px;font-weight:800;color:#141210">{{ b.name }}</span><span style="display:block;font-size:12px;color:#8A847F">{{ b.desc }}</span></span>
+                          <span style="font-size:13px;font-weight:800;color:{{ b.c }};font-family:'Space Grotesk';white-space:nowrap">{{ b.cost }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <!-- TROOPS -->
+                <sc-if value="{{ isTroopsSheet }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#D7263D;margin-bottom:6px">Kampf</div>
+                    <h2 style="font-size:22px;font-weight:800;letter-spacing:-.6px;color:#141210;margin-bottom:4px">Truppen aufstellen</h2>
+                    <p style="font-size:13.5px;color:#8A847F;line-height:1.5;margin-bottom:18px">Verteile deine 12 Einheiten auf Angriff und Verteidigung, dann greife ein Nachbargebiet an.</p>
+                    <div style="display:flex;gap:10px;margin-bottom:14px">
+                      <div style="flex:1;background:rgba(215,38,61,.06);border:1px solid rgba(215,38,61,.16);border-radius:15px;padding:14px;text-align:center"><div style="font-size:30px;font-weight:900;color:#D7263D;font-family:'Space Grotesk'">{{ atkCount }}</div><div style="font-size:11px;font-weight:700;color:#8A847F;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Angriff</div></div>
+                      <div style="flex:1;background:rgba(21,88,240,.06);border:1px solid rgba(21,88,240,.16);border-radius:15px;padding:14px;text-align:center"><div style="font-size:30px;font-weight:900;color:#1558F0;font-family:'Space Grotesk'">{{ defCount }}</div><div style="font-size:11px;font-weight:700;color:#8A847F;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Verteidigung</div></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D7263D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4"/></svg>
+                      <input type="range" min="1" max="11" value="{{ atkCount }}" onInput="{{ setAtk }}" style="flex:1;accent-color:#D7263D;height:5px;cursor:pointer">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <button onClick="{{ startBattle }}" style="width:100%;border:none;cursor:pointer;font-family:'Outfit';background:#D7263D;color:#fff;border-radius:14px;padding:15px;font-size:15px;font-weight:700;box-shadow:0 12px 28px -12px rgba(215,38,61,.6);transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.97)">Angriff starten</button>
+                  </div>
+                </sc-if>
+                <!-- SETTINGS -->
+                <sc-if value="{{ isSettingsSheet }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1558F0;margin-bottom:6px">Einstellungen</div>
+                    <h2 style="font-size:22px;font-weight:800;letter-spacing:-.6px;color:#141210;margin-bottom:18px">Effekte</h2>
+                    <button onClick="{{ toggleSound }}" style="width:100%;border:1px solid rgba(20,18,16,.08);cursor:pointer;font-family:'Outfit';background:#fff;border-radius:14px;padding:15px;display:flex;align-items:center;gap:13px;text-align:left;margin-bottom:10px">
+                      <span style="width:42px;height:42px;border-radius:11px;background:rgba(21,88,240,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1558F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></span>
+                      <span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:800;color:#141210">Sound</span><span style="display:block;font-size:12.5px;color:#8A847F">Sieges-Fanfaren, Bau- & Tipp-Sounds</span></span>
+                      <span style="{{ soundKnob }}"><span style="{{ soundDot }}"></span></span>
+                    </button>
+                    <button onClick="{{ toggleHaptic }}" style="width:100%;border:1px solid rgba(20,18,16,.08);cursor:pointer;font-family:'Outfit';background:#fff;border-radius:14px;padding:15px;display:flex;align-items:center;gap:13px;text-align:left">
+                      <span style="width:42px;height:42px;border-radius:11px;background:rgba(27,158,90,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1B9E5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 6h2"/></svg></span>
+                      <span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:800;color:#141210">Haptik</span><span style="display:block;font-size:12.5px;color:#8A847F">Vibration bei Aktionen & Erfolgen</span></span>
+                      <span style="{{ hapticKnob }}"><span style="{{ hapticDot }}"></span></span>
+                    </button>
+                    <p style="font-size:11.5px;color:#A39C96;line-height:1.5;margin-top:14px;text-align:center">Haptik ist nur auf Geräten mit Vibrationsmotor spürbar.</p>
+                  </div>
+                </sc-if>
+                <!-- RECON -->
+                <sc-if value="{{ isReconSheet }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#C8860F;margin-bottom:6px">Aufklärung</div>
+                    <h2 style="font-size:22px;font-weight:800;letter-spacing:-.6px;color:#141210;margin-bottom:4px">Radar aktiviert</h2>
+                    <p style="font-size:13.5px;color:#8A847F;line-height:1.5;margin-bottom:18px">Dein Radar deckt gegnerische Gebiete im Umkreis auf. Wechsle auf der Karte zur Ebene „Aufklärung“, um den Nebel des Krieges zu lüften.</p>
+                    <div style="display:flex;align-items:center;gap:13px;background:#FBF4E6;border-radius:15px;padding:15px;margin-bottom:18px">
+                      <span style="width:44px;height:44px;border-radius:12px;background:#F5A623;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                      <div><div style="font-size:14px;font-weight:800;color:#141210">2 Gegner entdeckt</div><div style="font-size:12px;color:#8A847F">Nächster: 300 m nordöstlich</div></div>
+                    </div>
+                    <button onClick="{{ closeSheet }}" style="width:100%;border:none;cursor:pointer;font-family:'Outfit';background:#1558F0;color:#fff;border-radius:14px;padding:15px;font-size:15px;font-weight:700">Auf Karte ansehen</button>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- BATTLE -->
+        <sc-if value="{{ battleActive }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;z-index:55;display:flex;flex-direction:column;background:radial-gradient(125% 120% at 50% 16%,#2a1f3e 0%,#160f26 50%,#0a0712 100%);color:#EDEFF6;animation:mrScrim .25s ease both">
+            <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(250,180,180,.05) 0 1px,transparent 1px 44px),repeating-linear-gradient(90deg,rgba(250,180,180,.05) 0 1px,transparent 1px 44px);-webkit-mask-image:radial-gradient(circle at 50% 40%,#000,transparent 80%)"></div>
+
+            <div style="position:relative;padding:64px 24px 0;text-align:center">
+              <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#FF6B7A;margin-bottom:8px">Schlacht</div>
+              <div style="font-size:23px;font-weight:900;letter-spacing:-.6px">Angriff auf Nordfeld</div>
+            </div>
+
+            <!-- armies -->
+            <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px">
+              <!-- attacker -->
+              <div style="flex:1;text-align:center">
+                <div style="width:62px;height:62px;margin:0 auto 10px;border-radius:18px;background:#1558F0;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px -10px rgba(21,88,240,.7)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-4 4"/></svg></div>
+                <div style="font-size:14px;font-weight:800">Du</div>
+                <div style="font-size:11.5px;color:#9C93B5;margin-bottom:14px">{{ atkCount }} Angriff</div>
+                <div style="display:flex;gap:8px;justify-content:center">
+                  <div style="width:48px;height:48px;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-size:24px;font-weight:700;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);animation:{{ diceAnim }}"><div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;width:30px;height:30px"><sc-for list="{{ ad1Cells }}" as="p" hint-placeholder-count="9"><span style="width:7px;height:7px;border-radius:50%;background:{{ p.bg }};align-self:center;justify-self:center"></span></sc-for></div></div>
+                  <div style="width:48px;height:48px;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);animation:{{ diceAnim }}"><div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;width:30px;height:30px"><sc-for list="{{ ad2Cells }}" as="p" hint-placeholder-count="9"><span style="width:7px;height:7px;border-radius:50%;background:{{ p.bg }};align-self:center;justify-self:center"></span></sc-for></div></div>
+                </div>
+              </div>
+              <!-- VS -->
+              <div style="font-family:'Space Grotesk';font-size:20px;font-weight:700;color:#FF6B7A;flex-shrink:0;animation:mrVS .5s cubic-bezier(.2,.7,.3,1.4) both">VS</div>
+              <!-- defender -->
+              <div style="flex:1;text-align:center">
+                <div style="width:62px;height:62px;margin:0 auto 10px;border-radius:18px;background:#D7263D;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px -10px rgba(215,38,61,.7)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div style="font-size:14px;font-weight:800">Nordstadt</div>
+                <div style="font-size:11.5px;color:#9C93B5;margin-bottom:14px">9 Verteidigung</div>
+                <div style="display:flex;gap:8px;justify-content:center">
+                  <div style="width:48px;height:48px;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-size:24px;font-weight:700;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);animation:{{ diceAnim }}"><div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;width:30px;height:30px"><sc-for list="{{ dd1Cells }}" as="p" hint-placeholder-count="9"><span style="width:7px;height:7px;border-radius:50%;background:{{ p.bg }};align-self:center;justify-self:center"></span></sc-for></div></div>
+                  <div style="width:48px;height:48px;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);animation:{{ diceAnim }}"><div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;width:30px;height:30px"><sc-for list="{{ dd2Cells }}" as="p" hint-placeholder-count="9"><span style="width:7px;height:7px;border-radius:50%;background:{{ p.bg }};align-self:center;justify-self:center"></span></sc-for></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- result -->
+            <div style="position:relative;padding:0 24px 46px;min-height:188px;display:flex;flex-direction:column;justify-content:flex-end">
+              <sc-if value="{{ battleResult }}" hint-placeholder-val="{{ false }}">
+                <div style="text-align:center">
+                  <div style="position:relative;display:inline-block;animation:mrResultIn .5s cubic-bezier(.2,.7,.3,1.4) both">
+                    <sc-if value="{{ battleWin }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;left:50%;top:50%;width:0;height:0"><sc-for list="{{ particles }}" as="p" hint-placeholder-count="0"><span style="{{ p.style }}"></span></sc-for></div>
+                    </sc-if>
+                    <div style="font-size:40px;font-weight:900;letter-spacing:-1.5px;color:{{ resultColor }};line-height:1">{{ resultText }}</div>
+                  </div>
+                  <div style="font-size:13.5px;color:#B9B0CC;margin:12px 0 22px">{{ resultSub }}</div>
+                  <button onClick="{{ closeBattle }}" style="width:100%;height:52px;border:none;border-radius:15px;background:{{ resultBtnBg }};color:#fff;font-family:'Outfit';font-size:15.5px;font-weight:700;cursor:pointer;transition:transform .12s cubic-bezier(.2,.7,.3,1.4)" style-active="transform:scale(.97)">Weiter</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ battleRolling }}" hint-placeholder-val="{{ true }}">
+                <div style="text-align:center;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9C93B5;animation:mrDot 1s infinite">Würfel rollen...</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- TEACH COACHMARK -->
+        <sc-if value="{{ teachActive }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;z-index:60;animation:mrScrim .25s ease both">
+            <div onClick="{{ teachSkip }}" style="position:absolute;inset:0;background:rgba(8,11,22,.74);backdrop-filter:blur(1px)"></div>
+            <div key="{{ teachKey }}" style="position:absolute;left:18px;right:18px;bottom:30px;background:#fff;border-radius:22px;padding:24px 22px 20px;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);animation:mrUp .34s ease both">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                <span style="width:42px;height:42px;border-radius:12px;background:{{ teachIconBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ teachIcon }}</span>
+                <div style="flex:1"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A39C96">{{ teachKicker }} &middot; {{ teachStepLabel }}</div><div style="font-size:17.5px;font-weight:800;letter-spacing:-.4px;color:#141210;line-height:1.15;margin-top:2px">{{ teachTitle }}</div></div>
+              </div>
+              <p style="font-size:14.5px;line-height:1.6;color:#56504B;margin-bottom:20px;text-wrap:pretty">{{ teachBody }}</p>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="flex:1;display:flex;gap:6px">
+                  <sc-for list="{{ teachDots }}" as="d" hint-placeholder-count="3"><span style="width:{{ d.w }};height:6px;border-radius:99px;background:{{ d.c }};transition:all .3s"></span></sc-for>
+                </div>
+                <button onClick="{{ teachSkip }}" style="border:none;background:none;color:#A39C96;font-family:'Outfit';font-size:13.5px;font-weight:600;cursor:pointer;padding:8px 6px">{{ teachSkipLabel }}</button>
+                <button onClick="{{ teachNext }}" style="border:none;cursor:pointer;font-family:'Outfit';font-size:14px;font-weight:700;color:#fff;background:#1558F0;border-radius:11px;padding:11px 20px">{{ teachNextLabel }}</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+        <div style="position:relative;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid rgba(20,18,16,.07);padding:9px 10px 22px;display:flex;justify-content:space-around;align-items:flex-end">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+            <button onClick="{{ n.on }}" style="border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 6px;flex:1">
+              <span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;color:{{ n.color }};transition:color .2s">{{ n.icon }}</span>
+              <span style="font-size:9.5px;font-weight:{{ n.weight }};color:{{ n.color }};letter-spacing:.2px">{{ n.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </div>
+    <!-- home indicator -->
+    <div style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:128px;height:5px;border-radius:99px;background:rgba(255,255,255,.35);z-index:50"></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'onboarding', onb: 0,
+    tab: 'karte', layer: 'territory',
+    claimed: false,
+    teach: null, teachStep: 0, seen: {},
+    celebrate: false, shaking: false, particles: [], energyPulse: 0, celebrateMsg: '+0,4 km\u00b2 erobert!',
+    atkTroops: 8, streifOn: false, streifPush: null,
+    justBuilt: null, buildPulse: 0, soundOn: true, hapticOn: true, battle: null,
+    res: { energy: '2,4k', tech: 180 },
+    sheet: null, built: ['Teleporter','Radar','Raffinerie'],
+  };
+
+  // ---------- icons ----------
+  ic(path, stroke, w) {
+    return React.createElement('svg', { width: w||22, height: w||22, viewBox:'0 0 24 24', fill:'none', stroke: stroke||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round' },
+      ...(Array.isArray(path)?path:[path]).map((d,i)=>React.createElement('path',{key:i,d})));
+  }
+  iconMap(c){ return React.createElement('svg',{width:23,height:23,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2.1,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z'}),React.createElement('path',{d:'M9 3v15M15 6v15'})); }
+  iconCastle(c){ return React.createElement('svg',{width:23,height:23,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2.1,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12M10 21v-4h4v4'})); }
+  iconPlus(c){ return React.createElement('svg',{width:24,height:24,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2.4,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M12 5v14M5 12h14'})); }
+  iconUsers(c){ return React.createElement('svg',{width:23,height:23,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2.1,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'}),React.createElement('circle',{cx:9,cy:7,r:4}),React.createElement('path',{d:'M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'})); }
+  iconFlag(c){ return React.createElement('svg',{width:20,height:20,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2.2,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7'})); }
+
+  // ---------- teach content ----------
+  TEACH = {
+    karte: { kicker:'Karte', iconBg:'rgba(21,88,240,.1)', steps:[
+      { t:'Das ist dein Spielbrett', b:'Die echte Karte um dich herum. Geh raus, bewege dich, und das Land unter deinen Füßen wird zu deinem Revier. Blaue Flächen gehören dir.' },
+      { t:'Erobere dein erstes Gebiet', b:'Tippe unten auf „Gebiet erobern“, sobald du in einem freien Feld stehst. Jeder Schritt zieht neue Grenzen.' },
+      { t:'Wechsle die Ebenen', b:'Mit dem Schalter unten siehst du Territorien, Aufklärung (Nebel des Krieges) oder Kampf. Erkunde, bevor du angreifst.' },
+    ]},
+    claim: { kicker:'Erobert', iconBg:'rgba(27,158,90,.12)', steps:[
+      { t:'Gebiet gesichert!', b:'Du hast 0,4 km² beansprucht. Aber Vorsicht: ungepflegtes Land verfällt täglich. Lauf regelmäßig deine Grenzen ab, um es zu halten.' },
+    ]},
+    encounter: { kicker:'Begegnung', iconBg:'rgba(245,166,35,.13)', steps:[
+      { t:'Ein Spä-Drohne ist aufgetaucht', b:'Gelbe Marker sind Begegnungen auf der echten Karte: NPC-Gegner, Funde oder Rekruten. Stelle dich dem Kampf oder zieh weiter.' },
+    ]},
+    imperium: { kicker:'Imperium', iconBg:'rgba(21,88,240,.1)', steps:[
+      { t:'Dein Hauptquartier', b:'Hier baust du dein Reich aus: Gebäude errichten, Ressourcen verwalten, Truppen aufstellen und Gegner aufklären. Alles an einem Ort.' },
+      { t:'Bauen kostet Ressourcen', b:'Energie und Tech sammelst du beim Erobern und durch Ressourcen-Gebäude, auch offline. Tippe ein freies Feld an, um zu bauen.' },
+      { t:'Truppen & Aufklärung', b:'Unten stellst du Truppen für Schlachten auf und aktivierst dein Radar, um gegnerische Gebiete sichtbar zu machen.' },
+    ]},
+    build: { kicker:'Bauen', iconBg:'rgba(27,158,90,.12)', steps:[
+      { t:'Wähle ein Gebäude', b:'Jedes Gebäude hat eine echte Funktion: Teleporter für Schnellreise, Radar zum Spähen, Garrison für Verteidigung, Raffinerie für Rohstoffe.' },
+    ]},
+    erstellen: { kicker:'Erstellen', iconBg:'rgba(245,166,35,.13)', steps:[
+      { t:'Fülle die Welt', b:'Hinterlasse Quests, Echos und Challenges an echten Orten. Andere Spieler finden sie, wenn sie vorbeikommen, du gestaltest die Karte mit.' },
+    ]},
+    sozial: { kicker:'Sozial', iconBg:'rgba(27,158,90,.12)', steps:[
+      { t:'Gemeinsam stärker', b:'Tritt einem Clan bei, klettere in der Rangliste, finde Freunde und jage Bounties. Bezirk gegen Bezirk, deine Stadt ist die Arena.' },
+    ]},
+  };
+
+  // ---------- audio / haptics ----------
+  ensureAudio(){ if(!this.state.soundOn) return null; try{ if(!this._ac) this._ac=new (window.AudioContext||window.webkitAudioContext)(); if(this._ac.state==='suspended') this._ac.resume(); return this._ac; }catch(e){ return null; } }
+  tone(ac,freq,t0,dur,type,peak){ const o=ac.createOscillator(),g=ac.createGain(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,t0); g.gain.setValueAtTime(0.0001,t0); g.gain.linearRampToValueAtTime(peak||0.18,t0+0.014); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur); o.connect(g); g.connect(this._mg); o.start(t0); o.stop(t0+dur+0.03); }
+  sfx(name){ const ac=this.ensureAudio(); if(!ac) return; if(!this._mg){ this._mg=ac.createGain(); this._mg.gain.value=0.5; this._mg.connect(ac.destination); } const n=ac.currentTime;
+    if(name==='tick'){ this.tone(ac,520,n,0.05,'square',0.06); }
+    else if(name==='soft'){ this.tone(ac,330,n,0.12,'sine',0.10); this.tone(ac,494,n+0.04,0.12,'sine',0.07); }
+    else if(name==='build'){ this.tone(ac,170,n,0.16,'square',0.20); this.tone(ac,85,n,0.24,'sine',0.16); this.tone(ac,760,n+0.02,0.05,'square',0.05); }
+    else if(name==='victory'){ const s=[[392,0,0.14],[392,0.13,0.14],[392,0.26,0.14],[523,0.44,0.5],[659,0.7,0.6]]; s.forEach(([f,t,d])=>{ this.tone(ac,f,n+t,d,'sawtooth',0.15); this.tone(ac,f*2,n+t,d,'square',0.035); }); }
+    else if(name==='defeat'){ [330,262,196].forEach((f,i)=>this.tone(ac,f,n+i*0.15,0.34,'sawtooth',0.14)); }
+    else if(name==='clash'){ this.tone(ac,140,n,0.12,'square',0.22); this.tone(ac,2200,n,0.04,'square',0.06); }
+    else if(name==='notify'){ this.tone(ac,660,n,0.12,'sine',0.13); this.tone(ac,880,n+0.1,0.18,'sine',0.12); }
+  }
+  pipCells(v,color){ const P={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}; const on=P[v]||[]; return Array.from({length:9}).map((_,i)=>({ k:i, bg: on.includes(i)?color:'transparent' })); }
+  setAtk(e){ const v=+e.target.value; if(v!==this.state.atkTroops){ this.sfx('tick'); this.haptic(6); } this.setState({ atkTroops:v }); }
+  makeParticles(){ const cols=['#1558F0','#D7263D','#1B9E5A','#F5A623','#5C8BFF','#FFB23E']; return Array.from({length:26}).map((_,i)=>{ const ang=(Math.PI*2*i)/26+(Math.random()-.5)*0.4, dist=70+Math.random()*120; return { id:i, mx:Math.cos(ang)*dist+'px', my:Math.sin(ang)*dist+'px', mr:(Math.random()*720-360)+'deg', c:cols[i%cols.length], s:(6+Math.random()*8), dur:(0.7+Math.random()*0.5), sq:Math.random()>.5 }; }); }
+  d6(){ return 1+Math.floor(Math.random()*6); }
+  startBattle(){
+    this.setState({ sheet:null, battle:{ phase:'rolling', ad1:1,ad2:1,dd1:1,dd2:1, win:null }, particles:[] });
+    this.sfx('soft'); this.haptic(12);
+    let ticks=0;
+    this._spin=setInterval(()=>{ this.setState(x=> x.battle?({ battle:{...x.battle, ad1:this.d6(),ad2:this.d6(),dd1:this.d6(),dd2:this.d6()} }):{}); this.sfx('tick'); if(++ticks>=9){ clearInterval(this._spin); this.resolveBattle(); } }, 115);
+  }
+  resolveBattle(){
+    const ad1=this.d6(),ad2=this.d6(),dd1=this.d6(),dd2=this.d6(); const win=(ad1+ad2+(this.state.atkTroops-6))>=(dd1+dd2);
+    this.sfx('clash'); this.haptic(30);
+    this.setState({ battle:{ phase:'result', ad1,ad2,dd1,dd2, win }, shaking:true });
+    setTimeout(()=>this.setState({ shaking:false }), 600);
+    setTimeout(()=>{ if(win){ this.sfx('victory'); this.haptic([0,40,45,95]); this.setState({ particles:this.makeParticles() }); } else { this.sfx('defeat'); this.haptic([0,130]); } }, 360);
+  }
+  closeBattle(){ if(this._spin) clearInterval(this._spin); this.setState({ battle:null, particles:[] }); }
+
+  ENCOUNTERS = [
+    { type:'treasure', kicker:'Fund', color:'#C8860F', bg:'rgba(245,166,35,.13)', accent:'#F5A623', title:'Etwas gl\u00e4nzt 80 m vor dir', body:'Ein verstecktes Depot am Wegrand. Sichere es dir, bevor es jemand anderes findet.', accept:'Einsammeln', d:'M13 2 4 14h7l-1 8 9-12h-7z' },
+    { type:'mercenary', kicker:'Begegnung', color:'#1558F0', bg:'rgba(21,88,240,.1)', accent:'#1558F0', title:'S\u00f6ldner am Wegrand', body:'Ein S\u00f6ldner will sich deiner Sache anschlie\u00dfen. Nimm ihn in deine Truppen auf.', accept:'Rekrutieren', d:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM19 8v6M22 11h-6' },
+    { type:'patrol', kicker:'Gefahr', color:'#D7263D', bg:'rgba(215,38,61,.1)', accent:'#D7263D', title:'Feindliche Patrouille', body:'Eine gegnerische Patrouille stellt dich. K\u00e4mpfe um deinen Vorteil oder zieh dich zur\u00fcck.', accept:'K\u00e4mpfen', d:'M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-4 4' },
+  ];
+  startStreifzug(){ if(this.state.streifOn||this.state.streifPush) return; this.setState({ streifOn:true }); this.sfx('soft'); this.haptic(10); this._streif=setTimeout(()=>this.spawnPush(),1400); }
+  spawnPush(){ const e=this.ENCOUNTERS[Math.floor(Math.random()*this.ENCOUNTERS.length)]; this.setState({ streifPush:e }); this.sfx('notify'); this.haptic([0,18,50,18]); }
+  streifDismiss(){ if(this._streif) clearTimeout(this._streif); this.sfx('tick'); this.haptic(8); this.setState({ streifPush:null, streifOn:false }); }
+  streifAccept(){ const e=this.state.streifPush; if(!e) return; this.setState({ streifPush:null, streifOn:false });
+    if(e.type==='patrol'){ setTimeout(()=>this.startBattle(),260); return; }
+    if(e.type==='treasure'){ this.setState({ res:{...this.state.res,energy:'3,1k'}, celebrate:true, celebrateMsg:'+250 \u26a1 erbeutet!', particles:this.makeParticles(), shaking:true, energyPulse:(this.state.energyPulse||0)+1 }); this.sfx('victory'); this.haptic([0,35,45,90]); }
+    else { this.setState({ atkTroops:Math.min(11,this.state.atkTroops+1), celebrate:true, celebrateMsg:'+1 Truppe rekrutiert!', particles:this.makeParticles() }); this.sfx('claim'); this.haptic(30); }
+    setTimeout(()=>this.setState({ shaking:false }),600); setTimeout(()=>this.setState({ celebrate:false }),1500);
+  }
+  haptic(p){ if(!this.state.hapticOn) return; try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} }
+  openSettings(){ this.sfx('soft'); this.haptic(10); this.setState({ sheet:'settings' }); }
+  toggleSound(){ const on=!this.state.soundOn; this.setState({ soundOn:on }); if(on) setTimeout(()=>this.sfx('soft'),0); }
+  toggleHaptic(){ const on=!this.state.hapticOn; this.setState({ hapticOn:on }); if(on){ try{ navigator.vibrate&&navigator.vibrate(22); }catch(e){} } }
+
+  startTeach(id){ if(this.state.seen[id]) return; this.setState({ teach:id, teachStep:0 }); }
+  teachNext(){ const s=this.TEACH[this.state.teach]; if(!s) return; this.sfx('tick'); this.haptic(8); if(this.state.teachStep < s.steps.length-1) this.setState(x=>({teachStep:x.teachStep+1})); else this.closeTeach(); }
+  closeTeach(){ this.setState(x=>({ seen:{...x.seen,[x.teach]:true}, teach:null, teachStep:0 })); }
+
+  finishOnb(){ this.setState({ screen:'app', tab:'karte' }); setTimeout(()=>this.startTeach('karte'),360); }
+  onbNext(){ this.sfx('tick'); this.haptic(8); if(this.state.onb<3) this.setState(x=>({onb:x.onb+1})); else this.finishOnb(); }
+  go(tab){ if(tab!==this.state.tab){ this.sfx('tick'); this.haptic(8); } this.setState({ tab, sheet:null }); setTimeout(()=>this.startTeach(tab),340); }
+  setLayer(l){ this.setState({ layer:l }); }
+  claim(){
+    if(this.state.claimed) return;
+    const cols=['#1558F0','#D7263D','#1B9E5A','#F5A623','#5C8BFF','#FFB23E'];
+    const parts=Array.from({length:26}).map((_,i)=>{
+      const ang=(Math.PI*2*i)/26 + (Math.random()-.5)*0.4;
+      const dist=70+Math.random()*120;
+      return { id:i, mx:Math.cos(ang)*dist+'px', my:Math.sin(ang)*dist+'px', mr:(Math.random()*720-360)+'deg',
+        c:cols[i%cols.length], s:(6+Math.random()*8), dur:(0.7+Math.random()*0.5), sq:Math.random()>.5 };
+    });
+    this.setState({ claimed:true, res:{energy:'2,8k',tech:180}, celebrate:true, celebrateMsg:'+0,4 km\u00b2 erobert!', shaking:true, particles:parts, energyPulse:(this.state.energyPulse||0)+1 });
+    this.sfx('victory'); this.haptic([0,35,45,90]);
+    setTimeout(()=>this.setState({ shaking:false }), 600);
+    setTimeout(()=>this.setState({ celebrate:false }), 1500);
+    setTimeout(()=>this.startTeach('claim'), 1250);
+  }
+  openEncounter(){ this.startTeach('encounter'); }
+  openSheet(s){ this.sfx('soft'); this.haptic(10); this.setState({ sheet:s }); if(s==='build') setTimeout(()=>this.startTeach('build'),300); }
+  closeSheet(){ this.setState({ sheet:null }); }
+  buildOne(name){
+    this.setState(x=>{
+      if(x.built.includes(name)) return { sheet:null };
+      return { built:[...x.built,name], sheet:null, justBuilt:name, buildPulse:(x.buildPulse||0)+1 };
+    });
+    setTimeout(()=>this.setState({ justBuilt:null }), 1500);
+    this.sfx('build'); this.haptic(28);
+  }
+
+  BUILDINGS = [
+    { name:'Teleporter', desc:'Schnellreise über die Karte', cost:120, c:'#1558F0', bg:'rgba(21,88,240,.1)', d:'M12 20V9M7.5 13.5 12 9l4.5 4.5' },
+    { name:'Radar', desc:'Gegner & Gebiete aufdecken', cost:90, c:'#C8860F', bg:'rgba(245,166,35,.13)', d:'M12 12 19 5M12 2a10 10 0 1 0 10 10M12 8a4 4 0 1 0 4 4' },
+    { name:'Garrison', desc:'Verteidigung deines Gebiets', cost:150, c:'#D7263D', bg:'rgba(215,38,61,.1)', d:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
+    { name:'Schild-Generator', desc:'Schützt vor Angriffen', cost:200, c:'#1558F0', bg:'rgba(21,88,240,.1)', d:'M12 22s7-3 7-9V6l-7-3-7 3v7c0 6 7 9 7 9zM9 12l2 2 4-4' },
+    { name:'Raffinerie', desc:'Fördert Energie, auch offline', cost:80, c:'#1B9E5A', bg:'rgba(27,158,90,.1)', d:'M3 21h18M5 21V11l5 3V11l5 3V7l4 3v11' },
+    { name:'Silo', desc:'Erweitert dein Lager', cost:60, c:'#1B9E5A', bg:'rgba(27,158,90,.1)', d:'M6 6v12c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 6c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5' },
+  ];
+
+  ONB = [
+    { kicker:'Willkommen', title:'Die Karte ist dein Spielbrett.', body:'MapRaiders verwandelt deine echte Stadt in ein Strategiespiel. Dein Spaziergang ist der Spielzug.', cta:'Los geht\u2019s' },
+    { kicker:'Erobern', title:'Beanspruche echtes Land.', body:'Bewege dich durch die Welt und ziehe Grenzen. Was du läufst, gehört dir, Straße für Straße.', cta:'Weiter' },
+    { kicker:'Aufbauen', title:'Baue ein Imperium.', body:'Errichte Gebäude, sammle Ressourcen, stelle Truppen auf und kläre Gegner auf. Tiefe Strategie auf echtem Grund.', cta:'Weiter' },
+    { kicker:'Privat', title:'Dein Standort gehört dir.', body:'Kein Datenkonzern, keine Werbung, kein Tracking-Profil. Nur du, die Karte und dein Reich.', cta:'Spiel starten' },
+  ];
+
+  onbArt(i){
+    const wrap=(c)=>React.createElement('div',{style:{width:96,height:96,borderRadius:28,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,.06)',border:'1px solid rgba(150,180,250,.18)'}},c);
+    if(i===0) return wrap(React.createElement('svg',{width:46,height:46,viewBox:'0 0 24 24',fill:'none',stroke:'#5C8BFF',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z'}),React.createElement('path',{d:'M9 3v15M15 6v15'})));
+    if(i===1) return wrap(React.createElement('svg',{width:46,height:46,viewBox:'0 0 24 24',fill:'none',stroke:'#5C8BFF',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7'})));
+    if(i===2) return wrap(React.createElement('svg',{width:46,height:46,viewBox:'0 0 24 24',fill:'none',stroke:'#5C8BFF',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M3 21h18M5 21V9l3 2V7l4-3 4 3v4l3-2v12M10 21v-4h4v4'})));
+    return wrap(React.createElement('svg',{width:46,height:46,viewBox:'0 0 24 24',fill:'none',stroke:'#5C8BFF',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'}),React.createElement('path',{d:'M9 12l2 2 4-4'})));
+  }
+
+  renderVals() {
+    const st = this.state;
+    const isApp = st.screen==='app';
+    const ob = this.ONB[st.onb];
+    // teach
+    const tdef = st.teach ? this.TEACH[st.teach] : null;
+    const tstep = tdef ? tdef.steps[st.teachStep] : null;
+    const teachIc = tdef ? React.createElement('svg',{width:21,height:21,viewBox:'0 0 24 24',fill:'none',stroke:'#1558F0',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M9.5 2 3 9l9 13 9-13-6.5-7zM9.5 2 12 9l2.5-7M3 9h18'})) : null;
+
+    const navColor = (t)=> st.tab===t ? '#1558F0' : '#A39C96';
+    const navIc = (t,fn)=> fn(navColor(t));
+
+    return {
+      statusColor: (isApp && (st.tab==='karte')) ? '#141210' : (isApp?'#141210':'#EDEFF6'),
+      isOnboarding: st.screen==='onboarding',
+      isApp,
+      openSettings: ()=>this.openSettings(),
+      fxIcon: React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'#fff',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('circle',{cx:12,cy:12,r:3}),React.createElement('path',{d:'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'})),
+      fxBg: 'rgba(21,88,240,.9)',
+      tab: st.tab,
+      isKarte: isApp && st.tab==='karte',
+      isImperium: isApp && st.tab==='imperium',
+      isErstellen: isApp && st.tab==='erstellen',
+      isSozial: isApp && st.tab==='sozial',
+
+      // onboarding
+      onbKey: 'onb'+st.onb,
+      onbArt: this.onbArt(st.onb),
+      onbKicker: ob.kicker, onbTitle: ob.title, onbBody: ob.body, onbCta: ob.cta,
+      onbNext: ()=>this.onbNext(), onbSkip: ()=>this.finishOnb(),
+      onbSkipLabel: st.onb<3 ? '\u00dcberspringen' : '',
+      onbDots: this.ONB.map((_,i)=>({ w: i===st.onb?'22px':'7px', c: i===st.onb?'#2E6BFF':'rgba(150,180,250,.3)' })),
+
+      // motion / juice
+      shakeAnim: st.shaking ? 'mrShake .55s ease' : 'none',
+      celebrate: st.celebrate,
+      energyKey: 'e'+st.energyPulse,
+      energyAnim: st.energyPulse>0 ? 'mrCount .6s ease' : 'none',
+      particles: st.particles.map(p=>({ id:p.id, c:p.c,
+        style:{ position:'absolute', left:'50%', top:'50%', width:p.s+'px', height:p.s+'px', background:p.c,
+          borderRadius:p.sq?'2px':'50%', '--mx':p.mx, '--my':p.my, '--mr':p.mr,
+          animation:'mrParticle '+p.dur+'s cubic-bezier(.2,.6,.3,1) forwards' } })),
+
+      // karte
+      rankTitle: st.claimed?'Claimer':'Newcomer',
+      resEnergy: st.res.energy, resTech: st.res.tech,
+      showFog: st.layer==='recon',
+      showCombat: st.layer==='combat',
+      openEncounter: ()=>this.openEncounter(),
+      layers: [
+        { label:'Territorien', key:'territory' },
+        { label:'Aufkl\u00e4rung', key:'recon' },
+        { label:'Kampf', key:'combat' },
+      ].map(l=>({ label:l.label, on:()=>this.setLayer(l.key), bg: st.layer===l.key?'#1558F0':'transparent', fg: st.layer===l.key?'#fff':'#56504B' })),
+      claim: ()=>this.claim(),
+      claimed: st.claimed,
+      claimLabel: st.claimed?'Gebiet gesichert \u00b7 +0,4 km\u00b2':'Gebiet erobern',
+      claimBg: st.claimed?'#1B9E5A':'#1558F0',
+      claimShadow: st.claimed?'rgba(27,158,90,.6)':'rgba(21,88,240,.6)',
+      claimIcon: st.claimed
+        ? React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'#fff',strokeWidth:2.6,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M20 6 9 17l-5-5'}))
+        : React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:'#fff',strokeWidth:2.2,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7'})),
+
+      // nav
+      navItems: [
+        { label:'Karte', t:'karte', icon:this.iconMap(navColor('karte')) },
+        { label:'Imperium', t:'imperium', icon:this.iconCastle(navColor('imperium')) },
+        { label:'Erstellen', t:'erstellen', icon:this.iconPlus(navColor('erstellen')) },
+        { label:'Sozial', t:'sozial', icon:this.iconUsers(navColor('sozial')) },
+      ].map(n=>({ label:n.label, icon:n.icon, color:navColor(n.t), weight: st.tab===n.t?'700':'600', on:()=>this.go(n.t) })),
+
+      // imperium
+      baseCells: this.BUILDINGS.filter(b=>st.built.includes(b.name)).map(b=>({ name:b.name, c:b.c, bg:b.bg, border:'1px solid rgba(20,18,16,.06)', on:()=>this.openSheet('build'),
+        key:'b-'+b.name, anim: (b.name===st.justBuilt) ? 'mrConstruct .6s cubic-bezier(.2,.7,.3,1.4) both' : 'none',
+        icon: React.createElement('svg',{width:24,height:24,viewBox:'0 0 24 24',fill:'none',stroke:b.c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:b.d})) }))
+        .concat([0,1,2].map(i=>({ name:'Bauplatz', c:'#A39C96', bg:'rgba(20,18,16,.03)', border:'1.5px dashed rgba(20,18,16,.18)', key:'e'+i, anim:'none',
+          icon: React.createElement('svg',{width:22,height:22,viewBox:'0 0 24 24',fill:'none',stroke:'#B8B2AB',strokeWidth:2,strokeLinecap:'round'},React.createElement('path',{d:'M12 5v14M5 12h14'})), on:()=>this.openSheet('build') }))),
+      buildToast: !!st.justBuilt,
+      buildToastName: st.justBuilt||'',
+      buildToastKey: 'bt'+st.buildPulse,
+      builtCount: st.built.length,
+      openBuild: ()=>this.openSheet('build'),
+      openTroops: ()=>this.openSheet('troops'),
+      openRecon: ()=>this.openSheet('recon'),
+
+      // sheets
+      sheet: st.sheet||'none',
+      sheetActive: !!st.sheet,
+      isBuildSheet: st.sheet==='build',
+      isTroopsSheet: st.sheet==='troops',
+      isReconSheet: st.sheet==='recon',
+      isSettingsSheet: st.sheet==='settings',
+      soundOn: st.soundOn, hapticOn: st.hapticOn,
+      soundKnob: { alignSelf:'center', width:'44px', height:'26px', borderRadius:'99px', background: st.soundOn?'#1B9E5A':'rgba(20,18,16,.18)', position:'relative', transition:'background .2s', flexShrink:0 },
+      soundDot: { position:'absolute', top:'3px', left: st.soundOn?'21px':'3px', width:'20px', height:'20px', borderRadius:'50%', background:'#fff', transition:'left .2s cubic-bezier(.2,.7,.3,1.4)', boxShadow:'0 2px 5px rgba(0,0,0,.25)' },
+      hapticKnob: { alignSelf:'center', width:'44px', height:'26px', borderRadius:'99px', background: st.hapticOn?'#1B9E5A':'rgba(20,18,16,.18)', position:'relative', transition:'background .2s', flexShrink:0 },
+      hapticDot: { position:'absolute', top:'3px', left: st.hapticOn?'21px':'3px', width:'20px', height:'20px', borderRadius:'50%', background:'#fff', transition:'left .2s cubic-bezier(.2,.7,.3,1.4)', boxShadow:'0 2px 5px rgba(0,0,0,.25)' },
+      toggleSound: ()=>this.toggleSound(),
+      toggleHaptic: ()=>this.toggleHaptic(),
+      closeSheet: ()=>this.closeSheet(),
+      buildList: this.BUILDINGS.map(b=>({ name:b.name, desc:b.desc, cost:b.cost+' \u26a1', c:b.c, bg:b.bg, owned:st.built.includes(b.name),
+        icon: React.createElement('svg',{width:22,height:22,viewBox:'0 0 24 24',fill:'none',stroke:b.c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:b.d})),
+        on:()=>this.buildOne(b.name) })),
+
+      // erstellen
+      createItems: [
+        { name:'Quest', desc:'Mehrstufiges Abenteuer an echten Orten', c:'#1558F0', bg:'rgba(21,88,240,.1)', d:'M12 2 2 7l10 5 10-5zM2 17l10 5 10-5M2 12l10 5 10-5' },
+        { name:'Echo', desc:'Audio, Foto oder Video an einem Ort', c:'#C8860F', bg:'rgba(245,166,35,.13)', d:'M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zM19 10v1a7 7 0 0 1-14 0v-1M12 18v3' },
+        { name:'Challenge', desc:'Fordere andere zu einem Wettkampf', c:'#D7263D', bg:'rgba(215,38,61,.1)', d:'M6 9H4a2 2 0 0 1-2-2V4h4M18 9h2a2 2 0 0 0 2-2V4h-4M6 4h12v5a6 6 0 0 1-12 0zM9 18h6M10 22h4M12 15v3' },
+        { name:'Meetup', desc:'Lade Spieler zu einem Treffen ein', c:'#1B9E5A', bg:'rgba(27,158,90,.1)', d:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87' },
+      ].map(c=>({ name:c.name, desc:c.desc, c:c.c, bg:c.bg, icon:React.createElement('svg',{width:22,height:22,viewBox:'0 0 24 24',fill:'none',stroke:c.c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},...c.d.split('M').filter(Boolean).map((seg,i)=>React.createElement('path',{key:i,d:'M'+seg}))) })),
+
+      // sozial
+      leaderboard: [
+        { rank:'1', name:'GhostRunner', in:'GR', av:'#D7263D', km:'4,8' },
+        { rank:'2', name:'Lina_K', in:'LK', av:'#1B9E5A', km:'3,1' },
+        { rank:'7', name:'René S. (du)', in:'RS', av:'#1558F0', km:'1,2', me:true },
+        { rank:'8', name:'urban_fox', in:'UF', av:'#C8860F', km:'1,0' },
+      ].map(r=>({ rank:r.rank, name:r.name, in:r.in, av:r.av, km:r.km, weight:r.me?'800':'600', bg:r.me?'rgba(21,88,240,.05)':'#fff', rankColor:r.rank==='1'?'#F5A623':'#A39C96' })),
+
+      // battle
+      startBattle: ()=>this.startBattle(),
+      closeBattle: ()=>this.closeBattle(),
+      battleActive: !!st.battle,
+      battleRolling: !!st.battle && st.battle.phase==='rolling',
+      battleResult: !!st.battle && st.battle.phase==='result',
+      battleWin: !!st.battle && st.battle.win,
+      battleLose: !!st.battle && st.battle.phase==='result' && !st.battle.win,
+      ad1: st.battle?st.battle.ad1:1, ad2: st.battle?st.battle.ad2:1,
+      dd1: st.battle?st.battle.dd1:1, dd2: st.battle?st.battle.dd2:1,
+      diceAnim: (st.battle && st.battle.phase==='rolling') ? 'mrShake .25s infinite' : 'none',
+      resultText: (st.battle && st.battle.win)?'Sieg!':'Niederlage',
+      resultSub: (st.battle && st.battle.win)?'Nordfeld erobert \u00b7 +0,6 km\u00b2':'Angriff abgewehrt \u00b7 Truppen neu sammeln',
+      resultColor: (st.battle && st.battle.win)?'#1B9E5A':'#D7263D',
+      resultBtnBg: (st.battle && st.battle.win)?'#1B9E5A':'#56504B',
+      atkCount: st.atkTroops, defCount: 12-st.atkTroops, setAtk:(e)=>this.setAtk(e),
+      ad1Cells: this.pipCells(st.battle?st.battle.ad1:1,'#1558F0'), ad2Cells: this.pipCells(st.battle?st.battle.ad2:1,'#1558F0'),
+      dd1Cells: this.pipCells(st.battle?st.battle.dd1:1,'#D7263D'), dd2Cells: this.pipCells(st.battle?st.battle.dd2:1,'#D7263D'),
+      celebrateMsg: st.celebrateMsg,
+
+      // streifzug
+      streifOn: st.streifOn,
+      streifBtnLabel: st.streifOn ? 'Streifzug l\u00e4uft\u2026' : 'Streifzug starten',
+      startStreifzug: ()=>this.startStreifzug(),
+      streifPushActive: !!st.streifPush,
+      streifKicker: st.streifPush?st.streifPush.kicker:'',
+      streifTitle: st.streifPush?st.streifPush.title:'',
+      streifBody: st.streifPush?st.streifPush.body:'',
+      streifAcceptLabel: st.streifPush?st.streifPush.accept:'',
+      streifAccent: st.streifPush?st.streifPush.accent:'#1558F0',
+      streifIconBg: st.streifPush?st.streifPush.bg:'rgba(21,88,240,.1)',
+      streifIcon: st.streifPush ? React.createElement('svg',{width:22,height:22,viewBox:'0 0 24 24',fill:'none',stroke:st.streifPush.accent,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},...st.streifPush.d.split(/(?=M)/).filter(Boolean).map((seg,i)=>React.createElement('path',{key:i,d:seg}))) : null,
+      streifAccept: ()=>this.streifAccept(),
+      streifDismiss: ()=>this.streifDismiss(),
+
+      // teach
+      teachActive: !!tdef,
+      teachKey: (st.teach||'')+st.teachStep,
+      teachKicker: tdef?tdef.kicker:'',
+      teachIconBg: tdef?tdef.iconBg:'rgba(21,88,240,.1)',
+      teachIcon: teachIc,
+      teachTitle: tstep?tstep.t:'',
+      teachBody: tstep?tstep.b:'',
+      teachStepLabel: tdef? (st.teachStep+1)+'/'+tdef.steps.length : '',
+      teachDots: tdef? tdef.steps.map((_,i)=>({ w:i===st.teachStep?'18px':'6px', c:i===st.teachStep?'#1558F0':'rgba(20,18,16,.12)' })) : [],
+      teachNext: ()=>this.teachNext(),
+      teachSkip: ()=>this.closeTeach(),
+      teachNextLabel: (tdef && st.teachStep===tdef.steps.length-1)?'Verstanden':'Weiter',
+      teachSkipLabel: (tdef && tdef.steps.length>1 && st.teachStep<tdef.steps.length-1)?'Skip':'',
+    };
+  }
+}
+</script>
+</body>
+</html>
