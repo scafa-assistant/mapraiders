@@ -104,6 +104,7 @@ export const map: typeof en = {
     upgradeDialogMsg: '"{name}" auf die nächste Stufe upgraden?',
     upgradeAction: 'Upgraden',
     buildFailedTitle: 'Bau fehlgeschlagen',
+    buildSuccessBanner: '{name} errichtet!',
     upgradeFailedTitle: 'Upgrade fehlgeschlagen',
     buildPickerTitle: 'Gebäude bauen',
     buildPickerBuildBtn: 'Bauen',

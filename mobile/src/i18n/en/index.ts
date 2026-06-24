@@ -10,6 +10,7 @@ import { travel } from './travel';
 import { components } from './components';
 import { nav } from './nav';
 import { system } from './system';
+import { commander } from './commander';
 
 export default {
   nav,
@@ -24,4 +25,5 @@ export default {
   leaderboard,
   travel,
   components,
+  commander,
 };

@@ -15,40 +15,48 @@ import { useCommanderStore } from '../../store/commanderStore';
 import { useAuthStore } from '../../store/authStore';
 import { COMMANDER_COLORS, prettifyDefinitionId } from '../../utils/commander';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { strings as S, t, plural } from '../../i18n';
+import { fx } from '../../services/fx';
+import { PipDie } from '../../components/fx/PipDie';
+import { ParticleBurst } from '../../components/fx/ParticleBurst';
+import { useReducedMotion } from '../../components/fx/useReducedMotion';
 import type {
   CommanderBattleRound,
   CommanderBattleEffect,
   CommanderAirstrikeBattleLog,
+  CommanderDiceBattleLog,
   AirstrikeResult,
 } from '../../services/api';
 
 const C = COMMANDER_COLORS;
 const ROUND_MS = 800;
+// Window at the start of each round during which the dice "roll" (shake + tick).
+const ROLL_MS = 420;
 
-// ─── Dice value pop-in cell ─────────────────────────────────────────────────────
+// ─── VS badge that pops in before the resolution ───────────────────────────────
 
-function DieValue({ value, color, animKey }: { value: number; color: string; animKey: number }) {
-  const scale = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+function VsBadge({ animKey }: { animKey: number }) {
+  const reduced = useReducedMotion();
+  const scale = useRef(new Animated.Value(reduced ? 1 : 0)).current;
 
   useEffect(() => {
-    scale.setValue(0.3);
-    opacity.setValue(0);
-    Animated.parallel([
-      Animated.spring(scale, { toValue: 1, friction: 5, tension: 120, useNativeDriver: true }),
-      Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }),
-    ]).start();
-  }, [animKey, scale, opacity]);
+    if (reduced) {
+      scale.setValue(1);
+      return;
+    }
+    scale.setValue(0);
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 4,
+      tension: 140,
+      useNativeDriver: true,
+    }).start();
+  }, [animKey, reduced, scale]);
 
   return (
-    <Animated.View
-      style={[
-        styles.die,
-        { borderColor: color, backgroundColor: `${color}1A`, transform: [{ scale }], opacity },
-      ]}
-    >
-      <Text style={[styles.dieText, { color }]}>{value}</Text>
-    </Animated.View>
+    <Animated.Text style={[styles.vs, { transform: [{ scale }] }]}>
+      {S.commander.battleReplay.vs}
+    </Animated.Text>
   );
 }
 
@@ -60,12 +68,14 @@ function SideColumn({
   round,
   side,
   animKey,
+  rolling,
 }: {
   label: string;
   color: string;
   round: CommanderBattleRound;
   side: 'atk' | 'def';
   animKey: number;
+  rolling: boolean;
 }) {
   const data = round[side];
   return (
@@ -76,21 +86,31 @@ function SideColumn({
       </Text>
       <View style={styles.diceRow}>
         {data.rolls.map((r, i) => (
-          <DieValue key={`${animKey}-${i}`} value={r} color={color} animKey={animKey} />
+          <PipDie
+            key={`${animKey}-${i}`}
+            value={r}
+            color={color}
+            animKey={animKey}
+            rolling={rolling}
+          />
         ))}
       </View>
       <View style={styles.modRow}>
         {data.bonus !== 0 ? (
           <View style={[styles.chip, { borderColor: color }]}>
             <Text style={[styles.chipText, { color }]}>
-              {data.bonus > 0 ? `+${data.bonus}` : data.bonus} bonus
+              {t(S.commander.battleReplay.bonus, {
+                value: data.bonus > 0 ? `+${data.bonus}` : data.bonus,
+              })}
             </Text>
           </View>
         ) : null}
         {data.modifier !== 0 ? (
           <View style={[styles.chip, { borderColor: color }]}>
             <Text style={[styles.chipText, { color }]}>
-              {data.modifier > 0 ? `+${data.modifier}` : data.modifier} mod
+              {t(S.commander.battleReplay.mod, {
+                value: data.modifier > 0 ? `+${data.modifier}` : data.modifier,
+              })}
             </Text>
           </View>
         ) : null}
@@ -101,26 +121,122 @@ function SideColumn({
 }
 
 function effectLabel(e: CommanderBattleEffect): string {
-  const who = e.side === 'atk' ? 'Attacker' : 'Defender';
+  const R = S.commander.battleReplay;
+  const who = e.side === 'atk' ? R.whoAttacker : R.whoDefender;
   if (e.effect === 'cancel_highest') {
-    return `${who}'s shield die cancels a ${e.cancelled ?? '?'}!`;
+    return t(R.shieldCancel, { who, value: e.cancelled ?? '?' });
   }
   return `${who}: ${prettifyDefinitionId(e.effect)}`;
+}
+
+// ─── Post-battle balance summary ───────────────────────────────────────────────
+
+function unitsLabel(n: number): string {
+  const R = S.commander.battleReplay;
+  return plural(n, R.summaryUnitsOne, R.summaryUnitsOther);
+}
+
+function SummaryRow({
+  label,
+  color,
+  start,
+  survivors,
+  losses,
+}: {
+  label: string;
+  color: string;
+  start: number;
+  survivors: number;
+  losses: number;
+}) {
+  const R = S.commander.battleReplay;
+  return (
+    <View style={styles.summaryRow}>
+      <Text style={[styles.summarySide, { color }]} numberOfLines={1}>
+        {label}
+      </Text>
+      <View style={styles.summaryCells}>
+        <View style={styles.summaryCell}>
+          <Text style={styles.summaryCellLabel}>{R.summaryStart}</Text>
+          <Text style={styles.summaryCellValue}>{start}</Text>
+        </View>
+        <View style={styles.summaryCell}>
+          <Text style={styles.summaryCellLabel}>{R.summarySurvivors}</Text>
+          <Text style={[styles.summaryCellValue, { color: C.own }]}>{survivors}</Text>
+        </View>
+        <View style={styles.summaryCell}>
+          <Text style={styles.summaryCellLabel}>{R.summaryLosses}</Text>
+          <Text style={[styles.summaryCellValue, { color: losses > 0 ? C.enemy : C.textSecondary }]}>
+            {losses}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Aggregates a short balance card purely from the existing dice-battle log.
+ * Survivors come from `log.survivors`, losses are derived as start minus
+ * survivors (never below 0). No invented numbers.
+ */
+function BattleSummaryCard({ log }: { log: CommanderDiceBattleLog }) {
+  const R = S.commander.battleReplay;
+  const atkStart = log.attacker_units_start ?? 0;
+  const defStart = log.defender_units_start ?? 0;
+  const atkSurv = log.survivors?.attacker?.length ?? 0;
+  const defSurv = log.survivors?.defender?.length ?? 0;
+  const atkLoss = Math.max(0, atkStart - atkSurv);
+  const defLoss = Math.max(0, defStart - defSurv);
+  const roundsFought = log.rounds?.length ?? 0;
+
+  return (
+    <View style={styles.summaryCard}>
+      <View style={styles.summaryHeader}>
+        <Ionicons name="bar-chart" size={16} color={C.accent} />
+        <Text style={styles.summaryTitle}>{R.summaryTitle}</Text>
+      </View>
+
+      <SummaryRow
+        label={R.summaryAttacker}
+        color={C.own}
+        start={atkStart}
+        survivors={atkSurv}
+        losses={atkLoss}
+      />
+      <View style={styles.summaryDivider} />
+      <SummaryRow
+        label={R.summaryDefender}
+        color={C.foreign}
+        start={defStart}
+        survivors={defSurv}
+        losses={defLoss}
+      />
+
+      <Text style={styles.summaryMeta}>
+        {plural(roundsFought, R.summaryRoundsOne, R.summaryRoundsOther)}
+        {atkLoss + defLoss > 0
+          ? ` · ${unitsLabel(atkLoss + defLoss)} ${R.summaryLosses.toLowerCase()}`
+          : ''}
+      </Text>
+    </View>
+  );
 }
 
 // ─── Airstrike result summary card ────────────────────────────────────────────
 
 function airstrikeResultLine(result: AirstrikeResult): string {
+  const R = S.commander.battleReplay;
   if ('shield_broken' in result && result.shield_broken) {
-    return 'Shield destroyed!';
+    return R.airstrikeShieldBroken;
   }
   if ('building_hit' in result) {
     const h = result.building_hit;
     return h.destroyed
-      ? `${h.type} destroyed!`
-      : `${h.type} hit — ${h.hp_after} HP remaining.`;
+      ? t(R.airstrikeBuildingDestroyed, { type: h.type })
+      : t(R.airstrikeBuildingHit, { type: h.type, hp: h.hp_after });
   }
-  return 'No targets — strike wasted.';
+  return R.airstrikeNoEffect;
 }
 
 function AirstrikeCard({
@@ -132,17 +248,30 @@ function AirstrikeCard({
   playerIsAttacker: boolean;
   onBack: () => void;
 }) {
+  const R = S.commander.battleReplay;
   const hit = 'shield_broken' in log.result || 'building_hit' in log.result;
   const playerWon = playerIsAttacker && hit;
   const resultLine = airstrikeResultLine(log.result);
+
+  // Resolution feedback for the airstrike (no dice replay).
+  const firedRef = useRef(false);
+  useEffect(() => {
+    if (firedRef.current) return;
+    firedRef.current = true;
+    fx.clash();
+    const id = setTimeout(() => (playerWon ? fx.victory() : fx.defeat()), 280);
+    return () => clearTimeout(id);
+  }, [playerWon]);
 
   return (
     <View style={styles.scroll}>
       {/* Airstrike banner */}
       <View style={styles.airstrikeHeader}>
         <Ionicons name="rocket" size={40} color={C.warning} />
-        <Text style={styles.airstrikeTitle}>Airstrike</Text>
-        <Text style={styles.airstrikeMeta}>Silo Tier {log.silo_tier} · {log.damage} damage</Text>
+        <Text style={styles.airstrikeTitle}>{R.airstrike}</Text>
+        <Text style={styles.airstrikeMeta}>
+          {t(R.airstrikeMeta, { tier: log.silo_tier, damage: log.damage })}
+        </Text>
       </View>
 
       {/* Result line */}
@@ -158,47 +287,92 @@ function AirstrikeCard({
       </View>
 
       {/* Victory-style banner */}
-      <View style={styles.finalWrap}>
-        <View
-          style={[
-            styles.finalBanner,
-            {
-              borderColor: playerWon ? C.own : C.enemy,
-              backgroundColor: playerWon ? `${C.own}1A` : `${C.enemy}1A`,
-            },
-          ]}
-        >
-          <Ionicons
-            name={playerWon ? 'trophy' : 'sad'}
-            size={40}
-            color={playerWon ? C.warning : C.enemy}
-          />
-          <Text style={[styles.finalText, { color: playerWon ? C.own : C.enemy }]}>
-            {playerWon ? 'VICTORY' : 'DEFEAT'}
-          </Text>
-        </View>
+      <ResultBanner playerWon={playerWon} onBack={onBack} />
+    </View>
+  );
+}
 
-        <TouchableOpacity style={styles.doneBtn} onPress={onBack} activeOpacity={0.8}>
-          <Text style={styles.doneBtnText}>Done</Text>
-        </TouchableOpacity>
-      </View>
+// ─── Result banner (springs in, particle burst on win) ─────────────────────────
+
+function ResultBanner({
+  playerWon,
+  onBack,
+  children,
+}: {
+  playerWon: boolean;
+  onBack: () => void;
+  children?: React.ReactNode;
+}) {
+  const R = S.commander.battleReplay;
+  const reduced = useReducedMotion();
+  const scale = useRef(new Animated.Value(reduced ? 1 : 0.6)).current;
+  const [burstKey, setBurstKey] = useState(0);
+
+  useEffect(() => {
+    if (reduced) {
+      scale.setValue(1);
+    } else {
+      scale.setValue(0.6);
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 5,
+        tension: 110,
+        useNativeDriver: true,
+      }).start();
+    }
+    if (playerWon) setBurstKey(Date.now());
+  }, [playerWon, reduced, scale]);
+
+  return (
+    <View style={styles.finalWrap}>
+      {playerWon ? <ParticleBurst fireKey={burstKey} /> : null}
+      <Animated.View
+        style={[
+          styles.finalBanner,
+          {
+            borderColor: playerWon ? C.own : C.enemy,
+            backgroundColor: playerWon ? `${C.own}1A` : `${C.enemy}1A`,
+            transform: [{ scale }],
+          },
+        ]}
+      >
+        <Ionicons
+          name={playerWon ? 'trophy' : 'sad'}
+          size={40}
+          color={playerWon ? C.warning : C.enemy}
+        />
+        <Text style={[styles.finalText, { color: playerWon ? C.own : C.enemy }]}>
+          {playerWon ? R.victory : R.defeat}
+        </Text>
+      </Animated.View>
+
+      {children}
+
+      <TouchableOpacity style={styles.doneBtn} onPress={onBack} activeOpacity={0.8}>
+        <Text style={styles.doneBtnText}>{R.done}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 export default function BattleReplayScreen({ navigation, route }: BattleReplayScreenProps) {
+  const R = S.commander.battleReplay;
   const { battleId } = route.params;
   const { battleDetail, battleDetailLoading, fetchBattle, clearBattleDetail } = useCommanderStore();
   const userId = useAuthStore((s) => s.user?.id);
 
   const [roundIndex, setRoundIndex] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [rolling, setRolling] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resultFiredRef = useRef(false);
 
   useEffect(() => {
     fetchBattle(battleId);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
       clearBattleDetail();
     };
   }, [battleId, fetchBattle, clearBattleDetail]);
@@ -244,8 +418,24 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
     };
   }, [battleDetail, roundIndex, finished, rounds.length, walkover, isAirstrike]);
 
+  // Per-round juice: dice roll (shake + tick) then a clash impact on resolution.
+  useEffect(() => {
+    if (!battleDetail || isAirstrike || walkover || rounds.length === 0 || finished) return;
+    setRolling(true);
+    if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
+    rollTimerRef.current = setTimeout(() => {
+      setRolling(false);
+      fx.clash();
+    }, ROLL_MS);
+    return () => {
+      if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
+    };
+  }, [battleDetail, roundIndex, isAirstrike, walkover, rounds.length, finished]);
+
   const handleSkip = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
+    if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
+    setRolling(false);
     if (rounds.length > 0) setRoundIndex(rounds.length - 1);
     setFinished(true);
   }, [rounds.length]);
@@ -257,6 +447,14 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
     winnerSide != null &&
     ((playerIsAttacker && winnerSide === 'attacker') ||
       (!playerIsAttacker && winnerSide === 'defender'));
+
+  // Fire the victory/defeat resolution sound + haptic once, after the last clash.
+  useEffect(() => {
+    if (!finished || isAirstrike || resultFiredRef.current || !battleDetail) return;
+    resultFiredRef.current = true;
+    const id = setTimeout(() => (playerWon ? fx.victory() : fx.defeat()), 260);
+    return () => clearTimeout(id);
+  }, [finished, isAirstrike, playerWon, battleDetail]);
 
   const currentRound = rounds[roundIndex];
 
@@ -272,11 +470,13 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Ionicons name={isAirstrike ? 'rocket' : 'flash'} size={18} color={C.accent} />
-          <Text style={styles.headerTitle}>{isAirstrike ? 'Airstrike Report' : 'Battle Replay'}</Text>
+          <Text style={styles.headerTitle}>
+            {isAirstrike ? R.titleAirstrike : R.titleBattle}
+          </Text>
         </View>
         {!finished && !walkover && !isAirstrike ? (
           <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
-            <Text style={styles.skipText}>Skip</Text>
+            <Text style={styles.skipText}>{R.skip}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.headerRight} />
@@ -302,16 +502,24 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
           {/* Force counts */}
           <View style={styles.forcesRow}>
             <View style={styles.forceBox}>
-              <Text style={[styles.forceLabel, { color: C.own }]}>ATTACKER</Text>
+              <Text style={[styles.forceLabel, { color: C.own }]}>{R.attacker}</Text>
               <Text style={styles.forceCount}>
-                {(diceBattleLog as { attacker_units_start?: number } | null)?.attacker_units_start ?? 0} units
+                {t(R.units, {
+                  count:
+                    (diceBattleLog as { attacker_units_start?: number } | null)
+                      ?.attacker_units_start ?? 0,
+                })}
               </Text>
             </View>
-            <Text style={styles.vs}>VS</Text>
+            <VsBadge animKey={battleDetail.id ? 1 : 0} />
             <View style={styles.forceBox}>
-              <Text style={[styles.forceLabel, { color: C.foreign }]}>DEFENDER</Text>
+              <Text style={[styles.forceLabel, { color: C.foreign }]}>{R.defender}</Text>
               <Text style={styles.forceCount}>
-                {(diceBattleLog as { defender_units_start?: number } | null)?.defender_units_start ?? 0} units
+                {t(R.units, {
+                  count:
+                    (diceBattleLog as { defender_units_start?: number } | null)
+                      ?.defender_units_start ?? 0,
+                })}
               </Text>
             </View>
           </View>
@@ -319,30 +527,32 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
           {walkover ? (
             <View style={styles.walkoverCard}>
               <Ionicons name="walk" size={36} color={C.warning} />
-              <Text style={styles.walkoverText}>Walkover — no defenders present.</Text>
+              <Text style={styles.walkoverText}>{R.walkover}</Text>
             </View>
           ) : currentRound ? (
             <>
               <Text style={styles.roundLabel}>
-                Round {currentRound.round} / {rounds.length}
+                {t(R.round, { current: currentRound.round, total: rounds.length })}
               </Text>
               <View style={styles.battleRow}>
                 <SideColumn
-                  label="ATK"
+                  label={R.atkShort}
                   color={C.own}
                   round={currentRound}
                   side="atk"
                   animKey={roundIndex}
+                  rolling={rolling}
                 />
                 <View style={styles.swords}>
                   <Ionicons name="flash" size={20} color={C.accent} />
                 </View>
                 <SideColumn
-                  label="DEF"
+                  label={R.defShort}
                   color={C.foreign}
                   round={currentRound}
                   side="def"
                   animKey={roundIndex}
+                  rolling={rolling}
                 />
               </View>
 
@@ -373,50 +583,36 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
                 <View style={styles.casualtyBanner}>
                   <Ionicons name="skull" size={14} color={C.enemy} />
                   <Text style={styles.casualtyText}>
-                    {currentRound.casualty.side === 'atk' ? 'Attacker' : 'Defender'} loses{' '}
-                    {prettifyDefinitionId(currentRound.casualty.definition_id)}
+                    {t(
+                      currentRound.casualty.side === 'atk'
+                        ? R.casualtyAttacker
+                        : R.casualtyDefender,
+                      { unit: prettifyDefinitionId(currentRound.casualty.definition_id) },
+                    )}
                   </Text>
                 </View>
               ) : null}
             </>
           ) : null}
 
-          {/* Final banner */}
+          {/* Final banner + balance summary */}
           {finished ? (
-            <View style={styles.finalWrap}>
-              <View
-                style={[
-                  styles.finalBanner,
-                  { borderColor: playerWon ? C.own : C.enemy, backgroundColor: playerWon ? `${C.own}1A` : `${C.enemy}1A` },
-                ]}
-              >
-                <Ionicons
-                  name={playerWon ? 'trophy' : 'sad'}
-                  size={40}
-                  color={playerWon ? C.warning : C.enemy}
-                />
-                <Text style={[styles.finalText, { color: playerWon ? C.own : C.enemy }]}>
-                  {playerWon ? 'VICTORY' : 'DEFEAT'}
-                </Text>
-              </View>
+            <>
+              <ResultBanner playerWon={playerWon} onBack={() => navigation.goBack()}>
+                {battleDetail.loot?.dice_drop ? (
+                  <View style={styles.lootRow}>
+                    <Ionicons name="dice" size={18} color={C.accent} />
+                    <Text style={styles.lootText}>
+                      {t(R.loot, { name: prettifyDefinitionId(battleDetail.loot.dice_drop) })}
+                    </Text>
+                  </View>
+                ) : null}
+              </ResultBanner>
 
-              {battleDetail.loot?.dice_drop ? (
-                <View style={styles.lootRow}>
-                  <Ionicons name="dice" size={18} color={C.accent} />
-                  <Text style={styles.lootText}>
-                    Loot: {prettifyDefinitionId(battleDetail.loot.dice_drop)}
-                  </Text>
-                </View>
+              {diceBattleLog && !walkover ? (
+                <BattleSummaryCard log={diceBattleLog as CommanderDiceBattleLog} />
               ) : null}
-
-              <TouchableOpacity
-                style={styles.doneBtn}
-                onPress={() => navigation.goBack()}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.doneBtnText}>Done</Text>
-              </TouchableOpacity>
-            </View>
+            </>
           ) : null}
         </ScrollView>
       )}
@@ -458,7 +654,7 @@ const styles = StyleSheet.create({
   forceBox: { flex: 1, alignItems: 'center' },
   forceLabel: { fontSize: FONT_SIZE.xs, fontWeight: '800', letterSpacing: 1.5 },
   forceCount: { fontSize: FONT_SIZE.sm, color: C.text, marginTop: 2 },
-  vs: { color: C.textSecondary, fontWeight: '800', fontSize: FONT_SIZE.sm, marginHorizontal: SPACING.sm },
+  vs: { color: C.textSecondary, fontWeight: '800', fontSize: FONT_SIZE.md, marginHorizontal: SPACING.sm },
 
   roundLabel: {
     textAlign: 'center',
@@ -482,15 +678,6 @@ const styles = StyleSheet.create({
   colLabel: { fontSize: FONT_SIZE.xs, fontWeight: '800', letterSpacing: 1.5 },
   unitName: { fontSize: FONT_SIZE.sm, color: C.text, fontWeight: '600', marginTop: 2, marginBottom: SPACING.sm },
   diceRow: { flexDirection: 'row', gap: SPACING.xs, flexWrap: 'wrap', justifyContent: 'center' },
-  die: {
-    width: 34,
-    height: 34,
-    borderRadius: RADIUS.sm,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dieText: { fontWeight: '800', fontSize: FONT_SIZE.md },
   modRow: { flexDirection: 'row', gap: SPACING.xs, marginTop: SPACING.sm, flexWrap: 'wrap', justifyContent: 'center' },
   chip: { borderWidth: 1, borderRadius: RADIUS.full, paddingHorizontal: 8, paddingVertical: 2 },
   chipText: { fontSize: FONT_SIZE.xs, fontWeight: '700' },
@@ -573,6 +760,37 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
   doneBtnText: { fontSize: FONT_SIZE.md, fontWeight: '700', color: C.accent, letterSpacing: 0.5 },
+
+  // Battle balance summary
+  summaryCard: {
+    marginTop: SPACING.xl,
+    backgroundColor: C.surface,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: SPACING.md,
+  },
+  summaryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
+  },
+  summaryTitle: { color: C.text, fontWeight: '800', fontSize: FONT_SIZE.sm, letterSpacing: 0.5 },
+  summaryRow: { gap: SPACING.xs },
+  summarySide: { fontSize: FONT_SIZE.sm, fontWeight: '800', letterSpacing: 1 },
+  summaryCells: { flexDirection: 'row', justifyContent: 'space-between' },
+  summaryCell: { flex: 1, alignItems: 'center' },
+  summaryCellLabel: { fontSize: FONT_SIZE.xs, color: C.textSecondary, marginBottom: 2 },
+  summaryCellValue: { fontSize: FONT_SIZE.lg, fontWeight: '900', color: C.text },
+  summaryDivider: { height: 1, backgroundColor: C.border, marginVertical: SPACING.sm },
+  summaryMeta: {
+    marginTop: SPACING.md,
+    textAlign: 'center',
+    color: C.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '600',
+  },
 
   // Airstrike summary card
   airstrikeHeader: {

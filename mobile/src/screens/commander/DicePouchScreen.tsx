@@ -14,6 +14,8 @@ import { useInventoryStore, ItemInstance } from '../../store/inventoryStore';
 import { useCommanderStore } from '../../store/commanderStore';
 import { COMMANDER_COLORS, rarityColor, prettifyDefinitionId } from '../../utils/commander';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
+import { strings as S } from '../../i18n';
+import { PressableScale } from '../../components/fx/PressableScale';
 
 const C = COMMANDER_COLORS;
 
@@ -61,15 +63,13 @@ export default function DicePouchScreen({ navigation }: DicePouchScreenProps) {
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Ionicons name="dice" size={18} color={C.accent} />
-          <Text style={styles.headerTitle}>Dice Pouch</Text>
+          <Text style={styles.headerTitle}>{S.commander.dicePouch.title}</Text>
         </View>
         <View style={styles.headerRight} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.subtitle}>
-          Equip a die to bias your battle rolls. Only one die is active at a time.
-        </Text>
+        <Text style={styles.subtitle}>{S.commander.dicePouch.subtitle}</Text>
 
         {error ? (
           <TouchableOpacity onPress={clearError}>
@@ -82,8 +82,8 @@ export default function DicePouchScreen({ navigation }: DicePouchScreenProps) {
         ) : dice.length === 0 ? (
           <View style={styles.empty}>
             <Ionicons name="dice-outline" size={40} color={C.textSecondary} />
-            <Text style={styles.emptyTitle}>No dice yet</Text>
-            <Text style={styles.emptyText}>Win battles to loot dice for your pouch.</Text>
+            <Text style={styles.emptyTitle}>{S.commander.dicePouch.emptyTitle}</Text>
+            <Text style={styles.emptyText}>{S.commander.dicePouch.emptyText}</Text>
           </View>
         ) : (
           dice.map((die) => {
@@ -107,21 +107,22 @@ export default function DicePouchScreen({ navigation }: DicePouchScreenProps) {
                 {equipped ? (
                   <View style={styles.equippedBadge}>
                     <Ionicons name="checkmark-circle" size={16} color={C.accent} />
-                    <Text style={styles.equippedText}>Equipped</Text>
+                    <Text style={styles.equippedText}>{S.commander.dicePouch.equipped}</Text>
                   </View>
                 ) : (
-                  <TouchableOpacity
+                  <PressableScale
                     style={styles.equipBtn}
                     onPress={() => handleEquip(die.id)}
                     disabled={equipping === die.id}
-                    activeOpacity={0.8}
+                    feedback="soft"
+                    accessibilityLabel={S.commander.dicePouch.equip}
                   >
                     {equipping === die.id ? (
                       <ActivityIndicator color={C.bg} size="small" />
                     ) : (
-                      <Text style={styles.equipBtnText}>Equip</Text>
+                      <Text style={styles.equipBtnText}>{S.commander.dicePouch.equip}</Text>
                     )}
-                  </TouchableOpacity>
+                  </PressableScale>
                 )}
               </View>
             );

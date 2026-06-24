@@ -102,6 +102,7 @@ export const map = {
     upgradeDialogMsg: 'Upgrade "{name}" to the next tier?',
     upgradeAction: 'Upgrade',
     buildFailedTitle: 'Build failed',
+    buildSuccessBanner: '{name} built!',
     upgradeFailedTitle: 'Upgrade failed',
     buildPickerTitle: 'Build Structure',
     buildPickerBuildBtn: 'Build',

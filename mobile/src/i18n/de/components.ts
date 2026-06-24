@@ -65,4 +65,13 @@ export const components: typeof en = {
     distance: 'Distanz',
     duration: 'Dauer',
   },
+  streifzugCard: {
+    betaBadge: 'IN ENTWICKLUNG',
+    distanceAway: '{distance} m entfernt',
+    engageLoot: 'Einsammeln',
+    engageRecruit: 'Rekrutieren',
+    engageThreat: 'Stellen',
+    engageDefault: 'Hingehen',
+    dismiss: 'Später',
+  },
 };

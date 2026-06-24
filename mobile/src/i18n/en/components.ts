@@ -63,4 +63,14 @@ export const components = {
     distance: 'Distance',
     duration: 'Duration',
   },
+  streifzugCard: {
+    // Streifzug stays flagged as "in development" — this teaser badge keeps that framing.
+    betaBadge: 'IN DEVELOPMENT',
+    distanceAway: '{distance} m away',
+    engageLoot: 'Collect',
+    engageRecruit: 'Recruit',
+    engageThreat: 'Confront',
+    engageDefault: 'Head over',
+    dismiss: 'Later',
+  },
 };

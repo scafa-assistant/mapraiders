@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BuildingType } from '../services/api';
 import type { ResourceBalances } from '../store/resourceStore';
 import { strings as S } from '../i18n';
+import { fx } from '../services/fx';
 
 // ─── Brand palette (MapRaiders: white/blue, accent #1558F0) ──────────────────
 const VRIL_ACCENT = '#1558F0';
@@ -206,7 +207,12 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
               <TouchableOpacity
                 key={def.type}
                 style={[styles.row, !canAfford && styles.rowDisabled]}
-                onPress={() => canAfford && !loading && onBuild(def.type)}
+                onPress={() => {
+                  if (canAfford && !loading) {
+                    fx.tick();
+                    onBuild(def.type);
+                  }
+                }}
                 disabled={!canAfford || loading}
                 activeOpacity={0.75}
               >

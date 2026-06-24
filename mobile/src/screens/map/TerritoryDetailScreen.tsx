@@ -24,6 +24,10 @@ import { useBuildingStore } from '../../store/buildingStore';
 import { useResourceStore } from '../../store/resourceStore';
 import BuildingPickerSheet from '../../components/BuildingPickerSheet';
 import type { Building } from '../../services/api';
+import { fx } from '../../services/fx';
+import { PressableScale } from '../../components/fx/PressableScale';
+import { PopIn } from '../../components/fx/PopIn';
+import { BuildToast } from '../../components/fx/BuildToast';
 
 const CLASS_COLORS: Record<MovementClass, string> = {
   walker: '#1558F0', runner: '#D7263D', cyclist: '#1B9E5A',
@@ -176,6 +180,9 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   const { buildingsByTerritory, stockpileByTerritory, loading: buildingLoading, build, upgrade, demolish } = useBuildingStore();
   const { balances, fetchResources } = useResourceStore();
   const [showBuildPicker, setShowBuildPicker] = useState(false);
+  // FX: local confirmation banner + "pop in" highlight for the just-built card.
+  const [buildToast, setBuildToast] = useState<{ message: string; key: number } | null>(null);
+  const [poppedBuildingType, setPoppedBuildingType] = useState<BuildingType | null>(null);
   const buildings = buildingsByTerritory[territory.id] ?? [];
   const stockpile = stockpileByTerritory[territory.id] ?? [];
 
@@ -199,7 +206,16 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
   const handleBuild = useCallback(async (type: BuildingType) => {
     setShowBuildPicker(false);
     const result = await build(territory.id, type);
-    if (!result.success && result.message) {
+    if (result.success) {
+      // Juice: build sound + haptic, spring-pop the new card, fly-in confirmation banner.
+      fx.buildFx();
+      setPoppedBuildingType(type);
+      const name = getBuildingName(type);
+      setBuildToast({
+        message: t(S.map.territoryDetail.buildSuccessBanner, { name }),
+        key: Date.now(),
+      });
+    } else if (result.message) {
       Alert.alert(S.map.territoryDetail.buildFailedTitle, result.message);
     }
   }, [build, territory.id]);
@@ -547,7 +563,11 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                   const TIER_LABELS = ['', 'I', 'II', 'III'];
 
                   return (
-                    <View key={building.id} style={styles.buildingCard}>
+                    <PopIn
+                      key={building.id}
+                      style={styles.buildingCard}
+                      animate={building.type === poppedBuildingType}
+                    >
                       <View style={styles.buildingCardContent}>
                         <View style={styles.buildingNameRow}>
                           <Text style={styles.buildingName}>{getBuildingName(building.type)}</Text>
@@ -571,7 +591,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                         {canUpgrade && (
                           <TouchableOpacity
                             style={styles.upgradeBtn}
-                            onPress={() => handleUpgrade(building.id, getBuildingName(building.type))}
+                            onPress={() => { fx.tick(); handleUpgrade(building.id, getBuildingName(building.type)); }}
                             disabled={buildingLoading}
                           >
                             <Ionicons name="arrow-up-circle-outline" size={13} color="#1558F0" />
@@ -587,24 +607,25 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                       </View>
                       <TouchableOpacity
                         style={styles.buildingDemolishBtn}
-                        onPress={() => handleDemolish(building.id, getBuildingName(building.type))}
+                        onPress={() => { fx.tick(); handleDemolish(building.id, getBuildingName(building.type)); }}
                         disabled={buildingLoading}
                       >
                         <Ionicons name="trash-outline" size={18} color={theme.danger} />
                       </TouchableOpacity>
-                    </View>
+                    </PopIn>
                   );
                 })}
 
-                <TouchableOpacity
+                <PressableScale
                   style={styles.buildNewBtn}
                   onPress={() => setShowBuildPicker(true)}
-                  activeOpacity={0.8}
+                  feedback="soft"
                   disabled={buildingLoading}
+                  accessibilityLabel={S.map.territoryDetail.buildBtn}
                 >
                   <Ionicons name="add-circle-outline" size={20} color="#FFFFFF" />
                   <Text style={styles.buildNewBtnText}>{S.map.territoryDetail.buildBtn}</Text>
-                </TouchableOpacity>
+                </PressableScale>
               </>
             )}
 
@@ -656,6 +677,13 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           onBuild={handleBuild}
         />
       )}
+
+      {/* FX: local fly-in confirmation banner after a successful build */}
+      <BuildToast
+        message={buildToast?.message ?? null}
+        fireKey={buildToast?.key ?? 0}
+        onDone={() => setBuildToast(null)}
+      />
     </SafeAreaView>
   );
 }
