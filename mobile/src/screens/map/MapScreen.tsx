@@ -1449,7 +1449,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                           ) : null}
                         </View>
                         <View style={styles.myTerrRowBottom}>
-                          <Text style={styles.myTerrCv}>cv {Math.round(Number(terr.claim_value) || 0)}</Text>
+                          <Text style={styles.myTerrCv}>{S.map.mapScreen.myTerrValueLabel} {Math.round(Number(terr.claim_value) || 0)}</Text>
                           <Text style={styles.myTerrCoords}>
                             {(Number(terr.lat) || 0).toFixed(4)}, {(Number(terr.lng) || 0).toFixed(4)}
                           </Text>

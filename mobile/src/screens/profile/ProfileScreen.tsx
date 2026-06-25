@@ -16,7 +16,7 @@ import { useAuthStore } from '../../store/authStore';
 import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { CLASS_COLORS, CLASS_LABELS } from '../../utils/constants';
 import { useTheme } from '../../hooks/useTheme';
-import { formatArea, formatNumber, formatXP } from '../../utils/formatters';
+import { formatArea, formatNumber, formatXP, formatTitle } from '../../utils/formatters';
 import { notificationApi, userApi } from '../../services/api';
 import StatBar from '../../components/StatBar';
 import ClassBadge from '../../components/ClassBadge';
@@ -197,6 +197,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
               height={8}
               showPercentage={false}
               showValues
+              formatValue={formatXP}
             />
           </View>
 
@@ -206,7 +207,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
               {titles.slice(0, 3).map((title: string) => (
                 <View key={title} style={styles.titleBadge}>
                   <Ionicons name="ribbon-outline" size={12} color={theme.warning} />
-                  <Text style={[styles.titleText, { color: theme.warning }]}>{title}</Text>
+                  <Text style={[styles.titleText, { color: theme.warning }]}>{formatTitle(title)}</Text>
                 </View>
               ))}
               {titles.length > 3 && (

@@ -39,6 +39,7 @@ export const map = {
     countdownNow: 'NOW!',
     myTerrTitle: 'My Territories',
     myTerrEmpty: 'No territories yet — walk a route to claim one.',
+    myTerrValueLabel: 'Value',
   },
 
   territoryDetail: {
@@ -126,6 +127,25 @@ export const map = {
     buildingEffectQuarry: 'Industrial terrain only — extracts stone over time.',
     buildingEffectFarm: 'Rural terrain only — grows food over time.',
     buildingEffectFishery: 'Water terrain only — produces food over time.',
+    // Building lifecycle status labels (localized instead of raw server status).
+    statusActive: 'Active',
+    statusBuilding: 'Building',
+    statusDamaged: 'Damaged',
+    statusDestroyed: 'Destroyed',
+    statusInactive: 'Inactive',
+    // Build error codes from the server, localized.
+    buildErrNotOwner: 'You do not own this territory.',
+    buildErrNoSlots: 'This territory has no free building slots.',
+    buildErrDuplicateType: 'A building of this type already exists here.',
+    buildErrInsufficientResources: 'Not enough resources to construct this building.',
+    buildErrInvalidType: 'Unknown building type.',
+    buildErrTerritoryNotFound: 'Territory not found.',
+    buildErrBuildingNotFound: 'Building not found.',
+    buildErrNotDemolishable: 'This building cannot be demolished.',
+    buildErrMaxTier: 'Already at maximum tier.',
+    buildErrNotUpgradable: 'Building must be active to upgrade.',
+    buildErrBiomeMismatch: "This territory isn't the right terrain for that building.",
+    buildErrFeatureDisabled: 'This feature is not available yet.',
   },
 
   artifactDetail: {

@@ -17,6 +17,7 @@ import { useAuthStore } from '../../store/authStore';
 import { COMMANDER_COLORS, prettifyDefinitionId } from '../../utils/commander';
 import { SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { strings as S, t, plural } from '../../i18n';
+import { localizeBuildingType } from '../../utils/formatters';
 import { fx } from '../../services/fx';
 import { PipDie } from '../../components/fx/PipDie';
 import { ParticleBurst } from '../../components/fx/ParticleBurst';
@@ -234,8 +235,8 @@ function airstrikeResultLine(result: AirstrikeResult): string {
   if ('building_hit' in result) {
     const h = result.building_hit;
     return h.destroyed
-      ? t(R.airstrikeBuildingDestroyed, { type: h.type })
-      : t(R.airstrikeBuildingHit, { type: h.type, hp: h.hp_after });
+      ? t(R.airstrikeBuildingDestroyed, { type: localizeBuildingType(h.type) })
+      : t(R.airstrikeBuildingHit, { type: localizeBuildingType(h.type), hp: h.hp_after });
   }
   return R.airstrikeNoEffect;
 }
@@ -478,7 +479,7 @@ export default function BattleReplayScreen({ navigation, route }: BattleReplaySc
         </View>
         {!finished && !walkover && !isAirstrike ? (
           <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
-            <Text style={styles.skipText}>{R.skip}</Text>
+            <Text style={styles.skipText} numberOfLines={1}>{R.skip}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.headerRight} />
@@ -642,7 +643,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: C.text, letterSpacing: 0.5 },
   headerRight: { width: 48 },
-  skipBtn: { width: 48, alignItems: 'flex-end' },
+  skipBtn: { minWidth: 48, paddingLeft: 8, alignItems: 'flex-end' },
   skipText: { color: C.accent, fontWeight: '700', fontSize: FONT_SIZE.sm },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: SPACING.md, paddingBottom: SPACING.xl },

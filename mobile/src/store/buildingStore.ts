@@ -2,27 +2,30 @@ import { create } from 'zustand';
 import { buildingApi, BuildingType } from '../services/api';
 import type { Building, StockpileEntry } from '../services/api';
 import { useResourceStore } from './resourceStore';
+import { strings as S } from '../i18n';
 
-// ─── Error code → user-readable message map ──────────────────────────────────
+// ─── Error code → i18n key map ───────────────────────────────────────────────
+// Resolved at call time so the current language is always used.
 
-const BUILD_ERROR_MESSAGES: Record<string, string> = {
-  NOT_OWNER: 'You do not own this territory.',
-  NO_SLOTS: 'This territory has no free building slots.',
-  DUPLICATE_TYPE: 'A building of this type already exists here.',
-  INSUFFICIENT_RESOURCES: 'Not enough resources to construct this building.',
-  INVALID_TYPE: 'Unknown building type.',
-  TERRITORY_NOT_FOUND: 'Territory not found.',
-  BUILDING_NOT_FOUND: 'Building not found.',
-  NOT_DEMOLISHABLE: 'This building cannot be demolished.',
-  MAX_TIER: 'Already at maximum tier.',
-  NOT_UPGRADABLE: 'Building must be active to upgrade.',
+const BUILD_ERROR_KEYS: Record<string, keyof typeof S.map.territoryDetail> = {
+  NOT_OWNER: 'buildErrNotOwner',
+  NO_SLOTS: 'buildErrNoSlots',
+  DUPLICATE_TYPE: 'buildErrDuplicateType',
+  INSUFFICIENT_RESOURCES: 'buildErrInsufficientResources',
+  INVALID_TYPE: 'buildErrInvalidType',
+  TERRITORY_NOT_FOUND: 'buildErrTerritoryNotFound',
+  BUILDING_NOT_FOUND: 'buildErrBuildingNotFound',
+  NOT_DEMOLISHABLE: 'buildErrNotDemolishable',
+  MAX_TIER: 'buildErrMaxTier',
+  NOT_UPGRADABLE: 'buildErrNotUpgradable',
   // Phase F.1 — biome extraction (economy flag)
-  BIOME_MISMATCH: "This territory isn't the right terrain for that building.",
-  FEATURE_DISABLED: 'This feature is not available yet.',
+  BIOME_MISMATCH: 'buildErrBiomeMismatch',
+  FEATURE_DISABLED: 'buildErrFeatureDisabled',
 };
 
 function resolveBuildError(message: string): string {
-  return BUILD_ERROR_MESSAGES[message] ?? message;
+  const key = BUILD_ERROR_KEYS[message];
+  return key ? (S.map.territoryDetail[key] as string) : message;
 }
 
 // ─── State type ──────────────────────────────────────────────────────────────

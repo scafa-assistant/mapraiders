@@ -47,7 +47,8 @@ export function formatDuration(seconds: number): string {
 }
 
 /**
- * Format XP with K/M suffix for compact display.
+ * Format XP with K/M/B suffix for compact display.
+ * Handles billions so very large totals never read as "237398.5M".
  */
 export function formatXP(xp: number): string {
   if (xp == null || isNaN(xp) || xp < 0) return '0';
@@ -58,8 +59,12 @@ export function formatXP(xp: number): string {
     const k = xp / 1000;
     return k < 100 ? `${k.toFixed(1)}K` : `${Math.round(k)}K`;
   }
-  const m = xp / 1_000_000;
-  return `${m.toFixed(1)}M`;
+  if (xp < 1_000_000_000) {
+    const m = xp / 1_000_000;
+    return m < 100 ? `${m.toFixed(1)}M` : `${Math.round(m)}M`;
+  }
+  const b = xp / 1_000_000_000;
+  return b < 100 ? `${b.toFixed(1)}B` : `${Math.round(b)}B`;
 }
 
 /**
@@ -108,4 +113,54 @@ export function formatNumber(n: number): string {
 export function formatSpeed(metersPerSecond: number): string {
   const kmh = metersPerSecond * 3.6;
   return `${kmh.toFixed(1)} km/h`;
+}
+
+/**
+ * Humanize a raw snake_case key into Title Case as a last-resort fallback,
+ * so an unmapped server key never leaks as e.g. "level_25" in the UI.
+ */
+function humanizeKey(key: string): string {
+  return key
+    .split('_')
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+/**
+ * Localize an achievement/title key (e.g. "level_25", "echo_master") into the
+ * current language. Falls back to a humanized key for anything not yet mapped.
+ */
+export function formatTitle(key: string): string {
+  if (!key) return '';
+  const titles = (S as unknown as { titles?: Record<string, string> }).titles;
+  return titles?.[key] ?? humanizeKey(key);
+}
+
+/**
+ * Localize a raw building type key (e.g. "refinery", "shield_generator") into
+ * the player-facing building name. Mirrors the buildingX keys under
+ * map.territoryDetail so battle reports and toasts never show raw keys.
+ */
+export function localizeBuildingType(type: string): string {
+  if (!type) return '';
+  const td = S.map.territoryDetail as unknown as Record<string, string>;
+  const key =
+    'building' +
+    type
+      .split('_')
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join('');
+  return td[key] ?? humanizeKey(type);
+}
+
+/**
+ * Localize a building status (active/building/damaged/destroyed) for display.
+ * Falls back to a capitalized status so a new server status never breaks.
+ */
+export function localizeBuildingStatus(status: string): string {
+  if (!status) return '';
+  const td = S.map.territoryDetail as unknown as Record<string, string>;
+  const key = 'status' + status.charAt(0).toUpperCase() + status.slice(1);
+  return td[key] ?? humanizeKey(status);
 }

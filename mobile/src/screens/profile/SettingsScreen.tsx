@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
+import { useTeachStore } from '../../store/teachStore';
 import { userApi } from '../../services/api';
 import { Theme, SPACING, FONT_SIZE, RADIUS } from '../../utils/constants';
 import { useTheme } from '../../hooks/useTheme';
@@ -329,6 +330,46 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
               </Text>
             </TouchableOpacity>
           )}
+          {settings.soundEffects && (
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: `${theme.primary}15`,
+                borderRadius: 12,
+                paddingVertical: 12,
+                marginTop: 8,
+                gap: 8,
+              }}
+              onPress={() => fx.victory()}
+            >
+              <Ionicons name="volume-high" size={18} color={theme.primary} />
+              <Text style={{ color: theme.primary, fontSize: 13, fontWeight: '700' }}>
+                {S.profile.settings.testSound}
+              </Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: 12,
+              marginTop: 8,
+              gap: 8,
+            }}
+            onPress={() => {
+              fx.tick();
+              void useTeachStore.getState().resetSeen();
+              Alert.alert(S.profile.settings.resetTeach, S.profile.settings.resetTeachDone);
+            }}
+          >
+            <Ionicons name="school-outline" size={18} color={theme.textSecondary} />
+            <Text style={{ color: theme.textSecondary, fontSize: 13, fontWeight: '600' }}>
+              {S.profile.settings.resetTeach}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Language */}

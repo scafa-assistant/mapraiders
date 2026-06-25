@@ -12,6 +12,7 @@ import { nav } from './nav';
 import { system } from './system';
 import { commander } from './commander';
 import { teach } from './teach';
+import { titles } from './titles';
 
 export default {
   nav,
@@ -28,4 +29,5 @@ export default {
   components,
   commander,
   teach,
+  titles,
 };

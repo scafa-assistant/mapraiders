@@ -18,6 +18,8 @@ interface StatBarProps {
   showPercentage?: boolean;
   /** Whether to show the value text (e.g., "500 / 1000"). Defaults to false. */
   showValues?: boolean;
+  /** Optional formatter for the value text. Defaults to locale-grouped integers. */
+  formatValue?: (n: number) => string;
   /** Animation duration in ms. Defaults to 600. */
   animationDuration?: number;
 }
@@ -34,8 +36,10 @@ const StatBar: React.FC<StatBarProps> = ({
   height = 8,
   showPercentage = true,
   showValues = false,
+  formatValue,
   animationDuration = 600,
 }) => {
+  const fmt = formatValue ?? ((n: number) => (n ?? 0).toLocaleString());
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const fillColor = color ?? theme.primary;
@@ -90,7 +94,7 @@ const StatBar: React.FC<StatBarProps> = ({
           <View style={styles.valueContainer}>
             {showValues && (
               <Text style={styles.valueText}>
-                {(current ?? 0).toLocaleString()} / {(max ?? 0).toLocaleString()}
+                {fmt(current ?? 0)} / {fmt(max ?? 0)}
               </Text>
             )}
             {showPercentage && (

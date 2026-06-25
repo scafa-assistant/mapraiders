@@ -41,6 +41,7 @@ export const map: typeof en = {
     countdownNow: 'JETZT!',
     myTerrTitle: 'Meine Territorien',
     myTerrEmpty: 'Noch keine Territorien — laufe eine Route um eines zu erobern.',
+    myTerrValueLabel: 'Wert',
   },
 
   territoryDetail: {
@@ -128,6 +129,25 @@ export const map: typeof en = {
     buildingEffectQuarry: 'Nur Industrieterrain — fördert Stein über Zeit.',
     buildingEffectFarm: 'Nur ländliches Terrain — erzeugt Nahrung über Zeit.',
     buildingEffectFishery: 'Nur Wasserterrain — erzeugt Nahrung über Zeit.',
+    // Building lifecycle status labels (localized instead of raw server status).
+    statusActive: 'Aktiv',
+    statusBuilding: 'Im Bau',
+    statusDamaged: 'Beschädigt',
+    statusDestroyed: 'Zerstört',
+    statusInactive: 'Inaktiv',
+    // Build error codes from the server, localized.
+    buildErrNotOwner: 'Dieses Territorium gehört dir nicht.',
+    buildErrNoSlots: 'Dieses Territorium hat keine freien Bauplätze.',
+    buildErrDuplicateType: 'Ein Gebäude dieses Typs existiert hier bereits.',
+    buildErrInsufficientResources: 'Nicht genug Ressourcen für dieses Gebäude.',
+    buildErrInvalidType: 'Unbekannter Gebäudetyp.',
+    buildErrTerritoryNotFound: 'Territorium nicht gefunden.',
+    buildErrBuildingNotFound: 'Gebäude nicht gefunden.',
+    buildErrNotDemolishable: 'Dieses Gebäude kann nicht abgerissen werden.',
+    buildErrMaxTier: 'Bereits auf höchster Stufe.',
+    buildErrNotUpgradable: 'Gebäude muss aktiv sein, um aufzurüsten.',
+    buildErrBiomeMismatch: 'Dieses Territorium hat nicht das passende Terrain dafür.',
+    buildErrFeatureDisabled: 'Diese Funktion ist noch nicht verfügbar.',
   },
 
   artifactDetail: {

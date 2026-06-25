@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
+import { formatArea, formatRelativeTime, localizeBuildingStatus } from '../../utils/formatters';
 import { TerritoryDetailScreenProps, MovementClass } from '../../navigation/types';
 import { useTerritoryStore } from '../../store/territoryStore';
 import { useAuthStore } from '../../store/authStore';
@@ -343,13 +344,13 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
             <Ionicons name="resize" size={20} color={theme.primary} />
-            <Text style={styles.statValue}>{territory.area} m²</Text>
+            <Text style={styles.statValue}>{formatArea(territory.area)}</Text>
             <Text style={styles.statLabel}>{S.map.territoryDetail.statArea}</Text>
           </View>
           <View style={styles.statCard}>
             <View style={[styles.decayIndicator, { borderColor: decayColor }]}>
               <Text style={[styles.decayPercent, { color: decayColor }]}>
-                {100 - territory.decayPercent}%
+                {Math.round(100 - territory.decayPercent)}%
               </Text>
             </View>
             <Text style={[styles.statValue, { color: decayColor }]}>{decayLevel}</Text>
@@ -371,7 +372,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             <Ionicons name="time-outline" size={18} color={theme.textSecondary} />
             <Text style={styles.detailLabel}>{S.map.territoryDetail.ageLabel}</Text>
             <Text style={styles.detailValue}>
-              {formatDistanceToNow(new Date(territory.claimedAt), { addSuffix: true })}
+              {formatRelativeTime(territory.claimedAt)}
             </Text>
           </View>
           <View style={styles.detailRow}>
@@ -381,7 +382,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               <View style={styles.decayBarBg}>
                 <View style={[styles.decayBarFill, { width: `${100 - territory.decayPercent}%`, backgroundColor: decayColor }]} />
               </View>
-              <Text style={[styles.decayBarText, { color: decayColor }]}>{territory.decayPercent}%</Text>
+              <Text style={[styles.decayBarText, { color: decayColor }]}>{Math.round(territory.decayPercent)}%</Text>
             </View>
           </View>
         </View>
@@ -586,7 +587,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
                           <Text style={[styles.buildingStatusText, { color: statusColor }]}>
                             {isUnderConstruction
                               ? getCountdownText(building.completes_at)
-                              : building.status.charAt(0).toUpperCase() + building.status.slice(1)}
+                              : localizeBuildingStatus(building.status)}
                           </Text>
                         </View>
                         {/* Upgrade button — visible when active and tier < 3 */}
