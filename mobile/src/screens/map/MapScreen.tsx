@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useTeachOnMount } from '../../store/teachStore';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
@@ -107,6 +108,7 @@ function getPolygonCentroid(polygon: any[]): { latitude: number; longitude: numb
 }
 
 export default function MapScreen({ navigation }: MapScreenProps) {
+  useTeachOnMount('karte');
   const mapRef = useRef<MapView>(null);
   // True only once the native map finished initializing. getMapBoundaries()
   // crashes NATIVELY (uncatchable NPE) if called before this — so every bbox

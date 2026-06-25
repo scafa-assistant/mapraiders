@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useTeachOnMount } from '../../store/teachStore';
 import {
   View,
   Text,
@@ -356,6 +357,7 @@ function ResultBanner({
 }
 
 export default function BattleReplayScreen({ navigation, route }: BattleReplayScreenProps) {
+  useTeachOnMount('battle');
   const R = S.commander.battleReplay;
   const { battleId } = route.params;
   const { battleDetail, battleDetailLoading, fetchBattle, clearBattleDetail } = useCommanderStore();

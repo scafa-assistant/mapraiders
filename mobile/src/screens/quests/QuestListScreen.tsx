@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useTeachOnMount } from '../../store/teachStore';
 import {
   View,
   Text,
@@ -23,6 +24,7 @@ type FilterDifficulty = 0 | 1 | 2 | 3 | 4 | 5;
 type FilterDistance = 'any' | '500' | '1000' | '2000';
 
 export default function QuestListScreen({ navigation }: QuestListScreenProps) {
+  useTeachOnMount('quests');
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { nearbyQuests, isLoading, fetchNearby } = useQuestStore();

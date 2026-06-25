@@ -1,7 +1,51 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { ResourceBalances } from '../store/resourceStore';
+import { useReducedMotion } from './fx/useReducedMotion';
+
+// Green gain-pulse color, settles back to the normal value color.
+const GAIN_GREEN = '#1B9E5A';
+const VALUE_COLOR = '#141210';
+
+/**
+ * A single HUD value that briefly scales up and flashes green whenever its
+ * number INCREASES (resource gain). Decreases and first render are silent.
+ * Respects reduce-motion (snaps to the value, no pulse).
+ */
+const PulseValue: React.FC<{ value: number; text: string }> = ({ value, text }) => {
+  const reduced = useReducedMotion();
+  const prev = useRef(value);
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const rose = value > prev.current;
+    prev.current = value;
+    if (!rose || reduced) return;
+    pulse.setValue(0);
+    Animated.sequence([
+      Animated.timing(pulse, {
+        toValue: 1,
+        duration: 180,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }),
+      Animated.timing(pulse, {
+        toValue: 0,
+        duration: 420,
+        easing: Easing.in(Easing.quad),
+        useNativeDriver: false,
+      }),
+    ]).start();
+  }, [value, reduced, pulse]);
+
+  const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.35] });
+  const color = pulse.interpolate({ inputRange: [0, 1], outputRange: [VALUE_COLOR, GAIN_GREEN] });
+
+  return (
+    <Animated.Text style={[styles.value, { color, transform: [{ scale }] }]}>{text}</Animated.Text>
+  );
+};
 
 // ─── Vril palette (shared with PvESpawnMarker / PvEIntroCards) ───────────────
 const VRIL_ACCENT = '#1558F0';
@@ -76,7 +120,7 @@ const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
               <Text style={[styles.label, RESOURCE_LABEL_COLORS[key] ? { color: RESOURCE_LABEL_COLORS[key] } : null]}>
                 {RESOURCE_LABELS[key]}
               </Text>
-              <Text style={styles.value}>{formatCompact(balances[key])}</Text>
+              <PulseValue value={balances[key]} text={formatCompact(balances[key])} />
             </View>
           </View>
         </React.Fragment>

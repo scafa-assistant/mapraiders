@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useTeachOnMount } from '../../store/teachStore';
 import {
   View,
   Text,
@@ -68,6 +69,7 @@ const RESOURCE_META: Record<'wood' | 'stone' | 'food', { label: string; icon: ke
 };
 
 export default function TerritoryDetailScreen({ route, navigation }: TerritoryDetailScreenProps) {
+  useTeachOnMount('build');
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const classLabels = useMemo(getClassLabels, []);

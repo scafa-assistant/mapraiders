@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useTeachOnMount } from '../../store/teachStore';
 import {
   View,
   Text,
@@ -42,6 +43,7 @@ interface ManualClan extends Clan {
 }
 
 export default function ClanScreen({ navigation }: ClanScreenProps) {
+  useTeachOnMount('clan');
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const user = useAuthStore((s) => s.user);

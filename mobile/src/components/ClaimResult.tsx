@@ -9,6 +9,7 @@ import type { ClaimResult as ClaimResultType } from '../utils/types';
 import { fx } from '../services/fx';
 import { ParticleBurst } from './fx/ParticleBurst';
 import { useReducedMotion } from './fx/useReducedMotion';
+import { useTeachStore } from '../store/teachStore';
 
 interface ClaimResultProps {
   /** The claim result data. */
@@ -39,6 +40,14 @@ const ClaimResult: React.FC<ClaimResultProps> = ({
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const reduced = useReducedMotion();
   const [burst, setBurst] = useState(0);
+  const showTeach = useTeachStore((s) => s.showTeach);
+
+  // First claim ever: explain decay after the victory moment has played, so the
+  // celebration and the hint do not fight for the screen. No-op on later claims.
+  useEffect(() => {
+    const id = setTimeout(() => showTeach('claim'), 1400);
+    return () => clearTimeout(id);
+  }, [showTeach]);
 
   useEffect(() => {
     // Juice: sound + haptic + particle/shake celebration on claim success.

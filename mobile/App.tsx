@@ -20,6 +20,7 @@ import {
 import { userApi } from './src/services/api';
 import { useSettingsStore } from './src/store/settingsStore';
 import { fx } from './src/services/fx';
+import { Coachmark } from './src/components/fx/Coachmark';
 import { useFeatureStore } from './src/store/featureStore';
 import { initLocale, onLanguageChange } from './src/i18n';
 
@@ -141,7 +142,14 @@ function AppContent() {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
 
-  return token ? <MainNavigator /> : <AuthNavigator />;
+  return (
+    <>
+      {token ? <MainNavigator /> : <AuthNavigator />}
+      {/* First-run coachmarks render above the whole tree; no-op until a
+          screen calls showTeach(). Only meaningful once logged in. */}
+      {token ? <Coachmark /> : null}
+    </>
+  );
 }
 
 function AppShell() {

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useTeachOnMount } from '../../store/teachStore';
 import {
   View,
   Text,
@@ -128,6 +129,7 @@ type ActiveFlow =
     };
 
 export default function CommanderMapScreen({ navigation }: CommanderMapScreenProps) {
+  useTeachOnMount('imperium');
   const {
     mapData,
     loading,
