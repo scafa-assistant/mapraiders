@@ -37,7 +37,8 @@ def is_home(u):
     return p == '' or p in LOCALE_DIRS
 
 files = [f for f in glob.glob('**/*.html', recursive=True)
-         if '__pycache__' not in f and 'index-backup' not in f and not f.startswith('_')]
+         if '__pycache__' not in f and 'index-backup' not in f
+         and not any(part.startswith('_') for part in f.replace('\\', '/').split('/'))]
 info = {}
 for f in files:
     h = open(f, encoding='utf-8', errors='ignore').read()
