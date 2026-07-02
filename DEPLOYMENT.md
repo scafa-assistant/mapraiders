@@ -207,14 +207,13 @@ const WS_URL = 'wss://api.mapraiders.com';
 ```
 
 ## Updates deployen
+**NUR via Gate-Skript (lokal, Git Bash):**
 ```bash
-cd /opt/mapraiders
-git pull origin master
-cd server
-npm install --production
-npx tsc
-systemctl restart mapraiders
+bash deploy-server.sh
 ```
+Das Skript erzwingt: lokales tsc-Gate, Push-Gate, `npm ci` VOLL (devDeps inkl. typescript), `./node_modules/.bin/tsc` direkt, Artefakt-Frische-Check, Restart mit localhost-Health + Auto-Rollback auf dist-Backup, HTTPS-Health als Abschluss-Gate.
+
+> **WARNUNG , alte Landmine:** Die fruehere Sequenz (`npm install --production` + `npx tsc`) installiert typescript NICHT (devDependency). `npx tsc` kompiliert dann nichts, beendet mit Exit 0, und `systemctl restart` startet das ALTE `dist/`. Der Deploy sieht gruen aus, neue Routes geben 404. Nie wieder manuell so deployen.
 
 ## Monitoring
 ```bash
