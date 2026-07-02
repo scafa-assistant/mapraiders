@@ -12,6 +12,9 @@
 //   GEMINI_API_KEY      → GeminiProvider     (Google Generative Language REST)
 //   OPENROUTER_API_KEY  → OpenRouterProvider (OpenRouter chat-completions REST)
 //   DEEPSEEK_API_KEY    → DeepSeekProvider   (api.deepseek.com, OpenAI-compatible)
+//   MOONSHOT_API_KEY    → MoonshotProvider   (api.moonshot.ai, OpenAI-compatible;
+//                         base URL overridable via MOONSHOT_BASE_URL for the
+//                         .cn platform)
 //   ANTHROPIC_API_KEY   → AnthropicProvider  (@anthropic-ai/sdk, optional/paid)
 //
 // No new npm SDKs: Gemini + OpenRouter use Node 20's global `fetch`. Anthropic
@@ -216,6 +219,66 @@ export class DeepSeekProvider implements LlmProvider {
   }
 }
 
+// ---- Moonshot / Kimi (OpenAI-compatible chat completions REST) ------
+// platform.moonshot.ai keys use https://api.moonshot.ai/v1; keys from the
+// Chinese platform (platform.moonshot.cn) need MOONSHOT_BASE_URL override.
+
+export class MoonshotProvider implements LlmProvider {
+  readonly name = 'moonshot';
+  private readonly model: string;
+
+  constructor(model: string = 'kimi-latest') {
+    this.model = model || 'kimi-latest';
+  }
+
+  isConfigured(): boolean {
+    return !!process.env.MOONSHOT_API_KEY;
+  }
+
+  async complete(system: string, user: string, maxTokens: number): Promise<string> {
+    const key = process.env.MOONSHOT_API_KEY;
+    if (!key) throw new Error('MOONSHOT_API_KEY not set');
+    const base = process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.ai/v1';
+
+    // kimi-k2.x are reasoning models: they REQUIRE temperature 1 and spend
+    // tokens on thinking before emitting — with the caller's 400-token cap the
+    // content comes back EMPTY (finish_reason 'length', verified 2026-07-02).
+    // Give them a floor that leaves room to think.
+    const isReasoning = /^kimi-k2/.test(this.model);
+    const body = {
+      model: this.model,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      max_tokens: isReasoning ? Math.max(maxTokens, 2048) : maxTokens,
+      response_format: { type: 'json_object' },
+      temperature: isReasoning ? 1 : 0.7,
+    };
+
+    const res = await fetchWithTimeout(`${base}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '');
+      throw new Error(`Moonshot HTTP ${res.status}: ${detail.slice(0, 200)}`);
+    }
+
+    const data: any = await res.json();
+    const text: unknown = data?.choices?.[0]?.message?.content;
+    if (typeof text !== 'string' || text.trim() === '') {
+      throw new Error('Moonshot: missing message content');
+    }
+    return text.trim();
+  }
+}
+
 // ---- Anthropic (optional, paid — wraps the installed SDK) -----------
 
 export class AnthropicProvider implements LlmProvider {
@@ -266,6 +329,7 @@ export const PROVIDERS: Record<string, (model: string) => LlmProvider> = {
   gemini: (model) => new GeminiProvider(model),
   openrouter: (model) => new OpenRouterProvider(model),
   deepseek: (model) => new DeepSeekProvider(model),
+  moonshot: (model) => new MoonshotProvider(model),
   anthropic: (model) => new AnthropicProvider(model),
 };
 
