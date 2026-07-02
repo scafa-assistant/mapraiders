@@ -43,6 +43,7 @@ import { visionService } from './visionService';
 import { buildingEngine } from './buildingEngine';
 import { isInSilentZone } from './silentZoneService';
 import { wsService } from './wsService';
+import { notifyTerritoryAttack, notifyBattleResolved } from './notificationService';
 import { getContext } from './osmContextService';
 import { featureService } from './featureService';
 import { battleEngine } from './battleEngine';
@@ -655,7 +656,7 @@ class TroopEngine {
       return inserted.rows[0];
     });
 
-    // ---- Post-tx WS: warn the defender of an inbound assault ----
+    // ---- Post-tx WS + push: warn the defender of an inbound assault ----
     if (purpose === 'attack' && defenderId) {
       try {
         wsService.sendToUser(defenderId, 'under_attack', {
@@ -663,6 +664,13 @@ class TroopEngine {
           eta: result.arrives_at,
           units: instanceIds.length,
         });
+      } catch {
+        /* non-critical */
+      }
+      // Push so the warning reaches a closed app — the march ETA is the clock
+      // the defender is supposed to race.
+      try {
+        await notifyTerritoryAttack(defenderId, targetTerritoryId ?? '', userId);
       } catch {
         /* non-critical */
       }
@@ -1999,6 +2007,19 @@ class TroopEngine {
             winner_side: ctx.winnerSide,
             territory_id: ctx.territoryId,
           });
+        }
+        // Push the outcome to the defender — WS only reaches an open app, but
+        // the defender of a night battle finds out via the morning push.
+        if (ctx.defenderId) {
+          try {
+            await notifyBattleResolved(
+              ctx.defenderId,
+              ctx.territoryId ?? '',
+              ctx.winnerSide !== 'attacker',
+            );
+          } catch {
+            /* non-critical */
+          }
         }
       } else {
         wsService.sendToUser(ctx.ownerId, 'scout_report', {

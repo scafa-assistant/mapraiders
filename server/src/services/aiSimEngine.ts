@@ -429,6 +429,18 @@ class AiSimEngine {
       } catch {
         /* non-critical */
       }
+      // Push too — the march ETA must reach a closed app (German raw push,
+      // matching the invasion pushes in this file).
+      try {
+        await sendPushToUser(
+          territory.owner_id,
+          '⚔️ Angriff im Anmarsch — MapRaiders',
+          `Hyperboreer-Einheiten marschieren auf dein Territorium. Ankunft in ~${travelMin} min.`,
+          { type: 'under_attack', territory_id: territory.id, ai_faction: 'true' },
+        );
+      } catch {
+        /* non-critical */
+      }
     }
   }
 

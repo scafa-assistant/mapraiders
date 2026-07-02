@@ -70,6 +70,7 @@ export type WeatherCondition =
 export type NotificationType =
   | 'territory_attack'
   | 'territory_lost'
+  | 'battle_resolved'
   | 'new_quest_nearby'
   | 'streak_at_risk'
   | 'level_up'

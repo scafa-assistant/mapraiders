@@ -32,6 +32,7 @@ interface NotificationInput {
 const TYPE_PRIORITY: Record<NotificationType, NotificationPriority> = {
   territory_attack: 'HIGH',
   territory_lost: 'HIGH',
+  battle_resolved: 'HIGH',
   streak_at_risk: 'HIGH',
   new_title: 'HIGH',
   level_up: 'MEDIUM',
@@ -110,7 +111,10 @@ export class NotificationService {
         return; // Stored but not pushed
       }
 
-      const isTerritoryAttack = notification.type === 'territory_attack';
+      // battle_resolved shares territory_attack's combat-class bypasses: a
+      // night battle over your land must reach the phone, not a batch queue.
+      const isTerritoryAttack =
+        notification.type === 'territory_attack' || notification.type === 'battle_resolved';
       const isStreakWarning = notification.type === 'streak_at_risk';
 
       // Check quiet hours (territory attacks and streak warnings bypass)
@@ -383,6 +387,23 @@ export async function notifyTerritoryLost(
   newOwnerId: string
 ): Promise<void> {
   await notificationInstance.notifyTerritoryLost(ownerId, territoryId);
+}
+
+/** Notify the defender of a resolved troop battle over their territory. */
+export async function notifyBattleResolved(
+  defenderId: string,
+  territoryId: string,
+  defenderWon: boolean
+): Promise<void> {
+  await notificationInstance.send(defenderId, {
+    type: 'battle_resolved',
+    title: defenderWon ? 'Attack Repelled!' : 'Territory Overrun',
+    body: defenderWon
+      ? 'Your defenses held — the attack on your territory was repelled.'
+      : 'Enemy troops have overrun your territory. See the battle report.',
+    data: { territory_id: territoryId, defender_won: defenderWon },
+    priority: 'HIGH',
+  });
 }
 
 export async function notifyNewQuestNearby(
