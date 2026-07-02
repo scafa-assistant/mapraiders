@@ -20,6 +20,14 @@ import { strings as S } from '../i18n';
 // Set once the user picks "foreground only" so we stop re-asking on every start.
 const BG_LOCATION_DECLINED_KEY = '@mapraiders_bg_location_declined';
 
+// GPS can tick ~1/s (BestForNavigation). WS sends and disk writes must not
+// follow that cadence — they drain battery and hammer the network during the
+// exact walk sessions the game depends on. Route recording is NOT throttled.
+const WS_LOCATION_MIN_INTERVAL_MS = 5_000;
+const PERSIST_LOCATION_MIN_INTERVAL_MS = 15_000;
+let lastWsLocationSentAt = 0;
+let lastLocationPersistAt = 0;
+
 export interface ClaimResultData {
   territory_id: string;
   claim_value: number;
@@ -172,16 +180,25 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       },
     });
 
-    // Persist last known location for faster startup
-    try {
-      AsyncStorage.setItem('@mapraiders_last_location', JSON.stringify({
-        latitude: newPoint.latitude,
-        longitude: newPoint.longitude,
-      }));
-    } catch {}
+    const now = Date.now();
 
-    // Send location update via WebSocket
-    mapRaidersWs.sendLocationUpdate(newPoint.latitude, newPoint.longitude);
+    // Persist last known location for faster startup (throttled disk write)
+    if (now - lastLocationPersistAt >= PERSIST_LOCATION_MIN_INTERVAL_MS) {
+      lastLocationPersistAt = now;
+      try {
+        AsyncStorage.setItem('@mapraiders_last_location', JSON.stringify({
+          latitude: newPoint.latitude,
+          longitude: newPoint.longitude,
+        }));
+      } catch {}
+    }
+
+    // Send location update via WebSocket (throttled — proximity targeting
+    // does not need per-second precision)
+    if (now - lastWsLocationSentAt >= WS_LOCATION_MIN_INTERVAL_MS) {
+      lastWsLocationSentAt = now;
+      mapRaidersWs.sendLocationUpdate(newPoint.latitude, newPoint.longitude);
+    }
 
     if (isTracking) {
       const updatedRoute = [...currentRoute, newPoint];

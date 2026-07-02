@@ -197,9 +197,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   // Fetch weather on mount and significant location change (>500m)
   useEffect(() => {
     if (!currentLocation) return;
+    // NB precedence: `a ?? 0 - b` parses as `a ?? (0 - b)` — the missing
+    // parens made shouldFetch always true and fired the weather API on every
+    // GPS tick (battery killer during walk sessions).
     const shouldFetch = !lastWeatherFetch.current ||
-      Math.abs(currentLocation?.latitude ?? 0 - lastWeatherFetch.current.lat) > 0.005 ||
-      Math.abs(currentLocation?.longitude ?? 0 - lastWeatherFetch.current.lng) > 0.005;
+      Math.abs(currentLocation.latitude - lastWeatherFetch.current.lat) > 0.005 ||
+      Math.abs(currentLocation.longitude - lastWeatherFetch.current.lng) > 0.005;
 
     if (shouldFetch) {
       lastWeatherFetch.current = {
