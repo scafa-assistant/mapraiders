@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MapStackParamList } from './types';
 import MapScreen from '../screens/map/MapScreen';
 import TerritoryDetailScreen from '../screens/map/TerritoryDetailScreen';
+import BaseBuilderScreen from '../screens/map/BaseBuilderScreen';
 import ChallengeListScreen from '../screens/map/ChallengeListScreen';
 import ChallengeDetailScreen from '../screens/map/ChallengeDetailScreen';
 import EchoListScreen from '../screens/map/EchoListScreen';
@@ -36,6 +37,13 @@ export default function MapStack() {
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="BaseBuilder"
+        component={BaseBuilderScreen}
+        options={{
+          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen name="ChallengeList" component={ChallengeListScreen} />

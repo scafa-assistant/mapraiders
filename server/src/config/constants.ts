@@ -650,6 +650,10 @@ export const BUILDINGS = {
     quarry: { energy: 150, tech: 60 },
     farm: { energy: 120, tech: 30 },
     fishery: { energy: 130, tech: 40 },
+    // 2026-07-02 — tier-2 catalog: military + industry (level-gated, see LEVEL_GATES).
+    military_base: { energy: 500, tech: 300 },
+    airport: { energy: 1200, tech: 800 },
+    datacenter: { energy: 400, tech: 350 },
   } as Record<string, { energy: number; tech: number }>,
 
   /**
@@ -722,6 +726,118 @@ export const BUILDINGS = {
     /** Cap on accrual hours to prevent a windfall after long absence. */
     MAX_ACCRUAL_HOURS: 168,
   },
+
+  /**
+   * Base grid (2026-07-02) — territory area becomes a build grid so every
+   * structure occupies an individual m² FOOTPRINT instead of a uniform slot.
+   * One grid cell = CELL_M2 real square meters; the grid is square with
+   * side = ceil(sqrt(area/CELL_M2)) clamped to [MIN_SIDE, MAX_SIDE]. When a
+   * build request carries a grid position, footprint placement REPLACES the
+   * legacy slot cap (the grid itself is the capacity); requests without a
+   * position (legacy clients) keep the old slot rule.
+   */
+  GRID: {
+    CELL_M2: 25,
+    MIN_SIDE: 4,
+    MAX_SIDE: 40,
+    sideForArea(areaSqM: number): number {
+      const side = Math.ceil(Math.sqrt(Math.max(0, areaSqM || 0) / 25));
+      return Math.max(4, Math.min(40, side));
+    },
+  },
+
+  /** Footprint per building type in grid cells (width × height). */
+  FOOTPRINT: {
+    shield_generator: { w: 2, h: 2 },
+    refinery: { w: 2, h: 3 },
+    radar: { w: 2, h: 2 },
+    garrison: { w: 3, h: 3 },
+    silo: { w: 3, h: 3 },
+    teleporter: { w: 2, h: 2 },
+    sawmill: { w: 2, h: 2 },
+    quarry: { w: 3, h: 3 },
+    farm: { w: 4, h: 4 },
+    fishery: { w: 2, h: 3 },
+    // 2026-07-02 — tier-2 catalog: military + industry.
+    military_base: { w: 5, h: 5 },
+    airport: { w: 8, h: 6 },
+    datacenter: { w: 3, h: 3 },
+  } as Record<string, { w: number; h: number }>,
+
+  /**
+   * Minimum USER level to construct a type (unlisted types have no gate).
+   * Progression: industry at 8, military at 5, air power at 12.
+   */
+  LEVEL_GATES: {
+    military_base: 5,
+    datacenter: 8,
+    airport: 12,
+  } as Record<string, number>,
+
+  /**
+   * Datacenter ("AI core") speeds up construction/upgrades on its territory.
+   * Indexed by tier-1: fraction shaved off build time.
+   */
+  TIER_EFFECTS_DATACENTER: {
+    build_speedup: [0.15, 0.25, 0.35],
+  },
+} as const;
+
+// ============================================================
+// TRAINING (2026-07-02) — unit production at military buildings.
+// A military_base trains GROUND units, an airport trains AIR units.
+// Each recipe is gated by the trainee's USER level (no elite squads at
+// level 1) and paid in energy+tech per unit. Minted units are ordinary
+// non-tradeable 'unit' item_instances, so troopEngine / battleEngine /
+// hauling work unchanged. Max batch per request keeps minting bounded.
+// ============================================================
+
+export const TRAINING = {
+  MAX_BATCH: 10,
+  /** definition id → recipe. Building type must match, user level gates. */
+  RECIPES: {
+    unit_militia: {
+      building: 'military_base', minLevel: 1,
+      cost: { energy: 30, tech: 5 },
+      stats: { domain: 'ground', atk: 1, def: 1 }, rarity: 'common',
+    },
+    unit_infantry: {
+      building: 'military_base', minLevel: 5,
+      cost: { energy: 60, tech: 20 },
+      stats: { domain: 'ground', atk: 2, def: 2 }, rarity: 'common',
+    },
+    unit_ranger: {
+      building: 'military_base', minLevel: 10,
+      cost: { energy: 120, tech: 50 },
+      stats: { domain: 'ground', atk: 3, def: 2 }, rarity: 'uncommon',
+    },
+    unit_commando: {
+      building: 'military_base', minLevel: 15,
+      cost: { energy: 250, tech: 120 },
+      stats: { domain: 'ground', atk: 4, def: 3 }, rarity: 'rare',
+    },
+    unit_recon_uav: {
+      building: 'airport', minLevel: 12,
+      cost: { energy: 100, tech: 80 },
+      stats: { domain: 'air', atk: 1, def: 1 }, rarity: 'uncommon',
+    },
+    unit_gunship: {
+      building: 'airport', minLevel: 15,
+      cost: { energy: 300, tech: 200 },
+      stats: { domain: 'air', atk: 4, def: 2 }, rarity: 'rare',
+    },
+    unit_jet: {
+      building: 'airport', minLevel: 20,
+      cost: { energy: 600, tech: 450 },
+      stats: { domain: 'air', atk: 6, def: 3 }, rarity: 'epic',
+    },
+  } as Record<string, {
+    building: string;
+    minLevel: number;
+    cost: { energy: number; tech: number };
+    stats: { domain: string; atk: number; def: number };
+    rarity: string;
+  }>,
 } as const;
 
 // ============================================================

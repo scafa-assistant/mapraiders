@@ -156,6 +156,7 @@ export type RegisterScreenProps = NativeStackScreenProps<AuthStackParamList, 'Re
 export type MapStackParamList = {
   MapMain: undefined;
   TerritoryDetail: { territory: Territory };
+  BaseBuilder: { territoryId: string; territoryName?: string; areaM2?: number };
   ChallengeList: undefined;
   ChallengeDetail: { challengeId: string };
   EchoList: undefined;
@@ -214,6 +215,11 @@ export type MapScreenProps = CompositeScreenProps<
 export type TerritoryDetailScreenProps = NativeStackScreenProps<
   MapStackParamList,
   'TerritoryDetail'
+>;
+
+export type BaseBuilderScreenProps = NativeStackScreenProps<
+  MapStackParamList,
+  'BaseBuilder'
 >;
 
 export type ChallengeListScreenProps = NativeStackScreenProps<MapStackParamList, 'ChallengeList'>;

@@ -35,6 +35,10 @@ const VALID_TYPES = [
   'quarry',
   'farm',
   'fishery',
+  // 2026-07-02 — tier-2 catalog: military + industry (level-gated server-side).
+  'military_base',
+  'airport',
+  'datacenter',
 ] as const;
 type BuildingType = (typeof VALID_TYPES)[number];
 
@@ -72,6 +76,15 @@ router.get('/territory/:territoryId', authenticate, async (req: Request, res: Re
 
     const buildings = await buildingEngine.getBuildings(territoryId, userId);
 
+    // 2026-07-02 base grid — square build grid derived from the territory
+    // area; the client renders side×side cells of cell_m2 each.
+    let grid: { side: number; cell_m2: number } | null = null;
+    try {
+      grid = await buildingEngine.getGridInfo(territoryId);
+    } catch {
+      /* territory gone between reads — grid stays null */
+    }
+
     // Phase F.1 — territory stockpile (raw extraction resources). Only surfaced
     // when the `economy` flag is on for this user; otherwise an empty list so
     // the client can render uniformly without learning the feature exists.
@@ -87,7 +100,7 @@ router.get('/territory/:territoryId', authenticate, async (req: Request, res: Re
       }));
     }
 
-    return res.json({ success: true, data: { buildings, stockpile } });
+    return res.json({ success: true, data: { buildings, stockpile, grid } });
   } catch (err: any) {
     console.error('[Buildings] GET /territory/:territoryId error:', err);
     return res.status(500).json({ success: false, message: 'Failed to load buildings' });
@@ -135,7 +148,22 @@ router.post('/territory/:territoryId', authenticate, async (req: Request, res: R
       }
     }
 
-    const building = await buildingEngine.build(userId, territoryId, type);
+    // 2026-07-02 base grid — optional placement. Both coords must come
+    // together; the engine validates bounds/overlap (OUT_OF_BOUNDS/SPOT_TAKEN).
+    let pos: { x: number; y: number } | undefined;
+    const gx = req.body?.grid_x;
+    const gy = req.body?.grid_y;
+    if (gx !== undefined || gy !== undefined) {
+      if (!Number.isInteger(gx) || !Number.isInteger(gy) || gx < 0 || gy < 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'grid_x and grid_y must be non-negative integers (both or neither)',
+        });
+      }
+      pos = { x: gx, y: gy };
+    }
+
+    const building = await buildingEngine.build(userId, territoryId, type, pos);
     return res.status(201).json({ success: true, data: { building } });
   } catch (err: any) {
     // BuildingError (NOT_OWNER, INVALID_TYPE, NO_SLOTS, DUPLICATE_TYPE)
@@ -179,6 +207,47 @@ router.post('/:id/upgrade', authenticate, async (req: Request, res: Response) =>
     }
     console.error('[Buildings] POST /:id/upgrade error:', err);
     return res.status(500).json({ success: false, message: 'Failed to upgrade building' });
+  }
+});
+
+// ---- POST /:id/train (2026-07-02) ------------------------------------------------
+
+/**
+ * POST /api/buildings/:id/train
+ * Body: { unit: string, count: number }
+ * Trains units at a military building (military_base → ground, airport → air).
+ * Recipes + user-level gates live in TRAINING.RECIPES (constants.ts).
+ * Feature-gated behind `resources` like all building routes.
+ */
+router.post('/:id/train', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const enabled = await featureService.isEnabledFor(userId, RESOURCES_FLAG);
+    if (!enabled) {
+      return res.status(403).json({ success: false, message: 'Feature not available' });
+    }
+
+    const buildingId = req.params.id as string;
+    if (!looksLikeUuid(buildingId)) {
+      return res.status(400).json({ success: false, message: 'Invalid building ID' });
+    }
+
+    const unit = req.body?.unit as string | undefined;
+    const count = Number(req.body?.count ?? 1);
+    if (!unit || typeof unit !== 'string') {
+      return res.status(400).json({ success: false, message: 'unit is required' });
+    }
+
+    const result = await buildingEngine.train(userId, buildingId, unit, count);
+    return res.status(201).json({ success: true, data: result });
+  } catch (err: any) {
+    if (err?.code) {
+      const status = String(err.code).endsWith('NOT_FOUND') ? 404 : 400;
+      return res.status(status).json({ success: false, message: err.code });
+    }
+    console.error('[Buildings] POST /:id/train error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to train units' });
   }
 });
 

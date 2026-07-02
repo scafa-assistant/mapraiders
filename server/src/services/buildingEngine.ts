@@ -14,7 +14,7 @@
 
 import { PoolClient } from 'pg';
 import { transaction } from '../config/database';
-import { BUILDINGS, EXTRACTION, isExtractionType, ExtractionType } from '../config/constants';
+import { BUILDINGS, EXTRACTION, TRAINING, isExtractionType, ExtractionType } from '../config/constants';
 import { resourceService } from './resourceService';
 import { featureService } from './featureService';
 import { wsService } from './wsService';
@@ -47,6 +47,10 @@ export const BUILDING_TYPES = [
   'quarry',
   'farm',
   'fishery',
+  // 2026-07-02 — tier-2 catalog: military + industry (level-gated).
+  'military_base',
+  'airport',
+  'datacenter',
 ] as const;
 export type BuildingType = (typeof BUILDING_TYPES)[number];
 
@@ -64,6 +68,9 @@ export interface Building {
   completes_at: Date | null;
   config: Record<string, any>;
   created_at: Date;
+  /** Base-grid position (2026-07-02); NULL on legacy rows until auto-placed. */
+  grid_x: number | null;
+  grid_y: number | null;
 }
 
 export interface TerritoryEffects {
@@ -100,6 +107,40 @@ async function withClient<T>(
 ): Promise<T> {
   if (client) return fn(client);
   return transaction(fn);
+}
+
+// ---- Base-grid placement helpers (2026-07-02) -----------------------
+
+/** Footprint (grid cells) for a type; unknown types get a safe 2×2. */
+function footprintOf(type: string): { w: number; h: number } {
+  return BUILDINGS.FOOTPRINT[type] ?? { w: 2, h: 2 };
+}
+
+interface PlacedRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+function rectsOverlap(a: PlacedRect, b: PlacedRect): boolean {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+}
+
+/** First free row-major spot for a w×h footprint on a side×side grid. */
+function findFreeSpot(
+  side: number,
+  placed: PlacedRect[],
+  w: number,
+  h: number,
+): { x: number; y: number } | null {
+  for (let y = 0; y <= side - h; y++) {
+    for (let x = 0; x <= side - w; x++) {
+      const cand = { x, y, w, h };
+      if (!placed.some((p) => rectsOverlap(cand, p))) return { x, y };
+    }
+  }
+  return null;
 }
 
 class BuildingEngine {
@@ -256,7 +297,7 @@ class BuildingEngine {
     return withClient(client, async (c) => {
       const res = await c.query<Building>(
         `SELECT id, territory_id, owner_id, type, tier, status, hp,
-                completes_at, config, created_at
+                completes_at, config, created_at, grid_x, grid_y
            FROM buildings
           WHERE territory_id = $1 AND status <> 'destroyed'
             AND (
@@ -267,8 +308,60 @@ class BuildingEngine {
           ORDER BY created_at ASC`,
         [territoryId, viewerId ?? null],
       );
+
+      // 2026-07-02 base grid: legacy rows carry no position. Auto-place them
+      // once (row-major) and persist, so the base view renders consistently.
+      // Covert spy radars stay unplaced — they are hidden devices, not part
+      // of the owner's visible base.
+      const unplaced = res.rows.filter(
+        (r) => r.grid_x === null && !(r.config as any)?.covert,
+      );
+      if (unplaced.length > 0) {
+        const terr = await c.query<{ area_m2: number }>(
+          `SELECT ST_Area(polygon::geography) AS area_m2 FROM territories WHERE id = $1`,
+          [territoryId],
+        );
+        const side = BUILDINGS.GRID.sideForArea(terr.rows[0]?.area_m2 || 0);
+        const placed: PlacedRect[] = res.rows
+          .filter((r) => r.grid_x !== null && r.grid_y !== null)
+          .map((r) => ({ x: r.grid_x as number, y: r.grid_y as number, ...footprintOf(r.type) }));
+        for (const b of unplaced) {
+          const fp = footprintOf(b.type);
+          const spot = findFreeSpot(side, placed, fp.w, fp.h);
+          if (!spot) continue; // grid full — leave NULL, client falls back
+          b.grid_x = spot.x;
+          b.grid_y = spot.y;
+          placed.push({ ...spot, ...fp });
+          await c.query(
+            `UPDATE buildings SET grid_x = $2, grid_y = $3 WHERE id = $1 AND grid_x IS NULL`,
+            [b.id, spot.x, spot.y],
+          );
+        }
+      }
+
       return res.rows;
     });
+  }
+
+  /**
+   * Base-grid metadata for a territory (2026-07-02): the square grid side
+   * derived from the territory's area. The client renders side×side cells of
+   * BUILDINGS.GRID.CELL_M2 each.
+   */
+  async getGridInfo(territoryId: string): Promise<{ side: number; cell_m2: number }> {
+    const res = await transaction((c) =>
+      c.query<{ area_m2: number }>(
+        `SELECT ST_Area(polygon::geography) AS area_m2 FROM territories WHERE id = $1`,
+        [territoryId],
+      ),
+    );
+    if (res.rowCount === 0) {
+      throw new BuildingError('TERRITORY_NOT_FOUND', 'Territory does not exist');
+    }
+    return {
+      side: BUILDINGS.GRID.sideForArea(res.rows[0].area_m2 || 0),
+      cell_m2: BUILDINGS.GRID.CELL_M2,
+    };
   }
 
   /**
@@ -383,16 +476,23 @@ class BuildingEngine {
    *
    * One atomic transaction:
    *   1. Lock the territory FOR UPDATE; check ownership.
-   *   2. Validate type.
-   *   3. Enforce area-based slot limit (active + building count).
+   *   2. Validate type + user-level gate (LEVEL_GATES).
+   *   3. Placement (2026-07-02 base grid): every structure occupies an
+   *      individual m² FOOTPRINT on the territory's build grid. A request
+   *      with a grid position validates bounds + overlap (SPOT_TAKEN /
+   *      OUT_OF_BOUNDS); without one the engine auto-places row-major
+   *      (NO_SPACE when the grid is full). The legacy slot cap only still
+   *      applies to requests WITHOUT a position (old clients).
    *   4. Enforce max 1 building per type per territory.
    *   5. Debit energy + tech (ResourceError bubbles up untouched).
-   *   6. INSERT status='building', completes_at = NOW() + build time.
+   *   6. INSERT status='building', completes_at = NOW() + build time
+   *      (an active datacenter on the territory shaves the build time).
    */
   async build(
     userId: string,
     territoryId: string,
     type: string,
+    pos?: { x: number; y: number },
   ): Promise<Building> {
     if (!BUILDING_TYPES.includes(type as BuildingType)) {
       throw new BuildingError('INVALID_TYPE', `Unknown building type '${type}'`);
@@ -428,32 +528,81 @@ class BuildingEngine {
         throw new BuildingError('NOT_OWNER', 'You do not own this territory');
       }
 
-      // 3. Slot limit + duplicate check. Count NON-COVERT structures of the
-      // TERRITORY OWNER only: foreign covert spy radars (Phase C.1) live on
-      // this territory but belong to another player — they must neither consume
-      // the owner's slots nor block the owner from building a real radar.
-      const counts = await c.query<{ type: string; cnt: string }>(
-        `SELECT type, COUNT(*)::bigint AS cnt
+      // 2b. User-level gate (military/industry catalog).
+      const gate = BUILDINGS.LEVEL_GATES[buildType];
+      if (gate) {
+        const u = await c.query<{ level: number }>(
+          `SELECT level FROM users WHERE id = $1`,
+          [userId],
+        );
+        if ((u.rows[0]?.level ?? 1) < gate) {
+          throw new BuildingError('LEVEL_TOO_LOW', `Requires player level ${gate}`);
+        }
+      }
+
+      // 3. Load the owner's NON-COVERT structures: foreign covert spy radars
+      // (Phase C.1) live on this territory but belong to another player — they
+      // must neither consume space nor block the owner (and letting them block
+      // grid cells would betray their position).
+      const existing = await c.query<{
+        type: string;
+        tier: number;
+        status: string;
+        grid_x: number | null;
+        grid_y: number | null;
+      }>(
+        `SELECT type, tier, status, grid_x, grid_y
            FROM buildings
           WHERE territory_id = $1
             AND status IN ('building', 'active', 'damaged')
             AND owner_id = $2
-            AND COALESCE((config->>'covert')::boolean, FALSE) IS NOT TRUE
-          GROUP BY type`,
+            AND COALESCE((config->>'covert')::boolean, FALSE) IS NOT TRUE`,
         [territoryId, userId],
       );
-      const totalUsed = counts.rows.reduce((s, r) => s + parseInt(r.cnt, 10), 0);
-      const maxSlots = this.maxSlotsForArea(territory.area_m2 || 0);
-      if (totalUsed >= maxSlots) {
-        throw new BuildingError(
-          'NO_SLOTS',
-          `Territory has no free building slot (${totalUsed}/${maxSlots})`,
-        );
+
+      // 4. Max 1 per type.
+      if (existing.rows.some((r) => r.type === buildType)) {
+        throw new BuildingError('DUPLICATE_TYPE', `A ${buildType} already exists here`);
       }
 
-      // 4. Max 1 per type (owner's non-covert rows, per the query above)
-      if (counts.rows.some((r) => r.type === buildType && parseInt(r.cnt, 10) > 0)) {
-        throw new BuildingError('DUPLICATE_TYPE', `A ${buildType} already exists here`);
+      // 3b. Placement on the base grid.
+      const side = BUILDINGS.GRID.sideForArea(territory.area_m2 || 0);
+      const fp = footprintOf(buildType);
+      const placed: PlacedRect[] = existing.rows
+        .filter((r) => r.grid_x !== null && r.grid_y !== null)
+        .map((r) => ({
+          x: r.grid_x as number,
+          y: r.grid_y as number,
+          ...footprintOf(r.type),
+        }));
+
+      let spot: { x: number; y: number } | null;
+      if (pos) {
+        // Footprint must fit the grid and not overlap any placed structure.
+        if (
+          !Number.isInteger(pos.x) || !Number.isInteger(pos.y) ||
+          pos.x < 0 || pos.y < 0 || pos.x + fp.w > side || pos.y + fp.h > side
+        ) {
+          throw new BuildingError('OUT_OF_BOUNDS', `Footprint ${fp.w}x${fp.h} does not fit at (${pos.x},${pos.y}) on a ${side}x${side} grid`);
+        }
+        if (placed.some((p) => rectsOverlap({ ...pos, ...fp }, p))) {
+          throw new BuildingError('SPOT_TAKEN', 'Another structure occupies this spot');
+        }
+        spot = pos;
+      } else {
+        // Legacy request without a position: keep the old slot cap, then
+        // auto-place so the base view stays consistent.
+        const maxSlots = this.maxSlotsForArea(territory.area_m2 || 0);
+        if (existing.rows.length >= maxSlots) {
+          throw new BuildingError(
+            'NO_SLOTS',
+            `Territory has no free building slot (${existing.rows.length}/${maxSlots})`,
+          );
+        }
+        spot = findFreeSpot(side, placed, fp.w, fp.h);
+      }
+      if (!spot) {
+        throw new BuildingError('NO_SPACE', `No free ${fp.w}x${fp.h} spot on the ${side}x${side} grid`);
       }
 
       // 5. Pay costs (energy AND tech) — ResourceError bubbles up.
@@ -461,13 +610,22 @@ class BuildingEngine {
       await resourceService.debit(userId, 'energy', cost.energy, 'building_build', ctx, c);
       await resourceService.debit(userId, 'tech', cost.tech, 'building_build', ctx, c);
 
-      // 6. Create the building
+      // 6. Create the building. An ACTIVE datacenter (AI core) on the same
+      // territory shaves a tier-scaled fraction off the build time.
+      let effectiveHours = buildHours;
+      const dc = existing.rows.find((r) => r.type === 'datacenter' && r.status === 'active');
+      if (dc) {
+        const table = BUILDINGS.TIER_EFFECTS_DATACENTER.build_speedup;
+        const idx = Math.max(0, Math.min(table.length - 1, (dc.tier || 1) - 1));
+        effectiveHours = buildHours * (1 - table[idx]);
+      }
+
       const inserted = await c.query<Building>(
-        `INSERT INTO buildings (territory_id, owner_id, type, status, completes_at, config)
-         VALUES ($1, $2, $3, 'building', NOW() + ($4 || ' hours')::interval, $5)
+        `INSERT INTO buildings (territory_id, owner_id, type, status, completes_at, config, grid_x, grid_y)
+         VALUES ($1, $2, $3, 'building', NOW() + ($4 || ' hours')::interval, $5, $6, $7)
          RETURNING id, territory_id, owner_id, type, tier, status, hp,
-                   completes_at, config, created_at`,
-        [territoryId, userId, buildType, String(buildHours), JSON.stringify({ cost })],
+                   completes_at, config, created_at, grid_x, grid_y`,
+        [territoryId, userId, buildType, String(effectiveHours), JSON.stringify({ cost }), spot.x, spot.y],
       );
 
       return inserted.rows[0];
@@ -495,7 +653,7 @@ class BuildingEngine {
     return transaction(async (c) => {
       const cur = await c.query<Building>(
         `SELECT id, territory_id, owner_id, type, tier, status, hp,
-                completes_at, config, created_at
+                completes_at, config, created_at, grid_x, grid_y
            FROM buildings
           WHERE id = $1
           FOR UPDATE`,
@@ -542,7 +700,7 @@ class BuildingEngine {
                          || jsonb_build_object('upgrading_to', ($3)::int)
           WHERE id = $1
           RETURNING id, territory_id, owner_id, type, tier, status, hp,
-                    completes_at, config, created_at`,
+                    completes_at, config, created_at, grid_x, grid_y`,
         [buildingId, String(upgradeHours), currentTier + 1],
       );
       return updated.rows[0];
@@ -566,7 +724,7 @@ class BuildingEngine {
     return transaction(async (c) => {
       const cur = await c.query<Building>(
         `SELECT id, territory_id, owner_id, type, tier, status, hp,
-                completes_at, config, created_at
+                completes_at, config, created_at, grid_x, grid_y
            FROM buildings
           WHERE id = $1
           FOR UPDATE`,
@@ -630,11 +788,97 @@ class BuildingEngine {
             SET status = 'destroyed'
           WHERE id = $1
           RETURNING id, territory_id, owner_id, type, tier, status, hp,
-                    completes_at, config, created_at`,
+                    completes_at, config, created_at, grid_x, grid_y`,
         [buildingId],
       );
 
       return { ...updated.rows[0], refunded: { energy: refundEnergy, tech: refundTech } };
+    });
+  }
+
+  // ---- Training (2026-07-02) ----------------------------------------
+
+  /**
+   * Train `count` units of `unitDefId` at a military building the user owns.
+   *
+   * One atomic transaction:
+   *   1. Validate the recipe (TRAINING.RECIPES) + batch size.
+   *   2. Lock the building FOR UPDATE; verify owner + 'active' status + that
+   *      the building type matches the recipe (ground at military_base, air
+   *      at airport).
+   *   3. User-level gate per recipe (no elite squads at level 1).
+   *   4. Debit energy + tech × count (ResourceError bubbles up).
+   *   5. Mint `count` non-tradeable 'unit' item_instances (status inventory)
+   *      + item_events, so troopEngine / battleEngine / hauling work as-is.
+   */
+  async train(
+    userId: string,
+    buildingId: string,
+    unitDefId: string,
+    count: number,
+  ): Promise<{ unit: string; count: number; instance_ids: string[] }> {
+    const recipe = TRAINING.RECIPES[unitDefId];
+    if (!recipe) {
+      throw new BuildingError('INVALID_UNIT', `Unknown trainable unit '${unitDefId}'`);
+    }
+    const batch = Math.floor(count);
+    if (!Number.isFinite(batch) || batch < 1 || batch > TRAINING.MAX_BATCH) {
+      throw new BuildingError('INVALID_COUNT', `count must be 1..${TRAINING.MAX_BATCH}`);
+    }
+
+    return transaction(async (c) => {
+      const cur = await c.query<Building>(
+        `SELECT id, territory_id, owner_id, type, tier, status, hp,
+                completes_at, config, created_at, grid_x, grid_y
+           FROM buildings
+          WHERE id = $1
+          FOR UPDATE`,
+        [buildingId],
+      );
+      if (cur.rowCount === 0) {
+        throw new BuildingError('BUILDING_NOT_FOUND', 'Building does not exist');
+      }
+      const building = cur.rows[0];
+      if (building.owner_id !== userId) {
+        throw new BuildingError('NOT_OWNER', 'You do not own this building');
+      }
+      if (building.status !== 'active') {
+        throw new BuildingError('NOT_ACTIVE', 'Building is not operational');
+      }
+      if (building.type !== recipe.building) {
+        throw new BuildingError('WRONG_BUILDING', `${unitDefId} trains at a ${recipe.building}`);
+      }
+
+      const u = await c.query<{ level: number }>(
+        `SELECT level FROM users WHERE id = $1`,
+        [userId],
+      );
+      if ((u.rows[0]?.level ?? 1) < recipe.minLevel) {
+        throw new BuildingError('LEVEL_TOO_LOW', `Requires player level ${recipe.minLevel}`);
+      }
+
+      const ctx = { buildingId, unit: unitDefId, count: batch };
+      await resourceService.debit(userId, 'energy', recipe.cost.energy * batch, 'unit_training', ctx, c);
+      await resourceService.debit(userId, 'tech', recipe.cost.tech * batch, 'unit_training', ctx, c);
+
+      const ids: string[] = [];
+      for (let i = 0; i < batch; i++) {
+        const inserted = await c.query<{ id: string }>(
+          `INSERT INTO item_instances
+             (definition_id, owner_id, status, acquired_via, state, created_at, updated_at)
+           VALUES ($1, $2, 'inventory', 'training', '{}'::jsonb, NOW(), NOW())
+           RETURNING id`,
+          [unitDefId, userId],
+        );
+        ids.push(inserted.rows[0].id);
+        await c.query(
+          `INSERT INTO item_events (instance_id, event, from_user, to_user, context)
+           VALUES ($1, 'minted', NULL, $2, $3)`,
+          [inserted.rows[0].id, userId, JSON.stringify(ctx)],
+        );
+      }
+
+      return { unit: unitDefId, count: batch, instance_ids: ids };
     });
   }
 
@@ -665,7 +909,7 @@ class BuildingEngine {
                 config = config - 'upgrading_to'
           WHERE status = 'building' AND completes_at <= NOW()
           RETURNING id, territory_id, owner_id, type, tier, status, hp,
-                    completes_at, config, created_at`,
+                    completes_at, config, created_at, grid_x, grid_y`,
       );
       const rows = res.rows;
 

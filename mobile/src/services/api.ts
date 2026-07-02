@@ -728,7 +728,11 @@ export type BuildingType =
   | 'sawmill'
   | 'quarry'
   | 'farm'
-  | 'fishery';
+  | 'fishery'
+  // Phase F.4 — advanced military / infrastructure buildings (base builder)
+  | 'military_base'
+  | 'airport'
+  | 'datacenter';
 
 export type BuildingStatus = 'building' | 'active' | 'damaged' | 'destroyed';
 
@@ -754,19 +758,35 @@ export interface Building {
   completes_at: string | null;
   config: Record<string, unknown>;
   created_at: string;
+  /** Top-left grid anchor of the footprint on the square build grid, or null if unplaced. */
+  grid_x: number | null;
+  grid_y: number | null;
+}
+
+/** Square build grid descriptor for a territory (base builder). */
+export interface BuildGrid {
+  side: number;
+  cell_m2: number;
 }
 
 export const buildingApi = {
   /**
    * List all buildings on a territory.
    * `stockpile` is the per-territory raw resource pile (Phase F.1) — `[]` when the economy flag is off.
+   * `grid` is the square build grid (base builder) — `null` when the economy flag is off.
    */
   list: (territoryId: string) =>
-    api.get<{ success: boolean; data: { buildings: Building[]; stockpile?: StockpileEntry[] } }>(`/buildings/territory/${territoryId}`),
+    api.get<{ success: boolean; data: { buildings: Building[]; stockpile?: StockpileEntry[]; grid?: BuildGrid | null } }>(`/buildings/territory/${territoryId}`),
 
-  /** Construct a new building on a territory. */
-  build: (territoryId: string, type: BuildingType) =>
-    api.post<{ success: boolean; data: { building: Building } }>(`/buildings/territory/${territoryId}`, { type }),
+  /**
+   * Construct a new building on a territory. When gridX/gridY are given the
+   * server places the footprint's top-left corner there (base builder).
+   */
+  build: (territoryId: string, type: BuildingType, gridX?: number, gridY?: number) =>
+    api.post<{ success: boolean; data: { building: Building } }>(
+      `/buildings/territory/${territoryId}`,
+      gridX != null && gridY != null ? { type, grid_x: gridX, grid_y: gridY } : { type }
+    ),
 
   /** Demolish a building — server refunds 50% of costs. */
   demolish: (buildingId: string) =>
@@ -775,6 +795,13 @@ export const buildingApi = {
   /** Upgrade a building to the next tier. Status → 'building' until completes_at. */
   upgrade: (buildingId: string) =>
     api.post<{ success: boolean; data: { building: Building } }>(`/buildings/${buildingId}/upgrade`),
+
+  /** Train a batch of units at a military_base or airport (max 10 per request). */
+  train: (buildingId: string, unit: string, count: number) =>
+    api.post<{ success: boolean; data: { unit: string; count: number; instance_ids: string[] } }>(
+      `/buildings/${buildingId}/train`,
+      { unit, count }
+    ),
 };
 
 // ─── PvE API ─────────────────────────────────────────────────────────────────

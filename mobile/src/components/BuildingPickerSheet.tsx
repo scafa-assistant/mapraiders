@@ -13,8 +13,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BuildingType } from '../services/api';
 import type { ResourceBalances } from '../store/resourceStore';
-import { strings as S } from '../i18n';
+import { strings as S, t } from '../i18n';
 import { fx } from '../services/fx';
+import { FOOTPRINTS, MIN_LEVEL, CELL_M2 } from '../utils/buildings';
 
 // ─── Brand palette (MapRaiders: white/blue, accent #1558F0) ──────────────────
 const VRIL_ACCENT = '#1558F0';
@@ -135,6 +136,38 @@ const getExtractionDefs = (): BuildingDef[] => [
   },
 ];
 
+// ─── Phase F.4 — advanced military / infrastructure buildings (base builder) ───
+// Only offered when `advancedEnabled` is set. Each carries a minimum player level.
+const getAdvancedDefs = (): BuildingDef[] => [
+  {
+    type: 'military_base',
+    name: S.map.territoryDetail.buildingMilitaryBase,
+    effect: S.map.territoryDetail.buildingEffectMilitaryBase,
+    costEnergy: 500,
+    costTech: 300,
+    buildTimeHours: 6,
+    icon: 'medal',
+  },
+  {
+    type: 'datacenter',
+    name: S.map.territoryDetail.buildingDatacenter,
+    effect: S.map.territoryDetail.buildingEffectDatacenter,
+    costEnergy: 400,
+    costTech: 350,
+    buildTimeHours: 6,
+    icon: 'server',
+  },
+  {
+    type: 'airport',
+    name: S.map.territoryDetail.buildingAirport,
+    effect: S.map.territoryDetail.buildingEffectAirport,
+    costEnergy: 1200,
+    costTech: 800,
+    buildTimeHours: 8,
+    icon: 'airplane',
+  },
+];
+
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface BuildingPickerSheetProps {
@@ -143,6 +176,10 @@ interface BuildingPickerSheetProps {
   loading: boolean;
   /** When true, the 4 biome-extraction buildings are offered (Phase F.1 'economy' flag). */
   economyEnabled?: boolean;
+  /** When true, the 3 advanced military / infrastructure buildings are offered (base builder). */
+  advancedEnabled?: boolean;
+  /** Current player level — locks rows whose type has a higher min level. */
+  userLevel?: number;
   onClose: () => void;
   onBuild: (type: BuildingType) => void;
 }
@@ -160,15 +197,19 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
   balances,
   loading,
   economyEnabled = false,
+  advancedEnabled = false,
+  userLevel,
   onClose,
   onBuild,
 }) => {
   const insets = useSafeAreaInsets();
 
-  // Extraction buildings only appear when the economy flag is on.
-  const defs = economyEnabled
-    ? [...getBuildingDefs(), ...getExtractionDefs()]
-    : getBuildingDefs();
+  // Extraction buildings appear with the economy flag; advanced ones with the base builder.
+  const defs = [
+    ...getBuildingDefs(),
+    ...(economyEnabled ? getExtractionDefs() : []),
+    ...(advancedEnabled ? getAdvancedDefs() : []),
+  ];
 
   return (
     <Modal
@@ -201,37 +242,50 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
         {/* Building list rows */}
         <ScrollView showsVerticalScrollIndicator={false} style={styles.list}>
           {defs.map((def) => {
+            const [fw, fh] = FOOTPRINTS[def.type];
+            const minLevel = MIN_LEVEL[def.type];
+            const locked = userLevel != null && minLevel != null && userLevel < minLevel;
             const canAfford =
               balances.energy >= def.costEnergy && balances.tech >= def.costTech;
+            const disabled = locked || !canAfford;
             return (
               <TouchableOpacity
                 key={def.type}
-                style={[styles.row, !canAfford && styles.rowDisabled]}
+                style={[styles.row, disabled && styles.rowDisabled]}
                 onPress={() => {
-                  if (canAfford && !loading) {
+                  if (!disabled && !loading) {
                     fx.tick();
                     onBuild(def.type);
                   }
                 }}
-                disabled={!canAfford || loading}
+                disabled={disabled || loading}
                 activeOpacity={0.75}
               >
                 {/* Icon */}
-                <View style={[styles.iconWrap, !canAfford && styles.iconWrapDisabled]}>
+                <View style={[styles.iconWrap, disabled && styles.iconWrapDisabled]}>
                   <Ionicons
-                    name={def.icon}
+                    name={locked ? 'lock-closed' : def.icon}
                     size={20}
-                    color={canAfford ? VRIL_ACCENT : TEXT_SECONDARY}
+                    color={disabled ? TEXT_SECONDARY : VRIL_ACCENT}
                   />
                 </View>
 
                 {/* Text block */}
                 <View style={styles.rowText}>
-                  <Text style={[styles.rowName, !canAfford && styles.rowNameDisabled]}>
+                  <Text style={[styles.rowName, disabled && styles.rowNameDisabled]}>
                     {def.name}
                   </Text>
-                  <Text style={styles.rowEffect} numberOfLines={1}>
-                    {def.effect}
+                  {locked ? (
+                    <Text style={styles.rowLocked} numberOfLines={1}>
+                      {t(S.map.territoryDetail.buildLockedLevel, { n: minLevel! })}
+                    </Text>
+                  ) : (
+                    <Text style={styles.rowEffect} numberOfLines={1}>
+                      {def.effect}
+                    </Text>
+                  )}
+                  <Text style={styles.rowFootprint}>
+                    {t(S.map.territoryDetail.buildFootprintLabel, { w: fw, h: fh, m2: fw * fh * CELL_M2 })}
                   </Text>
                 </View>
 
@@ -243,9 +297,9 @@ const BuildingPickerSheet: React.FC<BuildingPickerSheetProps> = ({
                   {loading ? (
                     <ActivityIndicator size="small" color={'#FFFFFF'} style={styles.buildBtn} />
                   ) : (
-                    <View style={[styles.buildBtn, !canAfford && styles.buildBtnDisabled]}>
+                    <View style={[styles.buildBtn, disabled && styles.buildBtnDisabled]}>
                       <Text style={styles.buildBtnText}>
-                        {canAfford ? S.map.territoryDetail.buildPickerBuildBtn : '—'}
+                        {disabled ? '—' : S.map.territoryDetail.buildPickerBuildBtn}
                       </Text>
                     </View>
                   )}
@@ -370,6 +424,17 @@ const styles = StyleSheet.create({
     color: TEXT_SECONDARY,
     fontSize: 11,
     lineHeight: 15,
+  },
+  rowLocked: {
+    color: '#D7263D',
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: '700',
+  },
+  rowFootprint: {
+    color: TEXT_SECONDARY,
+    fontSize: 10,
+    marginTop: 1,
   },
   rowRight: {
     alignItems: 'flex-end',

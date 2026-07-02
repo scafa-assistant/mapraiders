@@ -255,6 +255,9 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
       quarry: S.map.territoryDetail.buildingQuarry,
       farm: S.map.territoryDetail.buildingFarm,
       fishery: S.map.territoryDetail.buildingFishery,
+      military_base: S.map.territoryDetail.buildingMilitaryBase,
+      airport: S.map.territoryDetail.buildingAirport,
+      datacenter: S.map.territoryDetail.buildingDatacenter,
     };
     return names[type] ?? type;
   };
@@ -272,6 +275,9 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
       quarry: { e: 150, t: 60 },
       farm: { e: 120, t: 30 },
       fishery: { e: 130, t: 40 },
+      military_base: { e: 500, t: 300 },
+      airport: { e: 1200, t: 800 },
+      datacenter: { e: 400, t: 350 },
     };
     const base = BASE_COSTS[b.type] ?? { e: 0, t: 0 };
     const mult = Math.pow(2, b.tier);
@@ -541,6 +547,21 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
               {S.map.territoryDetail.defensesSubtitle}
             </Text>
 
+            {/* Entry point to the isometric base builder */}
+            <PressableScale
+              style={styles.baseViewBtn}
+              onPress={() => navigation.navigate('BaseBuilder', {
+                territoryId: territory.id,
+                territoryName: territory.ownerUsername,
+                areaM2: territory.area,
+              })}
+              feedback="soft"
+              accessibilityLabel={S.map.territoryDetail.baseViewBtn}
+            >
+              <Text style={styles.baseViewBtnText}>{S.map.territoryDetail.baseViewBtn}</Text>
+              <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
+            </PressableScale>
+
             {buildingLoading ? (
               <View style={styles.defenseLoading}>
                 <ActivityIndicator size="small" color="#1558F0" />
@@ -676,6 +697,8 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
           balances={balances}
           loading={buildingLoading}
           economyEnabled={isEconomyEnabled}
+          advancedEnabled={isEconomyEnabled}
+          userLevel={user?.level}
           onClose={() => setShowBuildPicker(false)}
           onBuild={handleBuild}
         />
@@ -781,6 +804,8 @@ const createStyles = (theme: Theme) =>
   buildingDemolishBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(215,38,61,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(215,38,61,0.25)' },
   buildNewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1558F0', borderRadius: 14, height: 48, gap: 8, marginTop: 4, shadowColor: '#1558F0', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
   buildNewBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
+  baseViewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1558F0', borderRadius: 14, height: 50, gap: 6, marginBottom: 14, shadowColor: '#1558F0', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
+  baseViewBtnText: { color: '#FFFFFF', fontSize: 15, fontWeight: '800', letterSpacing: 0.5 },
 
   // Production / stockpile section (economy feature flag)
   productionSectionTitle: { marginTop: 28, color: '#1B9E5A' },

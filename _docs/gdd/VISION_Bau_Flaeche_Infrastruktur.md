@@ -1,9 +1,12 @@
 # VISION: Flächen-Bau, Infrastruktur & Maut (René, 2026-07-02)
 
-> **Status: VISION, nicht Auftrag.** Festgehalten aus Renés Kopf am 2026-07-02, direkt nach dem
-> Erste-Nacht-Rollout. Bau-Gate: NICHTS hiervon vor dem N=1-Sog-Beweis bauen (Gründer-Pivot).
-> Dieses Dokument trennt sauber: was HEUTE schon im Code existiert, was die Vision ändert,
-> und welche Design-Spannungen vorher gelöst werden müssen.
+> **Status-Update 2026-07-02 (abends): Stufe 1 IST GEBAUT.** René hat das Bau-Gate selbst
+> aufgehoben ("die Gebäude möchte ich sehen und platzieren, denk dir was Kluges aus").
+> Umgesetzt: Basis-Grid mit individuellen m²-Fußabdrücken (Zelle = 25 m², Grid aus der
+> Territoriumsfläche), isometrische Basis-Ansicht (Anno-View) im Mobile-Client mit
+> Tap-to-Place, plus Katalog-Erweiterung Militärbasis / Airport / Datacenter und
+> Einheiten-Ausbildung mit Level-Gates. Details in §4 unten. Offen bleiben: Anbau-Claim,
+> Wege-Evolution, Maut, Erz-Arten.
 
 ## Die Vision in einem Satz
 Territorium ist Baufläche: jede Baute verbraucht individuelle m², wer mehr bauen will, muss mehr
@@ -60,9 +63,49 @@ Infrastruktur (Wege → Straßen → Schnellstraßen), die Dritten gegen Maut of
    der KI-General/NPC-Fraktionen müssten Infrastruktur mitbenutzen (passt zur Kreislauf-Rolle des Generals).
 
 ## Reihenfolge, wenn es soweit ist (Vorschlag)
-1. Flächen-Fußabdrücke statt Einheits-Slots (kleinster Schritt, macht m² sofort wertvoll)
+1. Flächen-Fußabdrücke statt Einheits-Slots (kleinster Schritt, macht m² sofort wertvoll) ✅ 2026-07-02
 2. Anbau-Claim (Land wächst zusammenhängend) , verstärkt den Outdoor-Loop direkt
 3. Persistente Wege mit Nutzungszähler (noch ohne Gameplay-Effekt, nur Daten sammeln)
 4. Straßen-Stufen + Maut
 5. Erz-Arten + ortsgebundene Produktionsketten
-6. Airport/Militärbasis als Endgame-Bauten
+6. Airport/Militärbasis als Endgame-Bauten ✅ 2026-07-02 (vorgezogen auf Renés Ansage)
+
+## 4. GEBAUT 2026-07-02: Basis-Layer Stufe 1 (Grid + Anno-View + Militär)
+
+### Basis-Grid (Server)
+- Territorium wird Baugrid: 1 Zelle = 25 m², quadratisches Grid mit
+  Seite = ceil(sqrt(Fläche/25)), geklemmt auf 4..40 (`BUILDINGS.GRID`).
+- Jede Baute hat FOOTPRINT in Zellen (`BUILDINGS.FOOTPRINT`): Sägewerk 2x2 (100 m²)
+  bis Airport 8x6 (1200 m², passt physisch nur auf große Territorien = Vision pur).
+- `buildings.grid_x/grid_y` (Migration 2026-07-02); Build-Request mit Position validiert
+  Grenzen + Überlappung (OUT_OF_BOUNDS/SPOT_TAKEN/NO_SPACE); ohne Position gilt
+  weiter die alte Slot-Regel + Auto-Platzierung (Bestandsschutz für alte Clients).
+- Legacy-Gebäude werden beim ersten Lesen automatisch platziert (row-major) und persistiert.
+
+### Katalog v2 + Level-Gates
+- NEU: `military_base` (5x5, 500/300, ab Level 5), `datacenter` (3x3, 400/350, ab Level 8,
+  KI-Kern: Bauzeit-Beschleunigung 15/25/35 % nach Tier), `airport` (8x6, 1200/800, ab Level 12).
+- Level-Gate serverseitig in build() (`BUILDINGS.LEVEL_GATES`).
+
+### Einheiten-Ausbildung (POST /api/buildings/:id/train)
+- Militärbasis (Boden): Miliz L1 → Infanterie L5 → Ranger L10 → Kommando L15.
+- Airport (Luft): Aufklärungs-UAV L12 → Gunship L15 → Jet L20.
+- Rezepte in `TRAINING.RECIPES` (constants.ts), Kosten Energy+Tech pro Einheit, Batch max 10.
+- Einheiten sind normale non-tradeable 'unit' item_instances → troopEngine/battleEngine/
+  Hauling funktionieren unverändert (Kommando marschiert wie jeder Trupp).
+
+### Anno-View (Mobile)
+- Neuer Screen BaseBuilder: isometrisches SVG-Grid, Gebäude als extrudierte Blöcke mit
+  Emoji-Glyphen, Platzierungs-Modus mit Footprint-Ghost (grün/rot), Info-Karte mit
+  Upgrade/Abriss/Ausbilden, freie-m²-Anzeige. Einstieg: TerritoryDetail → "Basis-Ansicht".
+
+### Katalog-Lücken (nächste Kandidaten, noch NICHT gebaut)
+| Gebäude | Zweck | Hängt an |
+|---|---|---|
+| Mine + Schmelze | Erz-Arten (Eisen/Gold/Silber) → Barren | Erz-System (§2), OSM-Biome |
+| Schmiede/Waffenwerk | Barren → Waffen/Ausrüstung für Einheiten | Mine/Schmelze |
+| Lagerhaus | Stockpile-Cap erhöhen, Hauling-Puffer | nichts, quick win |
+| Hafen/Werft | Naval-Einheiten (Domain 'naval' existiert!) | Wasser-Biom-Gate wie Fischerei |
+| Hauptquartier | Territorium-Zentrale, gated max Tier anderer Bauten (Anno-Kette) | Design |
+| Wachturm/Mauer | statische Verteidigung sichtbar auf dem Grid | Defense-Integration |
+| Straßenmeisterei | Infrastruktur-Pflege | Wege-Evolution (§3) |

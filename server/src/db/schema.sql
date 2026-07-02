@@ -1307,6 +1307,38 @@ CREATE TABLE IF NOT EXISTS buildings (
 CREATE INDEX IF NOT EXISTS idx_buildings_territory ON buildings(territory_id, status);
 CREATE INDEX IF NOT EXISTS idx_buildings_completion ON buildings(completes_at) WHERE status = 'building';
 
+-- 2026-07-02 — base grid: buildings occupy an individual m² footprint on a
+-- per-territory build grid (see BUILDINGS.GRID / FOOTPRINT in constants.ts).
+-- NULL = legacy building; buildingEngine auto-places those on first read.
+ALTER TABLE buildings ADD COLUMN IF NOT EXISTS grid_x INT;
+ALTER TABLE buildings ADD COLUMN IF NOT EXISTS grid_y INT;
+
+-- 2026-07-02 — player-trainable units (military_base → ground, airport → air).
+INSERT INTO item_definitions (id, category, rarity, tradeable, stats, lore)
+VALUES
+  ('unit_militia', 'unit', 'common', FALSE,
+    '{"domain":"ground","atk":1,"def":1}',
+    '{"name_key":"unit_militia","faction":"player"}'),
+  ('unit_infantry', 'unit', 'common', FALSE,
+    '{"domain":"ground","atk":2,"def":2}',
+    '{"name_key":"unit_infantry","faction":"player"}'),
+  ('unit_ranger', 'unit', 'uncommon', FALSE,
+    '{"domain":"ground","atk":3,"def":2}',
+    '{"name_key":"unit_ranger","faction":"player"}'),
+  ('unit_commando', 'unit', 'rare', FALSE,
+    '{"domain":"ground","atk":4,"def":3}',
+    '{"name_key":"unit_commando","faction":"player"}'),
+  ('unit_recon_uav', 'unit', 'uncommon', FALSE,
+    '{"domain":"air","atk":1,"def":1}',
+    '{"name_key":"unit_recon_uav","faction":"player"}'),
+  ('unit_gunship', 'unit', 'rare', FALSE,
+    '{"domain":"air","atk":4,"def":2}',
+    '{"name_key":"unit_gunship","faction":"player"}'),
+  ('unit_jet', 'unit', 'epic', FALSE,
+    '{"domain":"air","atk":6,"def":3}',
+    '{"name_key":"unit_jet","faction":"player"}')
+ON CONFLICT (id) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS energy_ticks (
   user_id      UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   last_tick_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
