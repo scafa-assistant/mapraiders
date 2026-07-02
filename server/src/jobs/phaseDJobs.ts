@@ -107,6 +107,19 @@ export async function runAiTriggerTick(): Promise<number> {
     }
   }
 
+  // Active-phase sectors simulate ALWAYS, even with no recent player activity
+  // in the window — otherwise a triggered sector freezes the moment players
+  // stop walking there: the general keeps issuing directives (ai_general_tick
+  // reads ai_region_state directly) but nothing ever executes them, and the
+  // world only moves where a player has recently been. (Found 2026-07-02:
+  // triggered sector unsimulated for 20 days with 97 pending directives.)
+  const activePhase = await queryMany<{ h3_sector: string }>(
+    `SELECT h3_sector FROM ai_region_state WHERE phase IN ('triggered', 'invasion') LIMIT 50`,
+  );
+  for (const row of activePhase) {
+    if (!sectorPlayers.has(row.h3_sector)) sectorPlayers.set(row.h3_sector, new Set());
+  }
+
   // Preload owned territories once for tier-sum metric (JS parent filter).
   const ownedTerr = await queryMany<{ id: string; owner_id: string; h3_cells: string[] | null }>(
     `SELECT id, owner_id, h3_cells FROM territories

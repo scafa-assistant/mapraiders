@@ -1001,6 +1001,12 @@ export const AI = {
   MAX_UNITS_PER_ATTACK: 4,
   PROBE_INTENSITY_UNITS: (i: number) => Math.max(1, Math.round(i * 4)), // intensity 0..1 -> 1..4 units
   INVASION_STRENGTH_THRESHOLD: 20,
+  MAX_STRENGTH: 30,                // cap for FORTIFY accrual in active phases —
+                                   // invasion (20) stays reachable but repellable
+                                   // (-2 per lost battle, so <=15 battles to drain)
+  DIRECTIVE_TTL_HOURS: 48,         // unexecuted directives older than this expire
+                                   // instead of executing (stale orders must not
+                                   // fire when a sector resumes simulating)
   // LLM
   LLM_MODEL: 'claude-haiku-4-5',   // legacy default (Anthropic); kept for reference
   LLM_MAX_TOKENS: 400,

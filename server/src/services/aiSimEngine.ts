@@ -166,7 +166,19 @@ class AiSimEngine {
     // 1) Drain battle losses since last sim into a counter (pool read).
     const battlesLost = await this.countAiBattlesLostSince(h3Sector, state.last_sim_at);
 
-    // 2) Load pending directives oldest-first (pool read).
+    // 2) Expire stale orders first (own tx): a directive issued while the
+    // sector was not being simulated must not fire days later. Stamping
+    // executed_at keeps the pending query cheap and the log auditable.
+    await transaction((c) =>
+      c.query(
+        `UPDATE ai_directives SET executed_at = NOW()
+          WHERE h3_sector = $1 AND executed_at IS NULL
+            AND created_at < NOW() - ($2 || ' hours')::interval`,
+        [h3Sector, String(AI.DIRECTIVE_TTL_HOURS)],
+      ),
+    );
+
+    // 3) Load pending directives oldest-first (pool read).
     const pending = await queryMany<{ id: string; directive: any }>(
       `SELECT id, directive
          FROM ai_directives
@@ -211,7 +223,7 @@ class AiSimEngine {
           break;
         }
         case 'FORTIFY':
-          strength += 2;
+          strength = Math.min(AI.MAX_STRENGTH, strength + 2);
           break;
         case 'HARVEST_AND_MOVE':
           resources += BigInt(Math.max(0, strength));
