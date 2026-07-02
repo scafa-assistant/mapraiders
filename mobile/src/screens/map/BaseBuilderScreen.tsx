@@ -24,6 +24,7 @@ import MapView, {
   MapPressEvent,
 } from 'react-native-maps';
 import { BaseBuilderScreenProps } from '../../navigation/types';
+import { RADAR_MAP_STYLE } from '../../utils/commander';
 import { useBuildingStore } from '../../store/buildingStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { useAuthStore } from '../../store/authStore';
@@ -62,8 +63,15 @@ const TEXT_SECONDARY = '#7A7470';
 const DANGER = '#D7263D';
 const GOOD = '#1B9E5A';
 
+// Commander radar look: white land, blue water, green woods — no real-world
+// imagery, labels, or building footprints under the base.
+const BASE_MAP_STYLE = [
+  ...RADAR_MAP_STYLE,
+  { featureType: 'landscape.man_made', stylers: [{ visibility: 'off' }] },
+];
+
 // Ground grid overlay tints (placement mode only).
-const GRID_LINE = 'rgba(255,255,255,0.35)';
+const GRID_LINE = 'rgba(21,88,240,0.22)';
 const TERRITORY_STROKE = ACCENT;
 const TERRITORY_FILL = 'rgba(21,88,240,0.08)';
 const GHOST_FREE = 'rgba(27,158,90,0.45)';
@@ -467,7 +475,7 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
             ref={mapRef}
             style={StyleSheet.absoluteFill}
             provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-            mapType="hybrid"
+            customMapStyle={BASE_MAP_STYLE}
             initialRegion={initialRegion}
             onMapReady={onMapReady}
             onRegionChangeComplete={setRegion}
