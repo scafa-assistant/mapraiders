@@ -5,10 +5,17 @@
 // update this map to match.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import type { ImageSourcePropType } from 'react-native';
 import type { BuildingType } from '../services/api';
 
 /** Square build grid cell size in m² (matches server grid.cell_m2). */
 export const CELL_M2 = 25;
+
+/** Meters per degree of latitude (constant everywhere; longitude scales by cos(lat)). */
+export const METERS_PER_DEG_LAT = 111320;
+
+/** Build grid cell edge length in meters. cell_m2 = 25 → 5 m per side. */
+export const CELL_SIZE_M = 5;
 
 /** Max units trainable per single request (matches server TRAINING cap). */
 export const MAX_TRAIN_BATCH = 10;
@@ -138,3 +145,92 @@ export function footprintCells(type: BuildingType): number {
   const [w, h] = FOOTPRINTS[type];
   return w * h;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Geo grid mapping (base builder v2). The build grid is anchored to the
+// south-west corner of the territory polygon's bounding box. Cell (x, y) covers
+// [minLng + x*dLng .. +dLng] × [minLat + y*dLat .. +dLat]; x runs east, y north.
+// All helpers are pure and deterministic so the client can draw and hit-test the
+// grid without a round trip.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface LatLng {
+  latitude: number;
+  longitude: number;
+}
+
+/** Degree size of one grid cell at the given anchor latitude. */
+export function cellDeltas(minLat: number): { dLat: number; dLng: number } {
+  const dLat = CELL_SIZE_M / METERS_PER_DEG_LAT;
+  const dLng = CELL_SIZE_M / (METERS_PER_DEG_LAT * Math.cos((minLat * Math.PI) / 180));
+  return { dLat, dLng };
+}
+
+/** Four corner coordinates of a footprint rect anchored at cell (x, y), size w×h. */
+export function footprintRect(
+  minLat: number,
+  minLng: number,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+): LatLng[] {
+  const { dLat, dLng } = cellDeltas(minLat);
+  const west = minLng + x * dLng;
+  const east = minLng + (x + w) * dLng;
+  const south = minLat + y * dLat;
+  const north = minLat + (y + h) * dLat;
+  return [
+    { latitude: south, longitude: west },
+    { latitude: south, longitude: east },
+    { latitude: north, longitude: east },
+    { latitude: north, longitude: west },
+  ];
+}
+
+/** Center coordinate of a footprint rect anchored at cell (x, y), size w×h. */
+export function footprintCenter(
+  minLat: number,
+  minLng: number,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+): LatLng {
+  const { dLat, dLng } = cellDeltas(minLat);
+  return {
+    latitude: minLat + (y + h / 2) * dLat,
+    longitude: minLng + (x + w / 2) * dLng,
+  };
+}
+
+/** Map a coordinate to the grid cell containing it (may fall outside the grid). */
+export function coordToCell(
+  minLat: number,
+  minLng: number,
+  lat: number,
+  lng: number
+): { x: number; y: number } {
+  const { dLat, dLng } = cellDeltas(minLat);
+  return {
+    x: Math.floor((lng - minLng) / dLng),
+    y: Math.floor((lat - minLat) / dLat),
+  };
+}
+
+/** Bundled ground sprite per building type (drawn as a Marker on the real map). */
+export const BUILDING_SPRITE: Record<BuildingType, ImageSourcePropType> = {
+  shield_generator: require('../../assets/buildings/shield_generator.png'),
+  refinery: require('../../assets/buildings/refinery.png'),
+  radar: require('../../assets/buildings/radar.png'),
+  garrison: require('../../assets/buildings/garrison.png'),
+  silo: require('../../assets/buildings/silo.png'),
+  teleporter: require('../../assets/buildings/teleporter.png'),
+  sawmill: require('../../assets/buildings/sawmill.png'),
+  quarry: require('../../assets/buildings/quarry.png'),
+  farm: require('../../assets/buildings/farm.png'),
+  fishery: require('../../assets/buildings/fishery.png'),
+  military_base: require('../../assets/buildings/military_base.png'),
+  airport: require('../../assets/buildings/airport.png'),
+  datacenter: require('../../assets/buildings/datacenter.png'),
+};

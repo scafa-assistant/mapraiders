@@ -550,11 +550,7 @@ export default function TerritoryDetailScreen({ route, navigation }: TerritoryDe
             {/* Entry point to the isometric base builder */}
             <PressableScale
               style={styles.baseViewBtn}
-              onPress={() => navigation.navigate('BaseBuilder', {
-                territoryId: territory.id,
-                territoryName: territory.ownerUsername,
-                areaM2: territory.area,
-              })}
+              onPress={() => navigation.navigate('BaseBuilder', { territory })}
               feedback="soft"
               accessibilityLabel={S.map.territoryDetail.baseViewBtn}
             >

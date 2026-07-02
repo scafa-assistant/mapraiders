@@ -156,7 +156,7 @@ export type RegisterScreenProps = NativeStackScreenProps<AuthStackParamList, 'Re
 export type MapStackParamList = {
   MapMain: undefined;
   TerritoryDetail: { territory: Territory };
-  BaseBuilder: { territoryId: string; territoryName?: string; areaM2?: number };
+  BaseBuilder: { territory: Territory };
   ChallengeList: undefined;
   ChallengeDetail: { challengeId: string };
   EchoList: undefined;

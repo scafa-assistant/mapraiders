@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,20 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Image,
+  Platform,
   useWindowDimensions,
-  GestureResponderEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Polygon, Text as SvgText, G } from 'react-native-svg';
+import MapView, {
+  Marker,
+  Polygon,
+  Polyline,
+  PROVIDER_GOOGLE,
+  Region,
+  MapPressEvent,
+} from 'react-native-maps';
 import { BaseBuilderScreenProps } from '../../navigation/types';
 import { useBuildingStore } from '../../store/buildingStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -27,15 +35,20 @@ import { BuildToast } from '../../components/fx/BuildToast';
 import BuildingPickerSheet from '../../components/BuildingPickerSheet';
 import {
   FOOTPRINTS,
-  MIN_LEVEL,
   BUILD_COSTS,
   BUILDING_EMOJI,
-  CATEGORY,
-  CATEGORY_COLORS,
+  BUILDING_SPRITE,
   TRAINING,
+  CELL_SIZE_M,
+  METERS_PER_DEG_LAT,
   isTrainer,
   footprintCells,
+  footprintRect,
+  footprintCenter,
+  coordToCell,
+  cellDeltas,
   MAX_TRAIN_BATCH,
+  LatLng,
 } from '../../utils/buildings';
 
 // ─── Brand palette (white/blue, NO purple) ───────────────────────────────────
@@ -49,13 +62,20 @@ const TEXT_SECONDARY = '#7A7470';
 const DANGER = '#D7263D';
 const GOOD = '#1B9E5A';
 
-// Ground diamond tints (subtle checkerboard alternation).
-const GROUND_A = '#F6F4F1';
-const GROUND_B = '#EDEAE5';
-const GROUND_BORDER = '#C0BAB4';
+// Ground grid overlay tints (placement mode only).
+const GRID_LINE = 'rgba(255,255,255,0.35)';
+const TERRITORY_STROKE = ACCENT;
+const TERRITORY_FILL = 'rgba(21,88,240,0.08)';
+const GHOST_FREE = 'rgba(27,158,90,0.45)';
+const GHOST_BLOCKED = 'rgba(215,38,61,0.45)';
 
-// Zoom multipliers over the fit-to-width base tile size.
-const ZOOMS = [0.75, 1, 1.5];
+// Sprite sizing bounds (px) and overhang factor for the pseudo-3D look.
+const SPRITE_MIN = 24;
+const SPRITE_MAX = 260;
+const SPRITE_OVERHANG = 1.35;
+const SPRITE_BUCKET = 8; // round size to this step so markers only re-rasterize on real zoom changes
+
+const TIER_LABELS = ['', 'I', 'II', 'III'];
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
@@ -110,11 +130,6 @@ const UNIT_NAME: Record<string, string> = {
   unit_jet: S.map.baseBuilder.unitJet,
 };
 
-interface Point {
-  x: number;
-  y: number;
-}
-
 /** Do two footprint rectangles overlap? */
 function rectsOverlap(
   a: { x: number; y: number; w: number; h: number },
@@ -123,10 +138,21 @@ function rectsOverlap(
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
+/** Parse a territory polygon into valid map coordinates (mirrors MapScreen). */
+function parsePolygon(polygon: { latitude: number; longitude: number }[] | undefined): LatLng[] {
+  if (!polygon || !Array.isArray(polygon)) return [];
+  return polygon
+    .filter((p) => p && typeof p.latitude === 'number' && typeof p.longitude === 'number')
+    .map((p) => ({ latitude: p.latitude, longitude: p.longitude }));
+}
+
 export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScreenProps) {
-  const { territoryId, territoryName } = route.params;
+  const { territory } = route.params;
+  const territoryId = territory.id;
+  const territoryName = territory.ownerUsername;
   const insets = useSafeAreaInsets();
   const { width: screenW } = useWindowDimensions();
+  const mapRef = useRef<MapView>(null);
 
   const { buildingsByTerritory, gridByTerritory, loading, build, upgrade, demolish, train } =
     useBuildingStore();
@@ -138,12 +164,38 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
   const side = grid?.side ?? 0;
   const cellM2 = grid?.cell_m2 ?? 25;
 
+  // Territory geometry: polygon coords + SW-corner anchor of the bounding box.
+  const coords = useMemo(() => parsePolygon(territory.polygon as any), [territory.polygon]);
+  const bounds = useMemo(() => {
+    if (coords.length < 3) return null;
+    let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+    for (const c of coords) {
+      if (c.latitude < minLat) minLat = c.latitude;
+      if (c.latitude > maxLat) maxLat = c.latitude;
+      if (c.longitude < minLng) minLng = c.longitude;
+      if (c.longitude > maxLng) maxLng = c.longitude;
+    }
+    return { minLat, maxLat, minLng, maxLng };
+  }, [coords]);
+
+  const initialRegion = useMemo<Region | null>(() => {
+    if (!bounds) return null;
+    const latSpan = Math.max(bounds.maxLat - bounds.minLat, 0.0005);
+    const lngSpan = Math.max(bounds.maxLng - bounds.minLng, 0.0005);
+    return {
+      latitude: (bounds.minLat + bounds.maxLat) / 2,
+      longitude: (bounds.minLng + bounds.maxLng) / 2,
+      latitudeDelta: latSpan * 1.6,
+      longitudeDelta: lngSpan * 1.6,
+    };
+  }, [bounds]);
+
   // ─── UI state ──────────────────────────────────────────────────────────────
-  const [zoom, setZoom] = useState(1);
+  const [region, setRegion] = useState<Region | null>(initialRegion);
   const [now, setNow] = useState(() => Date.now());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [placementType, setPlacementType] = useState<BuildingType | null>(null);
-  const [ghost, setGhost] = useState<Point>({ x: 0, y: 0 });
+  const [ghost, setGhost] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showPicker, setShowPicker] = useState(false);
   const [trainFor, setTrainFor] = useState<Building | null>(null);
   const [buildToast, setBuildToast] = useState<{ message: string; key: number } | null>(null);
@@ -173,24 +225,37 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
     return () => clearInterval(iv);
   }, [buildings]);
 
-  // ─── Isometric geometry ──────────────────────────────────────────────────────
-  const baseTile = clamp(Math.floor(screenW / (2 * Math.max(1, side))), 12, 40);
-  const TILE_H = Math.max(10, Math.round(baseTile * ZOOMS[zoom]));
-  const BLOCK_H = Math.round(TILE_H * 1.5);
-  const OX = side * TILE_H;
-  const OY = BLOCK_H + TILE_H;
-  const svgW = 2 * side * TILE_H;
-  const svgH = side * TILE_H + OY + TILE_H;
+  // Fit the camera to the territory once the native map is ready.
+  const onMapReady = useCallback(() => {
+    if (coords.length >= 3) {
+      mapRef.current?.fitToCoordinates(coords, {
+        edgePadding: { top: 90, right: 60, bottom: 160, left: 60 },
+        animated: false,
+      });
+    }
+  }, [coords]);
 
-  const project = useCallback(
-    (i: number, j: number): Point => ({
-      x: (i - j) * TILE_H + OX,
-      y: (i + j) * (TILE_H / 2) + OY,
-    }),
-    [TILE_H, OX, OY]
+  // Screen pixels per real-world meter, derived from the current camera. Drives
+  // sprite sizes so buildings feel pinned to the ground as the player zooms.
+  const pxPerMeter = useMemo(() => {
+    if (!region) return 0;
+    const metersAcross =
+      region.longitudeDelta * METERS_PER_DEG_LAT * Math.cos((region.latitude * Math.PI) / 180);
+    if (metersAcross <= 0) return 0;
+    return screenW / metersAcross;
+  }, [region, screenW]);
+
+  // Sprite side length (px), bucketed so markers re-rasterize only on real zoom steps.
+  const spriteSize = useCallback(
+    (type: BuildingType): number => {
+      const [w] = FOOTPRINTS[type];
+      const meters = w * CELL_SIZE_M;
+      const raw = meters * pxPerMeter * SPRITE_OVERHANG;
+      const clamped = clamp(Math.round(raw), SPRITE_MIN, SPRITE_MAX);
+      return Math.round(clamped / SPRITE_BUCKET) * SPRITE_BUCKET;
+    },
+    [pxPerMeter]
   );
-
-  const pointsStr = (pts: Point[]): string => pts.map((p) => `${p.x},${p.y}`).join(' ');
 
   // Free build area (cells not covered by any placed footprint).
   const usedCells = useMemo(
@@ -201,7 +266,7 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
 
   // First free anchor for a footprint of size w×h.
   const findFirstFree = useCallback(
-    (w: number, h: number): Point => {
+    (w: number, h: number): { x: number; y: number } => {
       for (let y = 0; y + h <= side; y++) {
         for (let x = 0; x + w <= side; x++) {
           const rect = { x, y, w, h };
@@ -237,43 +302,16 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
     );
   }, [placementType, ghost, side, placed]);
 
-  // ─── Tap → cell / building ──────────────────────────────────────────────────
-  const handleTap = (e: GestureResponderEvent) => {
-    const sx = e.nativeEvent.locationX;
-    const sy = e.nativeEvent.locationY;
-
-    // In placement mode: any tap re-anchors the ghost footprint.
-    if (placementType) {
-      const a = (sx - OX) / TILE_H; // i - j
-      const b = (sy - OY) / (TILE_H / 2); // i + j
-      const gx = Math.floor((a + b) / 2);
-      const gy = Math.floor((b - a) / 2);
-      setGhost({ x: clamp(gx, 0, side - 1), y: clamp(gy, 0, side - 1) });
-      fx.tick();
-      return;
-    }
-
-    // Otherwise: hit-test the raised building top faces, front-to-back.
-    for (let idx = placed.length - 1; idx >= 0; idx--) {
-      const bld = placed[idx];
-      const [w, h] = FOOTPRINTS[bld.type];
-      const gx = bld.grid_x as number;
-      const gy = bld.grid_y as number;
-      const top = project(gx, gy);
-      const right = project(gx + w, gy);
-      const bottom = project(gx + w, gy + h);
-      const left = project(gx, gy + h);
-      const cx = (left.x + right.x) / 2;
-      const cy = (top.y + bottom.y) / 2 - BLOCK_H;
-      const hw = (right.x - left.x) / 2;
-      const hh = (bottom.y - top.y) / 2;
-      if (hw > 0 && hh > 0 && Math.abs(sx - cx) / hw + Math.abs(sy - cy) / hh <= 1) {
-        setSelectedId(bld.id);
-        fx.tick();
-        return;
-      }
-    }
-    setSelectedId(null);
+  // ─── Map press → move ghost (placement mode only) ─────────────────────────────
+  const onMapPress = (e: MapPressEvent) => {
+    if (!placementType || !bounds || side === 0) return;
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    const [w, h] = FOOTPRINTS[placementType];
+    const cell = coordToCell(bounds.minLat, bounds.minLng, latitude, longitude);
+    const gx = clamp(cell.x, 0, Math.max(0, side - w));
+    const gy = clamp(cell.y, 0, Math.max(0, side - h));
+    setGhost({ x: gx, y: gy });
+    fx.tick();
   };
 
   // ─── Countdown text for a building under construction ─────────────────────────
@@ -352,125 +390,41 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
     );
   };
 
-  // ─── SVG render helpers ──────────────────────────────────────────────────────
-  const groundTiles = useMemo(() => {
-    const tiles: React.ReactNode[] = [];
-    for (let gy = 0; gy < side; gy++) {
-      for (let gx = 0; gx < side; gx++) {
-        const p = [
-          project(gx, gy),
-          project(gx + 1, gy),
-          project(gx + 1, gy + 1),
-          project(gx, gy + 1),
-        ];
-        tiles.push(
-          <Polygon
-            key={`g${gx}-${gy}`}
-            points={pointsStr(p)}
-            fill={(gx + gy) % 2 === 0 ? GROUND_A : GROUND_B}
-            stroke={GROUND_BORDER}
-            strokeWidth={0.5}
-          />
-        );
-      }
+  // ─── Grid lines (placement mode only) ─────────────────────────────────────────
+  const gridLines = useMemo(() => {
+    if (!bounds || !placementType || side === 0) return [];
+    const { dLat, dLng } = cellDeltas(bounds.minLat);
+    const { minLat, minLng } = bounds;
+    const lines: { key: string; coordinates: LatLng[] }[] = [];
+    for (let j = 0; j <= side; j++) {
+      const lat = minLat + j * dLat;
+      lines.push({
+        key: `h${j}`,
+        coordinates: [
+          { latitude: lat, longitude: minLng },
+          { latitude: lat, longitude: minLng + side * dLng },
+        ],
+      });
     }
-    return tiles;
-  }, [side, project]);
+    for (let i = 0; i <= side; i++) {
+      const lng = minLng + i * dLng;
+      lines.push({
+        key: `v${i}`,
+        coordinates: [
+          { latitude: minLat, longitude: lng },
+          { latitude: minLat + side * dLat, longitude: lng },
+        ],
+      });
+    }
+    return lines;
+  }, [bounds, placementType, side]);
 
-  const renderBuilding = (b: Building) => {
-    const [w, h] = FOOTPRINTS[b.type];
-    const gx = b.grid_x as number;
-    const gy = b.grid_y as number;
-    const cat = CATEGORY[b.type];
-    const col = CATEGORY_COLORS[cat];
-    const underConstruction = b.status === 'building';
-
-    // Ground-level footprint corners.
-    const gTop = project(gx, gy);
-    const gRight = project(gx + w, gy);
-    const gBottom = project(gx + w, gy + h);
-    const gLeft = project(gx, gy + h);
-    // Raised top-face corners.
-    const tTop = { x: gTop.x, y: gTop.y - BLOCK_H };
-    const tRight = { x: gRight.x, y: gRight.y - BLOCK_H };
-    const tBottom = { x: gBottom.x, y: gBottom.y - BLOCK_H };
-    const tLeft = { x: gLeft.x, y: gLeft.y - BLOCK_H };
-
-    const centerX = (tLeft.x + tRight.x) / 2;
-    const centerY = (tTop.y + tBottom.y) / 2;
-    const emojiSize = clamp(Math.min((tRight.x - tLeft.x) / 2, (tBottom.y - tTop.y) / 2), 12, 64);
-    const isSelected = b.id === selectedId;
-
-    return (
-      <G key={b.id} opacity={underConstruction ? 0.55 : 1}>
-        {/* Left side face */}
-        <Polygon points={pointsStr([gLeft, gBottom, tBottom, tLeft])} fill={col.left} />
-        {/* Right side face */}
-        <Polygon points={pointsStr([gBottom, gRight, tRight, tBottom])} fill={col.right} />
-        {/* Top face */}
-        <Polygon
-          points={pointsStr([tTop, tRight, tBottom, tLeft])}
-          fill={col.top}
-          stroke={isSelected ? '#FFFFFF' : col.left}
-          strokeWidth={isSelected ? 2.5 : 0.75}
-        />
-        {/* Emoji label */}
-        <SvgText
-          x={centerX}
-          y={centerY + emojiSize * 0.35}
-          fontSize={emojiSize}
-          textAnchor="middle"
-        >
-          {BUILDING_EMOJI[b.type]}
-        </SvgText>
-        {/* Under-construction hourglass + remaining time */}
-        {underConstruction && (
-          <SvgText
-            x={centerX}
-            y={centerY + emojiSize * 0.35 + emojiSize * 0.7}
-            fontSize={Math.max(9, emojiSize * 0.34)}
-            fill="#FFFFFF"
-            textAnchor="middle"
-          >
-            {`⏳ ${countdown(b.completes_at)}`}
-          </SvgText>
-        )}
-      </G>
-    );
-  };
-
-  // Ghost footprint (placement mode).
-  const ghostPoly = useMemo(() => {
-    if (!placementType) return null;
+  // Ghost footprint corners (placement mode).
+  const ghostCoords = useMemo(() => {
+    if (!placementType || !bounds) return null;
     const [w, h] = FOOTPRINTS[placementType];
-    const p = [
-      project(ghost.x, ghost.y),
-      project(ghost.x + w, ghost.y),
-      project(ghost.x + w, ghost.y + h),
-      project(ghost.x, ghost.y + h),
-    ];
-    const color = ghostValid ? GOOD : DANGER;
-    return (
-      <Polygon
-        points={pointsStr(p)}
-        fill={color}
-        fillOpacity={0.35}
-        stroke={color}
-        strokeWidth={2}
-      />
-    );
-  }, [placementType, ghost, ghostValid, project]);
-
-  // Buildings sorted back-to-front (painter's algorithm).
-  const sortedBuildings = useMemo(
-    () =>
-      [...placed].sort((a, b) => {
-        const sa = (a.grid_x as number) + (a.grid_y as number);
-        const sb = (b.grid_x as number) + (b.grid_y as number);
-        return sa - sb || (a.grid_x as number) - (b.grid_x as number);
-      }),
-    [placed]
-  );
+    return footprintRect(bounds.minLat, bounds.minLng, ghost.x, ghost.y, w, h);
+  }, [placementType, bounds, ghost]);
 
   const placementCost = placementType ? BUILD_COSTS[placementType] : null;
 
@@ -486,9 +440,11 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
           <Text style={styles.headerTitle} numberOfLines={1}>
             {territoryName || S.map.baseBuilder.title}
           </Text>
-          <Text style={styles.headerFree}>
-            {t(S.map.baseBuilder.freeArea, { area: formatArea(freeM2) })}
-          </Text>
+          {grid != null && (
+            <Text style={styles.headerFree}>
+              {t(S.map.baseBuilder.freeArea, { area: formatArea(freeM2) })}
+            </Text>
+          )}
         </View>
         <View style={styles.balanceCol}>
           <Text style={styles.balanceItem}>⚡ {balances.energy}</Text>
@@ -496,8 +452,8 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
         </View>
       </View>
 
-      {/* Iso board */}
-      {grid == null ? (
+      {/* Map board */}
+      {initialRegion == null ? (
         <View style={styles.emptyWrap}>
           {loading ? (
             <ActivityIndicator size="large" color={ACCENT} />
@@ -506,44 +462,87 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
           )}
         </View>
       ) : (
-        <ScrollView
-          style={styles.boardVertical}
-          contentContainerStyle={styles.boardContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.boardHorizontal}
+        <View style={styles.mapWrap}>
+          <MapView
+            ref={mapRef}
+            style={StyleSheet.absoluteFill}
+            provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
+            mapType="hybrid"
+            initialRegion={initialRegion}
+            onMapReady={onMapReady}
+            onRegionChangeComplete={setRegion}
+            onPress={onMapPress}
+            rotateEnabled={false}
+            pitchEnabled={false}
+            scrollEnabled
+            zoomEnabled
+            showsCompass={false}
+            showsUserLocation={false}
+            toolbarEnabled={false}
           >
-            <Pressable onPress={handleTap}>
-              <Svg width={svgW} height={svgH}>
-                <G>{groundTiles}</G>
-                {sortedBuildings.map(renderBuilding)}
-                {ghostPoly}
-              </Svg>
-            </Pressable>
-          </ScrollView>
-        </ScrollView>
-      )}
+            {/* Territory outline */}
+            {coords.length >= 3 && (
+              <Polygon
+                coordinates={coords}
+                strokeColor={TERRITORY_STROKE}
+                strokeWidth={2}
+                fillColor={TERRITORY_FILL}
+              />
+            )}
 
-      {/* Zoom controls */}
-      {grid != null && (
-        <View style={[styles.zoomBar, { bottom: insets.bottom + 20 }]}>
-          <TouchableOpacity
-            style={styles.zoomBtn}
-            onPress={() => { fx.tick(); setZoom((z) => Math.max(0, z - 1)); }}
-            disabled={zoom === 0}
-          >
-            <Ionicons name="remove" size={22} color={zoom === 0 ? BORDER : TEXT} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.zoomBtn}
-            onPress={() => { fx.tick(); setZoom((z) => Math.min(ZOOMS.length - 1, z + 1)); }}
-            disabled={zoom === ZOOMS.length - 1}
-          >
-            <Ionicons name="add" size={22} color={zoom === ZOOMS.length - 1 ? BORDER : TEXT} />
-          </TouchableOpacity>
+            {/* Build grid (placement mode only) */}
+            {gridLines.map((line) => (
+              <Polyline
+                key={line.key}
+                coordinates={line.coordinates}
+                strokeColor={GRID_LINE}
+                strokeWidth={1}
+              />
+            ))}
+
+            {/* Ghost footprint (placement mode) */}
+            {ghostCoords && (
+              <Polygon
+                coordinates={ghostCoords}
+                strokeColor={ghostValid ? GOOD : DANGER}
+                strokeWidth={2}
+                fillColor={ghostValid ? GHOST_FREE : GHOST_BLOCKED}
+              />
+            )}
+
+            {/* Placed buildings as ground sprites */}
+            {bounds &&
+              placed.map((b) => {
+                const [w, h] = FOOTPRINTS[b.type];
+                const center = footprintCenter(
+                  bounds.minLat,
+                  bounds.minLng,
+                  b.grid_x as number,
+                  b.grid_y as number,
+                  w,
+                  h
+                );
+                const size = spriteSize(b.type);
+                const underConstruction = b.status === 'building';
+                return (
+                  <BuildingMarker
+                    key={`${b.id}-${size}`}
+                    coordinate={center}
+                    size={size}
+                    type={b.type}
+                    tier={b.tier}
+                    dimmed={underConstruction}
+                    countdown={underConstruction ? countdown(b.completes_at) : null}
+                    selected={b.id === selectedId}
+                    onPress={() => {
+                      if (placementType) return;
+                      setSelectedId(b.id);
+                      fx.tick();
+                    }}
+                  />
+                );
+              })}
+          </MapView>
         </View>
       )}
 
@@ -571,9 +570,9 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
                 ⚡{placementCost.energy} ⚙{placementCost.tech}
               </Text>
             )}
-            {!ghostValid && (
-              <Text style={styles.placeBlocked}>{S.map.baseBuilder.blockedHint}</Text>
-            )}
+            <Text style={ghostValid ? styles.placeHint : styles.placeBlocked}>
+              {ghostValid ? S.map.baseBuilder.placeHint : S.map.baseBuilder.blockedHint}
+            </Text>
           </View>
           <TouchableOpacity
             style={styles.placeCancel}
@@ -689,6 +688,67 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
         onDone={() => setBuildToast(null)}
       />
     </SafeAreaView>
+  );
+}
+
+// ─── Building marker (ground sprite) ───────────────────────────────────────────
+
+interface BuildingMarkerProps {
+  coordinate: LatLng;
+  size: number;
+  type: BuildingType;
+  tier: number;
+  dimmed: boolean;
+  countdown: string | null;
+  selected: boolean;
+  onPress: () => void;
+}
+
+/**
+ * A placed building rendered as a Marker anchored to the ground. tracksViewChanges
+ * starts true so the native marker rasterizes the sprite, then flips false for
+ * performance; a size change re-keys the marker (parent), remounting this so it
+ * re-rasterizes at the new zoom bucket.
+ */
+function BuildingMarker({
+  coordinate,
+  size,
+  type,
+  tier,
+  dimmed,
+  countdown,
+  selected,
+  onPress,
+}: BuildingMarkerProps) {
+  const [tracks, setTracks] = useState(true);
+  const tierLabel = TIER_LABELS[tier] ?? `${tier}`;
+  return (
+    <Marker
+      coordinate={coordinate}
+      anchor={{ x: 0.5, y: 0.85 }}
+      tracksViewChanges={tracks}
+      onPress={onPress}
+    >
+      <View style={styles.markerWrap}>
+        <View style={[styles.markerChip, selected && styles.markerChipSelected]}>
+          <Text style={styles.markerChipText}>
+            {BUILDING_EMOJI[type]}
+            {tierLabel ? ` ${tierLabel}` : ''}
+          </Text>
+        </View>
+        {dimmed && countdown ? (
+          <View style={styles.markerCountdown}>
+            <Text style={styles.markerCountdownText}>⏳ {countdown}</Text>
+          </View>
+        ) : null}
+        <Image
+          source={BUILDING_SPRITE[type]}
+          style={{ width: size, height: size, opacity: dimmed ? 0.55 : 1 }}
+          resizeMode="contain"
+          onLoad={() => setTracks(false)}
+        />
+      </View>
+    </Marker>
   );
 }
 
@@ -815,29 +875,32 @@ const styles = StyleSheet.create({
   balanceCol: { alignItems: 'flex-end', gap: 2 },
   balanceItem: { color: TEXT, fontSize: 13, fontWeight: '700' },
 
-  boardVertical: { flex: 1 },
-  boardContent: { alignItems: 'center' },
-  boardHorizontal: { paddingHorizontal: 12, paddingVertical: 12 },
+  mapWrap: { flex: 1, overflow: 'hidden' },
 
   emptyWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
   emptyText: { color: TEXT_SECONDARY, fontSize: 14, textAlign: 'center', lineHeight: 20 },
 
-  zoomBar: { position: 'absolute', left: 16, gap: 8 },
-  zoomBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: SURFACE,
-    borderWidth: 1,
-    borderColor: BORDER,
-    justifyContent: 'center',
+  // Ground marker
+  markerWrap: { alignItems: 'center', justifyContent: 'flex-end' },
+  markerChip: {
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: 'rgba(20,18,16,0.75)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginBottom: 2,
   },
+  markerChipSelected: { backgroundColor: ACCENT },
+  markerChipText: { color: '#FFFFFF', fontSize: 11, fontWeight: '800' },
+  markerCountdown: {
+    backgroundColor: 'rgba(20,18,16,0.75)',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 6,
+    marginBottom: 2,
+  },
+  markerCountdownText: { color: '#FFFFFF', fontSize: 10, fontWeight: '700' },
 
   buildFab: {
     position: 'absolute',
@@ -874,6 +937,7 @@ const styles = StyleSheet.create({
   placeInfo: { flex: 1 },
   placeName: { color: TEXT, fontSize: 14, fontWeight: '800' },
   placeCost: { color: ACCENT, fontSize: 12, fontWeight: '700', marginTop: 2 },
+  placeHint: { color: TEXT_SECONDARY, fontSize: 11, fontWeight: '600', marginTop: 2 },
   placeBlocked: { color: DANGER, fontSize: 11, fontWeight: '700', marginTop: 2 },
   placeCancel: {
     flexDirection: 'row',
