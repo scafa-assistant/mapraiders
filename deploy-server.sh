@@ -57,7 +57,11 @@ if [ -d dist ]; then cp -a dist "dist.bak_${STAMP}"; fi
 ls -dt dist.bak_* 2>/dev/null | tail -n +4 | xargs -r rm -rf
 
 MARKER=$(mktemp)
-echo "tsc-Build..."
+# Deterministischer Full-Rebuild: tsconfig hat incremental:true, ein
+# unveraenderter Tree wuerde sonst nichts emittieren und das Artefakt-Gate
+# als False Positive reissen. Backup fuer Rollback liegt schon in dist.bak_*.
+rm -rf dist tsconfig.tsbuildinfo
+echo "tsc-Build (voll)..."
 ./node_modules/.bin/tsc -p tsconfig.json
 
 if [ ! -f dist/index.js ] || [ ! dist/index.js -nt "$MARKER" ]; then
