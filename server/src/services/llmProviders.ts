@@ -256,14 +256,20 @@ export class MoonshotProvider implements LlmProvider {
       temperature: isReasoning ? 1 : 0.7,
     };
 
-    const res = await fetchWithTimeout(`${base}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${key}`,
-        'Content-Type': 'application/json',
+    const res = await fetchWithTimeout(
+      `${base}/chat/completions`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    });
+      // Reasoning models think before they answer — 20s kills them mid-thought
+      // ("This operation was aborted", verified 2026-07-02).
+      isReasoning ? 60_000 : REQUEST_TIMEOUT_MS,
+    );
 
     if (!res.ok) {
       const detail = await res.text().catch(() => '');
