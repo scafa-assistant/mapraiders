@@ -5,9 +5,10 @@ MapRaiders API + WebSocket auf dem Hetzner Server deployen, NEBEN dem bestehende
 
 ## Server Info
 - **IP:** 159.69.157.42
-- **SSH:** root@159.69.157.42:22 (Fallback Port 443)
-- **Passwort:** 3jTTdX4JqHEN
+- **SSH:** root@159.69.157.42:22 (Fallback Port 443), NUR key-based: `ssh -i ~/.ssh/mapraiders-deploy/deploy_key root@159.69.157.42` (Passwort-Login serverseitig deaktiviert, 2026-07-02)
 - **OS:** Linux (Hetzner)
+
+> **SECRETS-REGEL:** Keine Passwoerter/Secrets in dieser Datei oder irgendwo im Repo. Live-Werte stehen ausschliesslich in `/opt/mapraiders/server/.env` auf dem Server; lokale Kopie der Zugangsdaten in `~/.ssh/mapraiders-deploy/secrets.local.md` (nicht im Repo). Alle frueher hier abgedruckten Werte wurden am 2026-07-02 rotiert.
 
 ## Was bereits auf dem Server läuft (NICHT ANFASSEN!)
 | Was | Pfad | Port | Service |
@@ -73,7 +74,7 @@ npx tsc  # TypeScript kompilieren → dist/
 ### Schritt 4: PostgreSQL einrichten
 ```bash
 sudo -u postgres psql << 'SQL'
-CREATE USER mapraiders WITH PASSWORD 'MapRaiders_Pr0d_2026!';
+CREATE USER mapraiders WITH PASSWORD '<DB_PASSWORD>';  -- generate: openssl rand -hex 24
 CREATE DATABASE mapraiders OWNER mapraiders;
 \c mapraiders
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -90,10 +91,10 @@ sudo -u postgres psql -d mapraiders -f /opt/mapraiders/server/src/db/seed.sql
 cat > /opt/mapraiders/server/.env << 'EOF'
 PORT=3000
 HOST=0.0.0.0
-DATABASE_URL=postgresql://mapraiders:MapRaiders_Pr0d_2026!@localhost:5432/mapraiders
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=MapRaiders-JWT-Secret-Change-This-In-Production-2026
-JWT_REFRESH_SECRET=MapRaiders-Refresh-Secret-Change-This-2026
+DATABASE_URL=postgresql://mapraiders:<DB_PASSWORD>@127.0.0.1:5433/mapraiders
+REDIS_URL=redis://:<REDIS_PASSWORD>@127.0.0.1:6379
+JWT_SECRET=<generate: openssl rand -hex 32>
+JWT_REFRESH_SECRET=<generate: openssl rand -hex 32>
 JWT_EXPIRES_IN=24h
 JWT_REFRESH_EXPIRES_IN=7d
 CORS_ORIGIN=https://mapraiders.com,https://api.mapraiders.com
