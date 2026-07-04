@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
-  Image,
   Platform,
   useWindowDimensions,
 } from 'react-native';
@@ -34,11 +33,11 @@ import { formatArea } from '../../utils/formatters';
 import { fx } from '../../services/fx';
 import { BuildToast } from '../../components/fx/BuildToast';
 import BuildingPickerSheet from '../../components/BuildingPickerSheet';
+import BuildingSprite from '../../components/BuildingSprite';
 import {
   FOOTPRINTS,
   BUILD_COSTS,
   BUILDING_EMOJI,
-  BUILDING_SPRITE,
   TRAINING,
   CELL_SIZE_M,
   METERS_PER_DEG_LAT,
@@ -729,6 +728,12 @@ function BuildingMarker({
   onPress,
 }: BuildingMarkerProps) {
   const [tracks, setTracks] = useState(true);
+  // SVG sprites have no onLoad; let the native marker rasterize once, then freeze.
+  // Re-mounts on a size (zoom bucket) change via the parent key, re-rasterizing.
+  useEffect(() => {
+    const t = setTimeout(() => setTracks(false), 650);
+    return () => clearTimeout(t);
+  }, []);
   const tierLabel = TIER_LABELS[tier] ?? `${tier}`;
   return (
     <Marker
@@ -749,12 +754,7 @@ function BuildingMarker({
             <Text style={styles.markerCountdownText}>⏳ {countdown}</Text>
           </View>
         ) : null}
-        <Image
-          source={BUILDING_SPRITE[type]}
-          style={{ width: size, height: size, opacity: dimmed ? 0.55 : 1 }}
-          resizeMode="contain"
-          onLoad={() => setTracks(false)}
-        />
+        <BuildingSprite type={type} size={size} opacity={dimmed ? 0.55 : 1} />
       </View>
     </Marker>
   );
