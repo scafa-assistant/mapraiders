@@ -1237,6 +1237,14 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             />
           </TouchableOpacity>
         )}
+        {/* DEV (2026-07-04): MapLibre 3D Phase-A proof. Temporary entry, removed once
+            the real MapScreen migration lands (one-layer 3D milestone). */}
+        <TouchableOpacity
+          style={[styles.controlButton, { backgroundColor: '#F5A623', borderColor: '#C77E12' }]}
+          onPress={() => navigation.navigate('MapLibreProof')}
+        >
+          <Ionicons name="cube" size={22} color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
 
       {/* Streifzug encounter overlay */}

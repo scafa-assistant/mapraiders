@@ -157,6 +157,7 @@ export type MapStackParamList = {
   MapMain: undefined;
   TerritoryDetail: { territory: Territory };
   BaseBuilder: { territory: Territory };
+  MapLibreProof: undefined;
   ChallengeList: undefined;
   ChallengeDetail: { challengeId: string };
   EchoList: undefined;
@@ -220,6 +221,10 @@ export type TerritoryDetailScreenProps = NativeStackScreenProps<
 export type BaseBuilderScreenProps = NativeStackScreenProps<
   MapStackParamList,
   'BaseBuilder'
+>;
+export type MapLibreProofScreenProps = NativeStackScreenProps<
+  MapStackParamList,
+  'MapLibreProof'
 >;
 
 export type ChallengeListScreenProps = NativeStackScreenProps<MapStackParamList, 'ChallengeList'>;

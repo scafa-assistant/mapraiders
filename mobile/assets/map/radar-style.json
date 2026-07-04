@@ -1,0 +1,52 @@
+{
+  "version": 8,
+  "name": "MapRaiders Radar",
+  "metadata": {
+    "note": "Commander radar look: white land, blue water, green woods, no labels/POI/roads. OpenFreeMap vector tiles (free, no key). Colors mirror utils/commander RADAR_MAP_STYLE + brand off-white."
+  },
+  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "https://tiles.openfreemap.org/planet"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": { "background-color": "#F6F4F1" }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "park",
+      "filter": ["==", "$type", "Polygon"],
+      "paint": { "fill-color": "#DCE8D6", "fill-opacity": 0.7 }
+    },
+    {
+      "id": "landcover_wood",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["==", "class", "wood"],
+      "paint": { "fill-color": "#DCE8D6", "fill-opacity": 0.6 }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "filter": ["!=", "brunnel", "tunnel"],
+      "paint": { "fill-color": "#CFE0F5" }
+    },
+    {
+      "id": "waterway",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "waterway",
+      "paint": { "line-color": "#BFD6F2", "line-width": 1.2 }
+    }
+  ]
+}
