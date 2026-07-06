@@ -191,6 +191,7 @@ const MapViewImpl = forwardRef<MapViewRef, MapViewProps>((props, ref) => {
       ref={mapR}
       style={style ?? StyleSheet.absoluteFill}
       mapStyle={radarStyle as any}
+      touchPitch
       compass={!!showsCompass}
       logo={false}
       attribution={false}

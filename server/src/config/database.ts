@@ -69,6 +69,21 @@ export async function initDatabase(): Promise<void> {
         // ignore -- the DB may already have it
       }
     }
+
+    // One-layer world map: real OSM buildings claimed as game buildings.
+    // Self-applying (idempotent) so a plain deploy+restart provisions it.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS claimed_buildings (
+        osm_id        TEXT PRIMARY KEY,
+        owner_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        building_type TEXT NOT NULL DEFAULT 'workshop',
+        lat           DOUBLE PRECISION NOT NULL,
+        lng           DOUBLE PRECISION NOT NULL,
+        claimed_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_claimed_buildings_bbox ON claimed_buildings (lat, lng);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_claimed_buildings_owner ON claimed_buildings (owner_id);`);
   } finally {
     client.release();
   }

@@ -16,8 +16,107 @@ import { featureService } from '../services/featureService';
 import { buildingEngine } from '../services/buildingEngine';
 import { extractionService } from '../services/extractionService';
 import { isExtractionType } from '../config/constants';
+import { queryMany, queryOne } from '../config/database';
 
 const router = Router();
+
+// ─── One-Layer World Map: claim real OSM buildings ───────────────────────────
+// Separate namespace (/osm/*) so it never collides with the grid-building routes
+// below. Not feature-gated: this is the core one-layer map, not the economy.
+const OSM_CLAIM_TYPES = ['workshop', 'refinery', 'garrison', 'storage', 'radar'];
+
+/**
+ * GET /api/buildings/osm/claimed?north&south&east&west
+ * Claimed real-buildings inside the viewport, with each owner's color + type.
+ */
+router.get('/osm/claimed', authenticate, async (req: Request, res: Response) => {
+  const north = parseFloat(req.query.north as string);
+  const south = parseFloat(req.query.south as string);
+  const east = parseFloat(req.query.east as string);
+  const west = parseFloat(req.query.west as string);
+  if ([north, south, east, west].some((n) => isNaN(n))) {
+    return res.status(400).json({ success: false, message: 'Bounding box required: north, south, east, west' });
+  }
+  try {
+    const rows = await queryMany<any>(
+      `SELECT cb.osm_id, cb.owner_id, cb.building_type, cb.lat, cb.lng,
+              u.territory_color AS owner_color, u.username AS owner_username
+         FROM claimed_buildings cb
+         JOIN users u ON u.id = cb.owner_id
+        WHERE cb.lat BETWEEN $1 AND $2 AND cb.lng BETWEEN $3 AND $4`,
+      [south, north, west, east],
+    );
+    return res.json({
+      success: true,
+      data: {
+        buildings: rows.map((r) => ({
+          osmId: r.osm_id,
+          ownerId: r.owner_id,
+          type: r.building_type,
+          lat: r.lat,
+          lng: r.lng,
+          color: r.owner_color || '#1558F0',
+          ownerName: r.owner_username,
+          isMine: r.owner_id === req.userId,
+        })),
+      },
+    });
+  } catch (err) {
+    console.error('[Buildings] GET /osm/claimed error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load claimed buildings' });
+  }
+});
+
+/**
+ * POST /api/buildings/osm/claim  { osmId, lat, lng, type? }
+ * Claim a real building. Fails if already owned by someone else.
+ */
+router.post('/osm/claim', authenticate, async (req: Request, res: Response) => {
+  const { osmId, lat, lng, type } = req.body ?? {};
+  if (!osmId || typeof lat !== 'number' || typeof lng !== 'number') {
+    return res.status(400).json({ success: false, message: 'osmId, lat, lng required' });
+  }
+  const buildingType = OSM_CLAIM_TYPES.includes(type) ? type : 'workshop';
+  try {
+    const existing = await queryOne<{ owner_id: string }>(
+      `SELECT owner_id FROM claimed_buildings WHERE osm_id = $1`,
+      [String(osmId)],
+    );
+    if (existing && existing.owner_id !== req.userId) {
+      return res.status(409).json({ success: false, message: 'BUILDING_TAKEN' });
+    }
+    await queryOne(
+      `INSERT INTO claimed_buildings (osm_id, owner_id, building_type, lat, lng)
+         VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (osm_id) DO UPDATE SET building_type = EXCLUDED.building_type
+       RETURNING osm_id`,
+      [String(osmId), req.userId, buildingType, lat, lng],
+    );
+    return res.json({ success: true, data: { osmId: String(osmId), type: buildingType } });
+  } catch (err) {
+    console.error('[Buildings] POST /osm/claim error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to claim building' });
+  }
+});
+
+/**
+ * POST /api/buildings/osm/release  { osmId }
+ * Release a building the caller owns.
+ */
+router.post('/osm/release', authenticate, async (req: Request, res: Response) => {
+  const { osmId } = req.body ?? {};
+  if (!osmId) return res.status(400).json({ success: false, message: 'osmId required' });
+  try {
+    await queryMany(
+      `DELETE FROM claimed_buildings WHERE osm_id = $1 AND owner_id = $2`,
+      [String(osmId), req.userId],
+    );
+    return res.json({ success: true, data: { osmId: String(osmId) } });
+  } catch (err) {
+    console.error('[Buildings] POST /osm/release error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to release building' });
+  }
+});
 
 const RESOURCES_FLAG = 'resources';
 const ECONOMY_FLAG = 'economy';

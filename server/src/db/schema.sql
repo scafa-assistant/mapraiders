@@ -1605,3 +1605,20 @@ WHERE NOT EXISTS (
 );
 UPDATE users SET banned = TRUE
  WHERE id = '00000000-0000-0000-0000-00000000a111' AND banned = FALSE;
+
+-- ============================================================
+-- CLAIMED BUILDINGS (One-Layer World Map)
+-- Real OSM building footprints claimed as game buildings. One owner per
+-- building (osm_id PK). Rendered in the owner's territory_color + type badge.
+-- Also self-applied idempotently in config/database.ts initDatabase().
+-- ============================================================
+CREATE TABLE IF NOT EXISTS claimed_buildings (
+  osm_id        TEXT PRIMARY KEY,
+  owner_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  building_type TEXT NOT NULL DEFAULT 'workshop',
+  lat           DOUBLE PRECISION NOT NULL,
+  lng           DOUBLE PRECISION NOT NULL,
+  claimed_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_claimed_buildings_bbox  ON claimed_buildings (lat, lng);
+CREATE INDEX IF NOT EXISTS idx_claimed_buildings_owner ON claimed_buildings (owner_id);

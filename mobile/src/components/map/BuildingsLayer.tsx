@@ -1,36 +1,39 @@
 // ============================================================
-// BuildingsLayer , echte OSM-Gebäude auf der Hauptkarte
+// BuildingsLayer , echte OSM-Gebäude auf der Hauptkarte (server-persistent)
 // (2026-07-06, one-layer 3D milestone)
 //
-// Rendert die ECHTEN Gebäude des sichtbaren Ausschnitts (OpenFreeMap/OSM via
-// Overpass) als unsere Spielgebäude: neutral bis EINGENOMMEN, dann in der
-// Besitzerfarbe (Profilfarbe; aktuell Demo = Marken-Blau) + Typ-Abzeichen.
-// Lebt als Kind der (MapLibre-)Hauptkarte, gated auf Zoom, lädt beim Pannen
-// debounced nach. Claim-Status aktuell lokal (Server-Persistenz = nächster
-// Schritt). Siehe _docs/gdd/VISION_OneLayer_3D_Weltkarte.md.
+// Rendert die ECHTEN Gebäude des sichtbaren Ausschnitts (OSM via Overpass) als
+// unsere Spielgebäude direkt auf der MapLibre-Hauptkarte: neutral bis
+// EINGENOMMEN, dann in der Besitzer-PROFILFARBE (users.territory_color) + Typ-
+// Abzeichen. Claims sind SERVER-persistent (/api/buildings/osm/*), also über
+// Neustarts hinweg und für alle Spieler sichtbar. Tap = einnehmen/freigeben
+// (optimistisch, dann Server-Sync). Gated auf Zoom, debounced Overpass-Fetch.
+// Siehe _docs/gdd/VISION_OneLayer_3D_Weltkarte.md.
 // ============================================================
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GeoJSONSource, Layer, Marker as MLMarker } from '@maplibre/maplibre-react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { mapBuildingApi } from '@services/api';
 
-const OWNER_COLOR = '#1558F0'; // TODO: Spieler-Profilfarbe, sobald im User-Modell
 const NEUTRAL = '#D8D2CA';
-// Gebäude nur laden/zeigen, wenn nah genug gezoomt (sonst tausende Häuser).
-const MAX_SPAN_DEG = 0.02; // ~2 km Nord-Süd
+const FALLBACK_COLOR = '#1558F0'; // used only until the server color syncs in
+const MAX_SPAN_DEG = 0.02; // only load buildings when zoomed in (~2 km N-S)
 
 export interface Bbox { north: number; south: number; east: number; west: number; }
 
-const CLAIM_TYPES = [
-  { key: 'workshop', icon: 'construct' as const },
-  { key: 'refinery', icon: 'flame' as const },
-  { key: 'garrison', icon: 'shield' as const },
-  { key: 'storage', icon: 'cube' as const },
-  { key: 'radar', icon: 'radio' as const },
-];
+// Type → badge icon. Claiming defaults to 'workshop' (type-picker is future UX).
+const TYPE_ICON: Record<string, keyof typeof Ionicons.glyphMap> = {
+  workshop: 'construct',
+  refinery: 'flame',
+  garrison: 'shield',
+  storage: 'cube',
+  radar: 'radio',
+};
 
 interface Building { id: string; ring: [number, number][]; centroid: [number, number]; height: number; }
+interface Claim { type: string; color: string; isMine: boolean; }
 
 function heightFromTags(tags?: Record<string, string>): number {
   if (!tags) return 6;
@@ -69,19 +72,31 @@ async function fetchBuildings(b: Bbox): Promise<Building[]> {
   return out;
 }
 
-interface BuildingsLayerProps {
-  /** Current map viewport bounds. Null disables the layer. */
-  bbox: Bbox | null;
+async function fetchClaims(b: Bbox): Promise<Record<string, Claim>> {
+  try {
+    const { data } = await mapBuildingApi.getClaimed(b);
+    const list = data?.data?.buildings ?? [];
+    const map: Record<string, Claim> = {};
+    for (const c of list) map[String(c.osmId)] = { type: c.type, color: c.color, isMine: c.isMine };
+    return map;
+  } catch {
+    return {};
+  }
 }
+
+interface BuildingsLayerProps { bbox: Bbox | null; }
 
 export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
   const [buildings, setBuildings] = useState<Building[]>([]);
-  const [claimed, setClaimed] = useState<Record<string, number>>({});
+  const [claims, setClaims] = useState<Record<string, Claim>>({});
   const lastFetched = useRef<Bbox | null>(null);
+  const currentBbox = useRef<Bbox | null>(null);
 
-  // Fetch (debounced) when the viewport moves outside the last fetched area.
+  // Fetch OSM footprints + server claims when the viewport moves out of the
+  // last fetched area (debounced). Claims refetch too so others' claims appear.
   useEffect(() => {
     if (!bbox) return;
+    currentBbox.current = bbox;
     const span = bbox.north - bbox.south;
     if (span > MAX_SPAN_DEG) { setBuildings([]); lastFetched.current = null; return; }
     const lf = lastFetched.current;
@@ -90,35 +105,57 @@ export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
       const pad = span * 0.5; // over-fetch so small pans don't re-hit Overpass
       const fb: Bbox = { north: bbox.north + pad, south: bbox.south - pad, east: bbox.east + pad, west: bbox.west - pad };
       fetchBuildings(fb).then((b) => { setBuildings(b); lastFetched.current = fb; }).catch(() => {});
+      fetchClaims(fb).then(setClaims).catch(() => {});
     }, 700);
     return () => clearTimeout(t);
   }, [bbox?.north, bbox?.south, bbox?.east, bbox?.west]);
 
+  const refreshClaims = () => {
+    const b = currentBbox.current;
+    if (b) fetchClaims(b).then(setClaims).catch(() => {});
+  };
+
   const fc = useMemo(() => ({
     type: 'FeatureCollection' as const,
-    features: buildings.map((b) => ({
-      type: 'Feature' as const,
-      id: b.id,
-      properties: { id: b.id, height: b.height, owned: claimed[b.id] !== undefined },
-      geometry: { type: 'Polygon' as const, coordinates: [b.ring] },
-    })),
-  }), [buildings, claimed]);
+    features: buildings.map((b) => {
+      const c = claims[b.id];
+      return {
+        type: 'Feature' as const,
+        id: b.id,
+        properties: { id: b.id, height: b.height, owned: !!c, color: c ? c.color : NEUTRAL },
+        geometry: { type: 'Polygon' as const, coordinates: [b.ring] },
+      };
+    }),
+  }), [buildings, claims]);
 
-  const claimedList = useMemo(
-    () => buildings.filter((b) => claimed[b.id] !== undefined),
-    [buildings, claimed],
+  // Badges only for claimed buildings whose footprint is in view.
+  const claimedInView = useMemo(
+    () => buildings.filter((b) => claims[b.id]),
+    [buildings, claims],
   );
 
-  // Tap a real building → take/release it.
+  // Tap a real building → claim (if free) or release (if mine). Others' = noop.
   const onPress = (e: any) => {
     const id = e?.nativeEvent?.features?.[0]?.properties?.id;
     if (id == null) return;
-    setClaimed((prev) => {
-      const next = { ...prev };
-      if (next[id] !== undefined) delete next[id];
-      else next[id] = Object.keys(prev).length % CLAIM_TYPES.length;
-      return next;
-    });
+    const key = String(id);
+    const b = buildings.find((x) => x.id === key);
+    if (!b) return;
+    const existing = claims[key];
+
+    if (existing?.isMine) {
+      // Release , optimistic.
+      setClaims((prev) => { const n = { ...prev }; delete n[key]; return n; });
+      mapBuildingApi.release(key).then(refreshClaims).catch(refreshClaims);
+    } else if (!existing) {
+      // Claim , optimistic (real profile color syncs on refresh).
+      setClaims((prev) => ({ ...prev, [key]: { type: 'workshop', color: FALLBACK_COLOR, isMine: true } }));
+      mapBuildingApi
+        .claim({ osmId: key, lat: b.centroid[1], lng: b.centroid[0], type: 'workshop' })
+        .then(refreshClaims)
+        .catch(refreshClaims);
+    }
+    // existing && !isMine → taken by someone else, ignore.
   };
 
   if (buildings.length === 0) return null;
@@ -131,19 +168,20 @@ export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
           type="fill-extrusion"
           source="mainblds"
           paint={{
-            'fill-extrusion-color': ['case', ['get', 'owned'], OWNER_COLOR, NEUTRAL],
+            'fill-extrusion-color': ['get', 'color'],
             'fill-extrusion-height': ['get', 'height'],
             'fill-extrusion-base': 0,
             'fill-extrusion-opacity': ['case', ['get', 'owned'], 0.9, 0.55],
           } as any}
         />
       </GeoJSONSource>
-      {claimedList.map((b) => {
-        const t = CLAIM_TYPES[claimed[b.id]];
+      {claimedInView.map((b) => {
+        const c = claims[b.id];
+        const icon = TYPE_ICON[c.type] ?? 'business';
         return (
           <MLMarker key={b.id} lngLat={b.centroid}>
-            <View style={styles.badge}>
-              <Ionicons name={t.icon} size={13} color="#FFFFFF" />
+            <View style={[styles.badge, { backgroundColor: c.color }]}>
+              <Ionicons name={icon} size={13} color="#FFFFFF" />
             </View>
           </MLMarker>
         );
@@ -155,7 +193,7 @@ export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
 const styles = StyleSheet.create({
   badge: {
     width: 24, height: 24, borderRadius: 12,
-    backgroundColor: OWNER_COLOR, borderWidth: 2, borderColor: '#FFFFFF',
+    borderWidth: 2, borderColor: '#FFFFFF',
     justifyContent: 'center', alignItems: 'center',
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.3, shadowRadius: 2, elevation: 4,
   },

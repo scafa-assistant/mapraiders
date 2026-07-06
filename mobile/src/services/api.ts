@@ -516,6 +516,19 @@ export const placeApi = {
     api.get('/places/stats', { params: { lat, lng, radius } }),
 };
 
+// ─── Map Buildings API (real OSM buildings claimed on the world map) ─────────
+
+export const mapBuildingApi = {
+  getClaimed: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/buildings/osm/claimed', { params: bbox }),
+
+  claim: (payload: { osmId: string; lat: number; lng: number; type?: string }) =>
+    api.post('/buildings/osm/claim', payload),
+
+  release: (osmId: string) =>
+    api.post('/buildings/osm/release', { osmId }),
+};
+
 // ─── Resonance API ─────────────────────────────────────────────────────────
 
 export const resonanceApi = {
