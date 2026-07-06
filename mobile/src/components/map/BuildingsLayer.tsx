@@ -178,7 +178,18 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
             'fill-extrusion-color': ['get', 'color'],
             'fill-extrusion-height': ['get', 'height'],
             'fill-extrusion-base': 0,
-            'fill-extrusion-opacity': ['case', ['get', 'owned'], 0.9, 0.55],
+            'fill-extrusion-opacity': ['case', ['get', 'owned'], 0.95, 0.6],
+          } as any}
+        />
+        {/* Crisp white outline on owned buildings so they pop even when the
+            owner color matches the territory tint; faint edge on neutral ones. */}
+        <Layer
+          id="mainblds-line"
+          type="line"
+          source="mainblds"
+          paint={{
+            'line-color': ['case', ['get', 'owned'], '#FFFFFF', 'rgba(120,112,102,0.45)'],
+            'line-width': ['case', ['get', 'owned'], 2.2, 0.6],
           } as any}
         />
       </GeoJSONSource>

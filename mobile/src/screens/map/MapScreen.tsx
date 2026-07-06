@@ -775,7 +775,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           if (validCoords.length < 3) return null;
           const baseColor = territory.color || CLASS_COLORS[territory.movementClass] || '#1558F0';
           const decay = isNaN(territory.decayPercent) ? 0 : territory.decayPercent;
-          const alpha = Math.round(Math.max(0.1, (1 - decay / 100)) * 0.4 * 255);
+          // Light tint (not a flood) so buildings + map read through the territory.
+          const alpha = Math.round(Math.max(0.06, (1 - decay / 100)) * 0.16 * 255);
           const hexAlpha = alpha.toString(16).padStart(2, '0');
           return (
             <Polygon
@@ -783,7 +784,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
               coordinates={validCoords}
               fillColor={`${baseColor}${hexAlpha}`}
               strokeColor={baseColor}
-              strokeWidth={1.5}
+              strokeWidth={2.5}
               tappable
               onPress={() => handleTerritoryPress(territory)}
             />
