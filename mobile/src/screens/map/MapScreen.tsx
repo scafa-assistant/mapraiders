@@ -16,6 +16,7 @@ import {
   ScrollView,
 } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent, type MapViewRef } from '@components/map';
+import BuildingsLayer, { type Bbox } from '@components/map/BuildingsLayer';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
@@ -155,6 +156,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
   const [canCloseClaim, setCanCloseClaim] = useState(false);
   const [hideOverlays, setHideOverlays] = useState(false); // Briefly hides polygons to force native re-render
+  const [buildingsBbox, setBuildingsBbox] = useState<Bbox | null>(null); // viewport for real-building layer
   const CLOSE_THRESHOLD_M = 50;
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
@@ -259,6 +261,20 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       }, 500);
     }
   }, [currentLocation, isTracking]);
+
+  // Seed the real-building layer's viewport around the user before the first
+  // region-change fires (so buildings appear on initial load, not only on pan).
+  useEffect(() => {
+    if (currentLocation && !buildingsBbox) {
+      const d = 0.006;
+      setBuildingsBbox({
+        north: currentLocation.latitude + d,
+        south: currentLocation.latitude - d,
+        east: currentLocation.longitude + d,
+        west: currentLocation.longitude - d,
+      });
+    }
+  }, [currentLocation, buildingsBbox]);
 
   // Recording pulse animation
   useEffect(() => {
@@ -478,6 +494,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         east: region.longitude + region.longitudeDelta / 2,
         west: region.longitude - region.longitudeDelta / 2,
       };
+      setBuildingsBbox(bbox);
       fetchTerritories(bbox);
       fetchQuestsInBounds(bbox);
       fetchNearbyEchos();
@@ -742,6 +759,10 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onRegionChangeComplete={handleRegionChange}
         onLongPress={handleMapLongPress}
       >
+        {/* Real OSM buildings as game buildings: neutral until claimed. Drawn
+            first so it sits beneath territory overlays and markers. */}
+        <BuildingsLayer bbox={buildingsBbox} />
+
         {/* Territory Polygons — hidden briefly on tab focus to force native re-render */}
         {!hideOverlays && uniqueTerritories.map((territory) => {
           if (!territory.polygon || !Array.isArray(territory.polygon) || territory.polygon.length < 3) return null;
