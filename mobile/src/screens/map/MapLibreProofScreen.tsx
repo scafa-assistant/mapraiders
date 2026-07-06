@@ -1,21 +1,28 @@
 // ============================================================
-// MapLibre 3D , Phase A Proof (2026-07-04, one-layer 3D milestone)
-// Isolated screen that proves the MapLibre engine lives in the build:
-//   - OpenFreeMap vector tiles rendered in the MapRaiders radar style
-//     (white land, blue water, green woods, no labels)
-//   - tiltable camera (pitch) so 3D reads
-//   - a test territory polygon at Sundern
-//   - three FillExtrusion blocks at tier heights (I/II/III)
-// It touches NO production map code. Once this renders on-device, the real
-// MapScreen migration (Phase B/C) follows with confidence. See
+// MapLibre , "Echte Gebäude werden Spielgebäude" Proof
+// (2026-07-06, one-layer 3D milestone, Renés Reskin-Idee)
+//
+// Beweist Renés Kern-Idee: die ECHTEN OSM-Gebäude der Umgebung (aus dem
+// OpenFreeMap-Vektorlayer `building`) werden als UNSERE Spielgebäude gerendert
+// , gleiche Position, gleiche Grundfläche, gleiche echte Höhe, nur in unserer
+// Optik (Marken-Blau, 3D-extrudiert). Antippen wählt ein reales Haus aus und
+// färbt es amber = "dieses echte Gebäude beanspruchen/umfunktionieren".
+// Dazu echte Straßen aus dem `transportation`-Layer, nach Klasse eingefärbt
+// (deutet die Straßen-Ausbaustufen an: Pfad → Nebenstraße → Hauptstraße).
+//
+// Das ist der Machbarkeits-Beweis dafür, dass wir NICHT jedes Gebäude selbst
+// modellieren müssen, sondern die reale Welt "klemmen und umfunktionieren".
+// Berührt KEINEN produktiven Karten-Code. Siehe
 // _docs/gdd/VISION_OneLayer_3D_Weltkarte.md.
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Map, Camera, GeoJSONSource, Layer } from '@maplibre/maplibre-react-native';
+import type { MapRef } from '@maplibre/maplibre-react-native';
 import type { MapLibreProofScreenProps } from '../../navigation/types';
 import radarStyle from '../../../assets/map/radar-style.json';
 
@@ -26,76 +33,78 @@ const TEXT = '#141210';
 const SURFACE = '#FFFFFF';
 const BORDER = '#C0BAB4';
 
-// Sundern test area (DopeRunner territory neighborhood, ~51.32 / 8.00).
-const CENTER: [number, number] = [8.0, 51.32];
+// Sundern-Hachen village center (dense OSM building coverage near Renés Revier).
+const CENTER: [number, number] = [7.9895, 51.3577];
 
-/** Axis-aligned square polygon of `half` degrees around [lng, lat]. */
-function square(lng: number, lat: number, halfLng: number, halfLat: number): number[][][] {
-  return [[
-    [lng - halfLng, lat - halfLat],
-    [lng + halfLng, lat - halfLat],
-    [lng + halfLng, lat + halfLat],
-    [lng - halfLng, lat + halfLat],
-    [lng - halfLng, lat - halfLat],
-  ]];
-}
-
-// Test territory outline (~700 x 450 m rectangle).
-const TERRITORY = {
-  type: 'FeatureCollection',
-  features: [
-    { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: square(8.0, 51.32, 0.0035, 0.002) } },
-  ],
-} as const;
-
-// Three buildings at tier heights, colored like the Struktur-Codex.
-const BUILDINGS = {
-  type: 'FeatureCollection',
-  features: [
-    { type: 'Feature', properties: { height: 18, color: ACCENT }, geometry: { type: 'Polygon', coordinates: square(7.9988, 51.3198, 0.00016, 0.0001) } },
-    { type: 'Feature', properties: { height: 40, color: ACCENT }, geometry: { type: 'Polygon', coordinates: square(8.0, 51.3201, 0.0002, 0.00013) } },
-    { type: 'Feature', properties: { height: 72, color: AMBER }, geometry: { type: 'Polygon', coordinates: square(8.0014, 51.3199, 0.00018, 0.00011) } },
-  ],
-} as const;
+const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const;
 
 export default function MapLibreProofScreen({ navigation }: MapLibreProofScreenProps) {
   const insets = useSafeAreaInsets();
+  const mapRef = useRef<MapRef>(null);
   const [pitched, setPitched] = useState(true);
+  // The real building the player tapped, echoed back as an amber "claimed" solid.
+  const [selected, setSelected] = useState<GeoJSON.FeatureCollection>(EMPTY_FC as any);
+  const [tappedName, setTappedName] = useState<string | null>(null);
+
+  // Tap → query the real building footprint under the finger, highlight it.
+  const onMapPress = async (e: NativeSyntheticEvent<any>) => {
+    const point = e?.nativeEvent?.point;
+    if (!point || !mapRef.current) return;
+    try {
+      const feats = await mapRef.current.queryRenderedFeatures(point, { layers: ['bld-real'] });
+      if (feats && feats.length > 0) {
+        const f = feats[0];
+        setSelected({ type: 'FeatureCollection', features: [f] });
+        const props: any = f.properties || {};
+        setTappedName(props.name || `Gebäude ${props.render_height ? Math.round(props.render_height) + ' m' : ''}`.trim() || 'Reales Gebäude');
+      } else {
+        setSelected(EMPTY_FC as any);
+        setTappedName(null);
+      }
+    } catch {
+      // query can fail mid-gesture; ignore, keep last selection
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Map
+        ref={mapRef}
         style={StyleSheet.absoluteFill}
         mapStyle={radarStyle as any}
         touchPitch
         compass={false}
         logo={false}
+        onPress={onMapPress}
       >
-        <Camera
-          center={CENTER}
-          zoom={16}
-          pitch={pitched ? 55 : 0}
-          bearing={20}
-          duration={600}
+        <Camera center={CENTER} zoom={16.5} pitch={pitched ? 55 : 0} bearing={20} duration={600} />
+
+        {/* REAL OSM buildings, rendered as OUR game buildings: brand blue,
+            extruded by their real height. This is the whole point. */}
+        <Layer
+          id="bld-real"
+          type="fill-extrusion"
+          source="openmaptiles"
+          source-layer="building"
+          paint={{
+            'fill-extrusion-color': ACCENT,
+            'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 6],
+            'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+            'fill-extrusion-opacity': 0.85,
+          }}
         />
 
-        {/* Test territory: blue outline + faint fill */}
-        <GeoJSONSource id="terr" data={TERRITORY as any}>
-          <Layer id="terr-fill" type="fill" source="terr" paint={{ 'fill-color': ACCENT, 'fill-opacity': 0.1 }} />
-          <Layer id="terr-line" type="line" source="terr" paint={{ 'line-color': ACCENT, 'line-width': 2.5 }} />
-        </GeoJSONSource>
-
-        {/* Buildings as real 3D extrusions, height from feature property */}
-        <GeoJSONSource id="bld" data={BUILDINGS as any}>
+        {/* The tapped building, echoed back as an amber solid = "claimed". */}
+        <GeoJSONSource id="sel" data={selected as any}>
           <Layer
-            id="bld-ext"
+            id="sel-ext"
             type="fill-extrusion"
-            source="bld"
+            source="sel"
             paint={{
-              'fill-extrusion-color': ['get', 'color'],
-              'fill-extrusion-height': ['get', 'height'],
-              'fill-extrusion-base': 0,
-              'fill-extrusion-opacity': 0.92,
+              'fill-extrusion-color': AMBER,
+              'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 8],
+              'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+              'fill-extrusion-opacity': 0.95,
             }}
           />
         </GeoJSONSource>
@@ -107,7 +116,7 @@ export default function MapLibreProofScreen({ navigation }: MapLibreProofScreenP
           <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={22} color={TEXT} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>MapLibre 3D · Phase A</Text>
+          <Text style={styles.headerTitle}>Echte Gebäude → Spielgebäude</Text>
           <View style={styles.headerBtn} />
         </View>
       </SafeAreaView>
@@ -115,8 +124,9 @@ export default function MapLibreProofScreen({ navigation }: MapLibreProofScreenP
       {/* What to look for */}
       <View style={[styles.hint, { top: insets.top + 60 }]} pointerEvents="none">
         <Text style={styles.hintText}>
-          Weißes Land · blaues Wasser · echte 3D-Klötze (I/II/III). OpenFreeMap-Vektor,
-          kein Satellit. Zwei Finger zum Kippen.
+          {tappedName
+            ? `Beansprucht: ${tappedName} (echtes OSM-Haus, amber). Tippe ein anderes an.`
+            : 'Jedes blaue 3D-Haus ist ein ECHTES Gebäude aus der Karte, in unserer Optik. Tippe eins an, um es zu beanspruchen. Straßen nach Ausbaustufe eingefärbt.'}
         </Text>
       </View>
 
@@ -155,7 +165,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: TEXT,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     backgroundColor: SURFACE,
     paddingHorizontal: 12,

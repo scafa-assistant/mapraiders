@@ -47,6 +47,30 @@
       "source": "openmaptiles",
       "source-layer": "waterway",
       "paint": { "line-color": "#BFD6F2", "line-width": 1.2 }
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["!=", "class", "rail"],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": [
+          "match", ["get", "class"],
+          "motorway", "#1558F0",
+          "trunk", "#1558F0",
+          "primary", "#3D7BF5",
+          "secondary", "#7FA8F5",
+          ["path", "track"], "#C6A77E",
+          "#FFFFFF"
+        ],
+        "line-width": [
+          "interpolate", ["linear"], ["zoom"],
+          12, ["match", ["get", "class"], ["motorway", "trunk"], 3, ["primary"], 2.2, ["path", "track"], 0.8, 1.2],
+          17, ["match", ["get", "class"], ["motorway", "trunk"], 9, ["primary"], 7, ["secondary"], 5.5, ["path", "track"], 2, 4]
+        ]
+      }
     }
   ]
 }
