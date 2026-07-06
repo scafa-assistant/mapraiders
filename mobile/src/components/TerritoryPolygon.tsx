@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
-import { Polygon } from 'react-native-maps';
+import { Polygon } from '@components/map';
 import type { Territory } from '../utils/types';
 import { getClassColor, withOpacity } from '../utils/colors';
 

@@ -12,7 +12,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, MapPressEvent } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE, MapPressEvent, type MapViewRef } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
@@ -48,7 +48,7 @@ export default function MeetupCreateScreen({ navigation }: MeetupCreateScreenPro
   const styles = useMemo(() => createStyles(theme), [theme]);
   const categories = useMemo(getCategories, []);
   const { currentLocation } = useLocationStore();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

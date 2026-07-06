@@ -10,7 +10,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE, type MapViewRef } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -55,7 +55,7 @@ export default function ChallengeDetailScreen({ route, navigation }: ChallengeDe
   const verificationInfo = useMemo(() => getVerificationInfo(theme), [theme]);
   const { challengeId } = route.params;
   const { currentLocation } = useLocationStore();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
 
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [isLoading, setIsLoading] = useState(true);

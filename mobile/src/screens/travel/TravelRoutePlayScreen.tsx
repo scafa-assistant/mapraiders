@@ -12,7 +12,7 @@ import {
   Image,
   Vibration,
 } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, type MapViewRef } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
@@ -49,7 +49,7 @@ export default function TravelRoutePlayScreen({
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { routeId } = route.params;
   const { currentLocation } = useLocationStore();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
 
   const [travelRoute, setTravelRoute] = useState<TravelRoute | null>(null);
   const [loading, setLoading] = useState(true);

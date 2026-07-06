@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, Easing, StyleSheet } from 'react-native';
-import { Marker } from 'react-native-maps';
+import { Marker } from '@components/map';
 import Svg, { Ellipse, Polygon as SvgPolygon, Circle as SvgCircle, Line, Rect } from 'react-native-svg';
 import type { PvESpawn, NpcType } from '../store/pveStore';
 

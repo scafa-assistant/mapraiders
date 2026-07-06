@@ -15,7 +15,7 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
-import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent } from 'react-native-maps';
+import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent, type MapViewRef } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
@@ -109,7 +109,7 @@ function getPolygonCentroid(polygon: any[]): { latitude: number; longitude: numb
 
 export default function MapScreen({ navigation }: MapScreenProps) {
   useTeachOnMount('karte');
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
   // True only once the native map finished initializing. getMapBoundaries()
   // crashes NATIVELY (uncatchable NPE) if called before this — so every bbox
   // read gates on it. Set in <MapView onMapReady>.

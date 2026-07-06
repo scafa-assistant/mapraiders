@@ -21,7 +21,8 @@ import MapView, {
   PROVIDER_GOOGLE,
   Region,
   MapPressEvent,
-} from 'react-native-maps';
+  type MapViewRef,
+} from '@components/map';
 import { BaseBuilderScreenProps } from '../../navigation/types';
 import { RADAR_MAP_STYLE } from '../../utils/commander';
 import { useBuildingStore } from '../../store/buildingStore';
@@ -159,7 +160,7 @@ export default function BaseBuilderScreen({ route, navigation }: BaseBuilderScre
   const territoryName = territory.ownerUsername;
   const insets = useSafeAreaInsets();
   const { width: screenW } = useWindowDimensions();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
 
   const { buildingsByTerritory, gridByTerritory, loading, build, upgrade, demolish, train } =
     useBuildingStore();

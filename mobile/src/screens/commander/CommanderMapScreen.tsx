@@ -19,7 +19,8 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
   MapPressEvent,
-} from 'react-native-maps';
+  type MapViewRef,
+} from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { latLngToCell } from 'h3-js';
 import type { CommanderMapScreenProps } from '../../navigation/types';
@@ -154,7 +155,7 @@ export default function CommanderMapScreen({ navigation }: CommanderMapScreenPro
   );
   const { stockpileByTerritory, fetchBuildings } = useBuildingStore();
 
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
   const fittedRef = useRef(false);
   const [tick, setTick] = useState(0); // forces marker recompute every 2s
 

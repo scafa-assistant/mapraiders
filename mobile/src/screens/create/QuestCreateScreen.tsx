@@ -13,7 +13,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, MapPressEvent } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE, MapPressEvent, type MapViewRef } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
@@ -50,7 +50,7 @@ export default function QuestCreateScreen({ navigation }: QuestCreateScreenProps
   const styles = useMemo(() => createStyles(theme), [theme]);
   const stepTypes = useMemo(getStepTypes, []);
   const { currentLocation } = useLocationStore();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
 
   const [wizardStep, setWizardStep] = useState<WizardStep>('info');
   const [title, setTitle] = useState('');

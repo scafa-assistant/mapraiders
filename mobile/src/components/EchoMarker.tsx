@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, Easing, StyleSheet } from 'react-native';
-import { Marker, Circle } from 'react-native-maps';
+import { Marker, Circle } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import type { Echo } from '../utils/types';
 

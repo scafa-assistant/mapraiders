@@ -117,3 +117,44 @@ Befehl (aus `mobile/`): `npx eas-cli update --branch preview -m "<knappe Beschre
 - Domain: mapraiders.com
 - API: api.mapraiders.com
 - GitHub: github.com/scafa-assistant/mapraiders (private)
+
+---
+
+<!-- Stammdaten migriert aus globaler CLAUDE.md, 2026-06-27 -->
+## Projekt: MapRaiders (GPS Territory MMO)
+
+- **Pfad:** `C:\Users\r.scafarti\Desktop\MapRaiders`
+- **App-Paket:** `com.mapraiders.app`
+- **Domain:** mapraiders.com / api.mapraiders.com
+- **GitHub:** github.com/scafa-assistant/mapraiders (privat)
+- **EAS Org:** iveezee23s-organization
+- **EAS Project ID:** 11263b5c-0b4f-4039-bc2a-9f9ebe3c0769
+- **Ziel:** GPS-basiertes MMO: Spieler laufen/radeln um echte Territorien zu erobern, erstellen Quests/Echos/Challenges, Duellieren, bilden Clans
+- **Tech-Stack:**
+  - Mobile: React Native / Expo SDK 55 + TypeScript + Zustand
+  - Server: Node.js + Express + TypeScript + PostgreSQL 16/PostGIS 3.4 + Redis + WebSocket
+  - Docker: PostGIS Port 5433, Redis Port 6379
+- **Build-System:**
+  - EAS Build: `preview` Profil = APK (direkt installierbar), `production` = AAB (Play Store)
+  - Gradle: MUSS 8.11.1 sein, Gradle 9.0 bricht Expo SDK 55 / RN 0.83
+  - `mobile/android/build.gradle` braucht `ext {}` Block mit compileSdkVersion=35, targetSdkVersion=35, minSdkVersion=24
+  - TypeScript-Check: `cd server && npx tsc --noEmit` muss 0 Errors haben
+- **Server Response-Format:** `{ success: true, data: {...} }` oder `{ success: false, message: "..." }`
+- **Auth Token:** Feld heißt `token` (NICHT `accessToken`)
+- **Error Feld:** `message` (NICHT `error`)
+- **Datenbank:** 35+ Tabellen, PostGIS Spatial Indexes (GIST), Schema in `server/src/db/schema.sql`
+- **Cron-Jobs:** 13+ Jobs (Decay, Clan-Formation, Leaderboards, Events, Bounties), alle in `server/src/jobs/decayCron.ts`
+- **Kritisches System:** Territory Decay Engine (`server/src/services/decayEngine.ts`), täglich 04:00 UTC
+- **ASO/SEO:** 13-Sprachen-Strategie, Triple-Tag Methode, vs-Wettbewerber-Pages, Pillar/Cluster Content
+- **Design Docs:** `Gridwalker_GDD.md`, `Gridwalker_Mechanismus_Analyse.md`, `Gridwalker_Marktanalyse.md`, `Kreuzanalyse_Mechaniken.md`
+
+### MapRaiders: Bekannte Pitfalls
+
+- Git-Push geht NUR vom lokalen Rechner (Sandbox hat keine GitHub-Auth)
+- `.git/index.lock` Files bleiben manchmal stecken nach parallelen Agents → mit `mv` umbenennen
+- EAS Build Fehler "Gradle build failed with unknown error" = fast immer Gradle-Version oder fehlender ext-Block
+- Play Console braucht erst Signing Key vom EAS Build bevor Package registriert werden kann
+- Seed-Territorien haben jetzt `is_protected = TRUE`, werden nicht mehr vom Decay gelöscht
+- Account-Löschung ist jetzt Soft-Delete (SET owner_id = NULL, nicht DELETE)
+- Cron-Monitoring via `/api/health/crons` Endpoint + Redis-basiertes Locking
+

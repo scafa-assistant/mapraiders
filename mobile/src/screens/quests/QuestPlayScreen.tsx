@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import MapView, { Marker, Circle, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { Marker, Circle, PROVIDER_GOOGLE, Region, type MapViewRef } from '@components/map';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -51,7 +51,7 @@ export default function QuestPlayScreen({ route, navigation }: QuestPlayScreenPr
   const { questId } = route.params;
   const { activeQuest, verifyStep, isVerifying, abandonQuest, completeQuest } = useQuestStore();
   const { currentLocation } = useLocationStore();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapViewRef>(null);
 
   const [solveAnswer, setSolveAnswer] = useState('');
   const [showHint, setShowHint] = useState(false);
