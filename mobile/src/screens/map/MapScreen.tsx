@@ -157,6 +157,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const [canCloseClaim, setCanCloseClaim] = useState(false);
   const [hideOverlays, setHideOverlays] = useState(false); // Briefly hides polygons to force native re-render
   const [buildingsBbox, setBuildingsBbox] = useState<Bbox | null>(null); // viewport for real-building layer
+  // Building-type picker: opened when claiming a real building; resolves the chosen type.
+  const [buildingPicker, setBuildingPicker] = useState<{ resolve: (t: string | null) => void } | null>(null);
+  const promptBuildingType = useCallback(
+    () => new Promise<string | null>((resolve) => setBuildingPicker({ resolve })),
+    [],
+  );
   const CLOSE_THRESHOLD_M = 50;
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
@@ -759,10 +765,6 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         onRegionChangeComplete={handleRegionChange}
         onLongPress={handleMapLongPress}
       >
-        {/* Real OSM buildings as game buildings: neutral until claimed. Drawn
-            first so it sits beneath territory overlays and markers. */}
-        <BuildingsLayer bbox={buildingsBbox} />
-
         {/* Territory Polygons — hidden briefly on tab focus to force native re-render */}
         {!hideOverlays && uniqueTerritories.map((territory) => {
           if (!territory.polygon || !Array.isArray(territory.polygon) || territory.polygon.length < 3) return null;
@@ -787,6 +789,11 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             />
           );
         })}
+
+        {/* Real OSM buildings as game buildings: neutral until claimed. Drawn
+            ABOVE territory fills so building taps win over territory taps and
+            the extrusions pop above the territory tint. */}
+        <BuildingsLayer bbox={buildingsBbox} promptType={promptBuildingType} />
 
         {/* Defense Shield Markers (defended territories) */}
         {!hideOverlays && uniqueTerritories.filter(t => t.hasDefense).map((territory) => {
@@ -1565,9 +1572,58 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           </View>
         </View>
       )}
+
+      {/* Building-type picker (claiming a real building on the map) */}
+      {buildingPicker && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible
+          onRequestClose={() => { buildingPicker.resolve(null); setBuildingPicker(null); }}
+        >
+          <TouchableOpacity
+            style={styles.bpBackdrop}
+            activeOpacity={1}
+            onPress={() => { buildingPicker.resolve(null); setBuildingPicker(null); }}
+          >
+            <View style={styles.bpSheet}>
+              <Text style={styles.bpTitle}>Gebäude einnehmen als</Text>
+              <View style={styles.bpGrid}>
+                {BUILDING_CLAIM_TYPES.map((t) => (
+                  <TouchableOpacity
+                    key={t.key}
+                    style={styles.bpOption}
+                    onPress={() => { buildingPicker.resolve(t.key); setBuildingPicker(null); }}
+                  >
+                    <View style={styles.bpIcon}>
+                      <Ionicons name={t.icon as any} size={22} color="#1558F0" />
+                    </View>
+                    <Text style={styles.bpLabel}>{t.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <TouchableOpacity
+                style={styles.bpCancel}
+                onPress={() => { buildingPicker.resolve(null); setBuildingPicker(null); }}
+              >
+                <Text style={styles.bpCancelText}>Abbrechen</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </View>
   );
 }
+
+// Building types the player can assign when claiming a real building.
+const BUILDING_CLAIM_TYPES = [
+  { key: 'workshop', label: 'Werkstatt', icon: 'construct' },
+  { key: 'refinery', label: 'Raffinerie', icon: 'flame' },
+  { key: 'garrison', label: 'Garnison', icon: 'shield' },
+  { key: 'storage', label: 'Lager', icon: 'cube' },
+  { key: 'radar', label: 'Radar', icon: 'radio' },
+] as const;
 
 const styles = StyleSheet.create({
   container: {
@@ -1577,6 +1633,67 @@ const styles = StyleSheet.create({
   map: {
     width,
     height,
+  },
+  // ─── Building-type picker ───────────────────────────────────────────────
+  bpBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(20,18,16,0.35)',
+    justifyContent: 'flex-end',
+  },
+  bpSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 30,
+  },
+  bpTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#141210',
+    marginBottom: 14,
+    textAlign: 'center',
+  },
+  bpGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  bpOption: {
+    width: 88,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E4E1DB',
+    backgroundColor: '#F6F4F1',
+  },
+  bpIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(21,88,240,0.10)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  bpLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#141210',
+  },
+  bpCancel: {
+    marginTop: 16,
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 28,
+  },
+  bpCancelText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#8A8580',
   },
   topOverlay: {
     position: 'absolute',

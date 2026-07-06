@@ -137,8 +137,16 @@ const MapViewImpl = forwardRef<MapViewRef, MapViewProps>((props, ref) => {
   }, []); // once
   const initZoom = useMemo(() => {
     const r = initialRegion ?? region;
-    return r ? zoomFromDelta(r.longitudeDelta ?? r.latitudeDelta) : 14;
+    return r ? zoomFromDelta(r.longitudeDelta ?? r.latitudeDelta) : 16;
   }, []); // once
+
+  // Latest intended start region (initialViewState can be ignored at style-load;
+  // we re-apply it via jumpTo in onDidFinishLoadingMap for a reliable start zoom).
+  const startRef = useRef<{ center: [number, number]; zoom: number }>({ center: initCenter, zoom: initZoom });
+  useEffect(() => {
+    const r = initialRegion ?? region;
+    if (r) startRef.current = { center: [r.longitude, r.latitude], zoom: zoomFromDelta(r.longitudeDelta ?? r.latitudeDelta) };
+  });
 
   // Controlled `region` prop → animate when it changes.
   useEffect(() => {
@@ -197,7 +205,12 @@ const MapViewImpl = forwardRef<MapViewRef, MapViewProps>((props, ref) => {
       attribution={false}
       onPress={onPress ? (e: any) => onPress({ nativeEvent: { coordinate: { latitude: e.nativeEvent.lngLat[1], longitude: e.nativeEvent.lngLat[0] } } }) : undefined}
       onLongPress={onLongPress ? (e: any) => onLongPress({ nativeEvent: { coordinate: { latitude: e.nativeEvent.lngLat[1], longitude: e.nativeEvent.lngLat[0] } } }) : undefined}
-      onDidFinishLoadingMap={() => onMapReady?.()}
+      onDidFinishLoadingMap={() => {
+        // Force the intended start zoom/center once the style is up (initialViewState alone is unreliable).
+        const s = startRef.current;
+        camR.current?.jumpTo({ center: s.center, zoom: s.zoom });
+        onMapReady?.();
+      }}
       onRegionDidChange={onRegionChangeComplete ? (e: any) => {
         const vs = e.nativeEvent;
         const d = deltaFromBounds(vs.bounds);

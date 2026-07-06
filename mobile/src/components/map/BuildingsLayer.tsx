@@ -84,9 +84,13 @@ async function fetchClaims(b: Bbox): Promise<Record<string, Claim>> {
   }
 }
 
-interface BuildingsLayerProps { bbox: Bbox | null; }
+interface BuildingsLayerProps {
+  bbox: Bbox | null;
+  /** Ask the host to pick a building type when claiming. Resolve null = cancel. */
+  promptType?: () => Promise<string | null>;
+}
 
-export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
+export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps) {
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [claims, setClaims] = useState<Record<string, Claim>>({});
   const lastFetched = useRef<Bbox | null>(null);
@@ -135,7 +139,7 @@ export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
   );
 
   // Tap a real building → claim (if free) or release (if mine). Others' = noop.
-  const onPress = (e: any) => {
+  const onPress = async (e: any) => {
     const id = e?.nativeEvent?.features?.[0]?.properties?.id;
     if (id == null) return;
     const key = String(id);
@@ -148,10 +152,13 @@ export default function BuildingsLayer({ bbox }: BuildingsLayerProps) {
       setClaims((prev) => { const n = { ...prev }; delete n[key]; return n; });
       mapBuildingApi.release(key).then(refreshClaims).catch(refreshClaims);
     } else if (!existing) {
+      // Let the host pick a building type (falls back to workshop).
+      const type = promptType ? await promptType() : 'workshop';
+      if (!type) return; // cancelled
       // Claim , optimistic (real profile color syncs on refresh).
-      setClaims((prev) => ({ ...prev, [key]: { type: 'workshop', color: FALLBACK_COLOR, isMine: true } }));
+      setClaims((prev) => ({ ...prev, [key]: { type, color: FALLBACK_COLOR, isMine: true } }));
       mapBuildingApi
-        .claim({ osmId: key, lat: b.centroid[1], lng: b.centroid[0], type: 'workshop' })
+        .claim({ osmId: key, lat: b.centroid[1], lng: b.centroid[0], type })
         .then(refreshClaims)
         .catch(refreshClaims);
     }
