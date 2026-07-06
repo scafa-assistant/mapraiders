@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
 import type { ResourceBalances } from '../store/resourceStore';
 import { useReducedMotion } from './fx/useReducedMotion';
 
@@ -59,14 +60,58 @@ function formatCompact(n: number): string {
   return String(n);
 }
 
-// ─── Simple text icons (no new deps) ─────────────────────────────────────────
-const RESOURCE_ICONS: Record<keyof ResourceBalances, string> = {
-  energy: '⚡',
-  tech: '⚙',
-  intel: '👁',
-  wood: '🪵',
-  stone: '🪨',
-  food: '🌾',
+// ─── Unified mono-line vector icons (one stroke weight, per-resource tint) ────
+// Replaces the mixed emoji/text glyphs so the whole bar reads as one icon set.
+const ICON_COLORS: Record<keyof ResourceBalances, string> = {
+  energy: '#F5A623',
+  tech: '#1558F0',
+  intel: '#1558F0',
+  wood: '#A06A3C',
+  stone: '#6B7280',
+  food: '#1B9E5A',
+};
+
+const ResourceIcon: React.FC<{ resource: keyof ResourceBalances; size: number }> = ({ resource, size }) => {
+  const c = ICON_COLORS[resource];
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      {resource === 'energy' && (
+        <Path d="M13 2 L5 13 L11 13 L11 22 L19 10 L13 10 Z" fill="none" stroke={c} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+      )}
+      {resource === 'tech' && (
+        <>
+          <Path d="M12 3 L19 7.5 L19 16.5 L12 21 L5 16.5 L5 7.5 Z" fill="none" stroke={c} strokeWidth={2} strokeLinejoin="round" />
+          <Circle cx={12} cy={12} r={3.2} fill="none" stroke={c} strokeWidth={2} />
+        </>
+      )}
+      {resource === 'intel' && (
+        <>
+          <Path d="M2 12 C5 6 9 4 12 4 C15 4 19 6 22 12 C19 18 15 20 12 20 C9 20 5 18 2 12 Z" fill="none" stroke={c} strokeWidth={2} strokeLinejoin="round" />
+          <Circle cx={12} cy={12} r={3.1} fill="none" stroke={c} strokeWidth={2} />
+        </>
+      )}
+      {resource === 'wood' && (
+        <>
+          <Path d="M8 6 H15 A5 6 0 0 1 15 18 H8 A5 6 0 0 1 8 6 Z" fill="none" stroke={c} strokeWidth={2} strokeLinejoin="round" />
+          <Ellipse cx={8} cy={12} rx={2.4} ry={4} fill="none" stroke={c} strokeWidth={1.6} />
+        </>
+      )}
+      {resource === 'stone' && (
+        <>
+          <Path d="M4 15 L5 9 L10 5 L16 6 L20 11 L18 17 L9 18 Z" fill="none" stroke={c} strokeWidth={2} strokeLinejoin="round" />
+          <Path d="M10 5 L12 12 L20 11 M12 12 L9 18" fill="none" stroke={c} strokeWidth={1.4} strokeLinejoin="round" />
+        </>
+      )}
+      {resource === 'food' && (
+        <>
+          <Path d="M12 21 V8" fill="none" stroke={c} strokeWidth={2} strokeLinecap="round" />
+          <Path d="M12 8 C10 6 10 4 12 3 C14 4 14 6 12 8 Z" fill="none" stroke={c} strokeWidth={1.8} strokeLinejoin="round" />
+          <Path d="M12 11 C10 10.5 8.5 9 8.5 7 M12 11 C14 10.5 15.5 9 15.5 7" fill="none" stroke={c} strokeWidth={1.8} strokeLinecap="round" />
+          <Path d="M12 15 C10 14.5 8.5 13 8.5 11 M12 15 C14 14.5 15.5 13 15.5 11" fill="none" stroke={c} strokeWidth={1.8} strokeLinecap="round" />
+        </>
+      )}
+    </Svg>
+  );
 };
 
 const RESOURCE_LABELS: Record<keyof ResourceBalances, string> = {
@@ -115,7 +160,7 @@ const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
         <React.Fragment key={key}>
           {idx > 0 && <View style={styles.divider} />}
           <View style={styles.item}>
-            <Text style={styles.icon}>{RESOURCE_ICONS[key]}</Text>
+            <ResourceIcon resource={key} size={16} />
             <View style={styles.textCol}>
               <Text style={[styles.label, RESOURCE_LABEL_COLORS[key] ? { color: RESOURCE_LABEL_COLORS[key] } : null]}>
                 {RESOURCE_LABELS[key]}
@@ -157,10 +202,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
-  },
-  icon: {
-    fontSize: 14,
-    lineHeight: 18,
   },
   textCol: {
     alignItems: 'flex-start',
