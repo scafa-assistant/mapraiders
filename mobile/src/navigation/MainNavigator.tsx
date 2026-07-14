@@ -40,8 +40,8 @@ export default function MainNavigator() {
   );
 
   const tabBarStyle = useMemo(() => ({
-    backgroundColor: isDark ? '#F6F4F1' : '#FFFFFF',
-    borderTopColor: isDark ? '#FFFFFF' : '#C0BAB4',
+    backgroundColor: isDark ? '#171B22' : '#FFFFFF',
+    borderTopColor: isDark ? '#2A303B' : '#C0BAB4',
     borderTopWidth: 1,
     height: 85,
     paddingTop: 8,
@@ -57,7 +57,7 @@ export default function MainNavigator() {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: isDark ? '#FFFFFF' : '#FFFFFF',
+    backgroundColor: isDark ? '#1B2029' : '#FFFFFF',
     borderWidth: 2,
     borderColor: theme.primary,
     justifyContent: 'center' as const,

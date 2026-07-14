@@ -158,6 +158,11 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const [canCloseClaim, setCanCloseClaim] = useState(false);
   const [hideOverlays, setHideOverlays] = useState(false); // Briefly hides polygons to force native re-render
   const [buildingsBbox, setBuildingsBbox] = useState<Bbox | null>(null); // viewport for real-building layer
+  // Encounter signals (PvE/terminals) only show once you're reasonably zoomed
+  // in — a zoomed-out map full of blue discs reads as pure noise.
+  const SIGNALS_VISIBLE_SPAN_DEG = 0.045; // ~5 km north-south
+  const signalsVisible = !!buildingsBbox
+    && buildingsBbox.north - buildingsBbox.south < SIGNALS_VISIBLE_SPAN_DEG;
   // Building-type picker: opened when claiming a real building; resolves the chosen type.
   const [buildingPicker, setBuildingPicker] = useState<{ resolve: (t: string | null) => void } | null>(null);
   const promptBuildingType = useCallback(
@@ -1066,7 +1071,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         })}
 
         {/* PvE Spawn Markers — only rendered when feature flag 'pve_spawns' + capability.pve are active */}
-        {isPveEnabled && pveSpawns
+        {isPveEnabled && signalsVisible && pveSpawns
           .filter((spawn) => spawn.npc_type !== 'terminal')
           .map((spawn) => (
             <PvESpawnMarker
@@ -1082,7 +1087,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           ))}
 
         {/* Terminal Spawn Markers — only rendered when feature flag 'terminals' + capability.terminals are active */}
-        {isTerminalsEnabled && pveSpawns
+        {isTerminalsEnabled && signalsVisible && pveSpawns
           .filter((spawn) => spawn.npc_type === 'terminal')
           .map((spawn) => (
             <TerminalMarker
