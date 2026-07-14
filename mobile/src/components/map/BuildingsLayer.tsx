@@ -67,7 +67,9 @@ function centroidOf(ring: [number, number][]): [number, number] {
   return [x / n, y / n];
 }
 
-async function fetchBuildings(b: Bbox): Promise<Building[]> {
+// Direct Overpass fetch — FALLBACK only (server cache is primary). Kept small:
+// overpass-api.de rate-limits phones quickly, which blanked the map before.
+async function fetchBuildingsOverpass(b: Bbox): Promise<Building[]> {
   const q = `[out:json][timeout:25];way["building"](${b.south},${b.west},${b.north},${b.east});out geom;`;
   const res = await fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
@@ -91,6 +93,26 @@ async function fetchBuildings(b: Bbox): Promise<Building[]> {
   return out;
 }
 
+// Primary: server tile cache (/buildings/osm/footprints). Falls back to direct
+// Overpass so buildings still appear if the API is briefly unreachable.
+async function fetchBuildings(b: Bbox): Promise<Building[]> {
+  try {
+    const { data } = await mapBuildingApi.getFootprints(b);
+    const list = data?.data?.buildings;
+    if (Array.isArray(list)) {
+      return list.map((f: any) => ({
+        id: String(f.id),
+        ring: f.ring,
+        centroid: f.centroid,
+        height: typeof f.height === 'number' ? f.height : 6,
+      }));
+    }
+    throw new Error('bad footprints response');
+  } catch {
+    return fetchBuildingsOverpass(b);
+  }
+}
+
 async function fetchClaims(b: Bbox): Promise<Record<string, Claim>> {
   try {
     const { data } = await mapBuildingApi.getClaimed(b);
@@ -107,9 +129,11 @@ interface BuildingsLayerProps {
   bbox: Bbox | null;
   /** Ask the host to pick a building type when claiming. Resolve null = cancel. */
   promptType?: () => Promise<string | null>;
+  /** Bump to force a fresh fetch of footprints + claims (manual refresh). */
+  refreshKey?: number;
 }
 
-export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps) {
+export default function BuildingsLayer({ bbox, promptType, refreshKey = 0 }: BuildingsLayerProps) {
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [claims, setClaims] = useState<Record<string, Claim>>({});
   const darkMap = useSettingsStore((s) => s.settings.darkMapStyle);
@@ -120,6 +144,12 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
 
   // Fetch OSM footprints + server claims when the viewport moves out of the
   // last fetched area (debounced). Claims refetch too so others' claims appear.
+  // refreshKey bump = manual refresh: forget the last-fetched area so the
+  // effect below re-fetches even for an unchanged viewport.
+  useEffect(() => {
+    if (refreshKey > 0) lastFetched.current = null;
+  }, [refreshKey]);
+
   useEffect(() => {
     if (!bbox) return;
     currentBbox.current = bbox;
@@ -136,7 +166,7 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
       fetchClaims(fb).then(setClaims).catch(() => {});
     }, 700);
     return () => clearTimeout(t);
-  }, [bbox?.north, bbox?.south, bbox?.east, bbox?.west]);
+  }, [bbox?.north, bbox?.south, bbox?.east, bbox?.west, refreshKey]);
 
   const refreshClaims = () => {
     const b = currentBbox.current;

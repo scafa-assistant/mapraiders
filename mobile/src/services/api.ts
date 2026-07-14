@@ -522,6 +522,11 @@ export const mapBuildingApi = {
   getClaimed: (bbox: { north: number; south: number; east: number; west: number }) =>
     api.get('/buildings/osm/claimed', { params: bbox }),
 
+  // Server-cached OSM footprints (tile cache) — phones no longer hit Overpass
+  // directly. First visit to an area is slower while the server fills tiles.
+  getFootprints: (bbox: { north: number; south: number; east: number; west: number }) =>
+    api.get('/buildings/osm/footprints', { params: bbox, timeout: 90_000 }),
+
   claim: (payload: { osmId: string; lat: number; lng: number; type?: string }) =>
     api.post('/buildings/osm/claim', payload),
 

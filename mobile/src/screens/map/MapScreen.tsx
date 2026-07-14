@@ -170,6 +170,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
     () => new Promise<string | null>((resolve) => setBuildingPicker({ resolve })),
     [],
   );
+  // Manual refresh: bump to force BuildingsLayer to re-fetch footprints/claims.
+  const [buildingsRefreshKey, setBuildingsRefreshKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const CLOSE_THRESHOLD_M = 50;
   const [showClaimResult, setShowClaimResult] = useState(false);
   const [claimResult, setClaimResult] = useState<{
@@ -801,7 +804,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         {/* Real OSM buildings as game buildings: neutral until claimed. Drawn
             ABOVE territory fills so building taps win over territory taps and
             the extrusions pop above the territory tint. */}
-        <BuildingsLayer bbox={buildingsBbox} promptType={promptBuildingType} />
+        <BuildingsLayer bbox={buildingsBbox} promptType={promptBuildingType} refreshKey={buildingsRefreshKey} />
 
         {/* Defense Shield Markers (defended territories) */}
         {!hideOverlays && uniqueTerritories.filter(t => t.hasDefense).map((territory) => {
@@ -1255,6 +1258,39 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         >
           <Ionicons name="layers" size={22} color={theme.primary} />
         </TouchableOpacity>
+        {/* Manual refresh: re-fetch buildings, claims and all map content */}
+        <TouchableOpacity
+          style={[styles.controlButton, {
+            backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
+          }]}
+          disabled={isRefreshing}
+          onPress={async () => {
+            if (useSettingsStore.getState().settings.hapticFeedback) {
+              Haptics.selectionAsync();
+            }
+            setIsRefreshing(true);
+            setBuildingsRefreshKey((k) => k + 1);
+            try {
+              const bounds = await mapRef.current?.getMapBoundaries();
+              if (bounds) {
+                handleRegionChange({
+                  latitude: (bounds.northEast.latitude + bounds.southWest.latitude) / 2,
+                  longitude: (bounds.northEast.longitude + bounds.southWest.longitude) / 2,
+                  latitudeDelta: bounds.northEast.latitude - bounds.southWest.latitude,
+                  longitudeDelta: bounds.northEast.longitude - bounds.southWest.longitude,
+                });
+              }
+            } catch {}
+            setTimeout(() => setIsRefreshing(false), 1200);
+          }}
+        >
+          {isRefreshing ? (
+            <ActivityIndicator size="small" color={theme.primary} />
+          ) : (
+            <Ionicons name="refresh" size={22} color={theme.primary} />
+          )}
+        </TouchableOpacity>
       </View>
 
       {/* Streifzug toggle — lives above the record FAB, both are "go" actions */}
@@ -1588,19 +1624,19 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             activeOpacity={1}
             onPress={() => { buildingPicker.resolve(null); setBuildingPicker(null); }}
           >
-            <View style={styles.bpSheet}>
-              <Text style={styles.bpTitle}>Gebäude einnehmen als</Text>
+            <View style={[styles.bpSheet, { backgroundColor: theme.surface }]}>
+              <Text style={[styles.bpTitle, { color: theme.text }]}>Gebäude einnehmen als</Text>
               <View style={styles.bpGrid}>
                 {BUILDING_CLAIM_TYPES.map((t) => (
                   <TouchableOpacity
                     key={t.key}
-                    style={styles.bpOption}
+                    style={[styles.bpOption, { backgroundColor: theme.bg, borderColor: theme.border }]}
                     onPress={() => { buildingPicker.resolve(t.key); setBuildingPicker(null); }}
                   >
                     <View style={[styles.bpIcon, { backgroundColor: BUILDING_TYPE_COLORS[t.key] }]}>
                       <Ionicons name={t.icon as any} size={22} color="#FFFFFF" />
                     </View>
-                    <Text style={styles.bpLabel}>{t.label}</Text>
+                    <Text style={[styles.bpLabel, { color: theme.text }]}>{t.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -1608,7 +1644,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                 style={styles.bpCancel}
                 onPress={() => { buildingPicker.resolve(null); setBuildingPicker(null); }}
               >
-                <Text style={styles.bpCancelText}>Abbrechen</Text>
+                <Text style={[styles.bpCancelText, { color: theme.textSecondary }]}>Abbrechen</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

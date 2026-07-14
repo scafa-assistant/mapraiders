@@ -11,6 +11,7 @@
 // ============================================================
 
 import { Router, Request, Response } from 'express';
+import axios from 'axios';
 import { authenticate } from '../middleware/auth';
 import { featureService } from '../services/featureService';
 import { buildingEngine } from '../services/buildingEngine';
@@ -64,6 +65,114 @@ router.get('/osm/claimed', authenticate, async (req: Request, res: Response) => 
   } catch (err) {
     console.error('[Buildings] GET /osm/claimed error:', err);
     return res.status(500).json({ success: false, message: 'Failed to load claimed buildings' });
+  }
+});
+
+// ─── OSM footprint tile cache ────────────────────────────────────────────────
+// Phones used to hit overpass-api.de directly; at the wider ~5 km building
+// gate that gets rate-limited/times out. The server fetches each 0.02°-tile
+// from Overpass ONCE, stores it in Postgres, and serves everyone from cache.
+
+const TILE_DEG = 0.02;
+const TILE_TTL_DAYS = 30;
+const MAX_TILES_PER_REQ = 20;
+
+interface OsmFootprint { id: string; ring: [number, number][]; centroid: [number, number]; height: number; }
+
+function footprintHeight(tags?: Record<string, string>): number {
+  if (!tags) return 6;
+  if (tags.height) { const h = parseFloat(tags.height); if (!isNaN(h)) return h; }
+  if (tags['building:levels']) { const l = parseFloat(tags['building:levels']); if (!isNaN(l)) return Math.max(3, l * 3); }
+  return 6;
+}
+
+async function fetchTileFromOverpass(ix: number, iy: number): Promise<OsmFootprint[]> {
+  const west = ix * TILE_DEG, south = iy * TILE_DEG;
+  const q = `[out:json][timeout:25];way["building"](${south},${west},${south + TILE_DEG},${west + TILE_DEG});out geom;`;
+  const { data } = await axios.post('https://overpass-api.de/api/interpreter', 'data=' + encodeURIComponent(q), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': 'MapRaiders/1.0 (contact info@scafa-investments.com)',
+      'Accept': 'application/json',
+    },
+    timeout: 30_000,
+    maxContentLength: 50 * 1024 * 1024,
+  });
+  const out: OsmFootprint[] = [];
+  for (const el of data.elements || []) {
+    if (el.type !== 'way' || !el.geometry || el.geometry.length < 4) continue;
+    const ring: [number, number][] = el.geometry.map((p: any) => [p.lon, p.lat]);
+    const f = ring[0], l = ring[ring.length - 1];
+    if (f[0] !== l[0] || f[1] !== l[1]) ring.push(f);
+    let cx = 0, cy = 0; const n = ring.length - 1;
+    for (let i = 0; i < n; i++) { cx += ring[i][0]; cy += ring[i][1]; }
+    out.push({ id: String(el.id), ring, centroid: [cx / n, cy / n], height: footprintHeight(el.tags) });
+  }
+  return out;
+}
+
+/**
+ * GET /api/buildings/osm/footprints?north&south&east&west
+ * Real-building footprints for the viewport, tile-cached server-side.
+ * Tiles that fail to fetch are skipped so one bad tile never blanks the map.
+ */
+router.get('/osm/footprints', authenticate, async (req: Request, res: Response) => {
+  const north = parseFloat(req.query.north as string);
+  const south = parseFloat(req.query.south as string);
+  const east = parseFloat(req.query.east as string);
+  const west = parseFloat(req.query.west as string);
+  if ([north, south, east, west].some((n) => isNaN(n)) || north <= south || east <= west) {
+    return res.status(400).json({ success: false, message: 'Bounding box required: north, south, east, west' });
+  }
+  const ix0 = Math.floor(west / TILE_DEG), ix1 = Math.floor(east / TILE_DEG);
+  const iy0 = Math.floor(south / TILE_DEG), iy1 = Math.floor(north / TILE_DEG);
+  const tiles: Array<{ ix: number; iy: number; key: string }> = [];
+  for (let ix = ix0; ix <= ix1; ix++) for (let iy = iy0; iy <= iy1; iy++) tiles.push({ ix, iy, key: `${ix}_${iy}` });
+  if (tiles.length > MAX_TILES_PER_REQ) {
+    return res.status(400).json({ success: false, message: 'Viewport too large' });
+  }
+  try {
+    const cached = await queryMany<{ tile_key: string; buildings: OsmFootprint[] }>(
+      `SELECT tile_key, buildings FROM osm_footprint_tiles
+        WHERE tile_key = ANY($1) AND fetched_at > NOW() - INTERVAL '${TILE_TTL_DAYS} days'`,
+      [tiles.map((t) => t.key)],
+    );
+    const byKey = new Map(cached.map((c) => [c.tile_key, c.buildings]));
+    const missing = tiles.filter((t) => !byKey.has(t.key));
+
+    // Fetch missing tiles from Overpass in small batches (be a polite client).
+    for (let i = 0; i < missing.length; i += 2) {
+      const batch = missing.slice(i, i + 2);
+      await Promise.all(batch.map(async (t) => {
+        try {
+          const buildings = await fetchTileFromOverpass(t.ix, t.iy);
+          byKey.set(t.key, buildings);
+          await queryOne(
+            `INSERT INTO osm_footprint_tiles (tile_key, buildings, fetched_at)
+             VALUES ($1, $2, NOW())
+             ON CONFLICT (tile_key) DO UPDATE SET buildings = $2, fetched_at = NOW()
+             RETURNING tile_key`,
+            [t.key, JSON.stringify(buildings)],
+          );
+        } catch (err: any) {
+          console.error(`[Buildings] Overpass tile ${t.key} failed:`, err?.message ?? err);
+        }
+      }));
+    }
+
+    const seen = new Set<string>();
+    const buildings: OsmFootprint[] = [];
+    for (const t of tiles) {
+      for (const b of byKey.get(t.key) ?? []) {
+        if (seen.has(b.id)) continue;
+        seen.add(b.id);
+        buildings.push(b);
+      }
+    }
+    return res.json({ success: true, data: { buildings } });
+  } catch (err) {
+    console.error('[Buildings] GET /osm/footprints error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load footprints' });
   }
 });
 

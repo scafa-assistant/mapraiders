@@ -84,6 +84,16 @@ export async function initDatabase(): Promise<void> {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_claimed_buildings_bbox ON claimed_buildings (lat, lng);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_claimed_buildings_owner ON claimed_buildings (owner_id);`);
+
+    // OSM footprint tile cache: each 0.02°-tile of building footprints is
+    // fetched from Overpass once and served to all players from here.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS osm_footprint_tiles (
+        tile_key   TEXT PRIMARY KEY,
+        buildings  JSONB NOT NULL,
+        fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
   } finally {
     client.release();
   }

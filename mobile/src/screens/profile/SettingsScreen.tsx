@@ -425,7 +425,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
                   width: 36, height: 36, borderRadius: 18,
                   backgroundColor: c,
                   borderWidth: territoryColor === c ? 3 : 1,
-                  borderColor: territoryColor === c ? '#141210' : 'rgba(20,18,16,0.15)',
+                  borderColor: territoryColor === c ? theme.text : theme.border,
                 }}
                 onPress={async () => {
                   setTerritoryColor(c);
