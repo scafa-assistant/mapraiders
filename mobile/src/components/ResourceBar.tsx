@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
 import type { ResourceBalances } from '../store/resourceStore';
@@ -144,18 +145,40 @@ interface ResourceBarProps {
 
 /**
  * Compact HUD bar showing Energy / Tech / Intel balances.
+ * Collapsed by default to keep the map HUD calm — a small chip with the core
+ * icons; tapping it expands the full bar, tapping again collapses it.
  * Positioned absolutely so the caller wraps it in a SafeAreaView or passes
  * explicit insets — we read safe-area insets here to push below the notch.
  */
 const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
   const insets = useSafeAreaInsets();
+  const [expanded, setExpanded] = useState(false);
 
   // Economy resources are only shown once the player actually has some (economy flag on + extraction running).
   const economyKeys = ECONOMY_KEYS.filter((key) => balances[key] > 0);
   const keys: Array<keyof ResourceBalances> = [...CORE_KEYS, ...economyKeys];
 
+  if (!expanded) {
+    return (
+      <TouchableOpacity
+        style={[styles.chip, { top: insets.top + 58 }]}
+        onPress={() => setExpanded(true)}
+        activeOpacity={0.8}
+      >
+        {CORE_KEYS.map((key) => (
+          <ResourceIcon key={key} resource={key} size={13} />
+        ))}
+        <Ionicons name="chevron-down" size={13} color="#8A837B" />
+      </TouchableOpacity>
+    );
+  }
+
   return (
-    <View style={[styles.container, { top: insets.top + 58 }]}>
+    <TouchableOpacity
+      style={[styles.container, { top: insets.top + 58 }]}
+      onPress={() => setExpanded(false)}
+      activeOpacity={0.9}
+    >
       {keys.map((key, idx) => (
         <React.Fragment key={key}>
           {idx > 0 && <View style={styles.divider} />}
@@ -170,7 +193,8 @@ const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
           </View>
         </React.Fragment>
       ))}
-    </View>
+      <Ionicons name="chevron-up" size={13} color="#8A837B" style={styles.collapseHint} />
+    </TouchableOpacity>
   );
 };
 
@@ -224,6 +248,27 @@ const styles = StyleSheet.create({
     height: 28,
     backgroundColor: OBSIDIAN_BORDER,
     marginHorizontal: 2,
+  },
+  chip: {
+    position: 'absolute',
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: OBSIDIAN,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: OBSIDIAN_BORDER,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    shadowColor: VRIL_ACCENT,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  collapseHint: {
+    marginLeft: 4,
   },
 });
 

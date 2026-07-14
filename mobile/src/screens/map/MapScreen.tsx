@@ -39,6 +39,7 @@ import ResourceBar from '../../components/ResourceBar';
 import { MapScreenProps, MovementClass, Territory, Echo, MapStackParamList } from '../../navigation/types';
 import type { WeatherData, WeatherBonus } from '../../utils/types';
 import { isNightTime, getNightModeStyles } from '../../utils/nightMode';
+import { formatXP } from '../../utils/formatters';
 import { getMapStyle } from '../../utils/mapStyles';
 import { strings as S, t, plural } from '../../i18n';
 
@@ -1149,7 +1150,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           </View>
           <View style={styles.xpContainer}>
             <Text style={[styles.xpText, { color: theme.textSecondary }]}>
-              {user?.xp ?? 0} / {user?.xpToNextLevel ?? 100} XP
+              {formatXP(user?.xp ?? 0)} / {formatXP(user?.xpToNextLevel ?? 100)} XP
             </Text>
             <View style={[styles.xpBarBg, { backgroundColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4' }]}>
               <View
@@ -1248,33 +1249,27 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         >
           <Ionicons name="layers" size={22} color={theme.primary} />
         </TouchableOpacity>
-        {isPveEnabled && (
-          <TouchableOpacity
-            style={[styles.controlButton, {
-              backgroundColor: streifzug.active
-                ? theme.primary
-                : (settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)'),
-              borderColor: streifzug.active ? theme.primary : '#C0BAB4',
-            }]}
-            onPress={() => (streifzug.active ? streifzug.stop() : streifzug.start())}
-            disabled={streifzug.starting}
-          >
-            <Ionicons
-              name="walk"
-              size={22}
-              color={streifzug.active ? '#FFFFFF' : theme.primary}
-            />
-          </TouchableOpacity>
-        )}
-        {/* DEV (2026-07-04): MapLibre 3D Phase-A proof. Temporary entry, removed once
-            the real MapScreen migration lands (one-layer 3D milestone). */}
-        <TouchableOpacity
-          style={[styles.controlButton, { backgroundColor: '#F5A623', borderColor: '#C77E12' }]}
-          onPress={() => navigation.navigate('MapLibreProof')}
-        >
-          <Ionicons name="cube" size={22} color="#FFFFFF" />
-        </TouchableOpacity>
       </View>
+
+      {/* Streifzug toggle — lives above the record FAB, both are "go" actions */}
+      {isPveEnabled && (
+        <TouchableOpacity
+          style={[styles.controlButton, styles.walkFloat, {
+            backgroundColor: streifzug.active
+              ? theme.primary
+              : (settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)'),
+            borderColor: streifzug.active ? theme.primary : '#C0BAB4',
+          }]}
+          onPress={() => (streifzug.active ? streifzug.stop() : streifzug.start())}
+          disabled={streifzug.starting}
+        >
+          <Ionicons
+            name="walk"
+            size={22}
+            color={streifzug.active ? '#FFFFFF' : theme.primary}
+          />
+        </TouchableOpacity>
+      )}
 
       {/* Streifzug encounter overlay */}
       {streifzug.encounter && (
@@ -1805,10 +1800,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingVertical: 2,
   },
+  walkFloat: {
+    position: 'absolute',
+    right: 30,
+    bottom: 158,
+    zIndex: 10,
+  },
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 100,
+    bottom: 84,
     zIndex: 10,
     width: 64,
     height: 64,
@@ -1929,7 +1930,7 @@ const styles = StyleSheet.create({
   },
   classBadgeFloat: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 84,
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -2267,7 +2268,8 @@ const styles = StyleSheet.create({
   },
   weatherBadge: {
     position: 'absolute',
-    top: height * 0.12,
+    // Below the resource HUD row so the two never overlap (bar sits ~insets.top+58).
+    top: height * 0.12 + 46,
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',
