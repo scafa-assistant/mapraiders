@@ -1142,8 +1142,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Top Status Bar */}
       <SafeAreaView style={styles.topOverlay} edges={['top']}>
         <View style={[styles.statusBar, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+          backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
         }]}>
           <View style={[styles.levelBadge, { backgroundColor: theme.primary }]}>
             <Text style={[styles.levelText, { color: settings.darkMapStyle ? '#FFFFFF' : '#FFFFFF' }]}>Lv {user?.level ?? 1}</Text>
@@ -1152,7 +1152,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
             <Text style={[styles.xpText, { color: theme.textSecondary }]}>
               {formatXP(user?.xp ?? 0)} / {formatXP(user?.xpToNextLevel ?? 100)} XP
             </Text>
-            <View style={[styles.xpBarBg, { backgroundColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4' }]}>
+            <View style={[styles.xpBarBg, { backgroundColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4' }]}>
               <View
                 style={[
                   styles.xpBarFill,
@@ -1188,8 +1188,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Weather Badge */}
       {weather && (
         <View style={[styles.weatherBadge, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+          backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
         }]}>
           <Ionicons
             name={WEATHER_ICONS[weather.condition] || 'partly-sunny'}
@@ -1220,21 +1220,21 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Map Control Buttons */}
       <View style={styles.mapControls}>
         <TouchableOpacity style={[styles.controlButton, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+          backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
         }]} onPress={centerOnUser}>
           <Ionicons name="locate" size={22} color={theme.primary} />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.controlButton, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+          backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
         }]} onPress={() => setShowSearch(true)}>
           <Ionicons name="search" size={22} color={theme.primary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.controlButton, {
-            backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-            borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+            backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
           }]}
           onPress={() => navigation.navigate('ChallengeList')}
         >
@@ -1242,8 +1242,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.controlButton, {
-            backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-            borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+            backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
           }]}
           onPress={openMyTerritories}
         >
@@ -1257,7 +1257,7 @@ export default function MapScreen({ navigation }: MapScreenProps) {
           style={[styles.controlButton, styles.walkFloat, {
             backgroundColor: streifzug.active
               ? theme.primary
-              : (settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)'),
+              : (settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)'),
             borderColor: streifzug.active ? theme.primary : '#C0BAB4',
           }]}
           onPress={() => (streifzug.active ? streifzug.stop() : streifzug.start())}
@@ -1370,8 +1370,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 
       {/* Small class badge bottom-left */}
       <View style={[styles.classBadgeFloat, {
-        backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-        borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+        backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+        borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
       }]}>
         <Ionicons
           name={CLASS_ICONS[detectedClass]}
@@ -1387,8 +1387,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
       {/* Tracking Stats Bar (only when recording) */}
       {isTracking && (
         <View style={[styles.trackingBar, {
-          backgroundColor: settings.darkMapStyle ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.95)',
-          borderColor: settings.darkMapStyle ? '#C0BAB4' : '#C0BAB4',
+          backgroundColor: settings.darkMapStyle ? 'rgba(27, 32, 41, 0.94)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: settings.darkMapStyle ? '#333B48' : '#C0BAB4',
         }]}>
           <TouchableOpacity
             style={styles.trackingCancelBtn}

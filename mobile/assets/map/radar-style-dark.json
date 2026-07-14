@@ -1,0 +1,89 @@
+{
+  "version": 8,
+  "name": "MapRaiders Nacht-Radar",
+  "metadata": {
+    "note": "Restyle direction B: dark command-table night mode. Near-black land, ink water, roads as light veins, paths muted brown. Pairs with DARK_THEME in utils/constants."
+  },
+  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "https://tiles.openfreemap.org/planet"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": { "background-color": "#12151B" }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "park",
+      "filter": ["==", "$type", "Polygon"],
+      "paint": { "fill-color": "#16211A", "fill-opacity": 0.9 }
+    },
+    {
+      "id": "landcover_wood",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["==", "class", "wood"],
+      "paint": { "fill-color": "#16211A", "fill-opacity": 0.8 }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "filter": ["!=", "brunnel", "tunnel"],
+      "paint": { "fill-color": "#0C2033" }
+    },
+    {
+      "id": "waterway",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "waterway",
+      "paint": { "line-color": "#15334E", "line-width": 1.2 }
+    },
+    {
+      "id": "roads-casing",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["all", ["!=", "class", "rail"], ["!in", "class", "path", "track"]],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": "#1E242E",
+        "line-width": [
+          "interpolate", ["linear"], ["zoom"],
+          12, ["match", ["get", "class"], ["motorway", "trunk"], 4.6, ["primary"], 3.6, 2.4],
+          17, ["match", ["get", "class"], ["motorway", "trunk"], 11.5, ["primary"], 9.5, ["secondary"], 7.5, 6]
+        ]
+      }
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["!=", "class", "rail"],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": [
+          "match", ["get", "class"],
+          ["motorway", "trunk"], "#4A5566",
+          ["path", "track"], "#6B573F",
+          "#39424F"
+        ],
+        "line-width": [
+          "interpolate", ["linear"], ["zoom"],
+          12, ["match", ["get", "class"], ["motorway", "trunk"], 3, ["primary"], 2.2, ["path", "track"], 0.8, 1.2],
+          17, ["match", ["get", "class"], ["motorway", "trunk"], 9, ["primary"], 7, ["secondary"], 5.5, ["path", "track"], 2, 4]
+        ]
+      }
+    }
+  ]
+}

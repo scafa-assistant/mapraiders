@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
 import type { ResourceBalances } from '../store/resourceStore';
 import { useReducedMotion } from './fx/useReducedMotion';
+import { useSettingsStore } from '../store/settingsStore';
 
 // Green gain-pulse color, settles back to the normal value color.
 const GAIN_GREEN = '#1B9E5A';
@@ -15,7 +16,7 @@ const VALUE_COLOR = '#141210';
  * number INCREASES (resource gain). Decreases and first render are silent.
  * Respects reduce-motion (snaps to the value, no pulse).
  */
-const PulseValue: React.FC<{ value: number; text: string }> = ({ value, text }) => {
+const PulseValue: React.FC<{ value: number; text: string; baseColor?: string }> = ({ value, text, baseColor = VALUE_COLOR }) => {
   const reduced = useReducedMotion();
   const prev = useRef(value);
   const pulse = useRef(new Animated.Value(0)).current;
@@ -42,7 +43,7 @@ const PulseValue: React.FC<{ value: number; text: string }> = ({ value, text }) 
   }, [value, reduced, pulse]);
 
   const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.35] });
-  const color = pulse.interpolate({ inputRange: [0, 1], outputRange: [VALUE_COLOR, GAIN_GREEN] });
+  const color = pulse.interpolate({ inputRange: [0, 1], outputRange: [baseColor, GAIN_GREEN] });
 
   return (
     <Animated.Text style={[styles.value, { color, transform: [{ scale }] }]}>{text}</Animated.Text>
@@ -153,6 +154,13 @@ interface ResourceBarProps {
 const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
+  // Night mode (direction B): dark glass chip instead of the white one.
+  const darkMap = useSettingsStore((s) => s.settings.darkMapStyle);
+  const surface = darkMap
+    ? { backgroundColor: 'rgba(27,32,41,0.94)', borderColor: '#333B48' }
+    : null;
+  const valueColor = darkMap ? '#EDF1F8' : VALUE_COLOR;
+  const hintColor = darkMap ? '#8C96A8' : '#8A837B';
 
   // Economy resources are only shown once the player actually has some (economy flag on + extraction running).
   const economyKeys = ECONOMY_KEYS.filter((key) => balances[key] > 0);
@@ -161,21 +169,21 @@ const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
   if (!expanded) {
     return (
       <TouchableOpacity
-        style={[styles.chip, { top: insets.top + 58 }]}
+        style={[styles.chip, surface, { top: insets.top + 58 }]}
         onPress={() => setExpanded(true)}
         activeOpacity={0.8}
       >
         {CORE_KEYS.map((key) => (
           <ResourceIcon key={key} resource={key} size={13} />
         ))}
-        <Ionicons name="chevron-down" size={13} color="#8A837B" />
+        <Ionicons name="chevron-down" size={13} color={hintColor} />
       </TouchableOpacity>
     );
   }
 
   return (
     <TouchableOpacity
-      style={[styles.container, { top: insets.top + 58 }]}
+      style={[styles.container, surface, { top: insets.top + 58 }]}
       onPress={() => setExpanded(false)}
       activeOpacity={0.9}
     >
@@ -188,12 +196,12 @@ const ResourceBar: React.FC<ResourceBarProps> = ({ balances }) => {
               <Text style={[styles.label, RESOURCE_LABEL_COLORS[key] ? { color: RESOURCE_LABEL_COLORS[key] } : null]}>
                 {RESOURCE_LABELS[key]}
               </Text>
-              <PulseValue value={balances[key]} text={formatCompact(balances[key])} />
+              <PulseValue value={balances[key]} text={formatCompact(balances[key])} baseColor={valueColor} />
             </View>
           </View>
         </React.Fragment>
       ))}
-      <Ionicons name="chevron-up" size={13} color="#8A837B" style={styles.collapseHint} />
+      <Ionicons name="chevron-up" size={13} color={hintColor} style={styles.collapseHint} />
     </TouchableOpacity>
   );
 };

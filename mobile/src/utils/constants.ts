@@ -63,19 +63,19 @@ export const LIGHT_THEME: Theme = {
   border: '#C0BAB4',      // dim border
 };
 
-// DARK_THEME kept for API compatibility but now mirrors the light brand look
-// (the app ships light to match web). Secondary surface used for contrast.
+// "Nacht-Radar" night mode (restyle direction B, René 2026-07-14): dark
+// command-table look. Same brand blue family lifted for dark-ground contrast.
 export const DARK_THEME: Theme = {
-  bg: '#EFEDE8',          // secondary surface (slightly deeper off-white)
-  surface: '#FFFFFF',
-  primary: '#1558F0',
-  secondary: '#4B7BFF',
-  accent: '#1558F0',
+  bg: '#12151B',          // near-black command table
+  surface: '#1B2029',     // dark glass cards
+  primary: '#4C86FF',     // brand blue lifted for contrast
+  secondary: '#6E9CFF',
+  accent: '#4C86FF',
   warning: '#F5A623',
-  danger: '#D7263D',
-  text: '#141210',
-  textSecondary: '#7A7470',
-  border: '#C0BAB4',
+  danger: '#FF4060',
+  text: '#EDF1F8',
+  textSecondary: '#8C96A8',
+  border: '#333B48',
 };
 
 // Backward compatibility — default export points to the brand (light) theme

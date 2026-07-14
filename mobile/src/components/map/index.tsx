@@ -22,6 +22,8 @@ import {
 } from '@maplibre/maplibre-react-native';
 import type { MapRef, CameraRef, Anchor } from '@maplibre/maplibre-react-native';
 import radarStyle from '../../../assets/map/radar-style.json';
+import radarStyleDark from '../../../assets/map/radar-style-dark.json';
+import { useSettingsStore } from '../../store/settingsStore';
 
 // ─── Coordinate types (mirror react-native-maps) ─────────────────────────────
 export interface LatLng { latitude: number; longitude: number; }
@@ -130,6 +132,8 @@ const MapViewImpl = forwardRef<MapViewRef, MapViewProps>((props, ref) => {
   } = props;
   const mapR = useRef<MapRef>(null);
   const camR = useRef<CameraRef>(null);
+  // Night mode (restyle direction B) swaps the whole basemap style.
+  const darkMap = useSettingsStore((s) => s.settings.darkMapStyle);
 
   const initCenter = useMemo<[number, number]>(() => {
     const r = initialRegion ?? region;
@@ -198,7 +202,7 @@ const MapViewImpl = forwardRef<MapViewRef, MapViewProps>((props, ref) => {
     <Map
       ref={mapR}
       style={style ?? StyleSheet.absoluteFill}
-      mapStyle={radarStyle as any}
+      mapStyle={(darkMap ? radarStyleDark : radarStyle) as any}
       touchPitch
       compass={!!showsCompass}
       logo={false}

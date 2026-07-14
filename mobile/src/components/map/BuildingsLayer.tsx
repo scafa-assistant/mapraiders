@@ -16,9 +16,13 @@ import { View, StyleSheet } from 'react-native';
 import { GeoJSONSource, Layer, Marker as MLMarker } from '@maplibre/maplibre-react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { mapBuildingApi } from '@services/api';
+import { useSettingsStore } from '../../store/settingsStore';
 
 const NEUTRAL = '#D8D2CA';
 const NEUTRAL_EDGE = 'rgba(120,112,102,0.45)';
+// Night mode (direction B): unclaimed buildings sit as dark slabs on the dark map.
+const NEUTRAL_DARK = '#2E3540';
+const NEUTRAL_EDGE_DARK = 'rgba(150,162,184,0.35)';
 const FALLBACK_COLOR = '#1558F0'; // used only until the server color syncs in
 const MAX_SPAN_DEG = 0.02; // only load buildings when zoomed in (~2 km N-S)
 
@@ -106,6 +110,9 @@ interface BuildingsLayerProps {
 export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps) {
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [claims, setClaims] = useState<Record<string, Claim>>({});
+  const darkMap = useSettingsStore((s) => s.settings.darkMapStyle);
+  const neutral = darkMap ? NEUTRAL_DARK : NEUTRAL;
+  const neutralEdge = darkMap ? NEUTRAL_EDGE_DARK : NEUTRAL_EDGE;
   const lastFetched = useRef<Bbox | null>(null);
   const currentBbox = useRef<Bbox | null>(null);
 
@@ -143,13 +150,13 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
           id: b.id,
           height: b.height,
           owned: !!c,
-          color: c ? (BUILDING_TYPE_COLORS[c.type] ?? FALLBACK_COLOR) : NEUTRAL,
-          ownerColor: c ? c.color : NEUTRAL_EDGE,
+          color: c ? (BUILDING_TYPE_COLORS[c.type] ?? FALLBACK_COLOR) : neutral,
+          ownerColor: c ? c.color : neutralEdge,
         },
         geometry: { type: 'Polygon' as const, coordinates: [b.ring] },
       };
     }),
-  }), [buildings, claims]);
+  }), [buildings, claims, neutral, neutralEdge]);
 
   // Badges only for claimed buildings whose footprint is in view.
   const claimedInView = useMemo(
