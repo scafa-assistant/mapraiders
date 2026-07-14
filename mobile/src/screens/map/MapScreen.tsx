@@ -16,7 +16,7 @@ import {
   ScrollView,
 } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, Circle, PROVIDER_GOOGLE, Region, LongPressEvent, type MapViewRef } from '@components/map';
-import BuildingsLayer, { type Bbox } from '@components/map/BuildingsLayer';
+import BuildingsLayer, { BUILDING_TYPE_COLORS, type Bbox } from '@components/map/BuildingsLayer';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocationStore } from '../../store/locationStore';
@@ -1591,8 +1591,8 @@ export default function MapScreen({ navigation }: MapScreenProps) {
                     style={styles.bpOption}
                     onPress={() => { buildingPicker.resolve(t.key); setBuildingPicker(null); }}
                   >
-                    <View style={styles.bpIcon}>
-                      <Ionicons name={t.icon as any} size={22} color="#1558F0" />
+                    <View style={[styles.bpIcon, { backgroundColor: BUILDING_TYPE_COLORS[t.key] }]}>
+                      <Ionicons name={t.icon as any} size={22} color="#FFFFFF" />
                     </View>
                     <Text style={styles.bpLabel}>{t.label}</Text>
                   </TouchableOpacity>
@@ -1613,10 +1613,12 @@ export default function MapScreen({ navigation }: MapScreenProps) {
 }
 
 // Building types the player can assign when claiming a real building.
+// Colors mirror BUILDING_TYPE_COLORS (fill = type, rim = owner).
 const BUILDING_CLAIM_TYPES = [
   { key: 'workshop', label: 'Werkstatt', icon: 'construct' },
   { key: 'refinery', label: 'Raffinerie', icon: 'flame' },
   { key: 'garrison', label: 'Garnison', icon: 'shield' },
+  { key: 'armory', label: 'Waffenschmiede', icon: 'hammer' },
   { key: 'storage', label: 'Lager', icon: 'cube' },
   { key: 'radar', label: 'Radar', icon: 'radio' },
 ] as const;

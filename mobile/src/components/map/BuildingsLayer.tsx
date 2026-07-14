@@ -18,18 +18,31 @@ import { Ionicons } from '@expo/vector-icons';
 import { mapBuildingApi } from '@services/api';
 
 const NEUTRAL = '#D8D2CA';
+const NEUTRAL_EDGE = 'rgba(120,112,102,0.45)';
 const FALLBACK_COLOR = '#1558F0'; // used only until the server color syncs in
 const MAX_SPAN_DEG = 0.02; // only load buildings when zoomed in (~2 km N-S)
 
 export interface Bbox { north: number; south: number; east: number; west: number; }
 
-// Type → badge icon. Claiming defaults to 'workshop' (type-picker is future UX).
+// Building color system (René 2026-07-14): fill = TYPE color, outline = OWNER
+// profile color, badge = type icon. So you can read WHAT a building is (color +
+// icon) and WHOSE it is (rim) at a glance, even when players share colors.
+export const BUILDING_TYPE_COLORS: Record<string, string> = {
+  workshop: '#F5A623',
+  refinery: '#E2571B',
+  garrison: '#4A6B3A',
+  storage: '#8B5E3C',
+  radar: '#0FA3A3',
+  armory: '#455A64',
+};
+
 const TYPE_ICON: Record<string, keyof typeof Ionicons.glyphMap> = {
   workshop: 'construct',
   refinery: 'flame',
   garrison: 'shield',
   storage: 'cube',
   radar: 'radio',
+  armory: 'hammer',
 };
 
 interface Building { id: string; ring: [number, number][]; centroid: [number, number]; height: number; }
@@ -126,7 +139,13 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
       return {
         type: 'Feature' as const,
         id: b.id,
-        properties: { id: b.id, height: b.height, owned: !!c, color: c ? c.color : NEUTRAL },
+        properties: {
+          id: b.id,
+          height: b.height,
+          owned: !!c,
+          color: c ? (BUILDING_TYPE_COLORS[c.type] ?? FALLBACK_COLOR) : NEUTRAL,
+          ownerColor: c ? c.color : NEUTRAL_EDGE,
+        },
         geometry: { type: 'Polygon' as const, coordinates: [b.ring] },
       };
     }),
@@ -181,15 +200,15 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
             'fill-extrusion-opacity': ['case', ['get', 'owned'], 0.95, 0.6],
           } as any}
         />
-        {/* Crisp white outline on owned buildings so they pop even when the
-            owner color matches the territory tint; faint edge on neutral ones. */}
+        {/* Owner rim: claimed buildings carry their owner's profile color as a
+            crisp outline (fill is the type color); faint edge on neutral ones. */}
         <Layer
           id="mainblds-line"
           type="line"
           source="mainblds"
           paint={{
-            'line-color': ['case', ['get', 'owned'], '#FFFFFF', 'rgba(120,112,102,0.45)'],
-            'line-width': ['case', ['get', 'owned'], 2.2, 0.6],
+            'line-color': ['get', 'ownerColor'],
+            'line-width': ['case', ['get', 'owned'], 2.6, 0.6],
           } as any}
         />
       </GeoJSONSource>
@@ -198,7 +217,7 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
         const icon = TYPE_ICON[c.type] ?? 'business';
         return (
           <MLMarker key={b.id} lngLat={b.centroid}>
-            <View style={[styles.badge, { backgroundColor: c.color }]}>
+            <View style={[styles.badge, { backgroundColor: BUILDING_TYPE_COLORS[c.type] ?? FALLBACK_COLOR, borderColor: c.color }]}>
               <Ionicons name={icon} size={13} color="#FFFFFF" />
             </View>
           </MLMarker>

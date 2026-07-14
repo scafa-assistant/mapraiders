@@ -23,7 +23,7 @@ const router = Router();
 // ─── One-Layer World Map: claim real OSM buildings ───────────────────────────
 // Separate namespace (/osm/*) so it never collides with the grid-building routes
 // below. Not feature-gated: this is the core one-layer map, not the economy.
-const OSM_CLAIM_TYPES = ['workshop', 'refinery', 'garrison', 'storage', 'radar'];
+const OSM_CLAIM_TYPES = ['workshop', 'refinery', 'garrison', 'armory', 'storage', 'radar'];
 
 /**
  * GET /api/buildings/osm/claimed?north&south&east&west

@@ -416,7 +416,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             {S.profile.settings.territoryColorHint}
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-            {['#1558F0', '#1558F0', '#1B9E5A', '#F5A623', '#D7263D', '#FF69B4', '#FF6B35', '#00BFFF',
+            {['#1558F0', '#0A2E8C', '#1B9E5A', '#F5A623', '#D7263D', '#FF69B4', '#FF6B35', '#00BFFF',
               '#E040FB', '#76FF03', '#FFEA00', '#FF1744', '#00E5FF', '#D500F9', '#1DE9B6', '#F50057',
             ].map((c) => (
               <TouchableOpacity

@@ -39,14 +39,30 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "filter": ["!=", "brunnel", "tunnel"],
-      "paint": { "fill-color": "#CFE0F5" }
+      "paint": { "fill-color": "#C7DBF2" }
     },
     {
       "id": "waterway",
       "type": "line",
       "source": "openmaptiles",
       "source-layer": "waterway",
-      "paint": { "line-color": "#BFD6F2", "line-width": 1.2 }
+      "paint": { "line-color": "#B4CDEC", "line-width": 1.2 }
+    },
+    {
+      "id": "roads-casing",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["all", ["!=", "class", "rail"], ["!in", "class", "path", "track"]],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": "#D8D2C8",
+        "line-width": [
+          "interpolate", ["linear"], ["zoom"],
+          12, ["match", ["get", "class"], ["motorway", "trunk"], 4.6, ["primary"], 3.6, 2.4],
+          17, ["match", ["get", "class"], ["motorway", "trunk"], 11.5, ["primary"], 9.5, ["secondary"], 7.5, 6]
+        ]
+      }
     },
     {
       "id": "roads",
@@ -58,10 +74,6 @@
       "paint": {
         "line-color": [
           "match", ["get", "class"],
-          "motorway", "#1558F0",
-          "trunk", "#1558F0",
-          "primary", "#3D7BF5",
-          "secondary", "#7FA8F5",
           ["path", "track"], "#C6A77E",
           "#FFFFFF"
         ],
