@@ -159,8 +159,9 @@ export default function MapScreen({ navigation }: MapScreenProps) {
   const [hideOverlays, setHideOverlays] = useState(false); // Briefly hides polygons to force native re-render
   const [buildingsBbox, setBuildingsBbox] = useState<Bbox | null>(null); // viewport for real-building layer
   // Encounter signals (PvE/terminals) only show once you're reasonably zoomed
-  // in — a zoomed-out map full of blue discs reads as pure noise.
-  const SIGNALS_VISIBLE_SPAN_DEG = 0.045; // ~5 km north-south
+  // in — a zoomed-out map full of blue discs reads as pure noise. Signals
+  // vanish BEFORE buildings do (buildings gate at ~5 km in BuildingsLayer).
+  const SIGNALS_VISIBLE_SPAN_DEG = 0.02; // ~2 km north-south
   const signalsVisible = !!buildingsBbox
     && buildingsBbox.north - buildingsBbox.south < SIGNALS_VISIBLE_SPAN_DEG;
   // Building-type picker: opened when claiming a real building; resolves the chosen type.

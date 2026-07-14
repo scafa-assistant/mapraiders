@@ -24,7 +24,9 @@ const NEUTRAL_EDGE = 'rgba(120,112,102,0.45)';
 const NEUTRAL_DARK = '#2E3540';
 const NEUTRAL_EDGE_DARK = 'rgba(150,162,184,0.35)';
 const FALLBACK_COLOR = '#1558F0'; // used only until the server color syncs in
-const MAX_SPAN_DEG = 0.02; // only load buildings when zoomed in (~2 km N-S)
+// Buildings stay visible LONGER than encounter signals when zooming out
+// (René 2026-07-14): houses ~5 km, signals ~2 km (see MapScreen).
+const MAX_SPAN_DEG = 0.05;
 
 export interface Bbox { north: number; south: number; east: number; west: number; }
 
@@ -126,7 +128,9 @@ export default function BuildingsLayer({ bbox, promptType }: BuildingsLayerProps
     const lf = lastFetched.current;
     if (lf && bbox.north <= lf.north && bbox.south >= lf.south && bbox.east <= lf.east && bbox.west >= lf.west) return;
     const t = setTimeout(() => {
-      const pad = span * 0.5; // over-fetch so small pans don't re-hit Overpass
+      // Over-fetch so small pans don't re-hit Overpass, but cap the padding —
+      // at the wider ~5 km gate an uncapped 50% pad would balloon the query.
+      const pad = Math.min(span * 0.5, 0.012);
       const fb: Bbox = { north: bbox.north + pad, south: bbox.south - pad, east: bbox.east + pad, west: bbox.west - pad };
       fetchBuildings(fb).then((b) => { setBuildings(b); lastFetched.current = fb; }).catch(() => {});
       fetchClaims(fb).then(setClaims).catch(() => {});
